@@ -4,6 +4,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PriceChart from '../../src/components/PriceChart';
 import { useChartStore } from '../../src/state/store';
 
+// Extend Window interface for test debugging properties
+interface TestWindow extends Window {
+  _adLine?: unknown;
+  _adx?: unknown;
+  _bbSeries?: unknown;
+  _cci?: unknown;
+  _macd?: unknown;
+  _rsi?: unknown;
+  _stochastic?: unknown;
+  _williamsR?: unknown;
+}
+
 // Mock lightweight-charts with v5 API (addSeries instead of addCandlestickSeries, etc.)
 vi.mock('lightweight-charts', () => {
   // Define Series type symbols INSIDE the mock factory (vi.mock is hoisted)
@@ -12,6 +24,7 @@ vi.mock('lightweight-charts', () => {
   const HistogramSeriesSymbol = Symbol('HistogramSeries');
   const AreaSeriesSymbol = Symbol('AreaSeries');
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock object built incrementally
   const mockChart: any = {}; // Define early so series can reference it
 
   // Series need to have a chart() method that returns the chart instance
@@ -210,7 +223,7 @@ describe('PriceChart Component', () => {
     mockAdapterListeners = [];
     mockAdapterInstance = null;
 
-    (useChartStore as any).mockReturnValue(mockStoreState);
+    vi.mocked(useChartStore).mockReturnValue(mockStoreState);
   });
 
   describe('Rendering', () => {
@@ -251,7 +264,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const mockChart = (createChart as any).mock.results[0].value;
+        const mockChart = vi.mocked(createChart).mock.results[0].value;
 
         // v5 uses addSeries() instead of addCandlestickSeries/addHistogramSeries
         expect(mockChart.addSeries).toHaveBeenCalled();
@@ -322,7 +335,7 @@ describe('PriceChart Component', () => {
     it('should create Bollinger Bands line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         indicators: {
           ...mockStoreState.indicators,
@@ -333,7 +346,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Bollinger Bands creates 3 line series (upper, middle, lower)
@@ -348,7 +361,7 @@ describe('PriceChart Component', () => {
     it('should create VWAP line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         indicators: {
           ...mockStoreState.indicators,
@@ -359,7 +372,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // VWAP creates 1 line series
@@ -374,7 +387,7 @@ describe('PriceChart Component', () => {
     it('should create VWMA line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         indicators: {
           ...mockStoreState.indicators,
@@ -385,7 +398,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // VWMA creates 1 line series
@@ -400,7 +413,7 @@ describe('PriceChart Component', () => {
     it('should create Standard Deviation Channels line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         indicators: {
           ...mockStoreState.indicators,
@@ -411,7 +424,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Std Dev Channels creates 3 line series (upper, middle, lower)
@@ -428,7 +441,7 @@ describe('PriceChart Component', () => {
     it('should apply dark theme options to chart', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         theme: 'dark',
       });
@@ -439,7 +452,7 @@ describe('PriceChart Component', () => {
         expect(createChart).toHaveBeenCalled();
 
         // Verify chart was created with layout options containing theme colors
-        const createChartCalls = (createChart as any).mock.calls;
+        const createChartCalls = vi.mocked(createChart).mock.calls;
         expect(createChartCalls.length).toBeGreaterThan(0);
 
         const chartOptions = createChartCalls[0][1];
@@ -453,7 +466,7 @@ describe('PriceChart Component', () => {
     it('should apply light theme options to chart', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         theme: 'light',
       });
@@ -464,7 +477,7 @@ describe('PriceChart Component', () => {
         expect(createChart).toHaveBeenCalled();
 
         // Verify chart was created with layout options containing theme colors
-        const createChartCalls = (createChart as any).mock.calls;
+        const createChartCalls = vi.mocked(createChart).mock.calls;
         expect(createChartCalls.length).toBeGreaterThan(0);
 
         const chartOptions = createChartCalls[0][1];
@@ -482,7 +495,7 @@ describe('PriceChart Component', () => {
       const { createChart } = await import('lightweight-charts');
 
       // Start with dark theme
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         theme: 'dark',
       });
@@ -490,7 +503,7 @@ describe('PriceChart Component', () => {
       const { rerender } = render(<PriceChart />);
 
       // Change to light theme
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         theme: 'light',
       });
@@ -498,7 +511,7 @@ describe('PriceChart Component', () => {
       rerender(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Verify applyOptions was called (theme update)
@@ -517,7 +530,7 @@ describe('PriceChart Component', () => {
         expect(createChart).toHaveBeenCalled();
 
         // Verify chart instance created with resize capability
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
         expect(chartMock.resize).toBeDefined();
       });
@@ -546,7 +559,7 @@ describe('PriceChart Component', () => {
       });
 
       // Change symbol
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         symbol: 'ETHUSDT',
       });
@@ -567,7 +580,7 @@ describe('PriceChart Component', () => {
       });
 
       // Change timeframe
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         timeframe: '5m',
       });
@@ -591,7 +604,7 @@ describe('PriceChart Component', () => {
         expect(mockAdapterInstance).not.toBeNull();
       });
 
-      const chartMock = (createChart as any).mock.results[0]?.value;
+      const chartMock = vi.mocked(createChart).mock.results[0]?.value;
 
       // Unmount component
       unmount();
@@ -683,7 +696,7 @@ describe('PriceChart Component', () => {
     it('should create all indicator series without performance issues', async () => {
       const { createChart } = await import('lightweight-charts');
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         indicators: {
           showBB: true,
@@ -697,7 +710,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // All 4 indicators enabled = 3 BB lines + 1 VWAP + 1 VWMA + 3 Std Dev = 8 line series
@@ -714,7 +727,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Verify chart has crosshair subscription capability
@@ -730,7 +743,7 @@ describe('PriceChart Component', () => {
         expect(createChart).toHaveBeenCalled();
 
         // Verify chart has crosshair subscription capability
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock.subscribeCrosshairMove).toBeDefined();
 
         // Verify component rendered
@@ -746,7 +759,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Verify histogram series was created for volume
@@ -760,7 +773,7 @@ describe('PriceChart Component', () => {
       render(<PriceChart />);
 
       await waitFor(() => {
-        const chartMock = (createChart as any).mock.results[0]?.value;
+        const chartMock = vi.mocked(createChart).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
 
         // Verify histogram series created
@@ -776,7 +789,7 @@ describe('PriceChart Component', () => {
 
   describe('RSI Indicator Integration', () => {
     it('should not create RSI series when showRSI is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -817,7 +830,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           // Get chartMock from the mock results
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           // Only candlestick and histogram series should be created
           const lineCalls = chartMock.addSeries.mock.calls;
           // No RSI lines should exist
@@ -829,7 +842,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create RSI series with overbought/oversold lines when showRSI is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -869,7 +882,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
@@ -900,7 +913,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom RSI period from settings', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -940,7 +953,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
@@ -975,7 +988,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
 
       const { rerender } = render(<PriceChart />);
 
@@ -993,7 +1006,7 @@ describe('PriceChart Component', () => {
       // Verify RSI series created
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
@@ -1009,21 +1022,21 @@ describe('PriceChart Component', () => {
           showRSI: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
           // Window._rsi should be cleaned up
-          expect((window as any)._rsi).toBeUndefined();
+          expect((window as TestWindow)._rsi).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (RSI + BB + VWAP) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1062,7 +1075,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(5); // BB (3) + VWAP (1) + RSI (3) = 7+
 
@@ -1084,7 +1097,7 @@ describe('PriceChart Component', () => {
 
   describe('MACD Indicator Integration', () => {
     it('should not create MACD series when showMACD is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1129,7 +1142,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           // Get chartMock from the mock results
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const allCalls = chartMock.addSeries.mock.calls;
 
           // No MACD line (blue) should exist
@@ -1151,7 +1164,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create MACD series with signal and histogram when showMACD is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1195,7 +1208,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const histogramCalls = chartMock.addSeries.mock.calls;
 
@@ -1225,7 +1238,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom MACD periods from settings', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1269,7 +1282,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const macdLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
@@ -1308,7 +1321,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
 
       const { rerender } = render(<PriceChart />);
 
@@ -1326,7 +1339,7 @@ describe('PriceChart Component', () => {
       // Verify MACD series created
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const macdLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
@@ -1342,21 +1355,21 @@ describe('PriceChart Component', () => {
           showMACD: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
           // Window._macd should be cleaned up
-          expect((window as any)._macd).toBeUndefined();
+          expect((window as TestWindow)._macd).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (MACD + RSI) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1399,7 +1412,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const allCalls = chartMock.addSeries.mock.calls;
 
           // RSI: 3 lines (RSI, overbought, oversold)
@@ -1430,7 +1443,7 @@ describe('PriceChart Component', () => {
 
   describe('Bollinger Bands Indicator Integration', () => {
     it('should not create BB series when showBB is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1475,7 +1488,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           // Get chartMock from the mock results
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           // No BB lines should exist (middle=orange, upper/lower=blue)
           const hasBBMiddle = lineCalls.some(
@@ -1489,7 +1502,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create BB series (upper, middle, lower) when showBB is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1533,7 +1546,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
@@ -1561,7 +1574,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should apply custom BB periods and multipliers', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1604,7 +1617,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period/multiplier reflected in title
@@ -1645,7 +1658,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
 
       const { rerender } = render(<PriceChart />);
 
@@ -1663,7 +1676,7 @@ describe('PriceChart Component', () => {
       // Verify BB series created
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
           const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
@@ -1679,21 +1692,21 @@ describe('PriceChart Component', () => {
           showBB: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
           // Window._bbSeries should be cleaned up
-          expect((window as any)._bbSeries).toBeUndefined();
+          expect((window as TestWindow)._bbSeries).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1736,7 +1749,7 @@ describe('PriceChart Component', () => {
       // Wait for indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
@@ -1762,7 +1775,7 @@ describe('PriceChart Component', () => {
 
     // --- Stochastic Oscillator Tests
     it('should not create Stochastic series when showStochastic is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1806,14 +1819,14 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
         },
         { timeout: 1000 }
       );
 
       // Verify no Stochastic series created
-      const chartMock = (createChart as any).mock.results[0]?.value;
+      const chartMock = vi.mocked(createChart).mock.results[0]?.value;
       const lineCalls = chartMock.addSeries.mock.calls;
       const stochasticK = lineCalls.find((call: any) => call[1]?.title?.includes('%K'));
       const stochasticD = lineCalls.find((call: any) => call[1]?.title?.includes('%D'));
@@ -1823,7 +1836,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create Stochastic series when showStochastic is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1868,7 +1881,7 @@ describe('PriceChart Component', () => {
       // Wait for Stochastic to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify %K line exists (blue)
@@ -1894,7 +1907,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom Stochastic periods', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -1938,7 +1951,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
@@ -1984,7 +1997,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
       const { rerender } = render(<PriceChart />);
 
       await waitFor(
@@ -2000,7 +2013,7 @@ describe('PriceChart Component', () => {
       // Wait for Stochastic to be created
       await waitFor(
         () => {
-          expect((window as any)._stochastic).toBeDefined();
+          expect((window as TestWindow)._stochastic).toBeDefined();
         },
         { timeout: 1000 }
       );
@@ -2013,20 +2026,20 @@ describe('PriceChart Component', () => {
           showStochastic: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
-          expect((window as any)._stochastic).toBeUndefined();
+          expect((window as TestWindow)._stochastic).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD + Stochastic) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2071,7 +2084,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
@@ -2109,7 +2122,7 @@ describe('PriceChart Component', () => {
 
     // --- ADX (Average Directional Index) Tests
     it('should not create ADX series when showADX is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2155,14 +2168,14 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
         },
         { timeout: 1000 }
       );
 
       // Verify no ADX series created
-      const chartMock = (createChart as any).mock.results[0]?.value;
+      const chartMock = vi.mocked(createChart).mock.results[0]?.value;
       const lineCalls = chartMock.addSeries.mock.calls;
       const adxLine = lineCalls.find((call: any) => call[1]?.title?.includes('ADX'));
 
@@ -2170,7 +2183,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create ADX series when showADX is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2217,7 +2230,7 @@ describe('PriceChart Component', () => {
       // Wait for ADX to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify ADX line exists (purple)
@@ -2236,7 +2249,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom ADX period', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2282,7 +2295,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
@@ -2327,7 +2340,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
       const { rerender } = render(<PriceChart />);
 
       await waitFor(
@@ -2343,7 +2356,7 @@ describe('PriceChart Component', () => {
       // Wait for ADX to be created
       await waitFor(
         () => {
-          expect((window as any)._adx).toBeDefined();
+          expect((window as TestWindow)._adx).toBeDefined();
         },
         { timeout: 1000 }
       );
@@ -2356,20 +2369,20 @@ describe('PriceChart Component', () => {
           showADX: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
-          expect((window as any)._adx).toBeUndefined();
+          expect((window as TestWindow)._adx).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2416,7 +2429,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
@@ -2454,7 +2467,7 @@ describe('PriceChart Component', () => {
 
     // --- CCI (Commodity Channel Index) Tests
     it('should not create CCI series when showCCI is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2502,14 +2515,14 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
         },
         { timeout: 1000 }
       );
 
       // Verify no CCI series created
-      const chartMock = (createChart as any).mock.results[0]?.value;
+      const chartMock = vi.mocked(createChart).mock.results[0]?.value;
       const lineCalls = chartMock.addSeries.mock.calls;
       const cciLine = lineCalls.find((call: any) => call[1]?.title?.includes('CCI'));
 
@@ -2517,7 +2530,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should create CCI series when showCCI is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2566,7 +2579,7 @@ describe('PriceChart Component', () => {
       // Wait for CCI to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify CCI line exists (blue-violet)
@@ -2585,7 +2598,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom CCI period', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2633,7 +2646,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
@@ -2680,7 +2693,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
       const { rerender } = render(<PriceChart />);
 
       await waitFor(
@@ -2696,7 +2709,7 @@ describe('PriceChart Component', () => {
       // Wait for CCI to be created
       await waitFor(
         () => {
-          expect((window as any)._cci).toBeDefined();
+          expect((window as TestWindow)._cci).toBeDefined();
         },
         { timeout: 1000 }
       );
@@ -2709,20 +2722,20 @@ describe('PriceChart Component', () => {
           showCCI: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
-          expect((window as any)._cci).toBeUndefined();
+          expect((window as TestWindow)._cci).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX + CCI) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2771,7 +2784,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
@@ -2814,7 +2827,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should not create Williams %R series when showWilliamsR is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2863,11 +2876,11 @@ describe('PriceChart Component', () => {
       listener({ type: 'snapshot', candles: mockCandles });
 
       // Williams %R should not exist
-      expect((window as any)._williamsR).toBeUndefined();
+      expect((window as TestWindow)._williamsR).toBeUndefined();
     });
 
     it('should create Williams %R series when showWilliamsR is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2917,7 +2930,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line (purple color)
@@ -2934,7 +2947,7 @@ describe('PriceChart Component', () => {
     });
 
     it('should use custom Williams %R period', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -2984,7 +2997,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line with custom period
@@ -3038,7 +3051,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
       const { rerender } = render(<PriceChart />);
 
       await waitFor(
@@ -3054,7 +3067,7 @@ describe('PriceChart Component', () => {
       // Wait for Williams %R to be created
       await waitFor(
         () => {
-          expect((window as any)._williamsR).toBeDefined();
+          expect((window as TestWindow)._williamsR).toBeDefined();
         },
         { timeout: 1000 }
       );
@@ -3067,20 +3080,20 @@ describe('PriceChart Component', () => {
           showWilliamsR: false,
         },
       };
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
-          expect((window as any)._williamsR).toBeUndefined();
+          expect((window as TestWindow)._williamsR).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX + CCI + Williams %R) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -3131,7 +3144,7 @@ describe('PriceChart Component', () => {
       // Wait for all indicators to process
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
@@ -3185,7 +3198,7 @@ describe('PriceChart Component', () => {
     // ============================================================================
 
     it('should not create A/D Line series when showADLine is false', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -3236,11 +3249,11 @@ describe('PriceChart Component', () => {
       listener({ type: 'snapshot', candles: mockCandles });
 
       // A/D Line should not exist
-      expect((window as any)._adLine).toBeUndefined();
+      expect((window as TestWindow)._adLine).toBeUndefined();
     });
 
     it('should create A/D Line series when showADLine is true', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -3292,9 +3305,9 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          expect((window as any)._adLine).toBeDefined();
+          expect((window as TestWindow)._adLine).toBeDefined();
 
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
           const lineCalls = chartMock.addSeries.mock.calls;
@@ -3353,7 +3366,7 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(mockStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(mockStoreValue);
 
       const { rerender } = render(<PriceChart />);
 
@@ -3370,7 +3383,7 @@ describe('PriceChart Component', () => {
       // Wait for A/D Line to be created
       await waitFor(
         () => {
-          expect((window as any)._adLine).toBeDefined();
+          expect((window as TestWindow)._adLine).toBeDefined();
         },
         { timeout: 1000 }
       );
@@ -3384,21 +3397,21 @@ describe('PriceChart Component', () => {
         },
       };
 
-      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      vi.mocked(useChartStore).mockReturnValue(updatedStoreValue);
 
       rerender(<PriceChart />);
 
       // Wait for cleanup
       await waitFor(
         () => {
-          expect((window as any)._adLine).toBeUndefined();
+          expect((window as TestWindow)._adLine).toBeUndefined();
         },
         { timeout: 1000 }
       );
     });
 
     it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX + CCI + Williams %R + OBV + A/D Line) simultaneously', async () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         theme: 'dark',
         symbol: 'BTCUSD',
         timeframe: '1h',
@@ -3450,7 +3463,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(
         () => {
-          const chartMock = (createChart as any).mock.results[0]?.value;
+          const chartMock = vi.mocked(createChart).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
           const lineCalls = chartMock.addSeries.mock.calls;
