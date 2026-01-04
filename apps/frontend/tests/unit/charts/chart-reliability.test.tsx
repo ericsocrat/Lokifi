@@ -1,9 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
-import React from 'react';
-import { render } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import { ChartLoadingState } from '@/components/ChartLoadingState';
+import { screen } from '@testing-library/dom';
+import { render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock lightweight-charts
 vi.mock('lightweight-charts', () => ({

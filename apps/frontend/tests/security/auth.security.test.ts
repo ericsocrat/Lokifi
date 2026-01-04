@@ -1,8 +1,8 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 /**
  * Security Tests: Authentication
- * 
+ *
  * Tests for authentication security vulnerabilities:
  * - Brute force protection
  * - User enumeration prevention

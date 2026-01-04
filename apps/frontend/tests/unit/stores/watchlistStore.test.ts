@@ -17,16 +17,16 @@
  * Session 108: watchlistStore (454 lines) + alertsStore (802 lines)
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { useWatchlistStore } from '@/lib/stores/watchlistStore';
 import type {
-  WatchlistItem,
-  Watchlist,
   AlertRule,
   ScreenerFilter,
-  SymbolMetrics,
   ScreenerQuery,
+  SymbolMetrics,
+  Watchlist,
+  WatchlistItem,
 } from '@/lib/stores/watchlistStore';
+import { useWatchlistStore } from '@/lib/stores/watchlistStore';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags - enabled by default for tests
 vi.mock('@/lib/stores/featureFlags', () => ({
@@ -799,11 +799,51 @@ describe('watchlistStore', () => {
     beforeEach(() => {
       // Set up symbol directory with test data
       const symbolDirectory = new Map<string, SymbolMetrics>();
-      symbolDirectory.set('AAPL', createTestMetrics({ symbol: 'AAPL', price: 150, volume: 50000000, marketCap: 2500000000000 }));
-      symbolDirectory.set('GOOGL', createTestMetrics({ symbol: 'GOOGL', price: 140, volume: 30000000, marketCap: 1800000000000 }));
-      symbolDirectory.set('MSFT', createTestMetrics({ symbol: 'MSFT', price: 380, volume: 25000000, marketCap: 2800000000000 }));
-      symbolDirectory.set('AMZN', createTestMetrics({ symbol: 'AMZN', price: 175, volume: 40000000, marketCap: 1500000000000 }));
-      symbolDirectory.set('TSLA', createTestMetrics({ symbol: 'TSLA', price: 250, volume: 100000000, marketCap: 800000000000 }));
+      symbolDirectory.set(
+        'AAPL',
+        createTestMetrics({
+          symbol: 'AAPL',
+          price: 150,
+          volume: 50000000,
+          marketCap: 2500000000000,
+        })
+      );
+      symbolDirectory.set(
+        'GOOGL',
+        createTestMetrics({
+          symbol: 'GOOGL',
+          price: 140,
+          volume: 30000000,
+          marketCap: 1800000000000,
+        })
+      );
+      symbolDirectory.set(
+        'MSFT',
+        createTestMetrics({
+          symbol: 'MSFT',
+          price: 380,
+          volume: 25000000,
+          marketCap: 2800000000000,
+        })
+      );
+      symbolDirectory.set(
+        'AMZN',
+        createTestMetrics({
+          symbol: 'AMZN',
+          price: 175,
+          volume: 40000000,
+          marketCap: 1500000000000,
+        })
+      );
+      symbolDirectory.set(
+        'TSLA',
+        createTestMetrics({
+          symbol: 'TSLA',
+          price: 250,
+          volume: 100000000,
+          marketCap: 800000000000,
+        })
+      );
 
       useWatchlistStore.setState({ symbolDirectory });
     });
