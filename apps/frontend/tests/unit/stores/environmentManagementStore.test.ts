@@ -167,7 +167,8 @@ describe('environmentManagementStore', () => {
     };
 
     it('should create environment', () => {
-      const { createEnvironment, environments: _environments } = useEnvironmentManagementStore.getState();
+      const { createEnvironment, environments: _environments } =
+        useEnvironmentManagementStore.getState();
 
       const environmentId = createEnvironment(mockEnvironment);
 

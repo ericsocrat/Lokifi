@@ -71,7 +71,7 @@ export const handlers = [
 
     const email = body?.email || '';
     const username = body?.username || '';
-    const _password = body?.password || '';  // Password is validated but not returned in response
+    const _password = body?.password || ''; // Password is validated but not returned in response
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

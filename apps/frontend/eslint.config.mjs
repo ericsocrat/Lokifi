@@ -3,13 +3,13 @@
 // Reference: https://nextjs.org/docs/app/api-reference/config/eslint
 
 import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import nextPlugin from '@next/eslint-plugin-next';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import nextPlugin from '@next/eslint-plugin-next';
 import security from 'eslint-plugin-security';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
 import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   // Base ESLint recommended rules

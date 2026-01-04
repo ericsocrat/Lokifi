@@ -627,7 +627,7 @@ describe('rollbackStore', () => {
       const execPromise = useRollbackStore.getState().executeRollback(planId);
       // Attach catch handler before running timers to prevent unhandled rejection
       execPromise.catch(() => {});
-      
+
       try {
         await vi.runAllTimersAsync();
         await execPromise;
