@@ -4,6 +4,8 @@
  * @see apps/frontend/lib/utils/logger.ts
  */
 
+/* eslint-disable no-console -- Logger tests require console access to verify logging behavior */
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLogger, isError, Logger, logger, LogLevel } from '../../lib/utils/logger';
 

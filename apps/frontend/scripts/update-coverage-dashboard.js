@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI script uses console for user feedback */
+/* eslint-disable security/detect-object-injection -- Object keys are from controlled sources (coverage data) */
 
 /**
  * Coverage Dashboard Data Generator (Enhanced)

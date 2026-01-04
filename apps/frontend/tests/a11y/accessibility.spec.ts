@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Test reporting uses console for accessibility audit output */
+
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
