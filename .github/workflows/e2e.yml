@@ -38,8 +38,8 @@ concurrency:
 
 # Permissions for workflow
 permissions:
-  contents: write  # Required for committing visual regression baselines
-  pull-requests: read
+  contents: write  # Required for creating branches with visual regression baselines
+  pull-requests: write  # Required for creating PRs with visual baselines
 
 jobs:
   # Detect which parts of codebase changed
@@ -246,25 +246,56 @@ jobs:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
 
-      - name: 💾 Commit updated snapshots
+      - name: 💾 Create PR with updated snapshots
         if: github.event.inputs.update_snapshots == 'true'
         working-directory: .
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Check if there are any changes
           git add apps/frontend/tests/visual-baselines/
           if git diff --staged --quiet; then
             echo "✅ No snapshot changes detected"
-          else
-            git commit -m "test: Update Linux visual regression baselines" \
-              -m "Generated via workflow_dispatch on ${{ runner.os }}" \
-              -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-              -m "[skip ci]"
-            git push
-            echo "✅ Snapshots committed and pushed"
+            exit 0
           fi
+
+          # Create a new branch for the baselines
+          BRANCH_NAME="chore/visual-baselines-linux-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$BRANCH_NAME"
+
+          # Configure git and commit
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "test: Update Linux visual regression baselines" \
+            -m "Generated via workflow_dispatch on ${{ runner.os }}" \
+            -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          # Push the branch
+          git push origin "$BRANCH_NAME"
+
+          # Create PR using gh CLI
+          gh pr create \
+            --title "test: Update Linux visual regression baselines" \
+            --body "## 📸 Visual Regression Baseline Update
+
+          This PR updates the Linux visual regression baselines.
+
+          **Generated via workflow_dispatch**
+          - Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Runner OS: ${{ runner.os }}
+
+          ### Files Updated
+          \`\`\`
+          $(git diff --name-only HEAD~1)
+          \`\`\`
+
+          ### Auto-merge
+          This PR can be auto-merged once CI passes." \
+            --label "visual-regression" \
+            --base main
+
+          echo "✅ PR created with visual regression baselines"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📊 Upload visual regression report
         if: always()
