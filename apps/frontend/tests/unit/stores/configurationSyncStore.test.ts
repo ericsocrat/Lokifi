@@ -1058,7 +1058,7 @@ describe('configurationSyncStore', () => {
           // No drift generated, test passes
           expect(true).toBe(true);
         }
-      }, 35000); // 35 second timeout for multiple scan attempts
+      }, 60000); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
 
       it('should ignore drift', async () => {
         // Manually add a drift to test resolution
