@@ -26,8 +26,6 @@ import type {
   ScreenerFilter,
   SymbolMetrics,
   ScreenerQuery,
-  WatchlistState,
-  WatchlistActions,
 } from '@/lib/stores/watchlistStore';
 
 // Mock feature flags - enabled by default for tests

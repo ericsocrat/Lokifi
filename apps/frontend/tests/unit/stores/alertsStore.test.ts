@@ -1,4 +1,5 @@
 /* eslint-disable no-console -- Store tests log state changes for debugging */
+/* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
 
 import type { Alert, AlertAction, AlertBacktest, AlertExecution } from '@/lib/stores/alertsStore';
 import { useAlertsStore } from '@/lib/stores/alertsStore';

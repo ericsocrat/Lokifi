@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign results to verify creation side effects */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useDrawingStore } from '@/lib/stores/drawingStore';
 

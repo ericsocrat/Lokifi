@@ -2,6 +2,7 @@
  * Comprehensive tests for Watchlist Store
  * Tests watchlist management, symbol tracking, alerts, and screener functionality
  */
+/* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWatchlistStore } from '../../../src/lib/stores/watchlistStore';

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
 import type {
   ConfigurationEnvironment,
   ConfigurationItem,

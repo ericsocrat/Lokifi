@@ -2,6 +2,7 @@
  * Comprehensive tests for Alerts Store
  * Tests alert management, activation, monitoring, and execution tracking
  */
+/* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
 import { act, renderHook } from '@testing-library/react';
 import { enableMapSet } from 'immer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
