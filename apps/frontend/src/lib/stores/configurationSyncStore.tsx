@@ -979,6 +979,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             let stringValue = value;
             for (const [key, val] of Object.entries(variables)) {
               const replacement = typeof val === 'string' ? val : String(val);
+              // eslint-disable-next-line security/detect-non-literal-regexp -- Template key is from trusted Object.entries(variables)
               stringValue = stringValue.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), replacement);
             }
             value = stringValue;
