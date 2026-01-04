@@ -12,8 +12,19 @@ import { beforeAll, describe, expect, it } from 'vitest';
  * - Security best practices
  */
 
+// Task definition for VS Code tasks.json
+interface VSCodeTask {
+  label?: string;
+  command?: string;
+  type?: string;
+}
+
+interface VSCodeTasks {
+  tasks?: VSCodeTask[];
+}
+
 // Helper function to parse JSONC (JSON with Comments)
-function parseJSONC(content: string): any {
+function parseJSONC(content: string): VSCodeTasks {
   // Remove single-line comments
   let cleaned = content.replace(/\/\/.*$/gm, '');
   // Remove multi-line comments
@@ -21,7 +32,7 @@ function parseJSONC(content: string): any {
   // Remove trailing commas before closing brackets/braces
   cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
 
-  return JSON.parse(cleaned);
+  return JSON.parse(cleaned) as VSCodeTasks;
 }
 
 describe('PowerShell Scripts', () => {
@@ -150,12 +161,14 @@ describe('PowerShell Scripts', () => {
 
         // Find tasks that reference PowerShell scripts
         const scriptTasks =
-          tasks.tasks?.filter((task: any) => task.command && task.command.includes('.ps1')) || [];
+          tasks.tasks?.filter(
+            (task: VSCodeTask) => task.command && task.command.includes('.ps1')
+          ) || [];
 
         // Verify referenced scripts exist
-        scriptTasks.forEach((task: any) => {
+        scriptTasks.forEach((task: VSCodeTask) => {
           // Extract script path from command
-          if (task.command.includes('./start-frontend.ps1')) {
+          if (task.command?.includes('./start-frontend.ps1')) {
             expect(existsSync(join(process.cwd(), 'start-frontend.ps1'))).toBe(true);
           }
           // Note: Backend script validation would be in backend tests

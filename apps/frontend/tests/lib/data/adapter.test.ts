@@ -390,10 +390,10 @@ describe('MarketDataAdapter', () => {
 
   describe('WebSocket Provider', () => {
     let mockWs: {
-      onopen: null | ((ev: any) => void);
-      onclose: null | ((ev: any) => void);
-      onerror: null | ((ev: any) => void);
-      onmessage: null | ((ev: any) => void);
+      onopen: null | ((ev: Event) => void);
+      onclose: null | ((ev: CloseEvent) => void);
+      onerror: null | ((ev: Event) => void);
+      onmessage: null | ((ev: MessageEvent) => void);
       close: ReturnType<typeof vi.fn>;
     };
 

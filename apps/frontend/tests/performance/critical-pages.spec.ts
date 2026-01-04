@@ -185,17 +185,16 @@ test.describe('Performance - Resource Loading', () => {
     await page.goto('/markets', { waitUntil: 'networkidle' });
 
     const images = await page.evaluate(() => {
-      return performance
-        .getEntriesByType('resource')
-        .filter((r: any) => r.name.match(/\.(png|jpg|jpeg|gif|webp|svg)$/i))
-        .map((r: any) => ({
+      return (performance.getEntriesByType('resource') as PerformanceResourceTiming[])
+        .filter((r) => r.name.match(/\.(png|jpg|jpeg|gif|webp|svg)$/i))
+        .map((r) => ({
           name: r.name,
           size: r.transferSize,
         }));
     });
 
     // Check that no single image is excessively large (>200KB)
-    const largeImages = images.filter((img: any) => img.size > 200 * 1024);
+    const largeImages = images.filter((img) => img.size > 200 * 1024);
 
     if (largeImages.length > 0) {
       console.warn('⚠️ Large images detected:', largeImages);

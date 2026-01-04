@@ -1,10 +1,21 @@
 import { ensureNotificationPermission, notify } from '@/lib/utils/notify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Mock types for browser globals
+interface MockAudio {
+  volume: number;
+  play: ReturnType<typeof vi.fn>;
+}
+
+interface MockNotificationClass {
+  requestPermission: ReturnType<typeof vi.fn>;
+  permission?: NotificationPermission;
+}
+
 describe('Notification Module', () => {
-  let mockNotification: any;
-  let mockAudio: any;
-  let originalNotification: any;
+  let mockNotification: MockNotificationClass;
+  let mockAudio: MockAudio;
+  let originalNotification: typeof Notification | undefined;
 
   // Helper to set notification permission
   const setNotificationPermission = (permission: NotificationPermission) => {
