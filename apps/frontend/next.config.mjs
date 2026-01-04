@@ -33,9 +33,10 @@ const nextConfig = {
     forceSwcTransforms: false,
   },
 
-  // Fix for Docker builds - ensure output tracing works correctly
-  // Must match turbopack.root for Next.js 16 compatibility
-  outputFileTracingRoot: process.env.DOCKER_BUILD ? undefined : path.resolve(__dirname, '../..'),
+  // Monorepo output tracing - Next.js 16 creates nested standalone structure:
+  // .next/standalone/apps/frontend/server.js (preserves monorepo path)
+  // Dockerfile.ci is configured to handle this nested structure
+  outputFileTracingRoot: path.resolve(__dirname, '../..'),
   output: 'standalone',
 
   // Security headers

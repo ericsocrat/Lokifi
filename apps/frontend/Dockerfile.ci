@@ -24,13 +24,13 @@ RUN npm run build
 FROM node:24-alpine AS prod
 WORKDIR /app
 
-# Copy standalone output
-COPY --from=build /app/.next/standalone ./
+# Next.js 16+ with monorepo outputFileTracingRoot creates nested structure:
+# .next/standalone/apps/frontend/server.js (not .next/standalone/server.js)
+# Copy the nested structure correctly
+COPY --from=build /app/.next/standalone/apps/frontend ./
+COPY --from=build /app/.next/standalone/node_modules ./node_modules
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
-
-# Copy package.json for runtime
-COPY --from=build /app/package.json ./
 
 EXPOSE 3000
 ENV NODE_ENV=production
