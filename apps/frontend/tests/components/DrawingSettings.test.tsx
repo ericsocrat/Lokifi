@@ -11,9 +11,15 @@ const mockStoreState = {
   showHandles: true,
 };
 
+// Type for the mock store state
+interface MockState {
+  drawingSettings: typeof mockStoreState;
+  setDrawingSettings: typeof mockSetDrawingSettings;
+}
+
 vi.mock('@/state/store', () => ({
-  useChartStore: (selector: any) => {
-    const state = {
+  useChartStore: <T,>(selector: (state: MockState) => T): T => {
+    const state: MockState = {
       drawingSettings: mockStoreState,
       setDrawingSettings: mockSetDrawingSettings,
     };

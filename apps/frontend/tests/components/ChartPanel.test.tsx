@@ -27,7 +27,7 @@ vi.mock('lightweight-charts', () => {
     return {
       timeScale: timeScale,
       // v5 unified API
-      addSeries: vi.fn((_seriesType: symbol, _options?: any) => {
+      addSeries: vi.fn((_seriesType: symbol, _options?: unknown) => {
         return {
           setData: vi.fn(),
           priceToCoordinate: vi.fn(() => 0),

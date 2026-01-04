@@ -15,7 +15,7 @@ jest.mock('lightweight-charts', () => {
   return {
     createChart: jest.fn(() => ({
       // v5 unified API
-      addSeries: jest.fn((_seriesType: symbol, _options?: any) => ({
+      addSeries: jest.fn((_seriesType: symbol, _options?: unknown) => ({
         setData: jest.fn(),
         coordinateToPrice: jest.fn(() => 100),
       })),
@@ -182,7 +182,7 @@ describe('Chart Data Processing', () => {
     ];
 
     // Test the conversion logic
-    const chartData = mockOHLCData.map((item: any) => ({
+    const chartData = mockOHLCData.map((item) => ({
       time: Math.floor(new Date(item.timestamp).getTime() / 1000),
       open: item.open,
       high: item.high,

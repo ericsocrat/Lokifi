@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // Mock describeDrawing utility
 const mockDescribeDrawing = vi.fn();
 vi.mock('@/lib/utils/labels', () => ({
-  describeDrawing: (...args: any[]) => mockDescribeDrawing(...args),
+  describeDrawing: (...args: unknown[]) => mockDescribeDrawing(...args),
   DEFAULT_LABEL_CONFIG: {
     showValue: true,
     showPercent: true,
@@ -14,17 +14,42 @@ vi.mock('@/lib/utils/labels', () => ({
   },
 }));
 
+// Drawing and Layer types for mock state
+interface MockDrawing {
+  id: string;
+  type: string;
+  [key: string]: unknown;
+}
+
+interface MockLayer {
+  id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+interface MockAutoLabels {
+  showValue: boolean;
+  showPercent: boolean;
+  showAngle: boolean;
+  showRR: boolean;
+  enabled: boolean;
+}
+
 // Mock chart store
-const mockStoreState = {
-  drawings: [] as any[],
-  layers: [] as any[],
+const mockStoreState: {
+  drawings: MockDrawing[];
+  layers: MockLayer[];
+  autoLabels: MockAutoLabels | null;
+} = {
+  drawings: [] as MockDrawing[],
+  layers: [] as MockLayer[],
   autoLabels: {
     showValue: true,
     showPercent: true,
     showAngle: true,
     showRR: true,
     enabled: true,
-  } as any,
+  } as MockAutoLabels,
 };
 
 const mockSubscribe = vi.fn();
@@ -32,7 +57,7 @@ const mockGetState = vi.fn(() => mockStoreState);
 
 vi.mock('@/state/store', () => ({
   useChartStore: Object.assign(() => mockStoreState, {
-    subscribe: (...args: any[]) => mockSubscribe(...args),
+    subscribe: (...args: unknown[]) => mockSubscribe(...args),
     getState: () => mockGetState(),
   }),
 }));
@@ -83,7 +108,7 @@ describe('LabelsLayer', () => {
     });
 
     it('should handle missing autoLabels config with default values', () => {
-      mockStoreState.autoLabels = null as any;
+      mockStoreState.autoLabels = null;
       // Add a drawing with label to verify default config works
       mockStoreState.drawings = [{ id: 'drawing-1', layerId: 'layer-1' }];
       mockStoreState.layers = [{ id: 'layer-1', visible: true, opacity: 1 }];
