@@ -1,3 +1,11 @@
+/**
+ * 3-Point Parallel Channel Plugin
+ * Drawing tool for parallel channel defined by 3 points
+ *
+ * Note: Uses dynamic state management with globalThis for ghost preview
+ * and plugin state. The 'any' types are intentional for runtime flexibility.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { pluginSettingsStore } from '@/stores/pluginSettingsStore';
 import type { ToolPlugin } from './types';
 const ghostKey = '__lokifiGhost';

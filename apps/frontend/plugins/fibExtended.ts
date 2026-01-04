@@ -1,3 +1,12 @@
+/**
+ * Fib Extended Plugin
+ * Fibonacci retracement drawing tool with extended levels
+ *
+ * Note: This plugin uses dynamic state management patterns with globalThis
+ * for ghost preview and plugin state. The 'any' types are intentional for
+ * runtime flexibility and cross-plugin communication.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { pluginSettingsStore } from '@/stores/pluginSettingsStore';
 import type { ToolPlugin } from './types';
 const ghostKey = '__lokifiGhost';

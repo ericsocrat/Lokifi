@@ -26,7 +26,7 @@ class PluginManager {
   private _activeToolId: string | null = null;
 
   register(p: LokifiPlugin) {
-    if (this.plugins.find((x: any) => x.id === p.id)) return;
+    if (this.plugins.find((x) => x.id === p.id)) return;
     this.plugins.push(p);
     if (this.env) p.mount?.(this.ctx());
   }
@@ -157,7 +157,7 @@ class PluginManager {
 
   private active(): ToolPlugin | null {
     if (!this._activeToolId) return null;
-    return (this.plugins.find((p: any) => p.id === this._activeToolId) as ToolPlugin) || null;
+    return (this.plugins.find((p) => p.id === this._activeToolId) as ToolPlugin) || null;
   }
 
   pointerDown(e: PointerEvent): boolean {

@@ -1,3 +1,11 @@
+/**
+ * Ruler Measure Plugin
+ * Drawing tool for measuring price/time distances
+ *
+ * Note: Uses dynamic state management with globalThis for ghost preview
+ * and plugin state. The 'any' types are intentional for runtime flexibility.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ToolPlugin } from './types';
 const ghostKey = '__lokifiGhost';
 

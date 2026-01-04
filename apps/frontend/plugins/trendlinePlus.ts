@@ -1,3 +1,11 @@
+/**
+ * Trendline Plus Plugin
+ * Enhanced trendline drawing tool with extensions
+ *
+ * Note: Uses dynamic state management with globalThis for ghost preview
+ * and plugin state. The 'any' types are intentional for runtime flexibility.
+ */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { ToolPlugin } from './types';
 const ghostKey = '__lokifiGhost';
 
