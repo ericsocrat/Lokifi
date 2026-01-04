@@ -533,7 +533,7 @@ describe('alertsStore', () => {
           symbol: 'AAPL',
           isActive: true,
           condition: { type: 'price' as const },
-          actions: [],  // No actions = simpler test, still creates execution record
+          actions: [], // No actions = simpler test, still creates execution record
           tags: [],
           priority: 'medium' as const,
         });
@@ -1002,7 +1002,7 @@ describe('alertsStore', () => {
         connectRealtime();
 
         expect(WebSocketMock).toHaveBeenCalledWith('/ws/alerts');
-        
+
         vi.unstubAllGlobals();
       });
 
@@ -1014,13 +1014,16 @@ describe('alertsStore', () => {
           onclose: null as any,
           onmessage: null as any,
         };
-        vi.stubGlobal('WebSocket', vi.fn(() => mockWebSocket));
+        vi.stubGlobal(
+          'WebSocket',
+          vi.fn(() => mockWebSocket)
+        );
 
         connectRealtime();
 
         mockWebSocket.onopen();
         expect(useAlertsStore.getState().realtimeConnected).toBe(true);
-        
+
         vi.unstubAllGlobals();
       });
 
@@ -1032,14 +1035,17 @@ describe('alertsStore', () => {
           onclose: null as any,
           onmessage: null as any,
         };
-        vi.stubGlobal('WebSocket', vi.fn(() => mockWebSocket));
+        vi.stubGlobal(
+          'WebSocket',
+          vi.fn(() => mockWebSocket)
+        );
 
         connectRealtime();
         mockWebSocket.onopen();
         mockWebSocket.onclose();
 
         expect(useAlertsStore.getState().realtimeConnected).toBe(false);
-        
+
         vi.unstubAllGlobals();
       });
     });
@@ -1259,11 +1265,17 @@ describe('alertsStore', () => {
         // getActiveAlerts should only return the active one
         const activeAlerts = getActiveAlerts();
         const allAlerts = useAlertsStore.getState().alerts;
-        
+
         // Debug: log what we got
         if (activeAlerts.length !== 1) {
-          console.log('All alerts:', allAlerts.map(a => ({ name: a.name, isActive: a.isActive })));
-          console.log('Active alerts returned:', activeAlerts.map(a => ({ name: a.name, isActive: a.isActive })));
+          console.log(
+            'All alerts:',
+            allAlerts.map((a) => ({ name: a.name, isActive: a.isActive }))
+          );
+          console.log(
+            'Active alerts returned:',
+            activeAlerts.map((a) => ({ name: a.name, isActive: a.isActive }))
+          );
         }
 
         expect(activeAlerts).toHaveLength(1);
