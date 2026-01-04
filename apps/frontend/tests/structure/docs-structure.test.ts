@@ -12,7 +12,7 @@ const _parseJsonc = (content: string) => {
     const lines = content.split('\n');
     const cleanLines = lines.map((line) => {
       // Remove // comments but preserve strings that might contain //
-      // Regex is safe: limited string content length to prevent catastrophic backtracking
+      // eslint-disable-next-line security/detect-unsafe-regex -- Bounded quantifiers prevent catastrophic backtracking
       const commentMatch = line.match(/^([^"]{0,2000}(?:"[^"]{0,1000}"[^"]{0,2000}){0,10})\/\/.*$/);
       if (commentMatch) {
         return commentMatch[1];

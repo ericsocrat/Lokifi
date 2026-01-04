@@ -350,8 +350,12 @@ describe('MultiChartStore', () => {
       // Wait for layout to stabilize
       expect(result.current.charts).toHaveLength(2);
 
-      const activeChartId = result.current.charts[0]?.id!;
-      const otherChartId = result.current.charts[1]?.id!;
+      const chart0 = result.current.charts[0];
+      const chart1 = result.current.charts[1];
+      expect(chart0).toBeDefined();
+      expect(chart1).toBeDefined();
+      const activeChartId = chart0.id;
+      const otherChartId = chart1.id;
 
       act(() => {
         result.current.updateLinking('symbol', true);
@@ -418,8 +422,12 @@ describe('MultiChartStore', () => {
 
       expect(result.current.charts).toHaveLength(2);
 
-      const activeChartId = result.current.charts[0]?.id!;
-      const otherChartId = result.current.charts[1]?.id!;
+      const chart0 = result.current.charts[0];
+      const chart1 = result.current.charts[1];
+      expect(chart0).toBeDefined();
+      expect(chart1).toBeDefined();
+      const activeChartId = chart0.id;
+      const otherChartId = chart1.id;
 
       act(() => {
         result.current.updateLinking('timeframe', true);
@@ -485,7 +493,9 @@ describe('MultiChartStore', () => {
         result.current.setLayout('1x2');
       });
 
-      const chartId = result.current.charts[0]?.id!;
+      const cursorChart = result.current.charts[0];
+      expect(cursorChart).toBeDefined();
+      const chartId = cursorChart.id;
 
       act(() => {
         result.current.updateLinking('cursor', true);
@@ -510,7 +520,10 @@ describe('MultiChartStore', () => {
 
       act(() => {
         result.current.updateLinking('cursor', false);
-        result.current.setActiveChart(result.current.charts[0]?.id!);
+        const chart = result.current.charts[0];
+        if (chart) {
+          result.current.setActiveChart(chart.id);
+        }
       });
 
       act(() => {
@@ -533,7 +546,9 @@ describe('MultiChartStore', () => {
         result.current.setLayout('1x2');
       });
 
-      const chartId = result.current.charts[0]?.id!;
+      const sourceChart = result.current.charts[0];
+      expect(sourceChart).toBeDefined();
+      const chartId = sourceChart.id;
 
       act(() => {
         result.current.updateLinking('cursor', true);

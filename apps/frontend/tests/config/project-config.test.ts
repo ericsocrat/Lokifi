@@ -59,7 +59,7 @@ describe('Project Configuration Files', () => {
 
       const content = readFileSync(nvmrcPath, 'utf-8').trim();
       // Accept both major-only (22) and full version (22.x.x) formats
-      // Regex is safe: anchored to start/end, no nested quantifiers
+      // eslint-disable-next-line security/detect-unsafe-regex -- Anchored regex with bounded quantifiers
       expect(content).toMatch(/^\d{1,3}(?:\.\d{1,3}\.\d{1,4})?$/);
     });
 

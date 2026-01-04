@@ -375,7 +375,8 @@ describe('DrawStore', () => {
       });
 
       const originalShape = drawStore.get().shapes[0] as Extract<Shape, { type: 'trendline' }>;
-      const originalA = { ...originalShape?.a! };
+      expect(originalShape).toBeDefined();
+      const originalA = { ...originalShape.a };
       drawStore.moveSelectedBy(100, 50);
 
       const currentShape = drawStore.get().shapes[0] as Extract<Shape, { type: 'trendline' }>;
