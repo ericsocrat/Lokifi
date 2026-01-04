@@ -37,7 +37,8 @@ export const handlers = [
       return HttpResponse.json({ detail: 'Invalid characters in credentials' }, { status: 422 });
     }
 
-    // Invalid credentials
+    // Invalid credentials (mock test scenario - timing attack not applicable for test mocks)
+    // eslint-disable-next-line security/detect-possible-timing-attacks
     if (password === 'wrong_password') {
       return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
     }

@@ -131,7 +131,7 @@ describe('DrawingSettings', () => {
       // The function should be called with snapStep as a number
       const calls = mockSetDrawingSettings.mock.calls;
       const hasSnapStepCall = calls.some(
-        (call) => call[0].hasOwnProperty('snapStep') && typeof call[0].snapStep === 'number'
+        (call) => Object.hasOwn(call[0], 'snapStep') && typeof call[0].snapStep === 'number'
       );
       expect(hasSnapStepCall).toBe(true);
     });
@@ -213,7 +213,7 @@ describe('DrawingSettings', () => {
 
       // Verify snap step was changed (should have snapStep property in some call)
       const hasSnapStepCall = mockSetDrawingSettings.mock.calls.some((call) =>
-        call[0].hasOwnProperty('snapStep')
+        Object.hasOwn(call[0], 'snapStep')
       );
       expect(hasSnapStepCall).toBe(true);
 

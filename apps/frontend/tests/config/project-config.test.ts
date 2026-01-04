@@ -59,7 +59,8 @@ describe('Project Configuration Files', () => {
 
       const content = readFileSync(nvmrcPath, 'utf-8').trim();
       // Accept both major-only (22) and full version (22.x.x) formats
-      expect(content).toMatch(/^\d+(\.\d+\.\d+)?$/);
+      // Regex is safe: anchored to start/end, no nested quantifiers
+      expect(content).toMatch(/^\d{1,3}(?:\.\d{1,3}\.\d{1,4})?$/);
     });
 
     it('should match package.json engines requirement', () => {
