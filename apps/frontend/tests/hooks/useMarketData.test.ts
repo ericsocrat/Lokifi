@@ -71,7 +71,7 @@ vi.mock('@/services/marketData', () => {
     ],
   ]);
 
-  let subscribers: Set<any> = new Set();
+  const subscribers: Set<any> = new Set();
 
   return {
     default: {

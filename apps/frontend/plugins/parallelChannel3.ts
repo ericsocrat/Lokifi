@@ -51,7 +51,7 @@ export const parallelChannel3: ToolPlugin = {
       b = st.b,
       c = snapped;
     const s = pluginSettingsStore.get();
-    let preview: any = { type: 'channel3', a, b, c };
+    const preview: any = { type: 'channel3', a, b, c };
     if (s.channelWidthMode === 'pixels') {
       preview.widthMode = 'pixels';
       preview.widthPx = 20;

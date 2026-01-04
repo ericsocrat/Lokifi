@@ -519,7 +519,7 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should handle real-time updates efficiently', () => {
-        let prices: OHLCVPrice[] = Array.from({ length: 100 }, (_, i) =>
+        const prices: OHLCVPrice[] = Array.from({ length: 100 }, (_, i) =>
           createPrice(i + 1, 100 + Math.sin(i / 10) * 10, 1000 + Math.cos(i / 10) * 500)
         );
 

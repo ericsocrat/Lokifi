@@ -5,8 +5,9 @@
  * Tests the TradingView Primitives API implementation for rectangles
  */
 
-import { RectangleOptions, RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
-import { Time } from 'lightweight-charts';
+import type { RectangleOptions} from '@/lib/plugins/RectanglePrimitive';
+import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
+import type { Time } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock time values (UNIX timestamps for TradingView)

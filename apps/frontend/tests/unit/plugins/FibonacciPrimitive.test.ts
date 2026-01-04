@@ -5,8 +5,9 @@
  * Tests the TradingView Primitives API implementation for Fibonacci retracement
  */
 
-import { FibonacciOptions, FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
-import { Time } from 'lightweight-charts';
+import type { FibonacciOptions} from '@/lib/plugins/FibonacciPrimitive';
+import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
+import type { Time } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock time values (UNIX timestamps for TradingView)

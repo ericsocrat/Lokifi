@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from 'react';
-import { useDrawingStore, DrawingTool } from '@/lib/stores/drawingStore';
+import type { DrawingTool } from '@/lib/stores/drawingStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
 
 const TOOL_SHORTCUTS: Record<string, DrawingTool> = {
   'v': 'cursor',

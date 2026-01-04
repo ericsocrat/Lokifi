@@ -5,8 +5,9 @@
  * Tests the TradingView Primitives API implementation for trendlines
  */
 
-import { TrendLineOptions, TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
-import { Time } from 'lightweight-charts';
+import type { TrendLineOptions} from '@/lib/plugins/TrendLinePrimitive';
+import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
+import type { Time } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock time values (UNIX timestamps for TradingView)

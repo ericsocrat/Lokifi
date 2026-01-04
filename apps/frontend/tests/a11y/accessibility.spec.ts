@@ -41,7 +41,7 @@ test.describe('Accessibility Tests', () => {
     }
 
     let labeledInputs = 0;
-    let totalInputs = inputs.length;
+    const totalInputs = inputs.length;
 
     for (const input of inputs) {
       const hasLabel = await input.evaluate((el: any) => {

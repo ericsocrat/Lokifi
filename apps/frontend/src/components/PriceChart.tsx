@@ -173,7 +173,7 @@ export default function PriceChart() {
       chartRef.current = null;
       setChart({ chart: null, series: null, candles: [] });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [ref, resizeCallback]);
 
   const bumpRangeTick = React.useCallback(() => setRangeTick((t: number) => (t + 1) | 0), []);

@@ -25,7 +25,7 @@ export default function ShareBar() {
       // clear hash to avoid repeat
       history.replaceState(null, '', window.location.pathname + window.location.search);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   const onShare = () => {

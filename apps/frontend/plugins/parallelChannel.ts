@@ -27,8 +27,8 @@ export const parallelChannel: ToolPlugin = {
     const a = st.a;
     const b = snapped;
     const s = pluginSettingsStore.get();
-    let width = Math.abs(a.p) * (s.channelDefaultWidthPct / 100);
-    let shape: any = { id: uuid(), type: 'channel', a, b, width };
+    const width = Math.abs(a.p) * (s.channelDefaultWidthPct / 100);
+    const shape: any = { id: uuid(), type: 'channel', a, b, width };
     if (s.channelWidthMode === 'pixels') {
       const ts = ctx.chart.timeScale();
       const x1 = ts.timeToCoordinate(a.t as any) || 0;
@@ -52,7 +52,7 @@ export const parallelChannel: ToolPlugin = {
     const a = st.a,
       b = snapped;
     const s = pluginSettingsStore.get();
-    let preview: any = {
+    const preview: any = {
       type: 'channel',
       a,
       b,

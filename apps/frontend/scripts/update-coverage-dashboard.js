@@ -26,7 +26,7 @@ const METADATA_FILE = path.join(__dirname, '../coverage-dashboard/metadata.json'
 console.log('🔄 Updating coverage dashboard...\n');
 
 // Get git information
-let gitInfo = {
+const gitInfo = {
   branch: 'unknown',
   commit: 'unknown',
   author: 'unknown',
@@ -43,7 +43,7 @@ try {
 }
 
 // Get test results from vitest output if available
-let testResults = {
+const testResults = {
   passing: 0,
   skipped: 0,
   failing: 0,
@@ -79,7 +79,7 @@ const coverageData = JSON.parse(fs.readFileSync(COVERAGE_FINAL, 'utf8'));
 const now = new Date().toISOString();
 
 // Calculate totals
-let totals = {
+const totals = {
   statements: { covered: 0, total: 0 },
   branches: { covered: 0, total: 0 },
   functions: { covered: 0, total: 0 },
