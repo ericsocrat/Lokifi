@@ -6,6 +6,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Extend Window interface for test mock
+declare global {
+  interface Window {
+    __lokifi_toast?: ReturnType<typeof vi.fn>;
+  }
+}
+
 // Mock dependencies
 vi.mock('@/lib/api/collab', () => ({
   startCollab: vi.fn(() => ({ stop: vi.fn() })),
@@ -36,7 +43,7 @@ describe('ShareBar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock toast
-    (window as any).__lokifi_toast = vi.fn();
+    window.__lokifi_toast = vi.fn();
     // Mock clipboard
     Object.defineProperty(navigator, 'clipboard', {
       writable: true,
@@ -54,7 +61,7 @@ describe('ShareBar', () => {
   });
 
   afterEach(() => {
-    delete (window as any).__lokifi_toast;
+    delete window.__lokifi_toast;
   });
 
   describe('Initial Render', () => {
@@ -129,11 +136,11 @@ describe('ShareBar', () => {
       const shareButton = screen.getByText('Copy Share Link');
       await user.click(shareButton);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Share link copied');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Share link copied');
     });
 
     it('should handle missing toast function gracefully', async () => {
-      delete (window as any).__lokifi_toast;
+      delete window.__lokifi_toast;
 
       const user = userEvent.setup();
       render(<ShareBar />);
@@ -295,7 +302,7 @@ describe('ShareBar', () => {
       const startButton = screen.getByText('Start Collab');
       await user.click(startButton);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Collab started');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Collab started');
     });
 
     it('should change button text to Stop Collab after starting', async () => {
@@ -367,7 +374,7 @@ describe('ShareBar', () => {
       const stopButton = await screen.findByText('Stop Collab');
       await user.click(stopButton);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Collab stopped');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Collab stopped');
     });
 
     it('should change button back to Start Collab after stopping', async () => {
@@ -425,7 +432,7 @@ describe('ShareBar', () => {
 
       render(<ShareBar />);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Loaded from share link');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Loaded from share link');
     });
 
     it('should use default theme if not in snapshot', () => {
@@ -486,7 +493,7 @@ describe('ShareBar', () => {
 
       render(<ShareBar />);
 
-      expect((window as any).__lokifi_toast).not.toHaveBeenCalled();
+      expect(window.__lokifi_toast).not.toHaveBeenCalled();
     });
   });
 
@@ -519,7 +526,7 @@ describe('ShareBar', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing toast function on share', async () => {
-      delete (window as any).__lokifi_toast;
+      delete window.__lokifi_toast;
 
       const user = userEvent.setup();
       render(<ShareBar />);
@@ -529,7 +536,7 @@ describe('ShareBar', () => {
     });
 
     it('should handle missing toast function on collab start', async () => {
-      delete (window as any).__lokifi_toast;
+      delete window.__lokifi_toast;
 
       const user = userEvent.setup();
       render(<ShareBar />);
@@ -542,7 +549,7 @@ describe('ShareBar', () => {
     });
 
     it('should handle missing toast function on URL load', () => {
-      delete (window as any).__lokifi_toast;
+      delete window.__lokifi_toast;
 
       const mockSnapshot = { drawings: [], theme: 'dark', timeframe: '1D' };
       vi.mocked(shareUtils.tryLoadFromURL).mockReturnValue(mockSnapshot as any);

@@ -80,6 +80,7 @@ test.describe('Chart Reliability - Part A', () => {
     // Simulate chart error by corrupting global state
     await page.evaluate(() => {
       // Force error in next chart render
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Browser window extension for test simulation
       (window as any).__simulateChartError = true;
     });
 

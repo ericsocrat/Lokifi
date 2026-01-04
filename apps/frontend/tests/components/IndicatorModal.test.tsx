@@ -38,7 +38,7 @@ describe('IndicatorModal', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     
-    (usePaneStore as any).mockReturnValue({
+    vi.mocked(usePaneStore).mockReturnValue({
       panes: mockPanes,
       addPane: mockAddPane,
       addIndicatorToPane: mockAddIndicatorToPane

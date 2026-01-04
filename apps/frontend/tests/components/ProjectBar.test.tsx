@@ -4,6 +4,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Extend Window interface for test mock
+declare global {
+  interface Window {
+    __lokifi_toast?: ReturnType<typeof vi.fn>;
+  }
+}
+
 // Mock persistence utilities
 vi.mock('@/lib/data/persistence', () => ({
   listSlots: vi.fn(() => []),
@@ -42,11 +49,11 @@ describe('ProjectBar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Mock toast
-    (window as any).__lokifi_toast = vi.fn();
+    window.__lokifi_toast = vi.fn();
   });
 
   afterEach(() => {
-    delete (window as any).__lokifi_toast;
+    delete window.__lokifi_toast;
   });
 
   describe('Initial Render', () => {
@@ -138,7 +145,7 @@ describe('ProjectBar', () => {
       const saveButton = screen.getByText('Save');
       await user.click(saveButton);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Saved project');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Saved project');
     });
 
     it('should refresh slot list after save', async () => {
@@ -146,7 +153,7 @@ describe('ProjectBar', () => {
       const user = userEvent.setup();
 
       // Mock listSlots to return saved project
-      (listSlots as any).mockReturnValue(['My project']);
+      vi.mocked(listSlots).mockReturnValue(['My project']);
 
       render(<ProjectBar />);
 
@@ -180,8 +187,8 @@ describe('ProjectBar', () => {
 
     it('should call loadSlot when Load button is clicked', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Test Project']);
-      (loadSlot as any).mockReturnValue({
+      vi.mocked(listSlots).mockReturnValue(['Test Project']);
+      vi.mocked(loadSlot).mockReturnValue({
         name: 'Test Project',
         drawings: [],
         theme: 'dark',
@@ -199,8 +206,8 @@ describe('ProjectBar', () => {
 
     it('should clear selection before loading project', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Project']);
-      (loadSlot as any).mockReturnValue({
+      vi.mocked(listSlots).mockReturnValue(['Project']);
+      vi.mocked(loadSlot).mockReturnValue({
         drawings: [],
         theme: 'dark',
         timeframe: '1D',
@@ -217,8 +224,8 @@ describe('ProjectBar', () => {
 
     it('should update store state when loading project', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Project']);
-      (loadSlot as any).mockReturnValue({
+      vi.mocked(listSlots).mockReturnValue(['Project']);
+      vi.mocked(loadSlot).mockReturnValue({
         drawings: [{ type: 'line' }],
         theme: 'light',
         timeframe: '5M',
@@ -239,8 +246,8 @@ describe('ProjectBar', () => {
 
     it('should show toast notification after load', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Project']);
-      (loadSlot as any).mockReturnValue({
+      vi.mocked(listSlots).mockReturnValue(['Project']);
+      vi.mocked(loadSlot).mockReturnValue({
         drawings: [],
         theme: 'dark',
         timeframe: '1D',
@@ -252,13 +259,13 @@ describe('ProjectBar', () => {
       const loadButton = screen.getAllByText('Load')[0];
       await user.click(loadButton);
 
-      expect((window as any).__lokifi_toast).toHaveBeenCalledWith('Loaded project');
+      expect(window.__lokifi_toast).toHaveBeenCalledWith('Loaded project');
     });
 
     it('should not update state if loadSlot returns null', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Invalid']);
-      (loadSlot as any).mockReturnValue(null);
+      vi.mocked(listSlots).mockReturnValue(['Invalid']);
+      vi.mocked(loadSlot).mockReturnValue(null);
 
       const user = userEvent.setup();
       render(<ProjectBar />);
@@ -282,7 +289,7 @@ describe('ProjectBar', () => {
 
     it('should call deleteSlot when Delete button is clicked', async () => {
       const { listSlots, deleteSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['To Delete']);
+      vi.mocked(listSlots).mockReturnValue(['To Delete']);
 
       const user = userEvent.setup();
       render(<ProjectBar />);
@@ -295,8 +302,8 @@ describe('ProjectBar', () => {
 
     it('should refresh slot list after delete', async () => {
       const { listSlots, deleteSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValueOnce(['Project 1']);
-      (listSlots as any).mockReturnValueOnce([]);
+      vi.mocked(listSlots).mockReturnValueOnce(['Project 1']);
+      vi.mocked(listSlots).mockReturnValueOnce([]);
 
       const user = userEvent.setup();
       render(<ProjectBar />);
@@ -364,7 +371,7 @@ describe('ProjectBar', () => {
 
   describe('Edge Cases', () => {
     it('should handle missing toast function gracefully', async () => {
-      delete (window as any).__lokifi_toast;
+      delete window.__lokifi_toast;
 
       const user = userEvent.setup();
       render(<ProjectBar />);
@@ -378,8 +385,8 @@ describe('ProjectBar', () => {
 
     it('should use default values when loading project with missing data', async () => {
       const { listSlots, loadSlot } = await import('@/lib/data/persistence');
-      (listSlots as any).mockReturnValue(['Partial']);
-      (loadSlot as any).mockReturnValue({
+      vi.mocked(listSlots).mockReturnValue(['Partial']);
+      vi.mocked(loadSlot).mockReturnValue({
         drawings: [],
         // Missing theme and timeframe
       });

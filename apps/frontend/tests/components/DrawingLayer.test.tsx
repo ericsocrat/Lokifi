@@ -93,7 +93,7 @@ describe('DrawingLayer Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (useChartStore as any).mockReturnValue(mockStoreState);
+    vi.mocked(useChartStore).mockReturnValue(mockStoreState);
   });
 
   afterEach(() => {
@@ -162,7 +162,7 @@ describe('DrawingLayer Component', () => {
   describe('Selection Handling', () => {
     it('should handle selection of drawings', () => {
       const setSelection = vi.fn();
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         setSelection,
       });
@@ -177,7 +177,7 @@ describe('DrawingLayer Component', () => {
 
     it('should clear selection on background click', () => {
       const clearSelection = vi.fn();
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         clearSelection,
       });
@@ -194,7 +194,7 @@ describe('DrawingLayer Component', () => {
   describe('Snap Functionality', () => {
     it('should apply grid snap when enabled', () => {
       const _snapPxToGrid = vi.spyOn(chartMapModule, 'snapPxToGrid');
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         drawingSettings: {
           ...mockStoreState.drawingSettings,
@@ -213,7 +213,7 @@ describe('DrawingLayer Component', () => {
 
     it('should apply price level snap when enabled', () => {
       const _snapYToPriceLevels = vi.spyOn(chartMapModule, 'snapYToPriceLevels');
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         drawingSettings: {
           ...mockStoreState.drawingSettings,
@@ -232,7 +232,7 @@ describe('DrawingLayer Component', () => {
 
   describe('Tool Modes', () => {
     it('should handle trendline tool', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         activeTool: 'trendline',
       });
@@ -248,7 +248,7 @@ describe('DrawingLayer Component', () => {
     });
 
     it('should handle rectangle tool', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         activeTool: 'rect',
       });
@@ -264,7 +264,7 @@ describe('DrawingLayer Component', () => {
     });
 
     it('should handle text tool', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         activeTool: 'text',
       });
@@ -281,7 +281,7 @@ describe('DrawingLayer Component', () => {
   describe('Drawing Deletion', () => {
     it('should delete selected drawings on delete key', () => {
       const deleteDrawing = vi.fn();
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         selection: new Set(['drawing-1']),
         deleteDrawing,
@@ -296,7 +296,7 @@ describe('DrawingLayer Component', () => {
 
     it('should delete selected drawings on backspace key', () => {
       const deleteDrawing = vi.fn();
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         selection: new Set(['drawing-1']),
         deleteDrawing,
@@ -312,7 +312,7 @@ describe('DrawingLayer Component', () => {
 
   describe('Layer Visibility', () => {
     it('should respect layer visibility settings', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         drawings: [{ ...mockDrawings[0], layerId: 'layer-hidden' }],
         layers: [{ id: 'layer-hidden', visible: false, locked: false, opacity: 1 }],
@@ -325,7 +325,7 @@ describe('DrawingLayer Component', () => {
     });
 
     it('should respect layer opacity settings', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         drawings: [{ ...mockDrawings[0], layerId: 'layer-transparent' }],
         layers: [{ id: 'layer-transparent', visible: true, locked: false, opacity: 0.5 }],
@@ -350,7 +350,7 @@ describe('DrawingLayer Component', () => {
         style: { stroke: '#ffffff', strokeWidth: 1 },
       }));
 
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         drawings: manyDrawings,
       });
@@ -400,7 +400,7 @@ describe('DrawingLayer Component', () => {
 
   describe('Keyboard Shortcuts', () => {
     it('should handle Escape key to cancel drawing', () => {
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         activeTool: 'trendline',
       });
@@ -416,7 +416,7 @@ describe('DrawingLayer Component', () => {
 
     it('should handle Ctrl+A to select all', () => {
       const setSelection = vi.fn();
-      (useChartStore as any).mockReturnValue({
+      vi.mocked(useChartStore).mockReturnValue({
         ...mockStoreState,
         setSelection,
       });
