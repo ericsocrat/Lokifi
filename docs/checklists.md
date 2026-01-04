@@ -24,16 +24,37 @@
 
 ## 🎯 Current Focus (Sprint 10 - Post-Migration Cleanup)
 
-**Status:** 🚀 **SPRINT 10 IN PROGRESS - Renovate PRs + Test Stability**
+**Status:** 🚀 **SPRINT 10 IN PROGRESS - Test Stability + Maintenance**
 
 **Previous Sessions:**
-- ✅ **Session 115 (cont.) COMPLETE** - Flaky test fix (robust mock), Renovate rebase requests
+- ✅ **Session 116 COMPLETE** - Flaky test timeout fix (configurationSyncStore)
+- ✅ **Session 115 (cont.) COMPLETE** - All Renovate PRs merged (manual rebase)
 - ✅ **Session 115 COMPLETE** - Visual Baselines, Flaky Test Fix, Renovate PR Merges
 - ✅ **Session 114 COMPLETE** - PR #95 MERGED! (Next.js 16, React 19, lightweight-charts v5)
 - ✅ **Session 112 COMPLETE** - PR #95 CI Fixes (Fast Feedback, Next.js 16 Turbopack)
 - ✅ **Session 111 COMPLETE** - ESLint Flat Config Migration!
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
+
+### 🎉 Session 116: Flaky Test Timeout Fix
+
+**Status:** ✅ **COMPLETE** - configurationSyncStore timeout increased
+
+**Objective**: Fix remaining flaky test identified in Session 115
+
+**Achievements**:
+1. **Fixed Flaky Test** (`resolveDrift > should resolve detected drift`):
+   - Root cause: Test loops up to 10 iterations of `scanForDrift()`
+   - Each call has 2-5s random delay → worst case 50s exceeds 35s timeout
+   - Fix: Increased timeout from 35s to 60s (matches sibling tests)
+   - Commit: `64fea80b`
+
+**Commits**:
+| Commit | Description |
+|--------|-------------|
+| `64fea80b` | fix(tests): increase timeout for resolveDrift test (35s → 60s) |
+
+---
 
 ### 🎉 Session 115 (continued): Renovate PRs Complete + Manual Rebase
 
