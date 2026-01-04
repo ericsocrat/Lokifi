@@ -1018,8 +1018,9 @@ describe('configurationSyncStore', () => {
         const { scanForDrift } = useConfigurationSyncStore.getState();
 
         // Multiple attempts to account for random drift generation
+        // Note: scanForDrift has 2-5s random delay, so 5 attempts = 10-25s typical
         let driftsFound = false;
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 5; i++) {
           const drifts = await scanForDrift('env_1');
           if (drifts.length > 0) {
             driftsFound = true;
@@ -1030,7 +1031,7 @@ describe('configurationSyncStore', () => {
         // Either drifts were found or the store should have empty drifts
         const { drifts } = useConfigurationSyncStore.getState();
         expect(Array.isArray(drifts)).toBe(true);
-      }, 35000); // 35 second timeout for multiple scan attempts
+      }, 60000); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
     });
 
     describe('resolveDrift', () => {

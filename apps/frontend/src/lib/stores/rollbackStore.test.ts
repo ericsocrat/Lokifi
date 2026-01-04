@@ -625,6 +625,9 @@ describe('rollbackStore', () => {
         // Expected to potentially fail based on random success rate
       }
 
+      // Flush any remaining timers to prevent unhandled rejections
+      await vi.runAllTimersAsync();
+
       const state = useRollbackStore.getState();
       expect(state.executions.length).toBeGreaterThanOrEqual(0);
     });
