@@ -41,9 +41,7 @@ describe('EmptyState', () => {
     });
 
     it('should render description as paragraph', () => {
-      render(
-        <EmptyState type="search" title="Title" description="Description text" />
-      );
+      render(<EmptyState type="search" title="Title" description="Description text" />);
 
       const description = screen.getByText('Description text');
       expect(description.tagName).toBe('P');

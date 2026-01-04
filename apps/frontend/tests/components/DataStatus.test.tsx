@@ -131,9 +131,7 @@ describe('DataStatus', () => {
     });
 
     it('should render with whitespace in values', () => {
-      render(
-        <DataStatus provider="Binance Pro" symbol="BTC USD" timeframe="1 h" />
-      );
+      render(<DataStatus provider="Binance Pro" symbol="BTC USD" timeframe="1 h" />);
 
       // Values with spaces should render correctly
       expect(screen.getByText(/Binance Pro/)).toBeInTheDocument();

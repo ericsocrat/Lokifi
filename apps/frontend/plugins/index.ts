@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
 // PluginManager type is used by consumers of this module
-export type { PluginManager } from "./manager";
+export type { PluginManager } from './manager';
 
 // Import all plugins
-import { trendlinePlus } from "./trendlinePlus";
-import { rulerMeasure } from "./rulerMeasure";
-import { parallelChannel } from "./parallelChannel";
-import { fibExtended } from "./fibExtended";
-import { parallelChannel3 } from "./parallelChannel3";
+import { fibExtended } from './fibExtended';
+import { parallelChannel } from './parallelChannel';
+import { parallelChannel3 } from './parallelChannel3';
+import { rulerMeasure } from './rulerMeasure';
+import { trendlinePlus } from './trendlinePlus';
 
 // Create namespace for plugin registration
 export const plugins = {
@@ -16,6 +16,5 @@ export const plugins = {
   rulerMeasure,
   parallelChannel,
   fibExtended,
-  parallelChannel3
+  parallelChannel3,
 };
-

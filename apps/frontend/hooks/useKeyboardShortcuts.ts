@@ -1,26 +1,26 @@
-"use client";
-import { useEffect } from 'react';
+'use client';
 import type { DrawingTool } from '@/lib/stores/drawingStore';
 import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { useEffect } from 'react';
 
 const TOOL_SHORTCUTS: Record<string, DrawingTool> = {
-  'v': 'cursor',
-  't': 'trendline',
-  'h': 'hline',
-  'r': 'rectangle',
-  'c': 'circle',
-  'a': 'arrow',
-  'n': 'textNote',
-  'f': 'fibonacciRetracement',
-  'p': 'parallelChannel',
-  'g': 'gannFan',
-  'e': 'elliottWave',
+  v: 'cursor',
+  t: 'trendline',
+  h: 'hline',
+  r: 'rectangle',
+  c: 'circle',
+  a: 'arrow',
+  n: 'textNote',
+  f: 'fibonacciRetracement',
+  p: 'parallelChannel',
+  g: 'gannFan',
+  e: 'elliottWave',
 };
 
 const SHIFT_TOOL_SHORTCUTS: Record<string, DrawingTool> = {
-  'h': 'vline', // Shift+H for vertical line
-  'f': 'fibonacciExtension', // Shift+F for fib extension
-  'p': 'pitchfork', // Shift+P for pitchfork
+  h: 'vline', // Shift+H for vertical line
+  f: 'fibonacciExtension', // Shift+F for fib extension
+  p: 'pitchfork', // Shift+P for pitchfork
 };
 
 export const useKeyboardShortcuts = () => {
@@ -49,7 +49,7 @@ export const useKeyboardShortcuts = () => {
 
       // Handle tool shortcuts
       const key = e.key.toLowerCase();
-      
+
       if (e.shiftKey && SHIFT_TOOL_SHORTCUTS[key]) {
         e.preventDefault();
         setActiveTool(SHIFT_TOOL_SHORTCUTS[key]);
@@ -66,11 +66,11 @@ export const useKeyboardShortcuts = () => {
 
 // Context menu hook for right-click interactions
 export const useContextMenu = () => {
-  const { 
-    selectObject, 
-    duplicateObject: _duplicateObject, 
-    deleteObject: _deleteObject, 
-    setObjectProperties: _setObjectProperties 
+  const {
+    selectObject,
+    duplicateObject: _duplicateObject,
+    deleteObject: _deleteObject,
+    setObjectProperties: _setObjectProperties,
   } = useDrawingStore();
   // TODO: These functions will be used when context menu is fully implemented
   // Keeping them to show the planned API surface
