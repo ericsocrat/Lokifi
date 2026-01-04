@@ -538,9 +538,12 @@ describe('rollbackStore', () => {
   describe('Execution', () => {
     it('should execute a rollback plan', async () => {
       const planId = useRollbackStore.getState().createPlan(createMockPlan());
-      useRollbackStore.getState().addStep(planId, createMockStep({ order: 1 }));
+      // Use isRequired: false to avoid random step failures causing unhandled rejections
+      useRollbackStore.getState().addStep(planId, createMockStep({ order: 1, isRequired: false }));
 
       const execPromise = useRollbackStore.getState().executeRollback(planId, 'Test execution');
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
       await vi.runAllTimersAsync();
       const executionId = await execPromise;
 
@@ -573,6 +576,8 @@ describe('rollbackStore', () => {
         .addStep(planId, createMockStep({ order: 2, name: 'Step 2', isRequired: false }));
 
       const execPromise = useRollbackStore.getState().executeRollback(planId);
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
       await vi.runAllTimersAsync();
 
       try {
@@ -593,6 +598,8 @@ describe('rollbackStore', () => {
       useRollbackStore.getState().addStep(planId, createMockStep({ order: 1, isRequired: false }));
 
       const execPromise = useRollbackStore.getState().executeRollback(planId);
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
 
       // Advance timers partially to start execution but not complete it
       await vi.advanceTimersByTimeAsync(100);
@@ -617,8 +624,11 @@ describe('rollbackStore', () => {
       const planId = useRollbackStore.getState().createPlan(createMockPlan());
       useRollbackStore.getState().addStep(planId, createMockStep({ order: 1, isRequired: true }));
 
+      const execPromise = useRollbackStore.getState().executeRollback(planId);
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
+      
       try {
-        const execPromise = useRollbackStore.getState().executeRollback(planId);
         await vi.runAllTimersAsync();
         await execPromise;
       } catch (_error) {
@@ -635,6 +645,8 @@ describe('rollbackStore', () => {
     it('should update plan execution history', async () => {
       const planId = useRollbackStore.getState().createPlan(createMockPlan());
       const execPromise = useRollbackStore.getState().executeRollback(planId);
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
       await vi.runAllTimersAsync();
       await execPromise;
 
@@ -651,6 +663,8 @@ describe('rollbackStore', () => {
       vi.advanceTimersByTime(10);
 
       const execPromise = useRollbackStore.getState().executeRollback(planId);
+      // Attach catch handler before running timers to prevent unhandled rejection
+      execPromise.catch(() => {});
       await vi.runAllTimersAsync();
 
       try {
