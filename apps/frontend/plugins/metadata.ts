@@ -1,18 +1,17 @@
 import type { LokifiPlugin } from './types';
 
 export interface PluginMetadata extends LokifiPlugin {
-    name: string;
-    description?: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin defaults can be of any type
-    defaults: Record<string, any>;
+  name: string;
+  description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin defaults can be of any type
+  defaults: Record<string, any>;
 }
 
 export function getPluginMetadata(plugin: LokifiPlugin): PluginMetadata {
-    return {
-        ...plugin,
-        name: plugin.label || plugin.id,
-        description: '',
-        defaults: {}
-    };
+  return {
+    ...plugin,
+    name: plugin.label || plugin.id,
+    description: '',
+    defaults: {},
+  };
 }
-

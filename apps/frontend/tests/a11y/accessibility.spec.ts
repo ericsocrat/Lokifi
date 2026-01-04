@@ -1,8 +1,8 @@
 /* eslint-disable no-console -- Test reporting uses console for accessibility audit output */
 
-import type { Result } from 'axe-core';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import type { Result } from 'axe-core';
 
 test.describe('Accessibility Tests', () => {
   test.beforeEach(async ({ page }) => {

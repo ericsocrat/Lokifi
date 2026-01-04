@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import type { LokifiPlugin } from "./types";
-import { pluginManager } from "./manager";
-import { plugins } from "./index";
+import { plugins } from './index';
+import { pluginManager } from './manager';
+import type { LokifiPlugin } from './types';
 
 // Register all plugins
 Object.values(plugins).forEach((plugin: LokifiPlugin) => pluginManager.register(plugin));

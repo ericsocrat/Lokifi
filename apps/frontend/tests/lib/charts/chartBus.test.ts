@@ -22,7 +22,9 @@ describe('chartBus', () => {
     it('should set chart context', () => {
       const chart = mockChart('test-chart');
       const series = mockSeries('test-series');
-      const mockCandles = [{ time: mockTime(1), open: 100, high: 110, low: 90, close: 105, volume: 1000 }];
+      const mockCandles = [
+        { time: mockTime(1), open: 100, high: 110, low: 90, close: 105, volume: 1000 },
+      ];
 
       setChart({
         chart,
@@ -176,7 +178,9 @@ describe('chartBus', () => {
     });
 
     it('should return chart with candles', () => {
-      const candles = [{ time: mockTime(1), open: 100, high: 110, low: 90, close: 105, volume: 1000 }];
+      const candles = [
+        { time: mockTime(1), open: 100, high: 110, low: 90, close: 105, volume: 1000 },
+      ];
 
       setChart({ chart: null, series: null, candles });
 

@@ -3,8 +3,8 @@
  * Comprehensive test suite for Web Vitals monitoring
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WebVitalsReport } from '@/lib/utils/webVitals';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Metric } from 'web-vitals';
 
 // Mock web-vitals module

@@ -4,14 +4,14 @@
  */
 
 import type {
-    CandlestickData,
-    ChartOptions,
-    HistogramData,
-    LineData,
-    SeriesMarker,
-    SeriesOptions,
-    Time,
-    TimeRange,
+  CandlestickData,
+  ChartOptions,
+  HistogramData,
+  LineData,
+  SeriesMarker,
+  SeriesOptions,
+  Time,
+  TimeRange,
 } from '@/types/lightweight-charts';
 import { describe, expect, it } from '@jest/globals';
 
@@ -114,11 +114,7 @@ describe('Lightweight Charts Type Definitions', () => {
     });
 
     it('should accept different positions', () => {
-      const positions: Array<'aboveBar' | 'belowBar' | 'inBar'> = [
-        'aboveBar',
-        'belowBar',
-        'inBar',
-      ];
+      const positions: Array<'aboveBar' | 'belowBar' | 'inBar'> = ['aboveBar', 'belowBar', 'inBar'];
       positions.forEach((position) => {
         const marker: SeriesMarker = {
           time: 1609459200,
@@ -304,4 +300,3 @@ describe('Lightweight Charts Type Definitions', () => {
     });
   });
 });
-
