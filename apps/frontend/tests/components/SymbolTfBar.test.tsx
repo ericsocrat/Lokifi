@@ -10,8 +10,16 @@ vi.mock('@/state/store', () => ({
   useChartStore: vi.fn(),
 }));
 
+// Mock store type
+interface MockStore {
+  symbol: string;
+  timeframe: string;
+  setSymbol: ReturnType<typeof vi.fn>;
+  setTimeframe: ReturnType<typeof vi.fn>;
+}
+
 describe('SymbolTfBar', () => {
-  let mockStore: any;
+  let mockStore: MockStore;
 
   beforeEach(() => {
     // Reset mock store
@@ -23,11 +31,11 @@ describe('SymbolTfBar', () => {
     };
 
     // Setup zustand mock to return values based on selector
-    (useChartStore as any).mockImplementation((selector: any) => {
+    vi.mocked(useChartStore).mockImplementation(<T,>(selector: (state: MockStore) => T): T => {
       if (typeof selector === 'function') {
         return selector(mockStore);
       }
-      return mockStore;
+      return mockStore as unknown as T;
     });
   });
 

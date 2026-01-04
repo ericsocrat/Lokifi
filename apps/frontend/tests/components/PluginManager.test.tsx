@@ -9,7 +9,7 @@ const mockSetPluginEnabled = vi.fn();
 
 vi.mock('@/lib/plugins/plugins', () => ({
   listPlugins: () => mockListPlugins(),
-  setPluginEnabled: (...args: any[]) => mockSetPluginEnabled(...args),
+  setPluginEnabled: (...args: unknown[]) => mockSetPluginEnabled(...args),
 }));
 
 // Mock chart store

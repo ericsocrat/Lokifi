@@ -12,8 +12,15 @@ vi.mock('@/state/store', () => ({
   useChartStore: vi.fn(),
 }));
 
+// Mock store type
+interface MockStore {
+  selection: Set<string>;
+  alignSelected: ReturnType<typeof vi.fn>;
+  distributeSelected: ReturnType<typeof vi.fn>;
+}
+
 describe('SelectionToolbar', () => {
-  let mockStore: any;
+  let mockStore: MockStore;
 
   beforeEach(() => {
     mockStore = {
@@ -22,7 +29,7 @@ describe('SelectionToolbar', () => {
       distributeSelected: vi.fn(),
     };
 
-    (useChartStore as any).mockReturnValue(mockStore);
+    vi.mocked(useChartStore).mockReturnValue(mockStore);
   });
 
   describe('Visibility', () => {

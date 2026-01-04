@@ -13,9 +13,29 @@ import marketData from '@/services/marketData';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Asset type for mock data
+interface MockAsset {
+  symbol: string;
+  name: string;
+  type: string;
+  price: number;
+  previousClose: number;
+  change: number;
+  changePercent: number;
+  volume: number;
+  marketCap: number;
+  high24h: number;
+  low24h: number;
+  sector?: string;
+  lastUpdated: number;
+}
+
+// Subscriber callback type
+type SubscriberCallback = (assets: Map<string, MockAsset>) => void;
+
 // Mock the marketData service
 vi.mock('@/services/marketData', () => {
-  const mockAssets = new Map([
+  const mockAssets = new Map<string, MockAsset>([
     [
       'AAPL',
       {
@@ -71,7 +91,7 @@ vi.mock('@/services/marketData', () => {
     ],
   ]);
 
-  const subscribers: Set<any> = new Set();
+  const subscribers: Set<SubscriberCallback> = new Set();
 
   return {
     default: {
@@ -99,7 +119,7 @@ vi.mock('@/services/marketData', () => {
         { timestamp: Date.now() - 86400000, price: 149.0 },
         { timestamp: Date.now(), price: 150.5 },
       ],
-      subscribe: (callback: any) => {
+      subscribe: (callback: SubscriberCallback) => {
         subscribers.add(callback);
         callback(mockAssets); // Call immediately to initialize state
         return () => subscribers.delete(callback);
@@ -107,7 +127,7 @@ vi.mock('@/services/marketData', () => {
       _triggerUpdate: () => {
         subscribers.forEach((cb) => cb(mockAssets));
       },
-      _updateAsset: (symbol: string, updates: any) => {
+      _updateAsset: (symbol: string, updates: Partial<MockAsset>) => {
         const asset = mockAssets.get(symbol);
         if (asset) {
           Object.assign(asset, updates);
