@@ -4,10 +4,12 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { WebVitalsReport } from '@/lib/utils/webVitals';
+import type { Metric } from 'web-vitals';
 
 // Mock web-vitals module
 vi.mock('web-vitals', () => ({
-  onCLS: vi.fn((callback: any) =>
+  onCLS: vi.fn((callback: (metric: Metric) => void) =>
     callback({
       name: 'CLS',
       value: 0.05,
@@ -16,7 +18,7 @@ vi.mock('web-vitals', () => ({
       navigationType: 'navigate',
     })
   ),
-  onFCP: vi.fn((callback: any) =>
+  onFCP: vi.fn((callback: (metric: Metric) => void) =>
     callback({
       name: 'FCP',
       value: 1500,
@@ -25,7 +27,7 @@ vi.mock('web-vitals', () => ({
       navigationType: 'navigate',
     })
   ),
-  onINP: vi.fn((callback: any) =>
+  onINP: vi.fn((callback: (metric: Metric) => void) =>
     callback({
       name: 'INP',
       value: 150,
@@ -34,7 +36,7 @@ vi.mock('web-vitals', () => ({
       navigationType: 'navigate',
     })
   ),
-  onLCP: vi.fn((callback: any) =>
+  onLCP: vi.fn((callback: (metric: Metric) => void) =>
     callback({
       name: 'LCP',
       value: 2000,
@@ -43,7 +45,7 @@ vi.mock('web-vitals', () => ({
       navigationType: 'navigate',
     })
   ),
-  onTTFB: vi.fn((callback: any) =>
+  onTTFB: vi.fn((callback: (metric: Metric) => void) =>
     callback({
       name: 'TTFB',
       value: 600,
@@ -55,6 +57,7 @@ vi.mock('web-vitals', () => ({
 }));
 
 describe('WebVitalsMonitor', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic import of class constructor
   let WebVitalsMonitor: any;
 
   beforeEach(async () => {
@@ -93,7 +96,7 @@ describe('WebVitalsMonitor', () => {
       monitor.init();
 
       const reports = monitor.getReports();
-      const clsReport = reports.find((r: any) => r.name === 'CLS');
+      const clsReport = reports.find((r: WebVitalsReport) => r.name === 'CLS');
 
       expect(clsReport).toBeDefined();
       expect(clsReport?.name).toBe('CLS');
@@ -106,7 +109,7 @@ describe('WebVitalsMonitor', () => {
       monitor.init();
 
       const reports = monitor.getReports();
-      const fcpReport = reports.find((r: any) => r.name === 'FCP');
+      const fcpReport = reports.find((r: WebVitalsReport) => r.name === 'FCP');
 
       expect(fcpReport).toBeDefined();
       expect(fcpReport?.name).toBe('FCP');
@@ -119,7 +122,7 @@ describe('WebVitalsMonitor', () => {
       monitor.init();
 
       const reports = monitor.getReports();
-      const inpReport = reports.find((r: any) => r.name === 'INP');
+      const inpReport = reports.find((r: WebVitalsReport) => r.name === 'INP');
 
       expect(inpReport).toBeDefined();
       expect(inpReport?.name).toBe('INP');
@@ -132,7 +135,7 @@ describe('WebVitalsMonitor', () => {
       monitor.init();
 
       const reports = monitor.getReports();
-      const lcpReport = reports.find((r: any) => r.name === 'LCP');
+      const lcpReport = reports.find((r: WebVitalsReport) => r.name === 'LCP');
 
       expect(lcpReport).toBeDefined();
       expect(lcpReport?.name).toBe('LCP');
@@ -145,7 +148,7 @@ describe('WebVitalsMonitor', () => {
       monitor.init();
 
       const reports = monitor.getReports();
-      const ttfbReport = reports.find((r: any) => r.name === 'TTFB');
+      const ttfbReport = reports.find((r: WebVitalsReport) => r.name === 'TTFB');
 
       expect(ttfbReport).toBeDefined();
       expect(ttfbReport?.name).toBe('TTFB');
@@ -159,7 +162,7 @@ describe('WebVitalsMonitor', () => {
       const monitor = new WebVitalsMonitor({ enableReporting: true });
       monitor.init();
 
-      const clsReport = monitor.getReports().find((r: any) => r.name === 'CLS');
+      const clsReport = monitor.getReports().find((r: WebVitalsReport) => r.name === 'CLS');
       expect(clsReport?.rating).toBe('good');
     });
 

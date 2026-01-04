@@ -116,6 +116,7 @@ export function spyOnStoreAction<T extends object, K extends keyof T>(
   store: UseBoundStore<StoreApi<T>>,
   actionName: K
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic spy captures arbitrary function arguments
   const calls: any[][] = [];
   const originalAction = store.getState()[actionName];
 
@@ -123,20 +124,24 @@ export function spyOnStoreAction<T extends object, K extends keyof T>(
     throw new Error(`${String(actionName)} is not a function in the store`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generic spy handles any function signature
   const spy = (...args: any[]) => {
     calls.push(args);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic function invocation
     return (originalAction as any)(...args);
   };
 
-  // Replace the action temporarily
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property assignment for spy
   store.setState({ [actionName]: spy } as any);
 
   return {
     calls,
     callCount: () => calls.length,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Variadic comparison for spy assertions
     calledWith: (...args: any[]) =>
       calls.some((call) => JSON.stringify(call) === JSON.stringify(args)),
     restore: () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Dynamic property restoration
       store.setState({ [actionName]: originalAction } as any);
     },
   };
