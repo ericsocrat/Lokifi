@@ -41,7 +41,7 @@ describe('EmptyState', () => {
     });
 
     it('should render description as paragraph', () => {
-      const { container } = render(
+      render(
         <EmptyState type="search" title="Title" description="Description text" />
       );
 

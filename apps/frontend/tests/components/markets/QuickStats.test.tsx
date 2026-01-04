@@ -220,7 +220,7 @@ describe('QuickStats', () => {
 
     it('should apply green color class for positive change', () => {
       const positiveAssets = [{ price_change_percentage_24h: 5.0 }];
-      const { container } = render(<QuickStats data={positiveAssets} />);
+      render(<QuickStats data={positiveAssets} />);
 
       const percentageElement = screen.getByText('+5.00%');
       expect(percentageElement.className).toContain('text-green-500');
@@ -228,7 +228,7 @@ describe('QuickStats', () => {
 
     it('should apply red color class for negative change', () => {
       const negativeAssets = [{ price_change_percentage_24h: -5.0 }];
-      const { container } = render(<QuickStats data={negativeAssets} />);
+      render(<QuickStats data={negativeAssets} />);
 
       const percentageElement = screen.getByText('-5.00%');
       expect(percentageElement.className).toContain('text-red-500');

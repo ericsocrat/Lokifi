@@ -1,8 +1,7 @@
-
 "use client";
 
-// Import manager type
-import type { PluginManager } from "./manager";
+// PluginManager type is used by consumers of this module
+export type { PluginManager } from "./manager";
 
 // Import all plugins
 import { trendlinePlus } from "./trendlinePlus";

@@ -47,7 +47,7 @@ describe('PageContent', () => {
     });
 
     it('should not render header section without title or description', () => {
-      const { container } = render(
+      render(
         <PageContent>
           <div>Content Only</div>
         </PageContent>

@@ -96,7 +96,7 @@ test.describe('Accessibility Tests', () => {
           if (isFocused) {
             accessibleCount++;
           }
-        } catch (error) {
+        } catch (_error) {
           console.log('Button focus failed:', await button.textContent());
         }
       }
@@ -251,7 +251,7 @@ test.describe('Accessibility Tests', () => {
         await page.waitForTimeout(300);
         // If no error, the shortcut is at least handled
         console.log(`✓ ${shortcut.key} - ${shortcut.description}`);
-      } catch (error) {
+      } catch (_error) {
         console.log(`⚠ ${shortcut.key} might not be properly handled`);
       }
     }

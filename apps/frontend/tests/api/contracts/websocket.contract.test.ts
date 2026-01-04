@@ -29,13 +29,13 @@ describe('WebSocket API Contract', () => {
             resolve();
           };
 
-          ws.onerror = (error: any) => {
+          ws.onerror = (_error: any) => {
             clearTimeout(timeout);
             // WebSocket not available, skip test
             console.log('ℹ️  WebSocket not available, skipping test');
             resolve();
           };
-        } catch (error) {
+        } catch (_error) {
           clearTimeout(timeout);
           console.log('ℹ️  WebSocket not supported in test environment');
           resolve();
@@ -84,7 +84,7 @@ describe('WebSocket API Contract', () => {
         return;
       }
 
-      return new Promise<void>((resolve: any, reject: any) => {
+      return new Promise<void>((resolve: any, _reject: any) => {
         const timeout = setTimeout(() => {
           console.log('ℹ️  No price updates received (expected in test env)');
           resolve();

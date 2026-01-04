@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Template file with placeholder code */
 import { beforeEach, describe, it, vi } from 'vitest';
 
 // TODO: Import your utility function

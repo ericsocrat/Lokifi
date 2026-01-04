@@ -169,7 +169,7 @@ describe('ProfileDropdown', () => {
   describe('Click Outside Behavior', () => {
     it('should close dropdown when clicking outside', async () => {
       const user = userEvent.setup();
-      const { container } = render(
+      render(
         <div>
           <ProfileDropdown />
           <div data-testid="outside-element">Outside</div>

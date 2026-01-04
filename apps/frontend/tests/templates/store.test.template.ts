@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- Template file with placeholder code */
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, it } from 'vitest';
 

@@ -68,12 +68,15 @@ export const useKeyboardShortcuts = () => {
 export const useContextMenu = () => {
   const { 
     selectObject, 
-    duplicateObject, 
-    deleteObject, 
-    setObjectProperties 
+    duplicateObject: _duplicateObject, 
+    deleteObject: _deleteObject, 
+    setObjectProperties: _setObjectProperties 
   } = useDrawingStore();
+  // TODO: These functions will be used when context menu is fully implemented
+  // Keeping them to show the planned API surface
+  void [_duplicateObject, _deleteObject, _setObjectProperties];
 
-  const showContextMenu = (objectId: string, x: number, y: number) => {
+  const showContextMenu = (objectId: string, _x: number, _y: number) => {
     // This would show a context menu at the specified position
     // For now, we'll just select the object
     selectObject(objectId);

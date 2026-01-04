@@ -35,7 +35,7 @@ export const trendlinePlus: ToolPlugin = {
       return true;
     }
   },
-  onPointerMove(e, ctx) {
+  onPointerMove(_e, _ctx) {
     // Could render a ghost preview in future by updating a temp shape id
     return !!(trendlinePlus as any)._state?.a;
   },

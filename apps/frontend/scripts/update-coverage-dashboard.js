@@ -68,7 +68,7 @@ try {
     if (durationMatch) testResults.duration = durationMatch[1];
     testResults.total = testResults.passing + testResults.skipped + testResults.failing;
   }
-} catch (e) {
+} catch (_e) {
   console.warn('⚠️  Could not parse test results');
 }
 
@@ -367,7 +367,7 @@ try {
   if (fs.existsSync(METADATA_FILE)) {
     metadata = JSON.parse(fs.readFileSync(METADATA_FILE, 'utf8'));
   }
-} catch (e) {
+} catch (_e) {
   console.warn('⚠️  Could not load existing trends/metadata');
 }
 

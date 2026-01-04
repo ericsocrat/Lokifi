@@ -14,7 +14,9 @@ interface Env {
   snap: (t: number, p: number) => { t: number; p: number };
 }
 
-type SafeEnv = {
+// SafeEnv is a utility type for when all env properties are guaranteed non-null
+// Currently defined for future use in plugin validation
+type _SafeEnv = {
   [K in keyof Env]: NonNullable<Env[K]>;
 };
 

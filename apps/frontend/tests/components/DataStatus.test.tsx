@@ -131,7 +131,7 @@ describe('DataStatus', () => {
     });
 
     it('should render with whitespace in values', () => {
-      const { container } = render(
+      render(
         <DataStatus provider="Binance Pro" symbol="BTC USD" timeframe="1 h" />
       );
 
@@ -142,7 +142,7 @@ describe('DataStatus', () => {
     });
 
     it('should handle multiple components rendering independently', () => {
-      const { container } = render(
+      render(
         <>
           <DataStatus provider="Provider1" symbol="BTC" timeframe="1h" />
           <DataStatus provider="Provider2" symbol="ETH" timeframe="4h" />

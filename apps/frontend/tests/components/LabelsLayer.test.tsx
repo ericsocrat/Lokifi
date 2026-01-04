@@ -92,7 +92,7 @@ describe('LabelsLayer', () => {
         text: 'Default Config Label',
       });
 
-      const { container } = render(<LabelsLayer />);
+      render(<LabelsLayer />);
 
       // Should render with default config
       expect(screen.getByText('Default Config Label')).toBeInTheDocument();
@@ -296,7 +296,7 @@ describe('LabelsLayer', () => {
         text: 'Styled Label',
       });
 
-      const { container } = render(<LabelsLayer />);
+      render(<LabelsLayer />);
 
       const label = screen.getByText('Styled Label');
       expect(label).toHaveClass('text-[11px]');
@@ -319,7 +319,7 @@ describe('LabelsLayer', () => {
         text: 'Absolute Label',
       });
 
-      const { container } = render(<LabelsLayer />);
+      render(<LabelsLayer />);
 
       const label = screen.getByText('Absolute Label');
       expect(label).toHaveStyle({ position: 'absolute' });
