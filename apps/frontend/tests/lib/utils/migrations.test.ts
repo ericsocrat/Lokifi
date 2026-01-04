@@ -137,8 +137,7 @@ describe('migrations', () => {
     });
 
     it('should register a migration for a state type', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with generic data spread
-      const migration: MigrationFunction = (data: any) => ({ ...data, migrated: true });
+      const migration: MigrationFunction = (data: unknown) => ({ ...data, migrated: true });
 
       expect(() => {
         registerMigration('test-type-1', 0, migration);
@@ -146,10 +145,8 @@ describe('migrations', () => {
     });
 
     it('should register multiple migrations for same state type', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with generic data spread
-      const migration1: MigrationFunction = (data: any) => ({ ...data, v1: true });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with generic data spread
-      const migration2: MigrationFunction = (data: any) => ({ ...data, v2: true });
+      const migration1: MigrationFunction = (data: unknown) => ({ ...data, v1: true });
+      const migration2: MigrationFunction = (data: unknown) => ({ ...data, v2: true });
 
       expect(() => {
         registerMigration('test-type-2', 0, migration1);
@@ -158,10 +155,8 @@ describe('migrations', () => {
     });
 
     it('should register migrations for different state types', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with pass-through data
-      const migration1: MigrationFunction = (data: any) => data;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with pass-through data
-      const migration2: MigrationFunction = (data: any) => data;
+      const migration1: MigrationFunction = (data: unknown) => data;
+      const migration2: MigrationFunction = (data: unknown) => data;
 
       expect(() => {
         registerMigration('test-type-3a', 0, migration1);
@@ -227,8 +222,7 @@ describe('migrations', () => {
     });
 
     it('should apply single migration', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with generic data spread
-      const migration: MigrationFunction = (data: any) => ({ ...data, migrated: true });
+      const migration: MigrationFunction = (data: unknown) => ({ ...data, migrated: true });
 
       // Register migration for testing (if CURRENT_SCHEMA_VERSION allows it)
       if (CURRENT_SCHEMA_VERSION > 1) {
@@ -369,8 +363,7 @@ describe('migrations', () => {
 
     it('should return path for single migration', () => {
       if (CURRENT_SCHEMA_VERSION > 1) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with pass-through data
-        const migration: MigrationFunction = (data: any) => data;
+        const migration: MigrationFunction = (data: unknown) => data;
         registerMigration('test-path-1', CURRENT_SCHEMA_VERSION - 1, migration);
 
         const path = getMigrationPath('test-path-1', CURRENT_SCHEMA_VERSION - 1);
@@ -452,7 +445,7 @@ describe('migrations', () => {
     });
 
     it('should handle state with circular references (via spread)', () => {
-      const circular: any = { a: 1 };
+      const circular: Record<string, unknown> = { a: 1 };
       circular.self = circular;
 
       // createVersionedState doesn't serialize, so circular refs are OK
@@ -479,8 +472,7 @@ describe('migrations', () => {
     });
 
     it('should handle special characters in state type names', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test migration with pass-through data
-      const migration: MigrationFunction = (data: any) => data;
+      const migration: MigrationFunction = (data: unknown) => data;
 
       expect(() => {
         registerMigration('test-type-with-dashes', 0, migration);
