@@ -48,7 +48,7 @@ describe('Logger Utility', () => {
       );
       log.info('test message');
       expect(console.info).toHaveBeenCalled();
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('[TestContext]');
     });
   });
@@ -110,7 +110,7 @@ describe('Logger Utility', () => {
       log.debug('debug message', { foo: 'bar' });
 
       expect(console.debug).toHaveBeenCalledOnce();
-      const call = (console.debug as any).mock.calls[0][0];
+      const call = vi.mocked(console.debug).mock.calls[0][0];
       expect(call).toContain('debug message');
     });
 
@@ -119,7 +119,7 @@ describe('Logger Utility', () => {
       log.info('info message', { count: 42 });
 
       expect(console.info).toHaveBeenCalledOnce();
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('info message');
     });
 
@@ -128,7 +128,7 @@ describe('Logger Utility', () => {
       log.warn('warning message', { severity: 'medium' });
 
       expect(console.warn).toHaveBeenCalledOnce();
-      const call = (console.warn as any).mock.calls[0][0];
+      const call = vi.mocked(console.warn).mock.calls[0][0];
       expect(call).toContain('warning message');
     });
 
@@ -138,7 +138,7 @@ describe('Logger Utility', () => {
       log.error('error message', error);
 
       expect(console.error).toHaveBeenCalledOnce();
-      const call = (console.error as any).mock.calls[0][0];
+      const call = vi.mocked(console.error).mock.calls[0][0];
       expect(call).toContain('error message');
     });
 
@@ -148,7 +148,7 @@ describe('Logger Utility', () => {
       log.error('Failed operation', error);
 
       expect(console.error).toHaveBeenCalledOnce();
-      const call = (console.error as any).mock.calls[0][0];
+      const call = vi.mocked(console.error).mock.calls[0][0];
       const parsed = JSON.parse(call);
       expect(parsed.data.name).toBe('Error');
       expect(parsed.data.message).toBe('Test error');
@@ -175,7 +175,7 @@ describe('Logger Utility', () => {
 
       childLog.info('test message');
       expect(console.info).toHaveBeenCalled();
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('[ChildContext]');
     });
 
@@ -186,7 +186,7 @@ describe('Logger Utility', () => {
       );
       log.info('test message');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('[MyComponent]');
     });
 
@@ -197,7 +197,7 @@ describe('Logger Utility', () => {
       );
       log.info('test message');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).not.toContain('[MyComponent]');
     });
   });
@@ -213,7 +213,7 @@ describe('Logger Utility', () => {
 
       log.info('test message', { foo: 'bar' });
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       const parsed = JSON.parse(call);
       expect(parsed.message).toBe('test message');
       expect(parsed.data.foo).toBe('bar');
@@ -230,7 +230,7 @@ describe('Logger Utility', () => {
 
       log.info('test message');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('INFO: test message');
       expect(() => JSON.parse(call)).toThrow();
     });
@@ -241,7 +241,7 @@ describe('Logger Utility', () => {
       const log = new Logger({ level: LogLevel.INFO, enabled: true, timestamps: true });
       log.info('test message');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       // Check for ISO timestamp pattern (YYYY-MM-DD)
       expect(call).toMatch(/\d{4}-\d{2}-\d{2}/);
     });
@@ -250,7 +250,7 @@ describe('Logger Utility', () => {
       const log = new Logger({ level: LogLevel.INFO, enabled: true, timestamps: false });
       log.info('test message');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       // Should not contain ISO timestamp pattern
       expect(call).not.toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/);
     });
@@ -315,7 +315,7 @@ describe('Logger Utility', () => {
 
       expect(result).toBe('result');
       expect(console.debug).toHaveBeenCalled();
-      const call = (console.debug as any).mock.calls[0][0];
+      const call = vi.mocked(console.debug).mock.calls[0][0];
       expect(call).toContain('test-operation completed in');
     });
 
@@ -353,7 +353,7 @@ describe('Logger Utility', () => {
       });
       log.info('test');
 
-      const call = (console.info as any).mock.calls[0][0];
+      const call = vi.mocked(console.info).mock.calls[0][0];
       expect(call).toContain('[TestComponent]');
     });
 
@@ -402,7 +402,7 @@ describe('Logger Utility', () => {
       }
 
       expect(console.error).toHaveBeenCalledOnce();
-      const call = (console.error as any).mock.calls[0][0];
+      const call = vi.mocked(console.error).mock.calls[0][0];
       const parsed = JSON.parse(call);
       expect(parsed.message).toBe('Login error');
       expect(parsed.data.stack).toBeDefined();
