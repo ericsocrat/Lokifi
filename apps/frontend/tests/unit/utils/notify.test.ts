@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Browser globals mocking (Notification, Audio) requires any casts */
+
 import { ensureNotificationPermission, notify } from '@/lib/utils/notify';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

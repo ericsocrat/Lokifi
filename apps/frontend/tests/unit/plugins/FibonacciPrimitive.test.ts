@@ -5,6 +5,8 @@
  * Tests the TradingView Primitives API implementation for Fibonacci retracement
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any -- Testing requires private property access and mock objects for chart/series APIs */
+
 import type { FibonacciOptions} from '@/lib/plugins/FibonacciPrimitive';
 import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
 import type { Time } from 'lightweight-charts';

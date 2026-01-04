@@ -168,11 +168,13 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should return empty array for null input', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime null handling
         const result = calculateOBV(null as any);
         expect(result).toEqual([]);
       });
 
       it('should return empty array for undefined input', () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime undefined handling
         const result = calculateOBV(undefined as any);
         expect(result).toEqual([]);
       });
@@ -202,6 +204,7 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should throw error for null volume', () => {
+        /* eslint-disable @typescript-eslint/no-explicit-any -- Testing runtime null volume handling */
         const prices = [
           {
             time: 1,
@@ -441,12 +444,12 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should return null for null input', () => {
-        const latest = getLatestOBV(null as any, 10);
+        const latest = getLatestOBV(null as unknown as OHLCVPrice[], 10);
         expect(latest).toBeNull();
       });
 
       it('should return null for undefined input', () => {
-        const latest = getLatestOBV(undefined as any, 10);
+        const latest = getLatestOBV(undefined as unknown as OHLCVPrice[], 10);
         expect(latest).toBeNull();
       });
 

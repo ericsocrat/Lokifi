@@ -783,6 +783,7 @@ describe('performanceStore', () => {
         value: async () => content,
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing with File mock (text() added via defineProperty)
       await store.importData(file as any);
 
       const freshState = usePerformanceStore.getState();

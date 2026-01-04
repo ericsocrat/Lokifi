@@ -1,5 +1,6 @@
 /* eslint-disable no-console -- Store tests log state changes for debugging */
 /* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
+/* eslint-disable @typescript-eslint/no-explicit-any -- Browser globals mocking (Notification, Audio, WebSocket) requires any casts */
 
 import type { Alert, AlertAction, AlertBacktest, AlertExecution } from '@/lib/stores/alertsStore';
 import { useAlertsStore } from '@/lib/stores/alertsStore';

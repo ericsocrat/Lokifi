@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- DOM element mocking (canvas, anchor, querySelectorAll) requires any casts */
+
 import { exportReportPDF } from '@/lib/utils/pdf';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

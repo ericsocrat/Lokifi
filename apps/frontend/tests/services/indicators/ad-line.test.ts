@@ -166,11 +166,13 @@ describe('Accumulation/Distribution Line (A/D Line) Indicator', () => {
     });
 
     it('should return empty array for null input', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime null handling
       const result = calculateADLine(null as any);
       expect(result).toEqual([]);
     });
 
     it('should return empty array for undefined input', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime undefined handling
       const result = calculateADLine(undefined as any);
       expect(result).toEqual([]);
     });
@@ -182,6 +184,7 @@ describe('Accumulation/Distribution Line (A/D Line) Indicator', () => {
     });
 
     it('should throw error when volume is null', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime null volume handling
       const prices = [{ time: 1, open: 100, high: 105, low: 99, close: 103, volume: null as any }];
 
       expect(() => calculateADLine(prices)).toThrow('Volume data is required');
@@ -504,11 +507,13 @@ describe('Accumulation/Distribution Line (A/D Line) Indicator', () => {
     });
 
     it('should return null for null prices', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime null handling
       const latest = getLatestADLine(null as any, 10);
       expect(latest).toBeNull();
     });
 
     it('should return null for undefined prices', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing runtime undefined handling
       const latest = getLatestADLine(undefined as any, 10);
       expect(latest).toBeNull();
     });
