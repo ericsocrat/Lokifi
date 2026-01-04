@@ -86,9 +86,14 @@ class TestProviderCascade:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(
-            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
-        ) as mock_av:
+        # Mock settings to ensure Alpha Vantage path is taken
+        with (
+            patch("app.services.indices_service.settings") as mock_settings,
+            patch.object(
+                service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+            ) as mock_av,
+        ):
+            mock_settings.ALPHAVANTAGE_KEY = "test-key"
             mock_av.return_value = [{"provider": "alpha_vantage"}]
             result = await service.get_indices(limit=5)
             assert result[0]["provider"] == "alpha_vantage"
