@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Test includes circular reference edge case */
+
 import { encodeShare, makeShareURL, tryLoadFromURL, type ShareSnapshot } from '@/lib/utils/share';
 import { compressToEncodedURIComponent } from 'lz-string';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';

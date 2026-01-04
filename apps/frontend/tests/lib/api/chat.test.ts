@@ -529,7 +529,8 @@ describe('Chat API', () => {
       const result = await chat([{ role: 'user', content: 'test' }]);
 
       expect(result.mode).toBe('general');
-      // Additional fields should be preserved
+      // Additional fields should be preserved (testing runtime behavior)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing that extra fields in API response are preserved
       expect((result as any).extra_field).toBe('extra_value');
     });
 

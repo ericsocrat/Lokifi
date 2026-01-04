@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Edge case tests require any casts for null handling and dynamic flag access */
+
 import {
   type FeatureFlags,
   FLAGS,

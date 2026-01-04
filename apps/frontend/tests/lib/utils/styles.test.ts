@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Tests include undefined value fallbacks */
+
 import { describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_STYLE,

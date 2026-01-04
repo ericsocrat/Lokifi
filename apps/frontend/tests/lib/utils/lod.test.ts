@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Edge case tests require any casts for runtime type handling (string timestamps, business day objects, null/undefined) */
+
 import type { Time } from 'lightweight-charts';
 import { describe, expect, it } from 'vitest';
 import {

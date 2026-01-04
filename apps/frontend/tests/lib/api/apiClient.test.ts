@@ -94,7 +94,7 @@ describe('APIClient', () => {
         })
       );
 
-      const result = await client.getSymbols({ type: 'stock' } as any);
+      const result = await client.getSymbols({ type: 'stock' });
 
       expect(result.data).toHaveLength(1);
       expect(result.data[0].type).toBe('stock');
@@ -180,7 +180,7 @@ describe('APIClient', () => {
       const result = await client.getOHLC({
         symbol: 'AAPL',
         timeframe: '1h',
-      } as any);
+      });
 
       expect(result).toEqual(mockOHLC);
       expect(result.data).toHaveLength(2);
@@ -207,7 +207,7 @@ describe('APIClient', () => {
       const result = await client.getOHLC({
         symbol: 'INVALID',
         timeframe: '1h',
-      } as any);
+      });
 
       expect(result.data).toHaveLength(0);
     });
@@ -235,7 +235,7 @@ describe('APIClient', () => {
         })
       );
 
-      await expect(client.getOHLC({ symbol: 'AAPL', timeframe: '1h' } as any)).rejects.toThrow(
+      await expect(client.getOHLC({ symbol: 'AAPL', timeframe: '1h' })).rejects.toThrow(
         APIError
       );
     });

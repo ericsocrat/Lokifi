@@ -323,7 +323,7 @@ describe('apiFetch', () => {
     });
 
     it('passes request body correctly', async () => {
-      let receivedBody: any;
+      let receivedBody: unknown;
 
       server.use(
         http.post(`${API_BASE}/data`, async ({ request }) => {

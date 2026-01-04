@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Edge case tests require any casts for testing invalid state formats and runtime handling */
+
 import {
   createVersionedState,
   CURRENT_SCHEMA_VERSION,

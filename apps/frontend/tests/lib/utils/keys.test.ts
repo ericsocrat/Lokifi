@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Test includes undefined key edge case */
+
 import { describe, expect, it } from 'vitest';
 import { keyFromEvent } from '../../../src/lib/utils/keys';
 

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Test includes circular reference edge case */
+
 import { loadJSON, saveJSON } from '@/lib/utils/storage';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
