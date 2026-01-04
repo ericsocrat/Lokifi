@@ -24,9 +24,10 @@
 
 ## 🎯 Current Focus (Sprint 10 - Post-Migration Cleanup)
 
-**Status:** 🚀 **SPRINT 10 IN PROGRESS - Visual Baselines + Dependency Updates**
+**Status:** 🚀 **SPRINT 10 IN PROGRESS - Renovate PRs + Test Stability**
 
 **Previous Sessions:**
+- ✅ **Session 115 (cont.) COMPLETE** - Flaky test fix (robust mock), Renovate rebase requests
 - ✅ **Session 115 COMPLETE** - Visual Baselines, Flaky Test Fix, Renovate PR Merges
 - ✅ **Session 114 COMPLETE** - PR #95 MERGED! (Next.js 16, React 19, lightweight-charts v5)
 - ✅ **Session 112 COMPLETE** - PR #95 CI Fixes (Fast Feedback, Next.js 16 Turbopack)
@@ -34,7 +35,37 @@
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
 
-### 🎉 Session 115: Visual Baselines + Dependency Cleanup - COMPLETE
+### 🎉 Session 115 (continued): Test Stability + Renovate PRs
+
+**Status:** ✅ **COMPLETE** - Robust mock pattern, package-lock.json updated, rebases requested
+
+**Objective**: Fix remaining flaky test issues in CI, manage Renovate PRs
+
+**Achievements**:
+1. **Flaky Test Permanently Fixed** (`test_uses_alpha_vantage_primary`):
+   - Previous fix only patched settings object, not attribute
+   - Root cause: `settings.ALPHAVANTAGE_KEY` check was evaluated before mock applied
+   - Fix: Changed to `patch("app.services.indices_service.settings.ALPHAVANTAGE_KEY", "test-key")`
+   - Added `mock_av.assert_called_once_with(5)` to verify behavior
+   - Commit: `a6b5ee28`
+
+2. **package-lock.json Updated**:
+   - Updated peer dependency annotations for vitest packages
+   - Routine update after PR merges
+   - Commit: `a433c106`
+
+3. **Renovate Rebase Requests**:
+   - Posted `@renovate rebase` on PRs #116, #119, #123
+   - Waiting for Renovate to pick up test fix (commit `a6b5ee28`)
+   - PRs will pass once rebased with fixed test
+
+**Commits** (2 to main):
+| Commit | Description |
+|--------|-------------|
+| `a6b5ee28` | fix(tests): robust Alpha Vantage mock in test_indices_service |
+| `a433c106` | chore(deps): update package-lock.json after npm install |
+
+### Session 115: Visual Baselines + Dependency Cleanup - COMPLETE
 
 **Status:** ✅ **COMPLETE** - Linux baselines generated, flaky test fixed, TypeScript types updated
 
