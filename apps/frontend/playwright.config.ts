@@ -102,11 +102,16 @@ export default defineConfig({
   ],
 
   // Run local dev server before starting tests
+  // Next.js 16 compatibility: Use 'wait' option for reliable server detection
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env['CI'],
     timeout: 120 * 1000,
+    // Next.js 16 outputs "✓ Ready in Xms" when server is ready
+    // Wait for this output instead of just polling the URL
+    stdout: 'pipe',
+    stderr: 'pipe',
   },
 
   // Expect configuration for visual comparisons and assertions

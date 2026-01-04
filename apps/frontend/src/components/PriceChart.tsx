@@ -20,7 +20,14 @@ import { calculateStochastic } from '@/services/indicators/stochastic';
 import { calculateWilliamsR } from '@/services/indicators/williams-r';
 import { useChartStore } from '@/state/store';
 import type { IChartApi, ISeriesApi, ITimeScaleApi, Time } from 'lightweight-charts';
-import { createChart, LineStyle, type TimeRangeChangeEventHandler } from 'lightweight-charts';
+import {
+  CandlestickSeries,
+  createChart,
+  HistogramSeries,
+  LineSeries,
+  LineStyle,
+  type TimeRangeChangeEventHandler,
+} from 'lightweight-charts';
 import React from 'react';
 
 // lightweight-charts Series interface extension (chart() method is internal but available)
@@ -129,9 +136,10 @@ export default function PriceChart() {
       timeScale: { borderColor: '#333' },
     });
     chartRef.current = chart;
-    const series = chart.addCandlestickSeries();
+    // lightweight-charts v5 API
+    const series = chart.addSeries(CandlestickSeries);
     seriesRef.current = series;
-    const vol = chart.addHistogramSeries({ priceScaleId: 'left' });
+    const vol = chart.addSeries(HistogramSeries, { priceScaleId: 'left' });
     volRef.current = vol;
 
     const publish = () => setChart({ chart, series, candles });
@@ -275,21 +283,21 @@ export default function PriceChart() {
           indicatorSettings.bbMult
         );
 
-        const basis = chart.addLineSeries({
+        const basis = chart.addSeries(LineSeries, {
           color: 'rgb(255, 152, 0)', // Orange (middle band)
           lineStyle: LineStyle.Solid,
           lineWidth: 2,
           priceScaleId: 'right',
           title: `BB Mid(${indicatorSettings.bbPeriod},${indicatorSettings.bbMult})`,
         });
-        const upper = chart.addLineSeries({
+        const upper = chart.addSeries(LineSeries, {
           color: 'rgb(33, 150, 243)', // Blue (upper band)
           lineStyle: LineStyle.Solid,
           lineWidth: 1,
           priceScaleId: 'right',
           title: 'BB Upper',
         });
-        const lower = chart.addLineSeries({
+        const lower = chart.addSeries(LineSeries, {
           color: 'rgb(33, 150, 243)', // Blue (lower band)
           lineStyle: LineStyle.Solid,
           lineWidth: 1,
@@ -329,7 +337,7 @@ export default function PriceChart() {
         const typical = slice.map((c: Candle) => (c.high + c.low + c.close) / 3);
         const volume = slice.map((c: Candle) => c.volume);
         const v = vwap(typical, volume);
-        const vwapLine = chart.addLineSeries({ lineWidth: 2 });
+        const vwapLine = chart.addSeries(LineSeries, { lineWidth: 2 });
         const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
         const data = vTimes.map((t: Time, i: number) => ({
           time: t,
@@ -344,7 +352,7 @@ export default function PriceChart() {
         const prices = slice.map((c: Candle) => c.close);
         const volumes = slice.map((c: Candle) => c.volume);
         const vArr = vwma(prices, volumes, indicatorSettings.vwmaPeriod);
-        const line = chart.addLineSeries({ lineWidth: 1 });
+        const line = chart.addSeries(LineSeries, { lineWidth: 1 });
         const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
         const data = vTimes.map((t: Time, i: number) => ({
           time: t,
@@ -361,9 +369,9 @@ export default function PriceChart() {
           indicatorSettings.stdChannelPeriod,
           indicatorSettings.stdChannelMult
         );
-        const mid = chart.addLineSeries({ lineWidth: 1 });
-        const up = chart.addLineSeries({ lineWidth: 1 });
-        const lo = chart.addLineSeries({ lineWidth: 1 });
+        const mid = chart.addSeries(LineSeries, { lineWidth: 1 });
+        const up = chart.addSeries(LineSeries, { lineWidth: 1 });
+        const lo = chart.addSeries(LineSeries, { lineWidth: 1 });
         const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
         const midData = vTimes.map((t: Time, i: number) => ({
           time: t,
@@ -387,7 +395,7 @@ export default function PriceChart() {
       // --- RSI (Relative Strength Index)
       if (indicators.showRSI) {
         const rsiValues = calculateRSI(close, indicatorSettings.rsiPeriod);
-        const rsiLine = chart.addLineSeries({
+        const rsiLine = chart.addSeries(LineSeries, {
           color: 'rgb(255, 152, 0)', // Orange
           lineWidth: 2,
           priceScaleId: 'right',
@@ -395,7 +403,7 @@ export default function PriceChart() {
         });
 
         // Add overbought/oversold reference lines
-        const overboughtLine = chart.addLineSeries({
+        const overboughtLine = chart.addSeries(LineSeries, {
           color: 'rgba(255, 0, 0, 0.3)', // Red, semi-transparent
           lineWidth: 1,
           lineStyle: LineStyle.Dashed,
@@ -403,7 +411,7 @@ export default function PriceChart() {
           title: 'Overbought (70)',
         });
 
-        const oversoldLine = chart.addLineSeries({
+        const oversoldLine = chart.addSeries(LineSeries, {
           color: 'rgba(0, 255, 0, 0.3)', // Green, semi-transparent
           lineWidth: 1,
           lineStyle: LineStyle.Dashed,
@@ -438,7 +446,7 @@ export default function PriceChart() {
         );
 
         // Create MACD line (blue)
-        const macdLine = chart.addLineSeries({
+        const macdLine = chart.addSeries(LineSeries, {
           color: 'rgb(33, 150, 243)', // Blue
           lineWidth: 2,
           priceScaleId: 'right',
@@ -446,7 +454,7 @@ export default function PriceChart() {
         });
 
         // Create Signal line (orange)
-        const signalLine = chart.addLineSeries({
+        const signalLine = chart.addSeries(LineSeries, {
           color: 'rgb(255, 152, 0)', // Orange
           lineWidth: 2,
           priceScaleId: 'right',
@@ -454,7 +462,7 @@ export default function PriceChart() {
         });
 
         // Create Histogram (green/red based on value)
-        const histogramSeries = chart.addHistogramSeries({
+        const histogramSeries = chart.addSeries(HistogramSeries, {
           priceScaleId: 'right',
           title: 'Histogram',
         });
@@ -507,7 +515,7 @@ export default function PriceChart() {
         );
 
         // Create %K line (blue)
-        const kLine = chart.addLineSeries({
+        const kLine = chart.addSeries(LineSeries, {
           color: 'rgb(33, 150, 243)', // Blue
           lineWidth: 2,
           priceScaleId: 'right',
@@ -515,7 +523,7 @@ export default function PriceChart() {
         });
 
         // Create %D line (orange)
-        const dLine = chart.addLineSeries({
+        const dLine = chart.addSeries(LineSeries, {
           color: 'rgb(255, 152, 0)', // Orange
           lineWidth: 2,
           priceScaleId: 'right',
@@ -552,7 +560,7 @@ export default function PriceChart() {
         );
 
         // Create ADX line (purple/magenta)
-        const adxLine = chart.addLineSeries({
+        const adxLine = chart.addSeries(LineSeries, {
           color: 'rgb(156, 39, 176)', // Purple
           lineWidth: 2,
           priceScaleId: 'right',
@@ -583,7 +591,7 @@ export default function PriceChart() {
         );
 
         // Create CCI line (purple)
-        const cciLine = chart.addLineSeries({
+        const cciLine = chart.addSeries(LineSeries, {
           color: 'rgb(138, 43, 226)', // Blue Violet
           lineWidth: 2,
           priceScaleId: 'right',
@@ -613,7 +621,7 @@ export default function PriceChart() {
         );
 
         // Create Williams %R line (purple)
-        const williamsRLine = chart.addLineSeries({
+        const williamsRLine = chart.addSeries(LineSeries, {
           color: 'rgb(147, 51, 234)', // Purple
           lineWidth: 2,
           priceScaleId: 'right',
@@ -645,7 +653,7 @@ export default function PriceChart() {
         );
 
         // Create OBV line (teal/cyan)
-        const obvLine = chart.addLineSeries({
+        const obvLine = chart.addSeries(LineSeries, {
           color: 'rgb(6, 182, 212)', // Teal/Cyan
           lineWidth: 2,
           priceScaleId: 'right',
@@ -677,7 +685,7 @@ export default function PriceChart() {
         );
 
         // Create A/D Line (indigo)
-        const adLine = chart.addLineSeries({
+        const adLine = chart.addSeries(LineSeries, {
           color: 'rgb(99, 102, 241)', // Indigo
           lineWidth: 2,
           priceScaleId: 'right',

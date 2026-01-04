@@ -13,6 +13,8 @@
     "dev:backend": "cd apps/backend && uvicorn app.main:app --reload",
     "build": "cd apps/frontend && npm run build",
     "lint": "cd apps/frontend && npm run lint",
+    "lint:security": "cd apps/frontend && npm run lint:security",
+    "lint:a11y": "cd apps/frontend && npm run lint:a11y",
     "lint:backend": "cd apps/backend && ruff check .",
     "typecheck": "cd apps/frontend && npm run typecheck",
     "test": "npm run test:all",

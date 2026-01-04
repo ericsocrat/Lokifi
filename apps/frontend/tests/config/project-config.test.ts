@@ -117,11 +117,12 @@ describe('Project Configuration Files', () => {
   describe('Development Workflow', () => {
     it('should support consistent development environment setup', () => {
       // Essential files for team consistency
+      // Note: ESLint 9+ uses flat config format (eslint.config.mjs) instead of .eslintrc.json
       const essentialFiles = [
         '.editorconfig',
         '.nvmrc',
         '.prettierrc.json',
-        '.eslintrc.json',
+        'eslint.config.mjs',
         'tsconfig.json',
       ];
 

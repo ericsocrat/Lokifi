@@ -3,8 +3,14 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ChartPanel from '../../components/ChartPanelV2';
 
-// Mock the dependencies
+// Mock the dependencies - lightweight-charts v5 API
 vi.mock('lightweight-charts', () => {
+  // Define Series type symbols INSIDE the mock factory (vi.mock is hoisted)
+  const CandlestickSeriesSymbol = Symbol('CandlestickSeries');
+  const LineSeriesSymbol = Symbol('LineSeries');
+  const HistogramSeriesSymbol = Symbol('HistogramSeries');
+  const AreaSeriesSymbol = Symbol('AreaSeries');
+
   const createChart = vi.fn(() => {
     const timeScale = () => ({
       subscribeVisibleTimeRangeChange: vi.fn(),
@@ -20,6 +26,15 @@ vi.mock('lightweight-charts', () => {
     const areaSeries = { setData: vi.fn() };
     return {
       timeScale: timeScale,
+      // v5 unified API
+      addSeries: vi.fn((_seriesType: symbol, _options?: any) => {
+        return {
+          setData: vi.fn(),
+          priceToCoordinate: vi.fn(() => 0),
+          timeToCoordinate: vi.fn(() => 0),
+        };
+      }),
+      // Legacy methods for backward compatibility
       addCandlestickSeries: vi.fn(() => candleSeries),
       addLineSeries: vi.fn(() => lineSeries),
       addHistogramSeries: vi.fn(() => histSeries),
@@ -28,7 +43,14 @@ vi.mock('lightweight-charts', () => {
       remove: vi.fn(),
     };
   });
-  return { createChart };
+  return {
+    createChart,
+    // v5 Series type exports
+    CandlestickSeries: CandlestickSeriesSymbol,
+    LineSeries: LineSeriesSymbol,
+    HistogramSeries: HistogramSeriesSymbol,
+    AreaSeries: AreaSeriesSymbol,
+  };
 });
 
 vi.mock('@/lib/api', () => ({

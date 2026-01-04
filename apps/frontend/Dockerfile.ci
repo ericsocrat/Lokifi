@@ -24,13 +24,11 @@ RUN npm run build
 FROM node:24-alpine AS prod
 WORKDIR /app
 
-# Copy standalone output
+# Next.js 16 standalone output with DOCKER_BUILD=true creates flat structure:
+# .next/standalone/server.js (because outputFileTracingRoot = __dirname in Docker)
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
-
-# Copy package.json for runtime
-COPY --from=build /app/package.json ./
 
 EXPOSE 3000
 ENV NODE_ENV=production

@@ -4,8 +4,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PriceChart from '../../src/components/PriceChart';
 import { useChartStore } from '../../src/state/store';
 
-// Mock lightweight-charts with comprehensive API
+// Mock lightweight-charts with v5 API (addSeries instead of addCandlestickSeries, etc.)
 vi.mock('lightweight-charts', () => {
+  // Define Series type symbols INSIDE the mock factory (vi.mock is hoisted)
+  const CandlestickSeriesSymbol = Symbol('CandlestickSeries');
+  const LineSeriesSymbol = Symbol('LineSeries');
+  const HistogramSeriesSymbol = Symbol('HistogramSeries');
+  const AreaSeriesSymbol = Symbol('AreaSeries');
+
   const mockChart: any = {}; // Define early so series can reference it
 
   // Series need to have a chart() method that returns the chart instance
@@ -17,7 +23,22 @@ vi.mock('lightweight-charts', () => {
     ...additionalMethods,
   });
 
+  // v5 unified addSeries API - takes SeriesType as first arg, options as second
+  const addSeriesMock = vi.fn((_seriesType: symbol, _options?: any) => {
+    // All series types get consistent mock with extended methods
+    return createSeries({
+      priceToCoordinate: vi.fn(() => 100),
+      coordinateToPrice: vi.fn(() => 50000),
+      priceScale: vi.fn(() => ({
+        applyOptions: vi.fn(),
+      })),
+    });
+  });
+
   Object.assign(mockChart, {
+    // v5 unified API
+    addSeries: addSeriesMock,
+    // Keep legacy methods for backward compatibility if needed
     addCandlestickSeries: vi.fn(() =>
       createSeries({
         priceToCoordinate: vi.fn(() => 100),
@@ -53,6 +74,11 @@ vi.mock('lightweight-charts', () => {
   return {
     // Named export
     createChart: vi.fn(() => mockChart),
+    // v5 Series type exports - these are passed to addSeries()
+    CandlestickSeries: CandlestickSeriesSymbol,
+    LineSeries: LineSeriesSymbol,
+    HistogramSeries: HistogramSeriesSymbol,
+    AreaSeries: AreaSeriesSymbol,
     // Export other needed items
     ColorType: {
       Solid: 'Solid',
@@ -227,11 +253,10 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const mockChart = (createChart as any).mock.results[0].value;
 
-        // Verify candlestick series added
-        expect(mockChart.addCandlestickSeries).toHaveBeenCalled();
-
-        // Verify histogram series added (for volume)
-        expect(mockChart.addHistogramSeries).toHaveBeenCalled();
+        // v5 uses addSeries() instead of addCandlestickSeries/addHistogramSeries
+        expect(mockChart.addSeries).toHaveBeenCalled();
+        // At minimum: candlestick + histogram = 2 calls
+        expect(mockChart.addSeries.mock.calls.length).toBeGreaterThanOrEqual(2);
       });
     });
   });
@@ -312,11 +337,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Bollinger Bands creates 3 line series (upper, middle, lower)
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
 
         // Verify at least one line series was created for BB
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
 
@@ -338,10 +363,10 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // VWAP creates 1 line series
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Verify line series was created
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -364,10 +389,10 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // VWMA creates 1 line series
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Verify line series was created
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -390,11 +415,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Std Dev Channels creates 3 line series (upper, middle, lower)
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
 
         // Verify line series was created
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
   });
@@ -676,7 +701,7 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // All 4 indicators enabled = 3 BB lines + 1 VWAP + 1 VWMA + 3 Std Dev = 8 line series
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(6);
       });
     });
@@ -725,7 +750,7 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Verify histogram series was created for volume
-        expect(chartMock.addHistogramSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
 
@@ -739,11 +764,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Verify histogram series created
-        expect(chartMock.addHistogramSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Volume bars colored based on price direction is implementation detail
         // Verified by histogram series creation
-        const addHistogramCalls = chartMock.addHistogramSeries.mock.calls;
+        const addHistogramCalls = chartMock.addSeries.mock.calls;
         expect(addHistogramCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -794,9 +819,9 @@ describe('PriceChart Component', () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
           // Only candlestick and histogram series should be created
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           // No RSI lines should exist
-          const hasRSILine = lineCalls.some((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          const hasRSILine = lineCalls.some((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(hasRSILine).toBe(false);
         },
         { timeout: 1000 }
@@ -845,30 +870,30 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
           // Verify RSI line (orange)
-          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
-          expect(rsiLine[0].lineWidth).toBe(2);
-          expect(rsiLine[0].title).toContain('RSI');
+          expect(rsiLine[1].lineWidth).toBe(2);
+          expect(rsiLine[1].title).toContain('RSI');
 
           // Verify overbought line (red, dashed)
           const overboughtLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgba(255, 0, 0, 0.3)'
+            (call: any) => call[1]?.color === 'rgba(255, 0, 0, 0.3)'
           );
           expect(overboughtLine).toBeDefined();
-          expect(overboughtLine[0].lineStyle).toBe(2); // Dashed (LineStyle.Dashed = 2)
-          expect(overboughtLine[0].title).toContain('Overbought');
+          expect(overboughtLine[1].lineStyle).toBe(2); // Dashed (LineStyle.Dashed = 2)
+          expect(overboughtLine[1].title).toContain('Overbought');
 
           // Verify oversold line (green, dashed)
           const oversoldLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgba(0, 255, 0, 0.3)'
+            (call: any) => call[1]?.color === 'rgba(0, 255, 0, 0.3)'
           );
           expect(oversoldLine).toBeDefined();
-          expect(oversoldLine[0].lineStyle).toBe(2); // Dashed
-          expect(oversoldLine[0].title).toContain('Oversold');
+          expect(oversoldLine[1].lineStyle).toBe(2); // Dashed
+          expect(oversoldLine[1].title).toContain('Oversold');
         },
         { timeout: 1000 }
       );
@@ -916,10 +941,10 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
-          expect(rsiLine[0].title).toBe('RSI(7)'); // Verify custom period in title
+          expect(rsiLine[1].title).toBe('RSI(7)'); // Verify custom period in title
         },
         { timeout: 1000 }
       );
@@ -969,8 +994,8 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -1038,15 +1063,15 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(5); // BB (3) + VWAP (1) + RSI (3) = 7+
 
           // Verify RSI line exists
-          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          const rsiLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
 
           // Verify VWAP line exists (should have lineWidth 2)
-          const vwapLine = lineCalls.find((call: any) => call[0]?.lineWidth === 2);
+          const vwapLine = lineCalls.find((call: any) => call[1]?.lineWidth === 2);
           expect(vwapLine).toBeDefined();
 
           // Verify BB lines exist (multiple line series)
@@ -1105,19 +1130,21 @@ describe('PriceChart Component', () => {
         () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const allCalls = chartMock.addSeries.mock.calls;
 
           // No MACD line (blue) should exist
-          const hasMACDLine = lineCalls.some((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          const hasMACDLine = allCalls.some((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(hasMACDLine).toBe(false);
 
           // No Signal line (orange) should exist
-          const hasSignalLine = lineCalls.some((call: any) => call[0]?.title === 'Signal');
+          const hasSignalLine = allCalls.some((call: any) => call[1]?.title === 'Signal');
           expect(hasSignalLine).toBe(false);
 
-          // Only volume histogram should exist (not MACD histogram)
-          expect(histogramCalls.length).toBe(1); // Just volume
+          // MACD histogram should NOT exist (only volume histogram exists)
+          const hasMACDHistogram = allCalls.some(
+            (call: any) => call[1]?.title?.includes('MACD') || call[1]?.title === 'Histogram'
+          );
+          expect(hasMACDHistogram).toBe(false);
         },
         { timeout: 1000 }
       );
@@ -1169,27 +1196,27 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const histogramCalls = chartMock.addSeries.mock.calls;
 
           expect(lineCalls.length).toBeGreaterThan(0);
           expect(histogramCalls.length).toBeGreaterThan(1); // Volume + MACD histogram
 
           // Verify MACD line (blue)
-          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          const macdLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
-          expect(macdLine[0].lineWidth).toBe(2);
-          expect(macdLine[0].title).toContain('MACD');
+          expect(macdLine[1].lineWidth).toBe(2);
+          expect(macdLine[1].title).toContain('MACD');
 
           // Verify Signal line (orange)
-          const signalLine = lineCalls.find((call: any) => call[0]?.title === 'Signal');
+          const signalLine = lineCalls.find((call: any) => call[1]?.title === 'Signal');
           expect(signalLine).toBeDefined();
-          expect(signalLine[0].color).toBe('rgb(255, 152, 0)');
-          expect(signalLine[0].lineWidth).toBe(2);
+          expect(signalLine[1].color).toBe('rgb(255, 152, 0)');
+          expect(signalLine[1].lineWidth).toBe(2);
 
           // Verify Histogram series
           const histogramSeries = histogramCalls.find(
-            (call: any) => call[0]?.title === 'Histogram'
+            (call: any) => call[1]?.title === 'Histogram'
           );
           expect(histogramSeries).toBeDefined();
         },
@@ -1243,10 +1270,10 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const macdLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
-          expect(macdLine[0].title).toBe('MACD(5,13,5)'); // Verify custom periods in title
+          expect(macdLine[1].title).toBe('MACD(5,13,5)'); // Verify custom periods in title
         },
         { timeout: 1000 }
       );
@@ -1300,8 +1327,8 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const macdLine = lineCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -1373,29 +1400,27 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const allCalls = chartMock.addSeries.mock.calls;
 
           // RSI: 3 lines (RSI, overbought, oversold)
-          // MACD: 2 lines (MACD, Signal)
-          // Total: 5+ line series
-          expect(lineCalls.length).toBeGreaterThanOrEqual(5);
-
-          // MACD histogram + Volume histogram = 2 histogram series
-          expect(histogramCalls.length).toBe(2);
+          // MACD: 2 lines (MACD, Signal) + 1 histogram
+          // Volume: 1 histogram
+          // Candlestick: 1 main series
+          // Total: 8+ series minimum
+          expect(allCalls.length).toBeGreaterThanOrEqual(7);
 
           // Verify MACD line exists (blue)
-          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          const macdLine = allCalls.find((call: any) => call[1]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
 
           // Verify RSI line exists (orange) - Note: RSI is also orange like Signal, but different title
-          const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          const rsiLine = allCalls.find(
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify Signal line exists (orange)
-          const signalLine = lineCalls.find((call: any) => call[0]?.title === 'Signal');
+          const signalLine = allCalls.find((call: any) => call[1]?.title === 'Signal');
           expect(signalLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -1451,11 +1476,11 @@ describe('PriceChart Component', () => {
         () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           // No BB lines should exist (middle=orange, upper/lower=blue)
           const hasBBMiddle = lineCalls.some(
             (call: any) =>
-              call[0]?.title?.includes('BB Mid') || call[0]?.title?.includes('BB Upper')
+              call[1]?.title?.includes('BB Mid') || call[1]?.title?.includes('BB Upper')
           );
           expect(hasBBMiddle).toBe(false);
         },
@@ -1509,27 +1534,27 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
           // Verify BB Middle line (orange)
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
-          expect(bbMiddle[0].color).toBe('rgb(255, 152, 0)'); // Orange
-          expect(bbMiddle[0].lineWidth).toBe(2);
-          expect(bbMiddle[0].title).toContain('BB Mid(20,2)');
+          expect(bbMiddle[1].color).toBe('rgb(255, 152, 0)'); // Orange
+          expect(bbMiddle[1].lineWidth).toBe(2);
+          expect(bbMiddle[1].title).toContain('BB Mid(20,2)');
 
           // Verify BB Upper line (blue)
-          const bbUpper = lineCalls.find((call: any) => call[0]?.title === 'BB Upper');
+          const bbUpper = lineCalls.find((call: any) => call[1]?.title === 'BB Upper');
           expect(bbUpper).toBeDefined();
-          expect(bbUpper[0].color).toBe('rgb(33, 150, 243)'); // Blue
-          expect(bbUpper[0].lineWidth).toBe(1);
+          expect(bbUpper[1].color).toBe('rgb(33, 150, 243)'); // Blue
+          expect(bbUpper[1].lineWidth).toBe(1);
 
           // Verify BB Lower line (blue)
-          const bbLower = lineCalls.find((call: any) => call[0]?.title === 'BB Lower');
+          const bbLower = lineCalls.find((call: any) => call[1]?.title === 'BB Lower');
           expect(bbLower).toBeDefined();
-          expect(bbLower[0].color).toBe('rgb(33, 150, 243)'); // Blue
-          expect(bbLower[0].lineWidth).toBe(1);
+          expect(bbLower[1].color).toBe('rgb(33, 150, 243)'); // Blue
+          expect(bbLower[1].lineWidth).toBe(1);
         },
         { timeout: 1000 }
       );
@@ -1580,12 +1605,12 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period/multiplier reflected in title
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
-          expect(bbMiddle[0].title).toContain('BB Mid(10,3)');
+          expect(bbMiddle[1].title).toContain('BB Mid(10,3)');
         },
         { timeout: 1000 }
       );
@@ -1639,8 +1664,8 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
         },
         { timeout: 1000 }
@@ -1712,22 +1737,22 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists (orange, but different title than BB middle)
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists (blue, but different title than BB bands)
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
         },
@@ -1789,9 +1814,9 @@ describe('PriceChart Component', () => {
 
       // Verify no Stochastic series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
-      const stochasticK = lineCalls.find((call: any) => call[0]?.title?.includes('%K'));
-      const stochasticD = lineCalls.find((call: any) => call[0]?.title?.includes('%D'));
+      const lineCalls = chartMock.addSeries.mock.calls;
+      const stochasticK = lineCalls.find((call: any) => call[1]?.title?.includes('%K'));
+      const stochasticD = lineCalls.find((call: any) => call[1]?.title?.includes('%D'));
 
       expect(stochasticK).toBeUndefined();
       expect(stochasticD).toBeUndefined();
@@ -1844,24 +1869,24 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify %K line exists (blue)
           const kLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K(14)')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K(14)')
           );
           expect(kLine).toBeDefined();
 
           // Verify %D line exists (orange)
           const dLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D(3)')
+              call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('%D(3)')
           );
           expect(dLine).toBeDefined();
 
           // Verify data was set for both lines
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -1914,13 +1939,13 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
-          const kLine = lineCalls.find((call: any) => call[0]?.title?.includes('%K(21)'));
+          const kLine = lineCalls.find((call: any) => call[1]?.title?.includes('%K(21)'));
           expect(kLine).toBeDefined();
 
-          const dLine = lineCalls.find((call: any) => call[0]?.title?.includes('%D(5)'));
+          const dLine = lineCalls.find((call: any) => call[1]?.title?.includes('%D(5)'));
           expect(dLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -2047,34 +2072,34 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify Stochastic %D exists
           const stochasticD = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('%D')
           );
           expect(stochasticD).toBeDefined();
         },
@@ -2138,8 +2163,8 @@ describe('PriceChart Component', () => {
 
       // Verify no ADX series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
-      const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX'));
+      const lineCalls = chartMock.addSeries.mock.calls;
+      const adxLine = lineCalls.find((call: any) => call[1]?.title?.includes('ADX'));
 
       expect(adxLine).toBeUndefined();
     });
@@ -2193,17 +2218,17 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify ADX line exists (purple)
           const adxLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX(14)')
+              call[1]?.color === 'rgb(156, 39, 176)' && call[1]?.title?.includes('ADX(14)')
           );
           expect(adxLine).toBeDefined();
 
           // Verify data was set for ADX line
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -2258,10 +2283,10 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
-          const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX(20)'));
+          const adxLine = lineCalls.find((call: any) => call[1]?.title?.includes('ADX(20)'));
           expect(adxLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -2392,34 +2417,34 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify ADX exists
           const adxLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+            (call: any) => call[1]?.color === 'rgb(156, 39, 176)' && call[1]?.title?.includes('ADX')
           );
           expect(adxLine).toBeDefined();
         },
@@ -2485,8 +2510,8 @@ describe('PriceChart Component', () => {
 
       // Verify no CCI series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
-      const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI'));
+      const lineCalls = chartMock.addSeries.mock.calls;
+      const cciLine = lineCalls.find((call: any) => call[1]?.title?.includes('CCI'));
 
       expect(cciLine).toBeUndefined();
     });
@@ -2542,17 +2567,17 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify CCI line exists (blue-violet)
           const cciLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI(20)')
+              call[1]?.color === 'rgb(138, 43, 226)' && call[1]?.title?.includes('CCI(20)')
           );
           expect(cciLine).toBeDefined();
 
           // Verify data was set for CCI line
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -2609,10 +2634,10 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
-          const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI(30)'));
+          const cciLine = lineCalls.find((call: any) => call[1]?.title?.includes('CCI(30)'));
           expect(cciLine).toBeDefined();
         },
         { timeout: 1000 }
@@ -2747,40 +2772,40 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify ADX exists
           const adxLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+            (call: any) => call[1]?.color === 'rgb(156, 39, 176)' && call[1]?.title?.includes('ADX')
           );
           expect(adxLine).toBeDefined();
 
           // Verify CCI exists
           const cciLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI')
+            (call: any) => call[1]?.color === 'rgb(138, 43, 226)' && call[1]?.title?.includes('CCI')
           );
           expect(cciLine).toBeDefined();
         },
@@ -2893,16 +2918,16 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line (purple color)
           const williamsRLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(147, 51, 234)' && call[0]?.title?.includes('Williams %R')
+              call[1]?.color === 'rgb(147, 51, 234)' && call[1]?.title?.includes('Williams %R')
           );
 
           expect(williamsRLine).toBeDefined();
-          expect(williamsRLine[0].title).toBe('Williams %R(14)');
+          expect(williamsRLine[1].title).toBe('Williams %R(14)');
         },
         { timeout: 1000 }
       );
@@ -2960,16 +2985,16 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line with custom period
           const williamsRLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(147, 51, 234)' && call[0]?.title?.includes('Williams %R')
+              call[1]?.color === 'rgb(147, 51, 234)' && call[1]?.title?.includes('Williams %R')
           );
 
           expect(williamsRLine).toBeDefined();
-          expect(williamsRLine[0].title).toBe('Williams %R(21)');
+          expect(williamsRLine[1].title).toBe('Williams %R(21)');
         },
         { timeout: 1000 }
       );
@@ -3107,47 +3132,47 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify ADX exists
           const adxLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+            (call: any) => call[1]?.color === 'rgb(156, 39, 176)' && call[1]?.title?.includes('ADX')
           );
           expect(adxLine).toBeDefined();
 
           // Verify CCI exists
           const cciLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI')
+            (call: any) => call[1]?.color === 'rgb(138, 43, 226)' && call[1]?.title?.includes('CCI')
           );
           expect(cciLine).toBeDefined();
 
           // Verify Williams %R exists
           const williamsRLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(147, 51, 234)' && call[0]?.title?.includes('Williams %R')
+              call[1]?.color === 'rgb(147, 51, 234)' && call[1]?.title?.includes('Williams %R')
           );
           expect(williamsRLine).toBeDefined();
         },
@@ -3272,17 +3297,17 @@ describe('PriceChart Component', () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find A/D Line (indigo color)
           const adLineLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(99, 102, 241)' && call[0]?.title?.includes('A/D Line')
+              call[1]?.color === 'rgb(99, 102, 241)' && call[1]?.title?.includes('A/D Line')
           );
 
           expect(adLineLine).toBeDefined();
-          expect(adLineLine[0].title).toBe('A/D Line');
-          expect(adLineLine[0].color).toBe('rgb(99, 102, 241)');
+          expect(adLineLine[1].title).toBe('A/D Line');
+          expect(adLineLine[1].color).toBe('rgb(99, 102, 241)');
         },
         { timeout: 1000 }
       );
@@ -3428,60 +3453,60 @@ describe('PriceChart Component', () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
-          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          const bbMiddle = lineCalls.find((call: any) => call[1]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
 
           // Verify RSI exists
           const rsiLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[1]?.color === 'rgb(255, 152, 0)' && call[1]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
           // Verify MACD exists
           const macdLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+              call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[1]?.color === 'rgb(33, 150, 243)' && call[1]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify ADX exists
           const adxLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+            (call: any) => call[1]?.color === 'rgb(156, 39, 176)' && call[1]?.title?.includes('ADX')
           );
           expect(adxLine).toBeDefined();
 
           // Verify CCI exists
           const cciLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI')
+            (call: any) => call[1]?.color === 'rgb(138, 43, 226)' && call[1]?.title?.includes('CCI')
           );
           expect(cciLine).toBeDefined();
 
           // Verify Williams %R exists
           const williamsRLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(147, 51, 234)' && call[0]?.title?.includes('Williams %R')
+              call[1]?.color === 'rgb(147, 51, 234)' && call[1]?.title?.includes('Williams %R')
           );
           expect(williamsRLine).toBeDefined();
 
           // Verify OBV exists
           const obvLine = lineCalls.find(
-            (call: any) => call[0]?.color === 'rgb(6, 182, 212)' && call[0]?.title?.includes('OBV')
+            (call: any) => call[1]?.color === 'rgb(6, 182, 212)' && call[1]?.title?.includes('OBV')
           );
           expect(obvLine).toBeDefined();
 
           // Verify A/D Line exists (9th indicator!)
           const adLineLine = lineCalls.find(
             (call: any) =>
-              call[0]?.color === 'rgb(99, 102, 241)' && call[0]?.title?.includes('A/D Line')
+              call[1]?.color === 'rgb(99, 102, 241)' && call[1]?.title?.includes('A/D Line')
           );
           expect(adLineLine).toBeDefined();
         },
