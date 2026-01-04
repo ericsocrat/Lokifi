@@ -3,6 +3,7 @@
  * Tests watchlist management, symbol tracking, alerts, and screener functionality
  */
 /* eslint-disable @typescript-eslint/no-unused-vars -- Store tests assign IDs to verify creation side effects */
+/* eslint-disable @typescript-eslint/no-explicit-any -- Edge case tests require any casts for invalid data formats */
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWatchlistStore } from '../../../src/lib/stores/watchlistStore';

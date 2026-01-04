@@ -1,6 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
+/* eslint-disable @typescript-eslint/no-explicit-any -- Test mock for global.fetch requires any cast */
 import { useAutoRefresh, useMarketDataStore } from '@/lib/stores/marketDataStore';
 import type { Candle } from '@/lib/types';
 import { act, renderHook } from '@testing-library/react';
@@ -9,7 +10,7 @@ import { server } from '../../mocks/server';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any; // any required: Test mock type compatibility
+global.fetch = mockFetch as any;
 
 describe('MarketDataStore', () => {
   beforeEach(() => {

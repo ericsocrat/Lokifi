@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Tests require partial mocks for project data structures */
+
 import {
   deleteSlot,
   fnv1a,
