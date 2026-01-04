@@ -74,7 +74,10 @@ export default tseslint.config(
       'import/no-anonymous-default-export': 'off', // Not available without import plugin
 
       // Security rules (from eslint-security.config.mjs)
-      'security/detect-object-injection': 'warn',
+      // Note: detect-object-injection disabled - high false positive rate in typed React code
+      // TypeScript types constrain property access keys, making prototype pollution unlikely
+      // See: https://github.com/eslint-community/eslint-plugin-security/issues/21
+      'security/detect-object-injection': 'off',
       'security/detect-non-literal-regexp': 'warn',
       'security/detect-unsafe-regex': 'error',
       'security/detect-buffer-noassert': 'error',
