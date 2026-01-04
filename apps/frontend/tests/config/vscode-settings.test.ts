@@ -12,8 +12,26 @@ import { describe, expect, it } from 'vitest';
  * - No deprecated settings
  */
 
+// VS Code configuration types
+interface LaunchConfiguration {
+  name: string;
+  type: string;
+  request: string;
+}
+
+interface LaunchConfig {
+  version: string;
+  configurations: LaunchConfiguration[];
+}
+
+interface Keybinding {
+  key: string;
+  command: string;
+  when?: string;
+}
+
 // Helper function to parse JSONC (JSON with comments)
-function parseJSONC(content: string): any {
+function parseJSONC(content: string): unknown {
   // Remove single-line comments
   let cleaned = content.replace(/\/\/.*$/gm, '');
   // Remove multi-line comments
@@ -152,16 +170,16 @@ describe('VS Code Configuration', () => {
     });
 
     it('should have Next.js debug configuration', () => {
-      const launch = parseJSONC(readFileSync(launchPath, 'utf-8'));
+      const launch = parseJSONC(readFileSync(launchPath, 'utf-8')) as LaunchConfig;
 
       expect(launch.version).toBe('0.2.0');
       expect(Array.isArray(launch.configurations)).toBe(true);
 
       const nextConfig = launch.configurations.find(
-        (config: any) => config.name.includes('Frontend') || config.name.includes('Next.js')
+        (config) => config.name.includes('Frontend') || config.name.includes('Next.js')
       );
       expect(nextConfig).toBeDefined();
-      expect(nextConfig.type).toBe('node');
+      expect(nextConfig!.type).toBe('node');
     });
   });
 
@@ -197,14 +215,14 @@ describe('VS Code Configuration', () => {
     });
 
     it('should have frontend-specific keybindings', () => {
-      const bindings = parseJSONC(readFileSync(keybindingsPath, 'utf-8'));
+      const bindings = parseJSONC(readFileSync(keybindingsPath, 'utf-8')) as Keybinding[];
 
       // Should have task and debug shortcuts
-      expect(
-        bindings.some((binding: any) => binding.command === 'workbench.action.tasks.runTask')
-      ).toBe(true);
+      expect(bindings.some((binding) => binding.command === 'workbench.action.tasks.runTask')).toBe(
+        true
+      );
 
-      expect(bindings.some((binding: any) => binding.command === 'vitest.run')).toBe(true);
+      expect(bindings.some((binding) => binding.command === 'vitest.run')).toBe(true);
     });
   });
 

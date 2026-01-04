@@ -2,8 +2,38 @@ import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { describe, expect, it } from 'vitest';
 
+// VS Code configuration types
+interface LaunchConfiguration {
+  name: string;
+  type: string;
+  request: string;
+  runtimeExecutable?: string;
+  runtimeArgs?: string[];
+  program?: string;
+  cwd?: string;
+  console?: string;
+}
+
+interface LaunchConfig {
+  version: string;
+  configurations: LaunchConfiguration[];
+}
+
+interface TaskDefinition {
+  label: string;
+  type: string;
+  command?: string;
+  isBackground?: boolean;
+  options?: Record<string, unknown>;
+}
+
+interface TasksConfig {
+  version: string;
+  tasks: TaskDefinition[];
+}
+
 // Helper function to parse JSONC (JSON with Comments)
-function parseJSONC(content: string): any {
+function parseJSONC(content: string): unknown {
   // Remove single-line comments
   let cleaned = content.replace(/\/\/.*$/gm, '');
   // Remove multi-line comments
@@ -86,27 +116,27 @@ describe('VS Code Workspace Integration', () => {
     it('should have Next.js debug configuration', () => {
       const launchPath = join(vscodeDir, 'launch.json');
       const content = readFileSync(launchPath, 'utf-8');
-      const config = parseJSONC(content);
+      const config = parseJSONC(content) as LaunchConfig;
 
       const nextjsConfig = config.configurations.find(
-        (c: any) => c.name.includes('Frontend') || c.name.includes('Next.js')
+        (c) => c.name.includes('Frontend') || c.name.includes('Next.js')
       );
 
       expect(nextjsConfig).toBeDefined();
-      expect(nextjsConfig.runtimeExecutable).toBe('npm');
-      expect(nextjsConfig.runtimeArgs).toContain('run');
-      expect(nextjsConfig.runtimeArgs).toContain('dev');
+      expect(nextjsConfig!.runtimeExecutable).toBe('npm');
+      expect(nextjsConfig!.runtimeArgs).toContain('run');
+      expect(nextjsConfig!.runtimeArgs).toContain('dev');
     });
 
     it('should have Vitest debug configuration', () => {
       const launchPath = join(vscodeDir, 'launch.json');
       const content = readFileSync(launchPath, 'utf-8');
-      const config = parseJSONC(content);
+      const config = parseJSONC(content) as LaunchConfig;
 
-      const vitestConfig = config.configurations.find((c: any) => c.name.includes('Vitest'));
+      const vitestConfig = config.configurations.find((c) => c.name.includes('Vitest'));
 
       expect(vitestConfig).toBeDefined();
-      expect(vitestConfig.program).toContain('vitest');
+      expect(vitestConfig!.program).toContain('vitest');
     });
   });
 
@@ -151,7 +181,7 @@ describe('VS Code Workspace Integration', () => {
     it('should have valid tasks.json', () => {
       const tasksPath = join(vscodeDir, 'tasks.json');
       const content = readFileSync(tasksPath, 'utf-8');
-      const config = parseJSONC(content);
+      const config = parseJSONC(content) as TasksConfig;
 
       expect(config.version).toBe('2.0.0');
       expect(config.tasks).toBeDefined();
@@ -161,13 +191,13 @@ describe('VS Code Workspace Integration', () => {
     it('should have frontend development task', () => {
       const tasksPath = join(vscodeDir, 'tasks.json');
       const content = readFileSync(tasksPath, 'utf-8');
-      const config = parseJSONC(content);
+      const config = parseJSONC(content) as TasksConfig;
 
-      const frontendTask = config.tasks.find((t: any) => t.label.includes('Frontend'));
+      const frontendTask = config.tasks.find((t) => t.label.includes('Frontend'));
 
       expect(frontendTask).toBeDefined();
-      expect(frontendTask.type).toBe('shell');
-      expect(frontendTask.isBackground).toBe(true);
+      expect(frontendTask!.type).toBe('shell');
+      expect(frontendTask!.isBackground).toBe(true);
     });
   });
 });

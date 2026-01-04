@@ -152,7 +152,7 @@ describe('Security: Authentication', () => {
         );
 
       const responses = await Promise.all(attempts);
-      const rateLimited = responses.filter((r: any) => r.status === 429);
+      const rateLimited = responses.filter((r) => r.status === 429);
 
       // Should get rate limited (429) for at least some requests
       if (rateLimited.length > 0) {
@@ -168,7 +168,7 @@ describe('Security: Authentication', () => {
         .map(() => fetch(`${API_URL}/api/health`));
 
       const responses = await Promise.all(requests);
-      const statuses = responses.map((r: any) => r.status);
+      const statuses = responses.map((r) => r.status);
 
       // Check if any rate limiting occurred
       const hasRateLimit = statuses.includes(429);

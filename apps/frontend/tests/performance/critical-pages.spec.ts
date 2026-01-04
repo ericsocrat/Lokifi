@@ -146,6 +146,14 @@ test.describe('Performance - Critical Pages', () => {
   });
 });
 
+// Resource entry type for performance entries
+interface ResourceEntry {
+  name: string;
+  transferSize: number;
+  duration: number;
+  size?: number;
+}
+
 test.describe('Performance - Resource Loading', () => {
   test('No excessive JavaScript bundle size', async ({ page }) => {
     await page.goto('/markets', { waitUntil: 'networkidle' });
@@ -153,23 +161,23 @@ test.describe('Performance - Resource Loading', () => {
     const resources = await page.evaluate(() => {
       return performance
         .getEntriesByType('resource')
-        .filter((r: any) => r.name.endsWith('.js'))
-        .map((r: any) => ({
+        .filter((r) => r.name.endsWith('.js'))
+        .map((r) => ({
           name: r.name,
-          size: r.transferSize,
+          size: (r as PerformanceResourceTiming).transferSize,
           duration: r.duration,
         }));
     });
 
     // Check that no single JS file is excessively large (>500KB)
-    const largeFiles = resources.filter((r: any) => r.size > 500 * 1024);
+    const largeFiles = resources.filter((r) => r.size > 500 * 1024);
 
     if (largeFiles.length > 0) {
       console.warn('⚠️ Large JavaScript files detected:', largeFiles);
     }
 
     // Total JS should be under 2MB
-    const totalJsSize = resources.reduce((sum: number, r: any) => sum + r.size, 0);
+    const totalJsSize = resources.reduce((sum, r) => sum + r.size, 0);
     expect(totalJsSize).toBeLessThan(2 * 1024 * 1024);
   });
 

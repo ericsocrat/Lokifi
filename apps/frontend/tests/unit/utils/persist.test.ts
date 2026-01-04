@@ -1,5 +1,5 @@
-import type { PersistSnapshot } from '@/lib/utils/persist';
 import type { Drawing } from '@/lib/utils/drawings';
+import type { PersistSnapshot } from '@/lib/utils/persist';
 import { listVersions, loadCurrent, saveCurrent, saveVersion } from '@/lib/utils/persist';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -354,4 +354,3 @@ describe('Persist Module', () => {
     });
   });
 });
-

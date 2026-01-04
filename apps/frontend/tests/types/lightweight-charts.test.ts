@@ -119,7 +119,7 @@ describe('Lightweight Charts Type Definitions', () => {
         'belowBar',
         'inBar',
       ];
-      positions.forEach((position: any) => {
+      positions.forEach((position) => {
         const marker: SeriesMarker = {
           time: 1609459200,
           position,
