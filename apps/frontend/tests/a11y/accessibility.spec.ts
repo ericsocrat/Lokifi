@@ -1,5 +1,6 @@
 /* eslint-disable no-console -- Test reporting uses console for accessibility audit output */
 
+import type { Result } from 'axe-core';
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
@@ -46,7 +47,7 @@ test.describe('Accessibility Tests', () => {
     const totalInputs = inputs.length;
 
     for (const input of inputs) {
-      const hasLabel = await input.evaluate((el: any) => {
+      const hasLabel = await input.evaluate((el: HTMLInputElement) => {
         const id = el.id;
         if (id) {
           const label = document.querySelector(`label[for="${id}"]`);
@@ -84,7 +85,7 @@ test.describe('Accessibility Tests', () => {
     let totalEnabled = 0;
 
     for (const button of buttons) {
-      const isDisabled = await button.evaluate((el: any) => {
+      const isDisabled = await button.evaluate((el: HTMLButtonElement) => {
         return el.hasAttribute('disabled') || el.getAttribute('aria-disabled') === 'true';
       });
 
@@ -92,7 +93,9 @@ test.describe('Accessibility Tests', () => {
         totalEnabled++;
         try {
           await button.focus({ timeout: 1000 });
-          const isFocused = await button.evaluate((el: any) => el === document.activeElement);
+          const isFocused = await button.evaluate(
+            (el: HTMLButtonElement) => el === document.activeElement
+          );
           if (isFocused) {
             accessibleCount++;
           }
@@ -114,7 +117,7 @@ test.describe('Accessibility Tests', () => {
     expect(await firstFocused.count()).toBeGreaterThan(0);
 
     // Check focus visible indicator
-    const outline = await firstFocused.evaluate((el: any) => {
+    const outline = await firstFocused.evaluate((el: Element) => {
       const styles = window.getComputedStyle(el);
       return styles.outline !== 'none' || styles.boxShadow !== 'none';
     });
@@ -136,7 +139,7 @@ test.describe('Accessibility Tests', () => {
     const contrastResults = await new AxeBuilder({ page }).withTags(['wcag2aa']).analyze();
 
     const contrastViolations = contrastResults.violations.filter(
-      (v: any) => v.id === 'color-contrast'
+      (v: Result) => v.id === 'color-contrast'
     );
 
     // Log violations for debugging
@@ -155,7 +158,7 @@ test.describe('Accessibility Tests', () => {
       .analyze();
 
     const nameViolations = results.violations.filter(
-      (v: any) => v.id === 'button-name' || v.id === 'link-name' || v.id === 'label'
+      (v: Result) => v.id === 'button-name' || v.id === 'link-name' || v.id === 'label'
     );
 
     expect(nameViolations).toEqual([]);
@@ -212,7 +215,7 @@ test.describe('Accessibility Tests', () => {
 
       // Check if focus stays within modal
       const isInModal = await newFocusedElement
-        .evaluate((el: any) => {
+        .evaluate((el: Element) => {
           return el.closest('[role="dialog"], [role="alertdialog"], [data-modal]') !== null;
         })
         .catch(() => false);
@@ -232,7 +235,7 @@ test.describe('Accessibility Tests', () => {
   test('ARIA attributes are used correctly', async ({ page }) => {
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
 
-    const ariaViolations = results.violations.filter((v: any) => v.id.startsWith('aria-'));
+    const ariaViolations = results.violations.filter((v: Result) => v.id.startsWith('aria-'));
 
     expect(ariaViolations).toEqual([]);
   });
@@ -261,7 +264,7 @@ test.describe('Accessibility Tests', () => {
     const canvas = page.locator('canvas').first();
 
     if ((await canvas.count()) > 0) {
-      const hasAriaLabel = await canvas.evaluate((el: any) => {
+      const hasAriaLabel = await canvas.evaluate((el: HTMLCanvasElement) => {
         return (
           el.hasAttribute('aria-label') ||
           el.hasAttribute('aria-labelledby') ||
