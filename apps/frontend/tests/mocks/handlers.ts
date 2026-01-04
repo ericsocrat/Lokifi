@@ -63,16 +63,16 @@ export const handlers = [
     }
 
     // Try to parse body, catch errors for malformed/oversized payloads
-    let body: any;
+    let body: Record<string, unknown>;
     try {
-      body = await request.json();
+      body = await request.json() as Record<string, unknown>;
     } catch (_error) {
       return HttpResponse.json({ detail: 'Invalid or oversized request body' }, { status: 400 });
     }
 
-    const email = body?.email || '';
-    const username = body?.username || '';
-    const _password = body?.password || ''; // Password is validated but not returned in response
+    const email = typeof body?.email === 'string' ? body.email : '';
+    const username = typeof body?.username === 'string' ? body.username : '';
+    const _password = typeof body?.password === 'string' ? body.password : ''; // Password is validated but not returned in response
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

@@ -20,11 +20,13 @@ describe('wireLightweightChartsMappings', () => {
 
   describe('basic functionality', () => {
     it('returns early if chart is null', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing null chart with minimal series
       wireLightweightChartsMappings(null, {} as any);
       expect(mockSetMappers).not.toHaveBeenCalled();
     });
 
     it('returns early if series is null', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing null series with minimal chart
       wireLightweightChartsMappings({} as any, null);
       expect(mockSetMappers).not.toHaveBeenCalled();
     });

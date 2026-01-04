@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Test-specific any usage is intentional:
+ * - Partial ShareSnapshot mocks for edge case testing
+ * - Window interface extensions for toast mocking
+ */
 import ShareBar from '@/components/ShareBar';
 import * as collabApi from '@/lib/api/collab';
 import * as pdfUtils from '@/lib/utils/pdf';

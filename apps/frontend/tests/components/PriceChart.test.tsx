@@ -1,3 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * Test-specific any usage is intentional:
+ * - Mock call array searching with (call: any) in .find()/.some()/.filter()
+ * - Mock chart/series objects with partial implementations
+ * - Adapter instance and listener type flexibility
+ * These patterns are necessary for testing lightweight-charts integration.
+ */
 import { render, waitFor } from '@testing-library/react';
 import { createChart } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -24,7 +32,6 @@ vi.mock('lightweight-charts', () => {
   const HistogramSeriesSymbol = Symbol('HistogramSeries');
   const AreaSeriesSymbol = Symbol('AreaSeries');
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock object built incrementally
   const mockChart: any = {}; // Define early so series can reference it
 
   // Series need to have a chart() method that returns the chart instance

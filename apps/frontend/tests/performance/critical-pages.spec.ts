@@ -1,5 +1,12 @@
 import { expect, test } from '@playwright/test';
 
+// Extend Window interface for performance test monitoring
+declare global {
+  interface Window {
+    performanceData?: PerformanceEntry[];
+  }
+}
+
 /**
  * Frontend Performance Tests
  *
@@ -26,9 +33,9 @@ test.describe('Performance - Critical Pages', () => {
   test.beforeEach(async ({ page }) => {
     // Enable performance monitoring
     await page.addInitScript(() => {
-      (window as any).performanceData = [];
+      window.performanceData = [];
       const observer = new PerformanceObserver((list) => {
-        (window as any).performanceData.push(...list.getEntries());
+        window.performanceData?.push(...list.getEntries());
       });
       observer.observe({ entryTypes: ['navigation', 'paint'] });
     });
@@ -147,7 +154,7 @@ test.describe('Performance - Critical Pages', () => {
 });
 
 // Resource entry type for performance entries
-interface ResourceEntry {
+interface _ResourceEntry {
   name: string;
   transferSize: number;
   duration: number;

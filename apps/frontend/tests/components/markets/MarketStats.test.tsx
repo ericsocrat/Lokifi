@@ -270,6 +270,7 @@ describe('MarketStats', () => {
         { symbol: 'ETH', price_change_percentage_24h: undefined },
         { symbol: 'ADA', price_change_percentage_24h: 5.0 },
       ];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing null/undefined edge cases
       render(<MarketStats data={{ crypto: assetsWithNulls as any }} />);
 
       // +5.00% appears in both average change and top gainer/loser cards

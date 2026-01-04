@@ -524,6 +524,7 @@ describe('Feature Flag Integration', () => {
     const { result } = renderHook(() => useTemplatesStore());
     
     await act(async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing with incomplete config
       const id = await result.current.createTemplate('Should Not Create', {} as any);
       expect(id).toBe('');
       expect(result.current.templates).toHaveLength(0);

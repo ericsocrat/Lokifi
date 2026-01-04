@@ -136,13 +136,14 @@ describe('SelectionToolbar', () => {
 
   describe('Edge Cases', () => {
     it('should handle null store gracefully', () => {
-      (useChartStore as any).mockReturnValue(null);
+      vi.mocked(useChartStore).mockReturnValue(null);
       const { container } = render(<SelectionToolbar />);
       expect(container.firstChild).toBeNull();
     });
 
     it('should handle store without selection property', () => {
-      (useChartStore as any).mockReturnValue({ alignSelected: vi.fn() });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing incomplete store state
+      vi.mocked(useChartStore).mockReturnValue({ alignSelected: vi.fn() } as any);
       const { container } = render(<SelectionToolbar />);
       expect(container.firstChild).toBeNull();
     });
