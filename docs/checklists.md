@@ -35,35 +35,43 @@
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
 
-### 🎉 Session 115 (continued): Test Stability + Renovate PRs
+### 🎉 Session 115 (continued): Renovate PRs Complete + Manual Rebase
 
-**Status:** ✅ **COMPLETE** - Robust mock pattern, package-lock.json updated, rebases requested
+**Status:** ✅ **COMPLETE** - All 3 Renovate PRs merged (manual rebase workflow)
 
-**Objective**: Fix remaining flaky test issues in CI, manage Renovate PRs
+**Objective**: Merge remaining Renovate PRs, handle flaky test issues
 
 **Achievements**:
-1. **Flaky Test Permanently Fixed** (`test_uses_alpha_vantage_primary`):
-   - Previous fix only patched settings object, not attribute
-   - Root cause: `settings.ALPHAVANTAGE_KEY` check was evaluated before mock applied
-   - Fix: Changed to `patch("app.services.indices_service.settings.ALPHAVANTAGE_KEY", "test-key")`
-   - Added `mock_av.assert_called_once_with(5)` to verify behavior
-   - Commit: `a6b5ee28`
+1. **Flaky Test Previously Fixed** (`test_uses_alpha_vantage_primary`):
+   - Commit `a6b5ee28` fixed with robust mock pattern
+   - Patched `settings.ALPHAVANTAGE_KEY` attribute directly
 
-2. **package-lock.json Updated**:
-   - Updated peer dependency annotations for vitest packages
-   - Routine update after PR merges
-   - Commit: `a433c106`
+2. **All 3 Renovate PRs Merged Successfully**:
+   - ✅ **PR #123 (certifi v2026)**: Manually rebased and merged
+   - ✅ **PR #119 (Security patches)**: 6 backend deps updated (pydantic, sqlalchemy, pillow, etc.)
+   - ✅ **PR #116 (GitHub Actions major)**: Major version updates:
+     - actions/setup-node v5→v6
+     - actions/setup-python v5→v6
+     - actions/upload-artifact v4→v6
+     - github/codeql-action v3→v4
+     - slackapi/slack-github-action v1→v2
 
-3. **Renovate Rebase Requests**:
-   - Posted `@renovate rebase` on PRs #116, #119, #123
-   - Waiting for Renovate to pick up test fix (commit `a6b5ee28`)
-   - PRs will pass once rebased with fixed test
+3. **Manual Rebase Workflow Used**:
+   - Renovate wasn't responding to `@renovate rebase` requests
+   - Manually checked out branches, rebased onto main, force-pushed
+   - All CI checks passed after fresh rebase
 
-**Commits** (2 to main):
-| Commit | Description |
-|--------|-------------|
-| `a6b5ee28` | fix(tests): robust Alpha Vantage mock in test_indices_service |
-| `a433c106` | chore(deps): update package-lock.json after npm install |
+4. **Known Flaky Test Identified**:
+   - `configurationSyncStore.test.ts > resolveDrift > should resolve detected drift`
+   - Times out at 35s - intermittent CI issue on GitHub runners
+   - Not blocking (passed on retry after rebase)
+
+**Commits** (final main state: `16bc7373`):
+| PR | Description | Status |
+|----|-------------|--------|
+| #123 | certifi v2026 | ✅ Merged |
+| #119 | Security patches (backend) | ✅ Merged |
+| #116 | GitHub Actions major updates | ✅ Merged |
 
 ### Session 115: Visual Baselines + Dependency Cleanup - COMPLETE
 
@@ -92,14 +100,12 @@
    - Fix: Added `patch("app.services.indices_service.settings")` with `mock_settings.ALPHAVANTAGE_KEY = "test-key"`
    - Commit: `91f9d725`
 
-4. **Renovate PRs Merged**:
+4. **Renovate PRs Merged** (All complete):
    - ✅ **PR #114 (TypeScript Types)**: @types/react v19, @types/react-dom v19, @types/node v24
    - ✅ **PR #121 (Pillow)**: 12.0.0 → 12.1.0 (minor update)
-
-5. **Pending Renovate PRs** (awaiting rebase):
-   - ⏳ **PR #116 (GitHub Actions Major)**: checkout v6, setup-node v6, PostgreSQL 18, Redis 8, slack-github-action v2
-   - ⏳ **PR #119 (Security Patches)**: Backend security updates
-   - ⏳ **PR #123 (certifi)**: certifi v2026 update
+   - ✅ **PR #123 (certifi)**: certifi v2026 update
+   - ✅ **PR #119 (Security Patches)**: Backend security updates
+   - ✅ **PR #116 (GitHub Actions Major)**: setup-node v6, setup-python v6, codeql-action v4, etc.
 
 **Commits** (5 to main):
 | Commit | Description |
@@ -114,6 +120,7 @@
 **Patterns Discovered**:
 - **Visual Baseline Pattern**: Branch protection requires PR workflow, not direct push
 - **Flaky Test Pattern**: External service tests need all settings mocked (not just httpx)
+- **Manual Rebase Pattern**: When Renovate doesn't respond, manually checkout/rebase/force-push
 
 ---
 
