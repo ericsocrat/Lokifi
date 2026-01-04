@@ -243,11 +243,11 @@ jobs:
 
       - name: 💾 Commit updated snapshots
         if: github.event.inputs.update_snapshots == 'true'
+        working-directory: .
         run: |
-          cd apps/frontend
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add tests/visual-baselines/
+          git add apps/frontend/tests/visual-baselines/
           if git diff --staged --quiet; then
             echo "✅ No snapshot changes detected"
           else
