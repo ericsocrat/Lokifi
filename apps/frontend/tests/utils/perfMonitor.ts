@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Performance monitor uses console for timing output */
+
 /**
  * Performance Monitoring Utilities for Tests
  *

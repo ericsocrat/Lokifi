@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Visual tests log render details for debugging */
+
 import { expect, test } from '@playwright/test';
 
 test.describe('Visual Regression Tests', () => {

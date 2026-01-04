@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Store tests log state changes for debugging */
+
 import type { Alert, AlertAction, AlertBacktest, AlertExecution } from '@/lib/stores/alertsStore';
 import { useAlertsStore } from '@/lib/stores/alertsStore';
 import * as featureFlags from '@/lib/stores/featureFlags';

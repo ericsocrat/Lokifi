@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Contract tests log protocol details for debugging */
+
 import { afterAll, describe, expect, it } from 'vitest';
 
 const WS_URL = process.env.WS_URL || 'ws://localhost:8000/ws';

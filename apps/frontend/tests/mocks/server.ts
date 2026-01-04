@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Mock server logs request handling for debugging */
+
 /**
  * MSW Server Setup for Node.js (Test Environment)
  *

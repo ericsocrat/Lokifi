@@ -1,3 +1,5 @@
+/* eslint-disable no-console -- Security tests log validation results for debugging */
+
 import { describe, expect, it } from 'vitest';
 
 const API_URL = process.env.API_URL || 'http://localhost:8000';
