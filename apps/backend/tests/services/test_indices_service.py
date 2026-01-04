@@ -86,17 +86,18 @@ class TestProviderCascade:
 
         service = IndicesService(redis_client=mock_redis)
 
-        # Mock settings to ensure Alpha Vantage path is taken
+        # Mock settings BEFORE creating service context - patch the settings object
+        # attribute directly since it's already imported in the module
         with (
-            patch("app.services.indices_service.settings") as mock_settings,
+            patch("app.services.indices_service.settings.ALPHAVANTAGE_KEY", "test-key"),
             patch.object(
                 service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
             ) as mock_av,
         ):
-            mock_settings.ALPHAVANTAGE_KEY = "test-key"
             mock_av.return_value = [{"provider": "alpha_vantage"}]
             result = await service.get_indices(limit=5)
             assert result[0]["provider"] == "alpha_vantage"
+            mock_av.assert_called_once_with(5)  # Verify it was actually called
 
     @pytest.mark.asyncio
     async def test_fallback_to_yahoo_when_av_fails(self):
