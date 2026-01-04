@@ -24,11 +24,9 @@ RUN npm run build
 FROM node:24-alpine AS prod
 WORKDIR /app
 
-# Next.js 16+ with monorepo outputFileTracingRoot creates nested structure:
-# .next/standalone/apps/frontend/server.js (not .next/standalone/server.js)
-# Copy the nested structure correctly
-COPY --from=build /app/.next/standalone/apps/frontend ./
-COPY --from=build /app/.next/standalone/node_modules ./node_modules
+# Next.js 16 standalone output with DOCKER_BUILD=true creates flat structure:
+# .next/standalone/server.js (because outputFileTracingRoot = __dirname in Docker)
+COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/public ./public
 

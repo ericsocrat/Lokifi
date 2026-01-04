@@ -23,7 +23,7 @@ const nextConfig = {
   // This resolves "Next.js inferred your workspace root, but it may not be correct" error
   // Note: outputFileTracingRoot and turbopack.root must have the same value
   turbopack: {
-    root: path.resolve(__dirname, '../..'), // Points to lokifi/ (monorepo root)
+    root: process.env.DOCKER_BUILD ? __dirname : path.resolve(__dirname, '../..'),
   },
 
   // Force ESM handling for lightweight-charts v5 (ESM-only package)
@@ -33,10 +33,11 @@ const nextConfig = {
     forceSwcTransforms: false,
   },
 
-  // Monorepo output tracing - Next.js 16 creates nested standalone structure:
-  // .next/standalone/apps/frontend/server.js (preserves monorepo path)
-  // Dockerfile.ci is configured to handle this nested structure
-  outputFileTracingRoot: path.resolve(__dirname, '../..'),
+  // Standalone output configuration:
+  // - In Docker: Use __dirname (single app context, flat structure)
+  // - In monorepo: Use '../..' (full monorepo context, nested structure)
+  // Dockerfile.ci expects flat structure (.next/standalone/server.js)
+  outputFileTracingRoot: process.env.DOCKER_BUILD ? __dirname : path.resolve(__dirname, '../..'),
   output: 'standalone',
 
   // Security headers
