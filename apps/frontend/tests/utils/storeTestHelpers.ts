@@ -41,7 +41,7 @@ export function createMockStore<T extends object>(initialState: T) {
  */
 export function resetStore<T extends object>(store: UseBoundStore<StoreApi<T>>, initialState: T) {
   act(() => {
-    store.setState(initialState as any, true); // true = replace entire state
+    store.setState(initialState, true); // true = replace entire state
   });
 }
 
@@ -204,7 +204,7 @@ export function assertStoreState<T extends object>(
   const actual = store.getState();
 
   Object.entries(expected).forEach(([key, value]) => {
-    const actualValue = (actual as any)[key];
+    const actualValue = actual[key as keyof T];
 
     if (JSON.stringify(actualValue) !== JSON.stringify(value)) {
       throw new Error(

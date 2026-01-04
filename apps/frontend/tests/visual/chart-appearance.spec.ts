@@ -1,5 +1,6 @@
 /* eslint-disable no-console -- Visual tests log render details for debugging */
 
+import type { Route } from '@playwright/test';
 import { expect, test } from '@playwright/test';
 
 test.describe('Visual Regression Tests', () => {
@@ -123,7 +124,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('Loading state renders consistently', async ({ page }) => {
     // Intercept API calls to slow them down
-    await page.route('**/api/ohlc/**', async (route: any) => {
+    await page.route('**/api/ohlc/**', async (route: Route) => {
       await page.waitForTimeout(2000);
       await route.continue();
     });
@@ -140,7 +141,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('Error state renders consistently', async ({ page }) => {
     // Intercept API calls to return error
-    await page.route('**/api/ohlc/**', async (route: any) => {
+    await page.route('**/api/ohlc/**', async (route: Route) => {
       await route.abort('failed');
     });
 
