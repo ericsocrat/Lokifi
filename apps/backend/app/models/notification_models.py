@@ -296,8 +296,7 @@ class NotificationPreference(Base):
         self, notification_type: str, channel: str, enabled: bool
     ) -> None:
         """Set preference for specific notification type and channel"""
-        if self.type_preferences is None:
-            self.type_preferences = {}
+        # type_preferences always exists (default=dict in mapping)
         self.type_preferences[f"{notification_type}_{channel}"] = enabled
 
     def is_in_quiet_hours(self, check_time: datetime | None = None) -> bool:

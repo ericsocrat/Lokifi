@@ -232,7 +232,10 @@ class AlertEvaluator:
             }
 
         else:
-            return False, {"reason": "unknown_type"}
+            # Defensive runtime safety for invalid types (e.g., from corrupt data)
+            # This branch is statically unreachable due to AlertType being a Literal,
+            # but we keep it for runtime robustness against data corruption.
+            return False, {"reason": "unknown_type"}  # type: ignore[unreachable]
 
 
 # Singleton-like module state

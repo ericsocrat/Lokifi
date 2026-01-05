@@ -271,7 +271,7 @@ class PerformanceAnalyzer:
         else:
             return "stable"
 
-    async def analyze_metrics(self, metrics: dict[str, Any]):
+    async def analyze_metrics(self, metrics: dict[str, Any] | SystemMetrics) -> None:
         """Analyze metrics data"""
         # Convert dict to SystemMetrics if needed
         if isinstance(metrics, dict):

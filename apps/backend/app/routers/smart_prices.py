@@ -195,10 +195,6 @@ async def get_all_assets(
             # Type narrowing: cached_data is already validated as dict from Redis
             data = cached_data if isinstance(cached_data, dict) else {}
 
-        # Ensure data is not None
-        if data is None:
-            data = {}
-
         # Calculate total count
         total_count = sum(len(assets) for assets in data.values())
 
