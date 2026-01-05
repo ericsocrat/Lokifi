@@ -27,7 +27,7 @@
 **Status:** 🎉 **SPRINT 11 IN PROGRESS**
 
 **Current Session:**
-- 🔄 **Session 120** - MyPy campaign COMPLETE (125→0 errors, 100% elimination)
+- 🔄 **Session 120** - MyPy campaign COMPLETE + Vitest v4.0 migration prep
 
 **Previous Sessions:**
 - ✅ **Session 119 COMPLETE** - ESLint any elimination FINALE (342 → 34 warnings, 97% campaign total)
@@ -42,11 +42,11 @@
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
 
-### 🎉 Session 120: MyPy Campaign + Flaky Test Fix
+### 🎉 Session 120: MyPy Campaign + Vitest v4.0 Migration Prep
 
-**Status:** ✅ **COMPLETE** - MyPy 125 → 0 errors + CI flaky test fixed
+**Status:** ✅ **COMPLETE** - MyPy 125 → 0 errors + Vitest deprecations fixed
 
-**Objective**: Complete backend type safety with MyPy error elimination, fix CI flakiness
+**Objective**: Complete backend type safety with MyPy error elimination, prepare for Vitest 4.0
 
 **MyPy Results**:
 | Session | Start | End | Reduction |
@@ -57,17 +57,34 @@
 | **Total** | **125** | **0** | **-125 (100%)** |
 
 **Session 120 Achievements**:
-1. **4 commits, 12 files modified**
+1. **5 commits, 17 files modified**
 2. **MyPy Fixes**: redis_client.py, advanced_redis_client.py, crypto_data_service.py, enhanced_startup.py, multimodal_ai_service.py, test_smoke.py, load_tester.py
 3. **Flaky Test Fix**: environmentManagementStore.test.ts timeout 20s → 25s
-4. **Pattern Documented**: [Flaky Timeout Pattern](../architecture/patterns/testing/flaky-timeout-pattern.md)
-5. **Renovate PR #127 Merged**: hypothesis v6.148.12
-6. **CI Issue #128 Closed**: Flaky test root cause identified and fixed
+4. **Vitest v4.0 Migration**: 19 test timeouts migrated from deprecated 3rd argument to object syntax
+5. **Pattern Documented**: [Flaky Timeout Pattern](../architecture/patterns/testing/flaky-timeout-pattern.md)
+6. **Renovate PR #127 Merged**: hypothesis v6.148.12
+7. **CI Issue #128 Closed**: Flaky test root cause identified and fixed
+
+**Vitest Timeout Migration** (Commit 12c60a9c):
+- environmentManagementStore.test.ts: 4 tests
+- configurationSyncStore.test.ts: 3 tests
+- auth-security.test.ts: 2 tests
+- input-validation.test.ts: 2 tests
+- websocket.contract.test.ts: 8 tests
+
+```typescript
+// Old syntax (deprecated in Vitest 4.0):
+it('test', async () => {...}, 10000);
+
+// New syntax:
+it('test', { timeout: 10000 }, async () => {...});
+```
 
 **Key Patterns Documented**:
 - Redis async client returns `Awaitable[T] | T` - requires `# type: ignore[misc]`
 - Use `SettingsConfigDict` (not `ConfigDict`) for `pydantic-settings` BaseSettings
 - **Flaky Timeout Pattern**: Calculate worst-case timing for random delays
+- **Vitest Timeout Migration**: Use object syntax for test-level timeouts
 
 **Backend Status**:
 - MyPy: **0 errors** ✅

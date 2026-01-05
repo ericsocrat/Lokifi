@@ -7,7 +7,7 @@
 ## 📖 Quick Navigation
 
 ### By Category
-- **[Testing Patterns](./testing/)** - Unit, integration, mocking, coverage (Sessions 30, 62, 63, 66, 77-89)
+- **[Testing Patterns](./testing/)** - Unit, integration, mocking, coverage (Sessions 30, 62, 63, 66, 77-89, 120)
 - **[CI/CD Patterns](./ci-cd/)** - Workflow optimization, debugging, health checks (Sessions 8-12, 33)
 - **[Code Quality Patterns](./code-quality/)** - TypeScript, Python, linting, refactoring (Sessions 42-59)
 - **[Dependency Management](./dependencies/)** - Conflict resolution, Renovate, security patches (Sessions 29-30)
@@ -46,6 +46,7 @@
 | [Test Fixture Design](./testing/fixture-design.md) | 🟢 Beginner | 100% (6/6) | ✅ DRY tests | 30, 62, 63, 66 |
 | [Transaction Order Tracking](./testing/transaction-order-tracking.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Transaction safety | ConversationService Gap 1 |
 | [vi.mocked() Pattern](./testing/vi-mocked-pattern.md) | 🟢 Beginner | 100% | 🎯 200+ fixes | 117, 118, 119 |
+| [Vitest Timeout Migration](./testing/vitest-timeout-migration-pattern.md) | 🟢 Beginner | 100% | ✅ Vitest 4.0 ready | 120 | ⭐ **NEW**
 | [Window Interface Extension](./testing/window-interface-extension.md) | 🟢 Beginner | 100% | ✅ Type-safe globals | 117, 118, 119 |
 
 ### CI/CD Patterns
