@@ -188,7 +188,7 @@ export default tseslint.config(
 
   // Test files - more lenient rules
   {
-    files: ['tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}'],
+    files: ['tests/**/*.{ts,tsx}', '**/*.test.{ts,tsx}', 'tools/**/*.{js,ts}'],
     rules: {
       // Allow common test patterns that would fail strict linting
       '@typescript-eslint/no-non-null-asserted-optional-chain': 'warn',
@@ -196,6 +196,8 @@ export default tseslint.config(
       'security/detect-unsafe-regex': 'warn',
       '@next/next/no-assign-module-variable': 'off', // Test mocks may assign module
       'no-useless-escape': 'warn',
+      // Tests and tools legitimately need dynamic file paths for fixtures/data
+      'security/detect-non-literal-fs-filename': 'off',
     },
   }
 );
