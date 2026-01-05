@@ -22,6 +22,7 @@ select = [
   "C4",   # flake8-comprehensions (better comprehensions)
   "SIM",  # flake8-simplify (code simplification)
   "PTH",  # flake8-use-pathlib (prefer pathlib)
+  "LOG",  # flake8-logging (logging best practices)
 ]
 ignore = [
   "E203",   # Whitespace before ':'

@@ -81,6 +81,7 @@
 7. **ALL CodeQL Alerts Resolved**: 0 open alerts (26 dismissed as FPs, 4 fixed)
 8. **FastAPI Deprecation Fix**: Migrated @router.on_event to main.py lifespan context manager
 9. **Unused Import Cleanup**: Removed 57 unused imports across 28 backend files (8 source, 20 test files)
+10. **Root Logger Fix (LOG015)**: Replaced 18 logging.error() calls with named loggers in j6_2_endpoints.py and crypto.py
 
 **Commits**:
 - `26ffdda7` - feat(security): add CodeQL custom configuration for Lokifi
@@ -93,6 +94,7 @@
 - `11ab8f0b` - refactor(backend): migrate @router.on_event to lifespan
 - `ff17c0aa` - fix(backend): remove unused evaluator import from alerts.py
 - `19afa73e` - refactor(backend): remove 57 unused imports
+- `fc7421c4` - refactor(backend): use named loggers instead of root logger (LOG015)
 
 **CodeQL Alert Status**: ✅ **ALL RESOLVED**
 - 0 open alerts
