@@ -27,7 +27,7 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- ✅ **Session 122 COMPLETE** - CodeQL ALL RESOLVED (0 open alerts) + Python code quality
+- ✅ **Session 122 COMPLETE** - CodeQL ALL RESOLVED + FastAPI deprecation fix
 
 **Previous Sessions:**
 - ✅ **Session 121 COMPLETE** - Dependency cleanup + Renovate branch management
@@ -66,11 +66,11 @@
 - `e62b3e58` - chore(deps): update traefik docker tag to v3.6
 - `061a76a2` - chore(backend-deps): Update dependency hypothesis to v6.148.13
 
-### 🎉 Session 122: CodeQL Security Fixes + Python Code Quality
+### 🎉 Session 122: CodeQL Security + FastAPI Deprecation Fix
 
 **Status:** ✅ **COMPLETE**
 
-**Objective**: Fix CodeQL security alerts, improve Python code quality
+**Objective**: Fix CodeQL security alerts, improve Python code quality, fix FastAPI deprecations
 
 **Session 122 Achievements**:
 1. **CodeQL Custom Configuration**: Created `.github/codeql/codeql-config.yml` with frontend+backend paths
@@ -80,6 +80,7 @@
 5. **Code Optimization**: Refactored sanitize_for_logging() with generator expression
 6. **CI Fixes**: Fixed "No JavaScript or TypeScript code found" error by including frontend/src in CodeQL paths
 7. **ALL CodeQL Alerts Resolved**: 0 open alerts (26 dismissed as FPs, 4 fixed)
+8. **FastAPI Deprecation Fix**: Migrated @router.on_event to main.py lifespan context manager
 
 **Commits**:
 - `26ffdda7` - feat(security): add CodeQL custom configuration for Lokifi
@@ -89,6 +90,7 @@
 - `cb82a8d4` - fix(security): include frontend paths in CodeQL config
 - `8e31872b` - refactor(security): optimize sanitize_for_logging with generator expression
 - `7d7d1f96` - docs(security): add security notes to j6_2_endpoints and profile_enhanced
+- `11ab8f0b` - refactor(backend): migrate @router.on_event to lifespan
 
 **CodeQL Alert Status**: ✅ **ALL RESOLVED**
 - 0 open alerts
