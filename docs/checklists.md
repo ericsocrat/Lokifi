@@ -101,17 +101,18 @@
    - Added `_utc_now()` helper returning timezone-aware UTC datetime
    - All models now use `datetime.now(timezone.utc)` per PEP 730
 
-**Commits**:
-- `f1516a5d` - docs: update coverage metrics to January 2026
-- `4bea7870` - docs: sync coverage metrics across documentation files
-- `3e843fd4` - docs: add current coverage reference to backend best practices
-- `b2908015` - chore(deps): update typescript-eslint packages to 8.52.0
-- `a8f334a4` - docs(session124): update checklists.md with session summary
-- `4a6cfa33` - refactor(alembic): replace print() with proper logging
-- `fa8e6eea` - refactor(follow): replace print() with proper logging
-- `89a095f2` - docs(session124): update with code quality improvements
+**Commits** (11 total):
+- `25349fd5` - docs(copilot-instructions): add datetime.utcnow deprecation guidance
+- `51312f7b` - docs: update Session 124 + UTC pattern with datetime.utcnow deprecation
 - `669d175f` - refactor(datetime): replace deprecated datetime.utcnow with timezone-aware UTC
+- `89a095f2` - docs(session124): update with code quality improvements
 - `fa8e6eea` - refactor(follow): replace print() with proper logging
+- `4a6cfa33` - refactor(alembic): replace print() with proper logging
+- `a8f334a4` - docs(session124): update checklists.md with session summary
+- `b2908015` - chore(deps): update typescript-eslint packages to 8.52.0
+- `3e843fd4` - docs: add current coverage reference to backend best practices
+- `4bea7870` - docs: sync coverage metrics across documentation files
+- `f1516a5d` - docs: update coverage metrics to January 2026
 
 ### 🎉 Session 123: CodeQL Bulk Dismissals + Security Fixes + Dependency Updates
 
