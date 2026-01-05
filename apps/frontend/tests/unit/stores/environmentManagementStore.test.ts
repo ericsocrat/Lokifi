@@ -326,13 +326,15 @@ describe('environmentManagementStore', () => {
       await startEnvironment(environmentId);
 
       // Then restart
+      // Note: restartEnvironment = stop (2-5s) + pause (1s) + start (3-8s)
+      // Plus initial start (3-8s), worst case = 8+5+1+8 = 22s
       await restartEnvironment(environmentId);
 
       const environment = useEnvironmentManagementStore
         .getState()
         .environments.find((e) => e.id === environmentId);
       expect(environment?.status).toBe('active');
-    }, 20000);
+    }, 25000);
 
     it('should check environment health', async () => {
       const { checkEnvironmentHealth } = useEnvironmentManagementStore.getState();
