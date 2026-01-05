@@ -5,7 +5,7 @@ OpenRouter AI provider for Lokifi AI Chatbot (J5).
 import json
 import logging
 import uuid
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncIterator
 
 import httpx
 
@@ -43,7 +43,7 @@ class OpenRouterProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """Stream chat completion from OpenRouter."""
 
         if not self.api_key:
@@ -79,7 +79,8 @@ class OpenRouterProvider(AIProvider):
                 elif response.status_code == 429:
                     raise ProviderRateLimitError("OpenRouter rate limit exceeded")
                 elif response.status_code != 200:
-                    error_text = await response.aread()
+                    error_bytes = await response.aread()
+                    error_text = error_bytes.decode("utf-8", errors="replace")
                     raise ProviderError(
                         f"OpenRouter API error: {response.status_code} - {error_text}"
                     )

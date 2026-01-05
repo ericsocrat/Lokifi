@@ -4,7 +4,7 @@ AI Provider abstraction layer for Lokifi AI Chatbot (J5).
 
 import uuid
 from abc import ABC, abstractmethod
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncIterator
 from enum import Enum
 from typing import Any
 
@@ -69,7 +69,7 @@ class AIProvider(ABC):
     @abstractmethod
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """
         Stream chat completion tokens.
 
@@ -80,7 +80,7 @@ class AIProvider(ABC):
         Yields:
             StreamChunk: Individual chunks of the response
         """
-        pass
+        yield  # type: ignore[misc]  # Abstract async generator
 
     @abstractmethod
     async def is_available(self) -> bool:
@@ -128,7 +128,7 @@ class MockProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """Generate mock streaming response."""
         mock_response = (
             "I'm a mock AI assistant. To enable real AI capabilities, "

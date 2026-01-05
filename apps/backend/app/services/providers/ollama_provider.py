@@ -5,7 +5,7 @@ Ollama local AI provider for Lokifi AI Chatbot (J5).
 import json
 import logging
 import uuid
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncIterator
 
 import httpx
 
@@ -35,7 +35,7 @@ class OllamaProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """Stream chat completion from Ollama."""
 
         if not self.validate_messages(messages):
@@ -84,7 +84,8 @@ class OllamaProvider(AIProvider):
                         )
 
                 elif response.status_code != 200:
-                    error_text = await response.aread()
+                    error_bytes = await response.aread()
+                    error_text = error_bytes.decode("utf-8", errors="replace")
                     raise ProviderError(
                         f"Ollama API error: {response.status_code} - {error_text}"
                     )
@@ -108,7 +109,7 @@ class OllamaProvider(AIProvider):
 
     async def _process_stream(
         self, response: httpx.Response, model: str, messages: list[AIMessage]
-    ) -> AsyncGenerator[StreamChunk]:
+    ) -> AsyncIterator[StreamChunk]:
         """Process Ollama streaming response."""
         chunk_id = str(uuid.uuid4())
         total_content = ""
