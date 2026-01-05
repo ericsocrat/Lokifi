@@ -10,6 +10,7 @@ from app.services.crypto_discovery_service import CryptoDiscoveryService
 from app.services.historical_price_service import HistoricalPriceService, PeriodType
 from app.services.smart_price_service import SmartPriceService
 from app.services.unified_asset_service import UnifiedAssetService
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1/prices", tags=["prices"])
@@ -156,7 +157,7 @@ async def get_all_assets(
             )
 
         logger.info(
-            f"🌐 Fetching unified assets: {type_list} (limit: {limit_per_type})"
+            f"🌐 Fetching unified assets: {sanitize_for_logging(type_list)} (limit: {limit_per_type})"
         )
 
         # Check if data is cached

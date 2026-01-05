@@ -9,6 +9,7 @@ import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +103,9 @@ class SmartPriceService:
                 await self._set_cache(cache_key, price_data.__dict__, 60)
             return price_data
         except Exception as e:
-            logger.error(f"Error fetching price for {symbol}: {e}")
+            logger.error(
+                f"Error fetching price for {sanitize_for_logging(symbol)}: {e}"
+            )
             return None
 
     async def _fetch_price(
@@ -117,7 +120,9 @@ class SmartPriceService:
             if unified.is_crypto(symbol):
                 coin_id = unified.get_coingecko_id(symbol)
                 if not coin_id:
-                    logger.warning(f"No CoinGecko ID found for {symbol}")
+                    logger.warning(
+                        f"No CoinGecko ID found for {sanitize_for_logging(symbol)}"
+                    )
                     return None
 
                 url = f"{self.providers['coingecko']}/simple/price"
@@ -168,7 +173,7 @@ class SmartPriceService:
                         source="finnhub",
                     )
         except Exception as e:
-            logger.error(f"Error fetching {symbol}: {e}")
+            logger.error(f"Error fetching {sanitize_for_logging(symbol)}: {e}")
         return None
 
     async def get_batch_prices(

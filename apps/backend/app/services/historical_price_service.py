@@ -11,6 +11,7 @@ import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -206,14 +207,16 @@ class HistoricalPriceService:
                 duration = time.time() - start_time
                 performance_metrics.record_request(cached=False, duration=duration)
                 logger.info(
-                    f"📊 Fetched {len(data)} data points for {symbol} ({period}) - {duration * 1000:.1f}ms"
+                    f"📊 Fetched {len(data)} data points for {sanitize_for_logging(symbol)} ({period}) - {duration * 1000:.1f}ms"
                 )
             else:
                 duration = time.time() - start_time
                 performance_metrics.record_request(
                     cached=False, duration=duration, error=True
                 )
-                logger.warning(f"⚠️ No data returned for {symbol} ({period})")
+                logger.warning(
+                    f"⚠️ No data returned for {sanitize_for_logging(symbol)} ({period})"
+                )
 
             return data
         except Exception as e:
@@ -221,7 +224,9 @@ class HistoricalPriceService:
             performance_metrics.record_request(
                 cached=False, duration=duration, error=True
             )
-            logger.error(f"❌ Error fetching history for {symbol}: {e}")
+            logger.error(
+                f"❌ Error fetching history for {sanitize_for_logging(symbol)}: {e}"
+            )
             return []
 
     async def _fetch_history(
@@ -262,7 +267,7 @@ class HistoricalPriceService:
 
             if "prices" in data and len(data["prices"]) > 0:
                 logger.info(
-                    f"✅ CoinGecko returned {len(data['prices'])} price points for {symbol}"
+                    f"✅ CoinGecko returned {len(data['prices'])} price points for {sanitize_for_logging(symbol)}"
                 )
                 return [
                     HistoricalPricePoint(
@@ -272,16 +277,22 @@ class HistoricalPriceService:
                     for point in data["prices"]
                 ]
             else:
-                logger.warning(f"⚠️ CoinGecko returned no price data for {symbol}")
+                logger.warning(
+                    f"⚠️ CoinGecko returned no price data for {sanitize_for_logging(symbol)}"
+                )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 429:
-                logger.error(f"🚫 CoinGecko rate limit exceeded for {symbol}")
+                logger.error(
+                    f"🚫 CoinGecko rate limit exceeded for {sanitize_for_logging(symbol)}"
+                )
             else:
                 logger.error(
-                    f"❌ CoinGecko HTTP error for {symbol}: {e.response.status_code}"
+                    f"❌ CoinGecko HTTP error for {sanitize_for_logging(symbol)}: {e.response.status_code}"
                 )
         except Exception as e:
-            logger.error(f"❌ Error fetching crypto history for {symbol}: {e}")
+            logger.error(
+                f"❌ Error fetching crypto history for {sanitize_for_logging(symbol)}: {e}"
+            )
 
         return []
 
@@ -322,29 +333,37 @@ class HistoricalPriceService:
 
             if data.get("s") == "ok" and "c" in data and len(data["c"]) > 0:
                 logger.info(
-                    f"✅ Finnhub returned {len(data['c'])} candles for {symbol}"
+                    f"✅ Finnhub returned {len(data['c'])} candles for {sanitize_for_logging(symbol)}"
                 )
                 return [
                     HistoricalPricePoint(timestamp=data["t"][i], price=data["c"][i])
                     for i in range(len(data["c"]))
                 ]
             elif data.get("s") == "no_data":
-                logger.warning(f"⚠️ Finnhub: No data available for {symbol}")
+                logger.warning(
+                    f"⚠️ Finnhub: No data available for {sanitize_for_logging(symbol)}"
+                )
             else:
                 logger.warning(
-                    f"⚠️ Finnhub returned unexpected response for {symbol}: {data.get('s')}"
+                    f"⚠️ Finnhub returned unexpected response for {sanitize_for_logging(symbol)}: {data.get('s')}"
                 )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 429:
-                logger.error(f"🚫 Finnhub rate limit exceeded for {symbol}")
+                logger.error(
+                    f"🚫 Finnhub rate limit exceeded for {sanitize_for_logging(symbol)}"
+                )
             elif e.response.status_code == 403:
-                logger.error(f"🚫 Finnhub API key invalid or expired for {symbol}")
+                logger.error(
+                    f"🚫 Finnhub API key invalid or expired for {sanitize_for_logging(symbol)}"
+                )
             else:
                 logger.error(
-                    f"❌ Finnhub HTTP error for {symbol}: {e.response.status_code}"
+                    f"❌ Finnhub HTTP error for {sanitize_for_logging(symbol)}: {e.response.status_code}"
                 )
         except Exception as e:
-            logger.error(f"❌ Error fetching stock history for {symbol}: {e}")
+            logger.error(
+                f"❌ Error fetching stock history for {sanitize_for_logging(symbol)}: {e}"
+            )
 
         return []
 
@@ -358,7 +377,9 @@ class HistoricalPriceService:
         if not force_refresh:
             cached = await self._get_cached_history(cache_key)
             if cached:
-                logger.info(f"Cache hit for {symbol} OHLCV ({period})")
+                logger.info(
+                    f"Cache hit for {sanitize_for_logging(symbol)} OHLCV ({period})"
+                )
                 return [OHLCVData(**point) for point in cached]
 
         try:
@@ -376,7 +397,9 @@ class HistoricalPriceService:
 
             return data
         except Exception as e:
-            logger.error(f"Error fetching OHLCV for {symbol}: {e}")
+            logger.error(
+                f"Error fetching OHLCV for {sanitize_for_logging(symbol)}: {e}"
+            )
             return []
 
     async def _fetch_ohlcv(
@@ -421,7 +444,9 @@ class HistoricalPriceService:
                 for candle in data
             ]
         except Exception as e:
-            logger.error(f"Error fetching crypto OHLCV for {symbol}: {e}")
+            logger.error(
+                f"Error fetching crypto OHLCV for {sanitize_for_logging(symbol)}: {e}"
+            )
 
         return []
 
@@ -470,6 +495,8 @@ class HistoricalPriceService:
                     for i in range(len(data["o"]))
                 ]
         except Exception as e:
-            logger.error(f"Error fetching stock OHLCV for {symbol}: {e}")
+            logger.error(
+                f"Error fetching stock OHLCV for {sanitize_for_logging(symbol)}: {e}"
+            )
 
         return []

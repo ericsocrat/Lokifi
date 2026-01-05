@@ -10,6 +10,7 @@ from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.services.smart_price_service import SmartPriceService
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class PriceWebSocketManager:
         connection_metrics.active_connections = len(self.active_connections)
 
         logger.info(
-            f"✅ WebSocket connected: {client_id} (total: {len(self.active_connections)})"
+            f"✅ WebSocket connected: {sanitize_for_logging(client_id)} (total: {len(self.active_connections)})"
         )
 
         # Start update task if not running
@@ -78,7 +79,7 @@ class PriceWebSocketManager:
         connection_metrics.active_connections = len(self.active_connections)
 
         logger.info(
-            f"🔌 WebSocket disconnected: {client_id} (remaining: {len(self.active_connections)})"
+            f"🔌 WebSocket disconnected: {sanitize_for_logging(client_id)} (remaining: {len(self.active_connections)})"
         )
 
         # Stop update task if no connections
@@ -96,7 +97,7 @@ class PriceWebSocketManager:
             symbols_upper = [s.upper() for s in symbols]
             self.subscriptions[client_id].update(symbols_upper)
             logger.info(
-                f"{client_id} subscribed to {len(symbols)} symbols: {symbols_upper[:10]}..."
+                f"{sanitize_for_logging(client_id)} subscribed to {len(symbols)} symbols: {symbols_upper[:10]}..."
             )
             return True
         return False
@@ -107,7 +108,9 @@ class PriceWebSocketManager:
             self.subscriptions[client_id].difference_update(
                 [s.upper() for s in symbols]
             )
-            logger.info(f"{client_id} unsubscribed from: {symbols}")
+            logger.info(
+                f"{sanitize_for_logging(client_id)} unsubscribed from: {symbols}"
+            )
             return True
         return False
 
@@ -118,7 +121,9 @@ class PriceWebSocketManager:
                 await self.active_connections[client_id].send_json(message)
                 connection_metrics.total_messages_sent += 1
             except Exception as e:
-                logger.error(f"❌ Error sending to {client_id}: {e}")
+                logger.error(
+                    f"❌ Error sending to {sanitize_for_logging(client_id)}: {e}"
+                )
                 connection_metrics.total_errors += 1
                 self.disconnect(client_id)
 
@@ -357,14 +362,18 @@ async def websocket_price_endpoint(
                     client_id, {"type": "error", "message": "Invalid JSON"}
                 )
             except Exception as e:
-                logger.error(f"Error processing message from {client_id}: {e}")
+                logger.error(
+                    f"Error processing message from {sanitize_for_logging(client_id)}: {e}"
+                )
                 await price_ws_manager.send_message(
                     client_id, {"type": "error", "message": str(e)}
                 )
 
     except WebSocketDisconnect:
         price_ws_manager.disconnect(client_id)
-        logger.info(f"Client {client_id} disconnected normally")
+        logger.info(f"Client {sanitize_for_logging(client_id)} disconnected normally")
     except Exception as e:
-        logger.error(f"WebSocket error for {client_id}: {e}", exc_info=True)
+        logger.error(
+            f"WebSocket error for {sanitize_for_logging(client_id)}: {e}", exc_info=True
+        )
         price_ws_manager.disconnect(client_id)

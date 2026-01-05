@@ -10,6 +10,7 @@ import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -268,7 +269,7 @@ class CryptoDiscoveryService:
             duration = time.time() - start_time
             crypto_metrics.record_fetch(cached=False)
             logger.info(
-                f"✅ API search for '{query}' returned {len(results)} results - {duration * 1000:.1f}ms"
+                f"✅ API search for '{sanitize_for_logging(query)}' returned {len(results)} results - {duration * 1000:.1f}ms"
             )
 
             return results
@@ -276,7 +277,7 @@ class CryptoDiscoveryService:
         except Exception as e:
             duration = time.time() - start_time
             logger.error(
-                f"❌ Error searching cryptos for '{query}': {e} - {duration * 1000:.1f}ms"
+                f"❌ Error searching cryptos for '{sanitize_for_logging(query)}': {e} - {duration * 1000:.1f}ms"
             )
             return []
 

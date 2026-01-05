@@ -13,6 +13,7 @@ from app.models.notification_models import NotificationPriority
 from app.models.user import User
 from app.services.notification_emitter import notification_emitter
 from app.services.notification_service import notification_service
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -312,7 +313,9 @@ async def mark_notification_as_read(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to mark notification {notification_id} as read: {e}")
+        logger.error(
+            f"Failed to mark notification {sanitize_for_logging(notification_id)} as read: {e}"
+        )
         raise HTTPException(
             status_code=500, detail="Failed to mark notification as read"
         )
@@ -370,7 +373,9 @@ async def click_notification(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to record click for notification {notification_id}: {e}")
+        logger.error(
+            f"Failed to record click for notification {sanitize_for_logging(notification_id)}: {e}"
+        )
         raise HTTPException(
             status_code=500, detail="Failed to record notification click"
         )

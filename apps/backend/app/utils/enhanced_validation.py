@@ -16,6 +16,48 @@ from pydantic import BaseModel, ConfigDict, field_validator
 from app.core.security_config import security_config
 
 
+def sanitize_for_logging(value: Any, max_length: int = 200) -> str:
+    """
+    Sanitize a value for safe logging to prevent log injection attacks.
+
+    This function removes newlines, carriage returns, and other control characters
+    that could be used to forge log entries or inject malicious content.
+
+    Args:
+        value: The value to sanitize (will be converted to string)
+        max_length: Maximum length of the output string (default: 200)
+
+    Returns:
+        A safe string representation suitable for logging
+    """
+    if value is None:
+        return "<None>"
+
+    # Convert to string
+    text = str(value)
+
+    # Remove control characters (newlines, carriage returns, tabs, etc.)
+    # Keep only printable ASCII and safe unicode
+    safe_chars = []
+    for char in text:
+        # Replace control characters with placeholder
+        if ord(char) < 32 or char in "\r\n\t\x0b\x0c" or ord(char) == 127:
+            safe_chars.append("_")
+        else:
+            safe_chars.append(char)
+
+    text = "".join(safe_chars)
+
+    # Truncate if too long
+    if len(text) > max_length:
+        text = text[:max_length] + "..."
+
+    # Escape any HTML entities
+    text = html.escape(text)
+
+    return text
+
+
 class InputSanitizer:
     """Utility class for sanitizing and validating user inputs"""
 
@@ -345,5 +387,6 @@ __all__ = [
     "SecureUsernameField",
     "SecureValidationModel",
     "create_input_validator",
+    "sanitize_for_logging",
     "validate_input",
 ]

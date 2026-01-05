@@ -12,6 +12,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.conversation import Message
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +163,7 @@ class MessageModerationService:
         try:
             # In a real implementation, this would create a moderation report record
             logger.info(
-                f"Message {message_id} reported by user {reporter_id}: {reason}"
+                f"Message {message_id} reported by user {reporter_id}: {sanitize_for_logging(reason)}"
             )
 
             # Could automatically re-moderate the reported message
