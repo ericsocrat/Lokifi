@@ -281,7 +281,7 @@ class AdvancedWebSocketManager:
 
     def __init__(self) -> None:
         self.connection_pool = ConnectionPool()
-        self.notification_service = None  # Will be injected
+        self.notification_service: NotificationService | None = None  # Will be injected
         self.broadcast_queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
         self.analytics: dict[str, deque[Any]] = {
             "messages_per_second": deque(maxlen=60),  # 1 minute window
@@ -299,7 +299,7 @@ class AdvancedWebSocketManager:
 
     def set_notification_service(self, service: NotificationService) -> None:
         """Inject notification service dependency"""
-        self.notification_service: NotificationService | None = service
+        self.notification_service = service
 
     def start_background_tasks(self):
         """Start background monitoring tasks"""

@@ -12,6 +12,7 @@ import asyncio
 import logging
 import time
 from collections import defaultdict, deque
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
@@ -24,6 +25,17 @@ from redis.retry import Retry
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class CircuitBreakerState:
+    """Circuit breaker state tracking"""
+
+    failure_count: int = 0
+    last_failure: datetime | None = None
+    state: str = "closed"  # closed, open, half_open
+    failure_threshold: int = 5
+    recovery_timeout: int = 60
 
 
 class CacheStrategy:
@@ -93,17 +105,11 @@ class AdvancedRedisClient:
         self.connected = False
         self.connection_pool = None
         self.metrics = CacheMetrics()
-        self.cache_layers = {}
-        self.warming_tasks = set()
+        self.cache_layers: dict[str, dict[str, int]] = {}
+        self.warming_tasks: set[asyncio.Task[Any]] = set()
 
-        # Circuit breaker state
-        self.circuit_breaker = {
-            "failure_count": 0,
-            "last_failure": None,
-            "state": "closed",  # closed, open, half_open
-            "failure_threshold": 5,
-            "recovery_timeout": 60,
-        }
+        # Circuit breaker state (using dataclass for type safety)
+        self.circuit_breaker = CircuitBreakerState()
 
         # Performance tracking
         self.operation_stats: dict[str, dict[str, int | float]] = defaultdict(
@@ -207,12 +213,16 @@ class AdvancedRedisClient:
 
     async def is_available(self) -> bool:
         """Enhanced availability check with circuit breaker"""
-        if self.circuit_breaker["state"] == "open":
+        if self.circuit_breaker.state == "open":
             # Check if recovery timeout has passed
             if (
-                datetime.now(timezone.utc) - self.circuit_breaker["last_failure"]
-            ).seconds >= self.circuit_breaker["recovery_timeout"]:
-                self.circuit_breaker["state"] = "half_open"
+                self.circuit_breaker.last_failure is not None
+                and (
+                    datetime.now(timezone.utc) - self.circuit_breaker.last_failure
+                ).seconds
+                >= self.circuit_breaker.recovery_timeout
+            ):
+                self.circuit_breaker.state = "half_open"
                 logger.info("Circuit breaker moving to half-open state")
             else:
                 return False
@@ -223,14 +233,8 @@ class AdvancedRedisClient:
 
             await self.client.ping()  # type: ignore[misc]
             # Reset circuit breaker on successful ping
-            if self.circuit_breaker["state"] != "closed":
-                self.circuit_breaker = {
-                    "failure_count": 0,
-                    "last_failure": None,
-                    "state": "closed",
-                    "failure_threshold": 5,
-                    "recovery_timeout": 60,
-                }
+            if self.circuit_breaker.state != "closed":
+                self.circuit_breaker = CircuitBreakerState()
                 logger.info("Circuit breaker reset to closed state")
 
             return True
@@ -240,18 +244,17 @@ class AdvancedRedisClient:
             logger.error(f"Redis availability check failed: {e}")
             return False
 
-    def _handle_circuit_breaker_failure(self):
+    def _handle_circuit_breaker_failure(self) -> None:
         """Handle circuit breaker failure logic"""
-        self.circuit_breaker["failure_count"] += 1
-        self.circuit_breaker["last_failure"] = datetime.now(timezone.utc)
+        self.circuit_breaker.failure_count += 1
+        self.circuit_breaker.last_failure = datetime.now(timezone.utc)
         self.metrics.record_error()
 
         if (
-            self.circuit_breaker["failure_count"]
-            >= self.circuit_breaker["failure_threshold"]
-            and self.circuit_breaker["state"] == "closed"
+            self.circuit_breaker.failure_count >= self.circuit_breaker.failure_threshold
+            and self.circuit_breaker.state == "closed"
         ):
-            self.circuit_breaker["state"] = "open"
+            self.circuit_breaker.state = "open"
             logger.warning("Circuit breaker opened due to repeated failures")
 
     async def get(self, key: str) -> Any:
@@ -459,7 +462,7 @@ class AdvancedRedisClient:
             "writes": self.metrics.writes,
             "errors": self.metrics.errors,
             "avg_response_time": self.metrics.avg_response_time,
-            "circuit_breaker": self.circuit_breaker.copy(),
+            "circuit_breaker": asdict(self.circuit_breaker),
             "operation_stats": dict(self.operation_stats),
             "connection_status": self.connected,
             "cache_layers": self.cache_layers,
