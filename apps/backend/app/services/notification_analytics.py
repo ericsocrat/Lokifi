@@ -7,7 +7,7 @@ Provides insights into notification delivery, user engagement, and system perfor
 import asyncio
 import logging
 from collections import defaultdict, deque
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -35,7 +35,7 @@ class NotificationMetrics:
     engagement_rate: float = 0.0
     average_time_to_read: float = 0.0
     peak_hour: int = 0
-    top_notification_types: list[dict[str, Any]] = None
+    top_notification_types: list[dict[str, Any]] = field(default_factory=list)
 
     # Performance attributes for monitoring
     average_response_time: float = 0.0
@@ -200,8 +200,8 @@ class NotificationAnalytics:
                     .order_by(desc("count"))
                 )
 
-                peak_hour = 0
-                max_count = 0
+                peak_hour: int = 0
+                max_count: int = 0
                 for row in hourly_stats:
                     if row.count > max_count:
                         max_count = row.count

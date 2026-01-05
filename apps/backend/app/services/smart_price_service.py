@@ -237,7 +237,7 @@ class SmartPriceService:
             stock_results = await asyncio.gather(*stock_tasks, return_exceptions=True)
 
             for symbol, result in zip(uncached_stocks, stock_results, strict=False):
-                if not isinstance(result, Exception) and result:
+                if not isinstance(result, BaseException) and result:
                     results[symbol] = result
 
         return results
@@ -284,9 +284,9 @@ class SmartPriceService:
             resp.raise_for_status()
             data = resp.json()
 
-            results = {}
+            results: dict[str, PriceData] = {}
             for coin_id, coin_data in data.items():
-                symbol = symbol_to_id.get(coin_id)
+                symbol: str | None = symbol_to_id.get(coin_id)
                 if symbol and "usd" in coin_data:
                     price_data = PriceData(
                         symbol=symbol,
