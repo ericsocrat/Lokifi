@@ -8,6 +8,7 @@ Advanced API endpoints for J6.2 notification system including:
 - Batch management
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import Any
 
@@ -100,9 +101,8 @@ async def get_notification_dashboard(
         dashboard_data = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=dashboard_data)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get dashboard data: {e!s}"
-        )
+        logging.error(f"Failed to get dashboard data: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get dashboard data")
 
 
 @router.get("/analytics/metrics/{user_id}")

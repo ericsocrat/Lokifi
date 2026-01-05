@@ -4,6 +4,7 @@ Comprehensive health check endpoint for Phase K components
 
 __all__ = ["router"]
 
+import logging
 import time
 from typing import Any
 
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db_session
 from app.core.performance_monitor import performance_metrics
 from app.core.redis_client import RedisClient, redis_client as _redis_client
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -132,7 +135,14 @@ async def check_component_health(
                 "checks_passed": ["connection", "query_execution"],
             }
         except Exception as e:
-            return {"component": component_name, "status": "unhealthy", "error": str(e)}
+            logger.error(
+                f"Health check failed for {component_name}: {e}", exc_info=True
+            )
+            return {
+                "component": component_name,
+                "status": "unhealthy",
+                "error": "Internal error",
+            }
 
     elif component_name == "redis":
         try:
@@ -154,7 +164,14 @@ async def check_component_health(
                     "error": "Not available",
                 }
         except Exception as e:
-            return {"component": component_name, "status": "unhealthy", "error": str(e)}
+            logger.error(
+                f"Health check failed for {component_name}: {e}", exc_info=True
+            )
+            return {
+                "component": component_name,
+                "status": "unhealthy",
+                "error": "Internal error",
+            }
 
     else:
         raise HTTPException(

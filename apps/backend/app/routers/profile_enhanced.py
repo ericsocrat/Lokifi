@@ -140,9 +140,16 @@ async def upload_avatar(
 @router.get("/enhanced/avatar/{user_id}")
 async def get_avatar(user_id: UUID):
     """Get user avatar by user ID."""
-    # This would typically serve the avatar file
-    # For now, return a placeholder response
-    avatar_path = UPLOAD_DIR / f"{user_id}_avatar.jpg"
+    # Construct avatar path using validated UUID
+    # UUID type guarantees format, but we still validate path stays within UPLOAD_DIR
+    avatar_filename = f"{user_id}_avatar.jpg"
+    avatar_path = (UPLOAD_DIR / avatar_filename).resolve()
+
+    # Security: Ensure resolved path is still within upload directory
+    if not str(avatar_path).startswith(str(UPLOAD_DIR.resolve())):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid avatar path"
+        )
 
     if avatar_path.exists():
         return FileResponse(avatar_path)

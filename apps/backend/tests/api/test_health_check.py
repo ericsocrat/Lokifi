@@ -348,7 +348,8 @@ class TestCheckComponentHealth:
         assert result["component"] == "database"
         assert result["status"] == "unhealthy"
         assert "error" in result
-        assert "Connection lost" in result["error"]
+        # Security: Error details are logged but generic message returned to client
+        assert result["error"] == "Internal error"
 
     @pytest.mark.asyncio
     async def test_redis_component_healthy(
@@ -388,7 +389,8 @@ class TestCheckComponentHealth:
         assert result["component"] == "redis"
         assert result["status"] == "unhealthy"
         assert "error" in result
-        assert "Timeout" in result["error"]
+        # Security: Error details are logged but generic message returned to client
+        assert result["error"] == "Internal error"
 
     @pytest.mark.asyncio
     async def test_unknown_component_raises_404(
