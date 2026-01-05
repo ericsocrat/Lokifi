@@ -243,8 +243,8 @@ class ProfileService:
             .order_by(Profile.follower_count.desc(), Profile.username)
         )
 
-        result = await self.db.execute(stmt)
-        profiles = result.scalars().all()
+        profiles_result = await self.db.execute(stmt)
+        profiles = profiles_result.scalars().all()
 
         # Get total count
         count_stmt = (
@@ -252,8 +252,8 @@ class ProfileService:
             .select_from(Profile)
             .where(and_(Profile.is_public, search_filter))
         )
-        result = await self.db.execute(count_stmt)
-        total = int(result.scalar() or 0)
+        count_result = await self.db.execute(count_stmt)
+        total = int(count_result.scalar() or 0)
 
         public_profiles = []
         if profiles:

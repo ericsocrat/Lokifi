@@ -155,8 +155,8 @@ class MessageAnalyticsService:
                 ConversationParticipant.is_active,
             )
         )
-        result = await self.db.execute(participant_stmt)
-        if not result.scalar_one_or_none():
+        participant_result = await self.db.execute(participant_stmt)
+        if not participant_result.scalar_one_or_none():
             return None
 
         cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
@@ -169,8 +169,8 @@ class MessageAnalyticsService:
                 ~Message.is_deleted,
             )
         )
-        result = await self.db.execute(total_messages_stmt)
-        total_messages = int(result.scalar() or 0)
+        messages_count_result = await self.db.execute(total_messages_stmt)
+        total_messages = int(messages_count_result.scalar() or 0)
 
         # Total participants
         participants_stmt = select(func.count(ConversationParticipant.user_id)).where(
@@ -179,8 +179,8 @@ class MessageAnalyticsService:
                 ConversationParticipant.is_active,
             )
         )
-        result = await self.db.execute(participants_stmt)
-        total_participants = int(result.scalar() or 0)
+        participants_count_result = await self.db.execute(participants_stmt)
+        total_participants = int(participants_count_result.scalar() or 0)
 
         # Messages by day (last 7 days)
         messages_by_day_stmt = (
