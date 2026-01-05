@@ -440,11 +440,13 @@ class CacheOptimizer:
         """Analyze overall cache performance and identify optimization opportunities"""
         from app.core.advanced_redis_client import advanced_redis_client
 
-        analysis = {
+        analysis: dict[str, Any] = {
             "overall_metrics": {},
             "layer_performance": {},
             "recommendations": [],
         }
+        # Create typed reference for layer_performance
+        layer_performance: dict[str, dict[str, Any]] = analysis["layer_performance"]
 
         try:
             # Get current cache metrics
@@ -454,7 +456,7 @@ class CacheOptimizer:
             # Analyze hit rates by layer
             for layer in ["memory", "distributed", "persistent"]:
                 layer_metrics = await self._analyze_layer_performance(layer)
-                analysis["layer_performance"][layer] = layer_metrics
+                layer_performance[layer] = layer_metrics
 
             # Generate optimization recommendations
             recommendations = await self._generate_cache_recommendations(cache_metrics)

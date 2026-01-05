@@ -29,12 +29,15 @@ async def comprehensive_health_check(
 ) -> dict[str, Any]:
     """Comprehensive health check for all Phase K components"""
 
-    health_status = {
+    health_status: dict[str, Any] = {
         "status": "healthy",
         "timestamp": time.time(),
         "components": {},
         "performance": performance_metrics.get_summary(),
     }
+
+    # Create typed reference for components
+    components: dict[str, dict[str, Any]] = health_status["components"]
 
     # Database health check
     try:
@@ -42,12 +45,12 @@ async def comprehensive_health_check(
         await db.execute("SELECT 1")
         db_response_time = (time.time() - start_time) * 1000
 
-        health_status["components"]["database"] = {
+        components["database"] = {
             "status": "healthy",
             "response_time_ms": db_response_time,
         }
     except Exception as e:
-        health_status["components"]["database"] = {
+        components["database"] = {
             "status": "unhealthy",
             "error": str(e),
         }
@@ -59,23 +62,23 @@ async def comprehensive_health_check(
         await redis_client.ping()
         redis_response_time = (time.time() - start_time) * 1000
 
-        health_status["components"]["redis"] = {
+        components["redis"] = {
             "status": "healthy",
             "response_time_ms": redis_response_time,
         }
     except Exception as e:
-        health_status["components"]["redis"] = {"status": "unhealthy", "error": str(e)}
+        components["redis"] = {"status": "unhealthy", "error": str(e)}
         health_status["status"] = "degraded"
 
     # WebSocket health check (simple connectivity test)
     try:
         # This is a placeholder for WebSocket health check
-        health_status["components"]["websockets"] = {
+        components["websockets"] = {
             "status": "healthy",
             "active_connections": 0,  # Would track actual connections
         }
     except Exception as e:
-        health_status["components"]["websockets"] = {
+        components["websockets"] = {
             "status": "unhealthy",
             "error": str(e),
         }
@@ -83,12 +86,12 @@ async def comprehensive_health_check(
 
     # AI Services health check
     try:
-        health_status["components"]["ai_services"] = {
+        components["ai_services"] = {
             "status": "healthy",
             "providers_available": 1,  # Would check actual providers
         }
     except Exception as e:
-        health_status["components"]["ai_services"] = {
+        components["ai_services"] = {
             "status": "unhealthy",
             "error": str(e),
         }
