@@ -1,6 +1,6 @@
 # Pattern Library
 
-> **World-Class Code Patterns from 119+ Proven Sessions**
+> **World-Class Code Patterns from 120+ Proven Sessions**
 >
 > A comprehensive, battle-tested collection of development patterns extracted from real-world problem-solving sessions. Each pattern includes context, solution approach, examples, and proven success metrics.
 
@@ -35,6 +35,7 @@
 | [Async Context Manager Mocking](./testing/async-context-manager.md) | 🔴 Advanced | 67% (2/3) | ⚠️ Complex | 30, 62, 63 |
 | [Conditional Import Patching](./testing/conditional-import-patching.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Solves patch failures | ProfileService Gap 3 |
 | [Event Handler Testing](./testing/event-handler-testing.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Event-driven systems | NotificationService Gap 3 |
+| [Flaky Timeout Pattern](./testing/flaky-timeout-pattern.md) | 🟢 Beginner | 100% | 🎯 Eliminates CI flakiness | 120 | ⭐ **NEW**
 | [Helper Method Testing](./testing/helper-method-testing.md) | 🟢 Beginner | 100% (4/4) | 🚀 +17-29pp per service | ConversationService, FollowService, AIService, NotificationService |
 | [Mathematical Correctness Testing](./testing/mathematical-testing.md) | 🟡 Intermediate | 100% (1/1) | ✅ +100% coverage | 66 |
 | [Pydantic Model Mocking](./testing/pydantic-model-mocking.md) | 🟡 Intermediate | 100% (2/2) | 🎯 Prevents ValidationError | ConversationService, FollowService |
@@ -44,8 +45,8 @@
 | [Server Default Simulation](./testing/server-default-simulation.md) | 🔴 Advanced | 100% (1/1) | 🎯 100% coverage | 67 |
 | [Test Fixture Design](./testing/fixture-design.md) | 🟢 Beginner | 100% (6/6) | ✅ DRY tests | 30, 62, 63, 66 |
 | [Transaction Order Tracking](./testing/transaction-order-tracking.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Transaction safety | ConversationService Gap 1 |
-| [vi.mocked() Pattern](./testing/vi-mocked-pattern.md) | 🟢 Beginner | 100% | 🎯 200+ fixes | 117, 118, 119 | ⭐ **NEW**
-| [Window Interface Extension](./testing/window-interface-extension.md) | 🟢 Beginner | 100% | ✅ Type-safe globals | 117, 118, 119 | ⭐ **NEW**
+| [vi.mocked() Pattern](./testing/vi-mocked-pattern.md) | 🟢 Beginner | 100% | 🎯 200+ fixes | 117, 118, 119 |
+| [Window Interface Extension](./testing/window-interface-extension.md) | 🟢 Beginner | 100% | ✅ Type-safe globals | 117, 118, 119 |
 
 ### CI/CD Patterns
 
