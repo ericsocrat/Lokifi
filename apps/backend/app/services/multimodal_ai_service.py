@@ -27,7 +27,7 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
-    Image = None  # type: ignore[assignment,misc]
+    Image = None
 
 
 from app.db.db import get_session
@@ -239,7 +239,7 @@ class MultiModalAIService:
             # Open and process image
             if Image is None:
                 raise ImportError("PIL not available")
-            image = Image.open(io.BytesIO(content))  # type: ignore[misc]
+            image = Image.open(io.BytesIO(content))
 
             # Get image info
             width, height = image.size

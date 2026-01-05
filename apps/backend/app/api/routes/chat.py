@@ -36,7 +36,7 @@ async def tool_get_price(symbol: str, timeframe: str = "1h") -> dict[str, Any]:
 async def tool_portfolio_summary(authorization: str | None) -> dict[str, Any]:
     # Reuse the route function; it expects (handle optional, authorization header)
     # Here we call its logic by using FastAPI callable directly.
-    return _portfolio_summary(handle=None, authorization=authorization)  # type: ignore
+    return _portfolio_summary(handle=None, authorization=authorization)
 
 
 async def tool_create_price_alert(
@@ -49,7 +49,7 @@ async def tool_create_price_alert(
         min_interval_sec=300,
         config={"direction": direction, "price": float(price)},
     )
-    res = await _create_alert(payload, authorization=authorization)  # type: ignore
+    res = await _create_alert(payload, authorization=authorization)
     return res
 
 

@@ -84,16 +84,30 @@
    - Fixed PIL Image type assignment error (expression has type 'Image', variable has type 'ImageFile')
    - Introduced `processed_img: Image.Image` typed variable for convert() operations
    - MyPy now shows 0 errors for backend (was 1)
+3. **Security Vulnerability Documentation (CVE-2024-23342)**:
+   - Discovered via `pip-audit`: ecdsa 0.19.1 has Minerva timing attack vulnerability
+   - No fix available from maintainer (out of scope for python-ecdsa project)
+   - Documented as accepted risk in `docs/security/README.md`
+   - Limited exposure: ecdsa is transitive dependency (python-jose → JWT signing)
+4. **MyPy INI Syntax Fix**:
+   - Discovered mypy.ini had invalid Python list syntax for plugins config
+   - MyPy was silently falling back to default config (no plugins loaded!)
+   - Fixed: `plugins = pydantic.mypy, sqlalchemy.ext.mypy.plugin` (comma-separated)
+   - Now pydantic.mypy and sqlalchemy.ext.mypy.plugin properly load
+   - Reveals ~249 previously hidden type issues (expected, CI non-blocking)
 
 **Code Quality Stats After Session**:
-- Backend: MyPy 0 errors ✅, Ruff 0 violations ✅
+- Backend: MyPy plugins now loading ✅, Ruff 0 violations ✅
 - Frontend: TypeScript 0 errors ✅, ESLint 34 warnings (expected) ✅
 - No `@ts-nocheck` directives remain in frontend source
 - Only 8 `as any` assertions (all justified for browser APIs/binary data)
 
-**Commits** (2 total):
+**Commits** (5 total):
 - `ebbd7ef5` - refactor(multiChartStore): remove @ts-nocheck and add proper type assertions
 - `6802ac56` - fix(mypy): resolve PIL Image type assignment error in profile_enhanced.py
+- `369f3b7b` - docs(session125): add session summary with type safety improvements
+- `1cc05585` - docs(security): document CVE-2024-23342 (ecdsa) accepted risk
+- `49f71873` - fix(mypy): correct INI syntax for plugins configuration
 
 ### 🎉 Session 124: Coverage Documentation Sync + Dependency Updates + Code Quality
 

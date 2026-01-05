@@ -230,9 +230,9 @@ class RedisClient:
             return True  # Allow if Redis unavailable
 
         try:
-            current = await self.client.incr(key)  # type: ignore[misc]
+            current = await self.client.incr(key)
             if current == 1:
-                await self.client.expire(key, window)  # type: ignore[misc]
+                await self.client.expire(key, window)
             return current <= limit
         except RedisError as e:
             logger.warning(f"Failed to check rate limit for {key}: {e}")
