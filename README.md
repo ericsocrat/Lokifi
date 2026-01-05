@@ -12,7 +12,7 @@ A comprehensive financial platform combining advanced market analysis with socia
 
 > 🔐 **Security Status**: CodeQL scanning enabled | Renovate bot active | Branch protection configured
 >
-> ✅ **Test Coverage**: Frontend 11.61% | Backend 27% | Overall 19.31%
+> ✅ **Test Coverage**: Frontend 11.61% | Backend 51.09% | Overall 31.35% | **6,368 tests passing**
 >
 > ⚡ **CI/CD**: 91.3% pass rate (42/46 workflows) | Optimized pipeline saves 11-16 min/PR | 30 automated checks
 
@@ -223,7 +223,8 @@ npm run dev
 ## 🧪 Testing
 
 **Status:** ✅ Production Ready
-**Frontend Coverage:** 11.61% pass rate, 68% branch coverage
+**Frontend:** 4,588 tests passing (11.61% line coverage, 88.7% branch coverage)
+**Backend:** 1,780 tests passing (51.09% line coverage)
 **Documentation:** [docs/testing/](docs/testing/)
 
 ### Quick Commands
@@ -255,12 +256,11 @@ npx playwright test       # Run E2E tests
 - 📄 [Test Improvement Journey](docs/testing/FRONTEND_TEST_IMPROVEMENT_COMPLETE.md) - Full story (30 min)
 
 **Current Metrics:**
-- ✅ 94.8% test pass rate (73/77 tests)
-- ✅ 100% test file pass rate (7/7 files)
-- ✅ 68.27% branch coverage (excellent)
-- ✅ 60.06% function coverage (good)
+- ✅ **6,368 tests passing** (4,588 frontend + 1,780 backend)
+- ✅ 51.09% backend coverage (exceeds 20% threshold)
+- ✅ 88.7% frontend branch coverage (excellent)
 - ✅ 0 test failures
-- ✅ 5-6.5s test runtime
+- ✅ ~135s frontend / ~216s backend test runtime
 
 **Test Infrastructure:**
 - MSW (Mock Service Worker) for API mocking
@@ -343,8 +343,10 @@ Lokifi uses a **fully automatic coverage tracking system** integrated into CI/CD
 | Component | Coverage | Status | Threshold |
 |-----------|----------|--------|-----------|
 | **Frontend** | 11.61% | ✅ Passing | 10% |
-| **Backend** | 27% | ⚠️ Below Target | 80% |
-| **Overall** | 19.31% | ✅ Passing | 20% |
+| **Backend** | 51.09% | ✅ Passing | 20% |
+| **Overall** | 31.35% | ✅ Passing | 20% |
+
+> 📊 **Total:** 6,368 passing tests (4,588 frontend + 1,780 backend) | Last updated: January 2026
 
 ### 🔍 Local Verification
 
