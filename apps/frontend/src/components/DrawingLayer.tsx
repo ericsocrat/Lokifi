@@ -585,7 +585,7 @@ function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
     p2 = yToPrice(b.y);
   if (p1 == null || p2 == null || p1 === 0) return;
   const pct = ((p2 - p1) / Math.abs(p1)) * 100;
-  const txt = String(Math.round(pct)) + '%' + (p2 != null ? ' @ ' + p2 : '');
+  const txt = `${Math.round(pct)}% @ ${p2}`;
   ctx.save();
   ctx.fillStyle = '#e5e7eb';
   ctx.font = '12px ui-sans-serif, system-ui';
