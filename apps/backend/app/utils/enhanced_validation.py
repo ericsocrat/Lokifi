@@ -29,6 +29,12 @@ def sanitize_for_logging(value: Any, max_length: int = 200) -> str:
 
     Returns:
         A safe string representation suitable for logging
+
+    Security:
+        - Removes all ASCII control characters (0x00-0x1F, 0x7F)
+        - Replaces with underscore to preserve string length visibility
+        - Truncates to max_length to prevent log flooding
+        - HTML-escapes output to prevent log viewer exploits
     """
     if value is None:
         return "<None>"
@@ -36,17 +42,9 @@ def sanitize_for_logging(value: Any, max_length: int = 200) -> str:
     # Convert to string
     text = str(value)
 
-    # Remove control characters (newlines, carriage returns, tabs, etc.)
-    # Keep only printable ASCII and safe unicode
-    safe_chars = []
-    for char in text:
-        # Replace control characters with placeholder
-        if ord(char) < 32 or char in "\r\n\t\x0b\x0c" or ord(char) == 127:
-            safe_chars.append("_")
-        else:
-            safe_chars.append(char)
-
-    text = "".join(safe_chars)
+    # Remove control characters using optimized generator expression
+    # Replace control chars (< 32, == 127, or explicit \r\n\t\x0b\x0c) with underscore
+    text = "".join("_" if ord(char) < 32 or ord(char) == 127 else char for char in text)
 
     # Truncate if too long
     if len(text) > max_length:
