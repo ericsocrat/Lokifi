@@ -1,13 +1,13 @@
 {
-  "totalRuns": 59,
+  "totalRuns": 60,
   "firstRun": "2025-10-19T14:49:34.228Z",
-  "lastRun": "2026-01-05T14:47:34.611Z",
+  "lastRun": "2026-01-05T16:33:25.963Z",
   "bestCoverage": {
-    "statements": 36.24217303113149,
-    "branches": 80.64386317907444,
+    "statements": 36.24236544440279,
+    "branches": 80.52758759565042,
     "functions": 86.793953858393,
-    "lines": 36.24217303113149,
-    "timestamp": "2026-01-04T23:44:00.163Z"
+    "lines": 36.24236544440279,
+    "timestamp": "2026-01-05T16:33:25.963Z"
   },
   "worstCoverage": {
     "statements": 11.259037646472201,

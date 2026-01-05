@@ -1560,14 +1560,14 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - "Get success metrics" - View overall success rates and top patterns
 - "Search patterns for [keyword]" - Find relevant patterns by topic
 
-**Pattern Categories** (43 patterns across 7 categories):
+**Pattern Categories** (44 patterns across 7 categories):
 - **Testing** (18) - AsyncMock, Mathematical Indicator Testing, Mock side_effect, 2-Tier Caching, Frontend React Testing, Pure Functions, Fixtures, Branch Coverage
 - **CI/CD** (5) - Workflow Health Check, GitHub CLI Investigation, Service Config Standards, Working Directory Context
 - **Code Quality** (6) - Zustand+Immer, TypeScript Any Elimination, Draft<T> Mutations, Python Ruff, ESLint Quality, Named Logger (LOG015)
 - **Dependencies** (4) - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patch Evaluation
 - **Python** (7) - arg-type Elimination, attr-defined Elimination, Assignment Errors, Python 3.10 Compatibility, UTC Imports
 - **Debugging** (3) - Root Cause Analysis, Log Analysis, Systematic Investigation
-- **Security** (2) - Secure Logging, Security Implementation
+- **Security** (3) - Secure Logging, Input Validation, Security Implementation
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
@@ -1933,7 +1933,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 **Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
 **MCP Servers** (4 servers, 25 tools):
-1. **Pattern Library** - 43 patterns from `/docs/architecture/patterns/` (6 tools)
+1. **Pattern Library** - 44 patterns from `/docs/architecture/patterns/` (6 tools)
 2. **Documentation Search** - 109 markdown files indexed (6 tools)
 3. **Git History** - 900+ commits searchable (6 tools)
 4. **Coverage** - Real-time test metrics (7 tools)
