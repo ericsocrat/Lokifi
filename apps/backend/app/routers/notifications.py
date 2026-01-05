@@ -459,7 +459,10 @@ async def create_test_notification(
                 alert_type="test_notification",
                 title=request.title,
                 message=request.message or "This is a test notification.",
-                alert_data={"test": True, "created_by": current_user.username},
+                alert_data={
+                    "test": True,
+                    "created_by": current_user.email,
+                },  # User has email, not username
                 priority=NotificationPriority.NORMAL,
             )
 

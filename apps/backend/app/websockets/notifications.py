@@ -80,7 +80,7 @@ class NotificationWebSocketManager:
             # Store connection metadata
             self.connection_metadata[websocket] = {
                 "user_id": user_id_str,
-                "username": user.username,
+                "name": user.full_name,  # User model has full_name, not username
                 "connected_at": datetime.now(timezone.utc),
                 "last_activity": datetime.now(timezone.utc),
             }
@@ -120,7 +120,7 @@ class NotificationWebSocketManager:
                 },
             )
 
-            logger.info(f"WebSocket connected for user {user.username} ({user.id})")
+            logger.info(f"WebSocket connected for user {user.full_name} ({user.id})")
             return True
 
         except Exception as e:

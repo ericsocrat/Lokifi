@@ -41,7 +41,7 @@ async def get_platform_messaging_stats(
 
         return {
             **stats,
-            "requested_by": admin_user.username,
+            "requested_by": admin_user.email,  # User model uses email as identifier
             "request_time": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -132,7 +132,7 @@ async def add_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.add_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.username} added blocked words: {words}")
+        logger.info(f"Admin {admin_user.email} added blocked words: {words}")
 
         return {
             "added_words": words,
@@ -159,7 +159,7 @@ async def remove_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.remove_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.username} removed blocked words: {words}")
+        logger.info(f"Admin {admin_user.email} removed blocked words: {words}")
 
         return {
             "removed_words": words,
@@ -217,7 +217,7 @@ async def admin_broadcast_message(
         for user_id in online_users:
             await connection_manager.send_personal_message(str(admin_message), user_id)
 
-        logger.info(f"Admin {admin_user.username} sent broadcast: {message}")
+        logger.info(f"Admin {admin_user.email} sent broadcast: {message}")
 
         return {
             "message": message,

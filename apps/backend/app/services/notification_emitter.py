@@ -1,7 +1,10 @@
 # J6 Enterprise Notification Event Emitters
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
+
+if TYPE_CHECKING:
+    from app.models.profile import Profile as ProfileType
 
 from app.models.user import User
 from app.services.notification_service import (
@@ -21,18 +24,29 @@ logger = logging.getLogger(__name__)
 # lightweight mock objects from integration layer
 
 
+class ProfileLike(Protocol):
+    """Protocol for profile-like objects in notification system."""
+
+    username: str | None
+    display_name: str | None
+    avatar_url: str | None
+
+
 class UserLike(Protocol):
     """
     Protocol for user-like objects in notification system
 
     Supports structural typing so that both User models and MockUser
     objects from integration layer can be used interchangeably.
+
+    Note: User attributes (username, display_name, avatar_url) are on the
+    Profile relationship, not directly on User.
     """
 
     id: int | str
-    username: str
-    display_name: str | None
-    avatar_url: str | None
+    email: str
+    full_name: str
+    profile: ProfileLike | None
 
 
 # ================================================================================
@@ -63,20 +77,41 @@ class NotificationEventEmitter:
             True if notification was created successfully
         """
         try:
+            # Get follower profile data (with fallbacks)
+            follower_profile = follower_user.profile
+            follower_display = (
+                follower_profile.display_name if follower_profile else None
+            )
+            follower_username = follower_profile.username if follower_profile else None
+            follower_avatar = follower_profile.avatar_url if follower_profile else None
+            follower_name = (
+                follower_display or follower_username or follower_user.full_name
+            )
+
+            # Get followed user profile data
+            followed_profile = followed_user.profile
+            followed_username = (
+                followed_profile.username if followed_profile else followed_user.email
+            )
+
             notification_data = NotificationData(
                 user_id=str(followed_user.id),
                 type=NotificationType.FOLLOW,
                 priority=NotificationPriority.NORMAL,
                 category="social",
-                title=f"{follower_user.display_name or follower_user.username} started following you",
-                message=f"You have a new follower! {follower_user.display_name or follower_user.username} is now following your updates.",
+                title=f"{follower_name} started following you",
+                message=f"You have a new follower! {follower_name} is now following your updates.",
                 payload={
-                    "follower_id": follower_user.id,
-                    "follower_username": follower_user.username,
-                    "follower_display_name": follower_user.display_name,
-                    "follower_avatar": follower_user.avatar_url,
+                    "follower_id": str(follower_user.id),
+                    "follower_username": follower_username,
+                    "follower_display_name": follower_display,
+                    "follower_avatar": follower_avatar,
                     "followed_at": datetime.now(timezone.utc).isoformat(),
-                    "action_url": f"/profile/{follower_user.username}",
+                    "action_url": (
+                        f"/profile/{follower_username}"
+                        if follower_username
+                        else f"/user/{follower_user.id}"
+                    ),
                     "action_text": "View Profile",
                 },
                 related_entity_type="user",
@@ -91,12 +126,12 @@ class NotificationEventEmitter:
 
             if notification:
                 logger.info(
-                    f"Created follow notification: {follower_user.username} -> {followed_user.username}"
+                    f"Created follow notification: {follower_username or follower_user.email} -> {followed_username}"
                 )
                 return True
             else:
                 logger.warning(
-                    f"Follow notification blocked by preferences: {follower_user.username} -> {followed_user.username}"
+                    f"Follow notification blocked by preferences: {follower_username or follower_user.email} -> {followed_username}"
                 )
                 return False
 
@@ -126,6 +161,21 @@ class NotificationEventEmitter:
             True if notification was created successfully
         """
         try:
+            # Get sender profile data (with fallbacks)
+            sender_profile = sender_user.profile
+            sender_display = sender_profile.display_name if sender_profile else None
+            sender_username = sender_profile.username if sender_profile else None
+            sender_avatar = sender_profile.avatar_url if sender_profile else None
+            sender_name = sender_display or sender_username or sender_user.full_name
+
+            # Get recipient profile data
+            recipient_profile = recipient_user.profile
+            recipient_username = (
+                recipient_profile.username
+                if recipient_profile
+                else recipient_user.email
+            )
+
             # Truncate message for notification preview
             preview_content = (
                 message_content[:100] + "..."
@@ -138,13 +188,13 @@ class NotificationEventEmitter:
                 type=NotificationType.DM_MESSAGE_RECEIVED,
                 priority=NotificationPriority.HIGH,  # DMs are high priority
                 category="messages",
-                title=f"New message from {sender_user.display_name or sender_user.username}",
+                title=f"New message from {sender_name}",
                 message=preview_content,
                 payload={
-                    "sender_id": sender_user.id,
-                    "sender_username": sender_user.username,
-                    "sender_display_name": sender_user.display_name,
-                    "sender_avatar": sender_user.avatar_url,
+                    "sender_id": str(sender_user.id),
+                    "sender_username": sender_username,
+                    "sender_display_name": sender_display,
+                    "sender_avatar": sender_avatar,
                     "message_id": message_id,
                     "thread_id": thread_id,
                     "full_message": message_content,
@@ -167,12 +217,12 @@ class NotificationEventEmitter:
 
             if notification:
                 logger.info(
-                    f"Created DM notification: {sender_user.username} -> {recipient_user.username}"
+                    f"Created DM notification: {sender_username or sender_user.email} -> {recipient_username}"
                 )
                 return True
             else:
                 logger.warning(
-                    f"DM notification blocked by preferences: {sender_user.username} -> {recipient_user.username}"
+                    f"DM notification blocked by preferences: {sender_username or sender_user.email} -> {recipient_username}"
                 )
                 return False
 
@@ -253,14 +303,17 @@ class NotificationEventEmitter:
                 notification_data
             )
 
+            # Get user identifier for logging
+            user_name = (user.profile.username if user.profile else None) or user.email
+
             if notification:
                 logger.info(
-                    f"Created AI reply notification for {user.username}: {ai_provider} response"
+                    f"Created AI reply notification for {user_name}: {ai_provider} response"
                 )
                 return True
             else:
                 logger.warning(
-                    f"AI reply notification blocked by preferences for {user.username}"
+                    f"AI reply notification blocked by preferences for {user_name}"
                 )
                 return False
 
@@ -270,8 +323,8 @@ class NotificationEventEmitter:
 
     @staticmethod
     async def emit_mention_notification(
-        mentioned_user: User,
-        mentioning_user: User,
+        mentioned_user: UserLike,
+        mentioning_user: UserLike,
         content: str,
         context_type: str,  # "message", "comment", etc.
         context_id: str,
@@ -293,18 +346,40 @@ class NotificationEventEmitter:
             # Truncate content for preview
             preview_content = content[:120] + "..." if len(content) > 120 else content
 
+            # Get mentioning user's profile data (with fallbacks)
+            mentioning_profile = mentioning_user.profile
+            mentioning_display = (
+                mentioning_profile.display_name if mentioning_profile else None
+            )
+            mentioning_username = (
+                mentioning_profile.username if mentioning_profile else None
+            )
+            mentioning_avatar = (
+                mentioning_profile.avatar_url if mentioning_profile else None
+            )
+            mentioning_name = (
+                mentioning_display or mentioning_username or mentioning_user.full_name
+            )
+
+            # Get mentioned user's profile data
+            mentioned_profile = mentioned_user.profile
+            mentioned_username = (
+                mentioned_profile.username if mentioned_profile else None
+            )
+
             notification_data = NotificationData(
-                user_id=mentioned_user.id,
+                user_id=str(mentioned_user.id),
                 type=NotificationType.MENTION,
                 priority=NotificationPriority.HIGH,
                 category="social",
-                title=f"{mentioning_user.display_name or mentioning_user.username} mentioned you",
+                title=f"{mentioning_name} mentioned you",
                 message=preview_content,
                 payload={
-                    "mentioning_user_id": mentioning_user.id,
-                    "mentioning_username": mentioning_user.username,
-                    "mentioning_display_name": mentioning_user.display_name,
-                    "mentioning_avatar": mentioning_user.avatar_url,
+                    "mentioning_user_id": str(mentioning_user.id),
+                    "mentioning_username": mentioning_username,
+                    "mentioning_display_name": mentioning_display
+                    or mentioning_user.full_name,
+                    "mentioning_avatar": mentioning_avatar,
                     "content": content,
                     "preview": preview_content,
                     "context_type": context_type,
@@ -323,14 +398,18 @@ class NotificationEventEmitter:
                 notification_data
             )
 
+            # Get usernames for logging (with fallbacks)
+            log_mentioning = mentioning_username or mentioning_user.email
+            log_mentioned = mentioned_username or mentioned_user.email
+
             if notification:
                 logger.info(
-                    f"Created mention notification: {mentioning_user.username} mentioned {mentioned_user.username}"
+                    f"Created mention notification: {log_mentioning} mentioned {log_mentioned}"
                 )
                 return True
             else:
                 logger.warning(
-                    f"Mention notification blocked by preferences: {mentioning_user.username} -> {mentioned_user.username}"
+                    f"Mention notification blocked by preferences: {log_mentioning} -> {log_mentioned}"
                 )
                 return False
 
@@ -408,7 +487,7 @@ class NotificationEventEmitter:
 
     @staticmethod
     async def emit_bulk_follow_notifications(
-        follower_user: User, followed_users: list[User]
+        follower_user: UserLike, followed_users: list[UserLike]
     ) -> list[str]:
         """
         Emit follow notifications in bulk for efficiency
@@ -423,21 +502,36 @@ class NotificationEventEmitter:
         try:
             notifications_data = []
 
+            # Get follower profile data (with fallbacks)
+            follower_profile = follower_user.profile
+            follower_display = (
+                follower_profile.display_name if follower_profile else None
+            )
+            follower_username = follower_profile.username if follower_profile else None
+            follower_avatar = follower_profile.avatar_url if follower_profile else None
+            follower_name = (
+                follower_display or follower_username or follower_user.full_name
+            )
+
             for followed_user in followed_users:
                 notification_data = NotificationData(
-                    user_id=followed_user.id,
+                    user_id=str(followed_user.id),
                     type=NotificationType.FOLLOW,
                     priority=NotificationPriority.NORMAL,
                     category="social",
-                    title=f"{follower_user.display_name or follower_user.username} started following you",
-                    message=f"You have a new follower! {follower_user.display_name or follower_user.username} is now following your updates.",
+                    title=f"{follower_name} started following you",
+                    message=f"You have a new follower! {follower_name} is now following your updates.",
                     payload={
-                        "follower_id": follower_user.id,
-                        "follower_username": follower_user.username,
-                        "follower_display_name": follower_user.display_name,
-                        "follower_avatar": follower_user.avatar_url,
+                        "follower_id": str(follower_user.id),
+                        "follower_username": follower_username,
+                        "follower_display_name": follower_display,
+                        "follower_avatar": follower_avatar,
                         "followed_at": datetime.now(timezone.utc).isoformat(),
-                        "action_url": f"/profile/{follower_user.username}",
+                        "action_url": (
+                            f"/profile/{follower_username}"
+                            if follower_username
+                            else f"/user/{follower_user.id}"
+                        ),
                         "action_text": "View Profile",
                         "bulk_follow": True,
                     },
@@ -457,7 +551,7 @@ class NotificationEventEmitter:
             notification_ids = [str(n.id) for n in created_notifications]
 
             logger.info(
-                f"Created {len(created_notifications)} bulk follow notifications from {follower_user.username}"
+                f"Created {len(created_notifications)} bulk follow notifications from {follower_username or follower_user.email}"
             )
             return notification_ids
 

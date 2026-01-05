@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.conversation import Conversation, ConversationParticipant, Message
+from app.models.profile import Profile
 from app.models.user import User
 from app.schemas.conversation import MessageResponse
 
@@ -81,8 +82,11 @@ class MessageSearchService:
             query = query.where(Message.content_type == search_filter.content_type)
 
         if search_filter.sender_username:
-            query = query.join(User, Message.sender_id == User.id).where(
-                User.username.ilike(f"%{search_filter.sender_username}%")
+            # Join through User to Profile to search by username
+            query = (
+                query.join(User, Message.sender_id == User.id)
+                .join(Profile, Profile.user_id == User.id)
+                .where(Profile.username.ilike(f"%{search_filter.sender_username}%"))
             )
 
         if search_filter.date_from:
@@ -164,7 +168,8 @@ class MessageSearchService:
         self, user_id: uuid.UUID, query: str, page: int = 1, page_size: int = 10
     ) -> list[dict[str, Any]]:
         """Search conversations by participant names or group names."""
-        # Search for conversations containing the query in participant usernames
+        # Search for conversations containing the query in participant usernames/display_names
+        # Join through User to Profile for username/display_name search
         stmt = (
             select(Conversation)
             .join(
@@ -172,11 +177,13 @@ class MessageSearchService:
                 ConversationParticipant.conversation_id == Conversation.id,
             )
             .join(User, ConversationParticipant.user_id == User.id)
+            .outerjoin(Profile, Profile.user_id == User.id)
             .where(
                 ConversationParticipant.user_id != user_id,  # Exclude self
                 or_(
-                    User.username.ilike(f"%{query}%"),
-                    User.display_name.ilike(f"%{query}%"),
+                    Profile.username.ilike(f"%{query}%"),
+                    Profile.display_name.ilike(f"%{query}%"),
+                    User.full_name.ilike(f"%{query}%"),  # Fallback to User.full_name
                     Conversation.name.ilike(f"%{query}%"),  # For group chats
                 ),
             )
