@@ -56,10 +56,32 @@ This folder contains all security-related documentation, audits, and implementat
 - Document and learn from security events
 - Regular security training and awareness
 
+## ⚠️ Known Vulnerability Acceptances
+
+### CVE-2024-23342 (ecdsa 0.19.1) - Accepted Risk
+
+**Package**: `ecdsa` 0.19.1 (transitive dependency of `python-jose`)
+
+**Vulnerability**: Minerva timing attack on P-256 curve. The `sign_digest()` API and timing signatures could leak internal nonce, potentially allowing private key discovery.
+
+**Why Accepted**:
+1. **No fix available**: Maintainers consider side-channel attacks out of scope
+2. **Limited exposure**: JWT signing occurs server-side in protected environment
+3. **Attack difficulty**: Timing attacks require precise measurement, difficult remotely
+4. **Verification unaffected**: Only signing operations are vulnerable
+5. **Alternative trade-offs**: PyJWT has its own considerations
+
+**Mitigation**:
+- Server-side JWT operations in controlled environment
+- Network-level protections between services
+- Regular monitoring for alternative libraries
+
+**Review Date**: January 2026 | **Next Review**: April 2026
+
 ## 🔗 Related Documentation
 - [Development Guides](../guides/) - Secure coding practices and standards
 - [API Documentation](../api/) - Security considerations for API development
 - [Main Documentation](../README.md) - Project overview and security context
 
 ---
-*Last updated: September 30, 2025*
+*Last updated: January 5, 2026*
