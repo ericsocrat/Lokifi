@@ -248,7 +248,7 @@ class CryptoDiscoveryService:
                 duration = time.time() - start_time
                 crypto_metrics.record_fetch(cached=True)
                 logger.info(
-                    f"✅ Cache hit for search '{query}' ({len(cached_data)} results) - {duration * 1000:.1f}ms"
+                    f"✅ Cache hit for search '{sanitize_for_logging(query)}' ({len(cached_data)} results) - {duration * 1000:.1f}ms"
                 )
                 return [CryptoAsset(**c) for c in cached_data]
 

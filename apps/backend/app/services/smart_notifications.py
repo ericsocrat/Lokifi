@@ -28,6 +28,7 @@ from app.models.notification_models import (
     NotificationType,
 )
 from app.services.notification_service import NotificationData, notification_service
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -443,7 +444,9 @@ class SmartNotificationProcessor:
     async def configure_ab_test(self, test_name: str, variants: list[str]):
         """Configure A/B test variants"""
         self.a_b_test_variants[test_name] = variants
-        logger.info(f"Configured A/B test '{test_name}' with variants: {variants}")
+        logger.info(
+            f"Configured A/B test '{sanitize_for_logging(test_name)}' with variants: {sanitize_for_logging(str(variants))}"
+        )
 
     async def get_pending_batches_summary(self) -> dict[str, Any]:
         """Get summary of pending notification batches"""
