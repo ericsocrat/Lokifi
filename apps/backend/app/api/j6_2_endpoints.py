@@ -118,9 +118,8 @@ async def get_user_metrics(
         )
         return JSONResponse(content=metrics)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get user metrics: {e!s}"
-        )
+        logging.error(f"Failed to get user metrics: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get user metrics")
 
 
 @router.get("/analytics/performance")
@@ -130,9 +129,8 @@ async def get_performance_metrics(current_user: User = Depends(get_current_user)
         performance = await analytics_service.get_system_performance_metrics()
         return JSONResponse(content=performance)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get performance metrics: {e!s}"
-        )
+        logging.error(f"Failed to get performance metrics: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get performance metrics")
 
 
 @router.get("/analytics/trends")
@@ -145,7 +143,8 @@ async def get_notification_trends(
         trends = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=trends)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get trends: {e!s}")
+        logging.error(f"Failed to get trends: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get trends")
 
 
 @router.get("/analytics/health-score")
@@ -155,9 +154,8 @@ async def get_system_health_score(current_user: User = Depends(get_current_user)
         health_score = await analytics_service.calculate_system_health_score()
         return JSONResponse(content={"health_score": health_score})
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get health score: {e!s}"
-        )
+        logging.error(f"Failed to get health score: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get health score")
 
 
 # Smart Notification Endpoints
@@ -195,9 +193,8 @@ async def send_rich_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to send rich notification: {e!s}"
-        )
+        logging.error(f"Failed to send rich notification: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to send rich notification")
 
 
 @router.post("/batched")
@@ -225,8 +222,9 @@ async def send_batched_notification_endpoint(
             }
         )
     except Exception as e:
+        logging.error(f"Failed to send batched notification: {e}", exc_info=True)
         raise HTTPException(
-            status_code=500, detail=f"Failed to send batched notification: {e!s}"
+            status_code=500, detail="Failed to send batched notification"
         )
 
 
@@ -262,9 +260,8 @@ async def schedule_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to schedule notification: {e!s}"
-        )
+        logging.error(f"Failed to schedule notification: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to schedule notification")
 
 
 # Batch Management Endpoints
@@ -277,9 +274,8 @@ async def get_pending_batches(current_user: User = Depends(get_current_user)):
         summary = await smart_notification_processor.get_pending_batches_summary()
         return JSONResponse(content=summary)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get pending batches: {e!s}"
-        )
+        logging.error(f"Failed to get pending batches: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get pending batches")
 
 
 @router.post("/batches/{batch_id}/deliver")
@@ -305,7 +301,8 @@ async def force_deliver_batch(
         else:
             raise HTTPException(status_code=404, detail="Batch not found")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to deliver batch: {e!s}")
+        logging.error(f"Failed to deliver batch: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to deliver batch")
 
 
 # A/B Testing Endpoints
@@ -330,9 +327,8 @@ async def configure_ab_test(
             }
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to configure A/B test: {e!s}"
-        )
+        logging.error(f"Failed to configure A/B test: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to configure A/B test")
 
 
 @router.get("/ab-tests")
@@ -346,7 +342,8 @@ async def get_ab_tests(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content={"ab_tests": tests})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get A/B tests: {e!s}")
+        logging.error(f"Failed to get A/B tests: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get A/B tests")
 
 
 # User Preferences Endpoints
@@ -365,9 +362,8 @@ async def get_user_notification_preferences(
         )
         return JSONResponse(content=preferences)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get user preferences: {e!s}"
-        )
+        logging.error(f"Failed to get user preferences: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get user preferences")
 
 
 @router.put("/preferences/{user_id}")
@@ -400,9 +396,8 @@ async def update_user_notification_preferences(
             }
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to update preferences: {e!s}"
-        )
+        logging.error(f"Failed to update preferences: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to update preferences")
 
 
 # Templates and Configuration Endpoints
@@ -422,7 +417,8 @@ async def get_notification_templates(current_user: User = Depends(get_current_us
 
         return JSONResponse(content={"templates": templates})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get templates: {e!s}")
+        logging.error(f"Failed to get templates: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get templates")
 
 
 @router.get("/channels")
@@ -439,7 +435,8 @@ async def get_delivery_channels(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content={"channels": channels})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get channels: {e!s}")
+        logging.error(f"Failed to get channels: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get channels")
 
 
 @router.get("/system-status")
@@ -468,9 +465,8 @@ async def get_system_status(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content=status)
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get system status: {e!s}"
-        )
+        logging.error(f"Failed to get system status: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to get system status")
 
 
 # Export router
