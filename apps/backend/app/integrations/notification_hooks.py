@@ -5,7 +5,7 @@ These hooks integrate notification events into the existing codebase.
 """
 
 import logging
-from typing import Any
+from typing import Any, Protocol
 
 from app.services.notification_emitter import notification_emitter
 
@@ -18,6 +18,31 @@ logger = logging.getLogger(__name__)
 # Lightweight user representation for notification integration
 
 
+class ProfileLike(Protocol):
+    """Protocol for profile-like objects (mirrors notification_emitter.ProfileLike)."""
+
+    username: str | None
+    display_name: str | None
+    avatar_url: str | None
+
+
+class MockProfile:
+    """
+    Lightweight profile representation for notification integration.
+
+    Implements the ProfileLike protocol for type compatibility.
+    """
+
+    username: str | None
+    display_name: str | None
+    avatar_url: str | None
+
+    def __init__(self, data: dict[str, Any]):
+        self.username = data.get("username")
+        self.display_name = data.get("display_name")
+        self.avatar_url = data.get("avatar_url")
+
+
 class MockUser:
     """
     Lightweight user representation for notification integration
@@ -26,12 +51,25 @@ class MockUser:
     rather than full User model instances. Implements UserLike protocol.
     """
 
+    id: int | str
+    email: str
+    full_name: str
+    profile: ProfileLike | None
+
     def __init__(self, data: dict[str, Any]):
         # Type-safe initialization matching UserLike protocol requirements
-        self.id: int | str = data.get("id", 0)  # Default to 0 if missing
-        self.username: str = data.get("username", "")  # Default to empty string
-        self.display_name: str | None = data.get("display_name")  # Can be None
-        self.avatar_url: str | None = data.get("avatar_url")  # Can be None
+        self.id = data.get("id", 0)  # Default to 0 if missing
+        self.email = data.get("email", "")  # Required by UserLike
+        self.full_name = data.get("full_name", "")  # Required by UserLike
+        # Profile contains username, display_name, avatar_url
+        self.profile = MockProfile(data) if data else None
+
+    @property
+    def username(self) -> str:
+        """Convenience property to access profile username."""
+        if self.profile and self.profile.username:
+            return self.profile.username
+        return ""
 
 
 # ================================================================================
