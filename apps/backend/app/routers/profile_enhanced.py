@@ -81,13 +81,14 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
         # Process image with PIL (resize if needed)
         with Image.open(file_path) as img:
             # Convert to RGB if necessary
+            processed_img: Image.Image = img
             if img.mode in ("RGBA", "LA", "P"):
-                img = img.convert("RGB")
+                processed_img = img.convert("RGB")
 
             # Resize if too large (max 512x512)
-            if img.width > 512 or img.height > 512:
-                img.thumbnail((512, 512), Image.Resampling.LANCZOS)
-                img.save(file_path, quality=85, optimize=True)
+            if processed_img.width > 512 or processed_img.height > 512:
+                processed_img.thumbnail((512, 512), Image.Resampling.LANCZOS)
+                processed_img.save(file_path, quality=85, optimize=True)
 
         # Return relative URL
         return f"/uploads/avatars/{filename}"
