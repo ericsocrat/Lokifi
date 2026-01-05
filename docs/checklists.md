@@ -27,9 +27,10 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- 🔄 **Session 121** - Dependency cleanup + Renovate branch management
+- 🔄 **Session 122** - CodeQL security fixes + Python code quality
 
 **Previous Sessions:**
+- ✅ **Session 121 COMPLETE** - Dependency cleanup + Renovate branch management
 - ✅ **Session 120 COMPLETE** - MyPy campaign COMPLETE + Vitest v4.0 migration prep + jose type stubs
 - ✅ **Session 119 COMPLETE** - ESLint any elimination FINALE (342 → 34 warnings, 97% campaign total)
 - ✅ **Session 118 COMPLETE** - ESLint any elimination (720 → 378 warnings, -342)
@@ -65,7 +66,56 @@
 - `e62b3e58` - chore(deps): update traefik docker tag to v3.6
 - `061a76a2` - chore(backend-deps): Update dependency hypothesis to v6.148.13
 
-### 🎉 Session 120: MyPy Campaign + Vitest v4.0 Migration Prep
+### 🔄 Session 122: CodeQL Security Fixes + Python Code Quality
+
+**Status:** 🔄 **IN PROGRESS**
+
+**Objective**: Fix CodeQL security alerts, improve Python code quality
+
+**Session 122 Achievements**:
+1. **CodeQL Custom Configuration**: Created `.github/codeql/codeql-config.yml` with frontend+backend paths
+2. **Stack-Trace Exposure Fixes**: 16 instances fixed in j6_2_endpoints.py (return generic errors, log with exc_info=True)
+3. **Path-Injection Prevention**: Enhanced validation in profile_enhanced.py (explicit path separator checks)
+4. **Security Utility**: Added `secure_log_value()` wrapper in enhanced_validation.py
+5. **Log-Injection Documentation**: Documented 23 py/log-injection alerts as false positives (sanitization IS effective)
+6. **CI Fixes**: Fixed "No JavaScript or TypeScript code found" error by including frontend/src in CodeQL paths
+
+**Commits**:
+- `26ffdda7` - feat(security): add CodeQL custom configuration for Lokifi
+- `bca11a30` - fix(security): prevent stack-trace exposure in j6_2_endpoints
+- `97d0e966` - fix(security): enhance path-injection prevention in profile_enhanced
+- `780abb14` - feat(security): add secure_log_value function for static analysis
+- `cb82a8d4` - fix(security): include frontend paths in CodeQL config
+- `3ce5708a` - style: auto-format Python files (Ruff + Black)
+
+**CodeQL Alert Status**:
+- py/log-injection: 23 (documented false positives - sanitization in place)
+- py/stack-trace-exposure: 2 (stale - fixes committed, pending rescan)
+- py/path-injection: 1 (stale - fixes committed, pending rescan)
+
+**CI Status**: All workflows passing ✅
+
+### 🎉 Session 121: Dependency Cleanup + Renovate Management
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Clean up outdated Renovate branches, merge safe dependency updates
+
+**Session 121 Achievements**:
+1. **Traefik v3.6 Update**: Production docker-compose updated from traefik:v3.0 to traefik:v3.6
+2. **hypothesis v6.148.13**: Security patch merged from Renovate
+3. **Branch Cleanup**: Deleted 4 outdated Renovate branches:
+   - `renovate/docker-images` (superseded by manual traefik update)
+   - `renovate/security-patches` (auto-deleted after merge)
+   - `renovate/major-github-actions` (outdated - actions already at v6)
+   - `renovate/python-3.x` (outdated - Python 3.14 not stable)
+
+**Remaining Renovate Branches**:
+- `renovate/major-frontend-major` - Major upgrade (Next.js 16, jsdom v27, ESLint 9) - needs careful review
+
+**Commits**:
+- `e62b3e58` - chore(deps): update traefik docker tag to v3.6
+- `061a76a2` - chore(backend-deps): Update dependency hypothesis to v6.148.13
 
 **Status:** ✅ **COMPLETE** - MyPy 125 → 0 errors + Vitest deprecations fixed
 
