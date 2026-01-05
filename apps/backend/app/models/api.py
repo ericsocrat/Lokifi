@@ -9,11 +9,16 @@ from pydantic import BaseModel, Field
 
 
 # Base response models
+def _utc_now() -> datetime:
+    """Return current UTC datetime (Python 3.12+ compatible)."""
+    return datetime.now(timezone.utc)
+
+
 class APIResponse(BaseModel):
     """Base API response with metadata"""
 
     success: bool = True
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=_utc_now)
     version: str = "1.0.0"
 
 
