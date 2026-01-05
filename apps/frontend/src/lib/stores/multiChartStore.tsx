@@ -1,8 +1,6 @@
 /**
  * Multi-chart layout system with linking capabilities
  * Feature-flagged and OFF by default
- *
- * @ts-nocheck - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
  */
 'use client';
 import type { Draft } from 'immer';
@@ -78,10 +76,10 @@ const createInitialState = () => ({
 });
 
 export const useMultiChartStore = create<MultiChartStore>()(
-  // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
+  // @ts-expect-error - Zustand v5 middleware type inference issue with devtools+persist+immer stack
   devtools(
     persist(
-      // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
+      // @ts-expect-error - Zustand v5 middleware type inference issue
       immer((set, get, _store) => ({
         ...createInitialState(),
 
@@ -166,8 +164,7 @@ export const useMultiChartStore = create<MultiChartStore>()(
         changeSymbolLinked: (symbol: string) => {
           if (!FLAGS.multiChart) return;
 
-          // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
-          const { linking, charts, activeChart } = get();
+          const { linking, charts, activeChart } = get() as MultiChartStore;
           if (!linking.symbol || !activeChart) return;
 
           set({
@@ -180,8 +177,7 @@ export const useMultiChartStore = create<MultiChartStore>()(
         changeTimeframeLinked: (timeframe: string) => {
           if (!FLAGS.multiChart) return;
 
-          // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
-          const { linking, charts, activeChart } = get();
+          const { linking, charts, activeChart } = get() as MultiChartStore;
           if (!linking.timeframe || !activeChart) return;
 
           set({
@@ -194,15 +190,13 @@ export const useMultiChartStore = create<MultiChartStore>()(
         updateCursorLinked: (position: { time: number; price: number }) => {
           if (!FLAGS.multiChart) return;
 
-          // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
-          const { linking } = get();
+          const { linking } = get() as MultiChartStore;
           if (!linking.cursor) return;
 
           // Emit cursor update event for other charts
           window.dispatchEvent(
             new CustomEvent('multiChartCursorUpdate', {
-              // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
-              detail: { position, source: get().activeChart },
+              detail: { position, source: (get() as MultiChartStore).activeChart },
             })
           );
         },
