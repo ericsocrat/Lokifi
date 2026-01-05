@@ -80,6 +80,26 @@ export default defineConfig({
       retries: process.env['CI'] ? 2 : 0, // 2 retries for critical E2E tests
     },
 
+    // Firefox (weekly cross-browser tests)
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+        viewport: { width: 1280, height: 720 },
+      },
+      retries: process.env['CI'] ? 2 : 0,
+    },
+
+    // WebKit/Safari (weekly cross-browser tests)
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1280, height: 720 },
+      },
+      retries: process.env['CI'] ? 2 : 0,
+    },
+
     // Mobile testing (for responsive visual tests)
     {
       name: 'mobile-chrome',

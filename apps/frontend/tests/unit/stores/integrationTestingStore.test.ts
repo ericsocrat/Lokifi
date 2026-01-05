@@ -595,6 +595,7 @@ describe('integrationTestingStore', () => {
   describe('Test Execution', () => {
     it(
       'should run a test suite and track execution',
+      { timeout: 15000 },
       async () => {
         // Mock Math.random to return < 0.8, ensuring simulated tests pass (threshold is < 0.8)
         const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.5);
@@ -688,12 +689,12 @@ describe('integrationTestingStore', () => {
 
         // Restore Math.random
         mockRandom.mockRestore();
-      },
-      { timeout: 15000 }
+      }
     );
 
     it(
       'should run a single test case',
+      { timeout: 10000 },
       async () => {
         const { createTestSuite, addTestCase, runTestCase } = useIntegrationTestingStore.getState();
 
@@ -749,8 +750,7 @@ describe('integrationTestingStore', () => {
         expect(result).toBeDefined();
         expect(result.testCaseId).toBe(testCaseId);
         expect(['passed', 'failed']).toContain(result.status);
-      },
-      { timeout: 10000 }
+      }
     );
 
     it('should cancel a running execution', async () => {
@@ -976,6 +976,7 @@ describe('integrationTestingStore', () => {
   describe('Pipeline Execution', () => {
     it(
       'should run a pipeline successfully',
+      { timeout: 20000 },
       async () => {
         const { createPipeline, runPipeline } = useIntegrationTestingStore.getState();
 
@@ -1018,8 +1019,7 @@ describe('integrationTestingStore', () => {
         expect(execution).toBeDefined();
         expect(execution?.status).toBe('completed');
         expect(execution?.environment).toBe('staging');
-      },
-      { timeout: 20000 }
+      }
     );
 
     it('should approve a pipeline stage', () => {
@@ -1172,6 +1172,7 @@ describe('integrationTestingStore', () => {
   describe('Environment Health', () => {
     it(
       'should check environment health',
+      { timeout: 10000 },
       async () => {
         const { checkEnvironmentHealth } = useIntegrationTestingStore.getState();
 
@@ -1186,8 +1187,7 @@ describe('integrationTestingStore', () => {
 
         const { environmentHealth } = useIntegrationTestingStore.getState();
         expect(environmentHealth).toEqual(healthData);
-      },
-      { timeout: 10000 }
+      }
     );
 
     it('should start health monitoring', () => {
@@ -1433,6 +1433,7 @@ describe('integrationTestingStore', () => {
   describe('Reporting', () => {
     it(
       'should generate HTML report',
+      { timeout: 20000 },
       async () => {
         const { createTestSuite, addTestCase, runTestSuite, generateReport } =
           useIntegrationTestingStore.getState();
@@ -1490,12 +1491,12 @@ describe('integrationTestingStore', () => {
         expect(report).toBeInstanceOf(Blob);
         expect(report.type).toBe('text/html');
         expect(report.size).toBeGreaterThan(0);
-      },
-      { timeout: 20000 }
+      }
     );
 
     it(
       'should export results as JSON',
+      { timeout: 20000 },
       async () => {
         const { createTestSuite, addTestCase, runTestSuite, exportResults } =
           useIntegrationTestingStore.getState();
@@ -1553,12 +1554,12 @@ describe('integrationTestingStore', () => {
         expect(exportBlob).toBeInstanceOf(Blob);
         expect(exportBlob.type).toBe('application/json');
         expect(exportBlob.size).toBeGreaterThan(0);
-      },
-      { timeout: 20000 }
+      }
     );
 
     it(
       'should export results as CSV',
+      { timeout: 20000 },
       async () => {
         const { createTestSuite, addTestCase, runTestSuite, exportResults } =
           useIntegrationTestingStore.getState();
@@ -1616,8 +1617,7 @@ describe('integrationTestingStore', () => {
         expect(exportBlob).toBeInstanceOf(Blob);
         expect(exportBlob.type).toBe('text/csv');
         expect(exportBlob.size).toBeGreaterThan(0);
-      },
-      { timeout: 20000 }
+      }
     );
   });
 
