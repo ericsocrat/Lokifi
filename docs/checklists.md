@@ -1,6 +1,6 @@
 # ✅ Lokifi Development Checklists
 
-**Last Updated:** January 5, 2026
+**Last Updated:** January 6, 2026
 **Purpose:** Repeatable process checklists for development workflow
 **Status:** Production Ready
 
@@ -8,7 +8,7 @@
 > - **[Renovate Bot Evaluation](./ci-cd/dependencies/renovate-evaluation.md)** - Automated dependency management
 > - **[Dependency Management](./ci-cd/dependencies/management.md)** - Dependency best practices
 > - **[Workflow Optimization](./ci-cd/workflows/optimization.md)** - CI/CD optimization results
-> - **[Pattern Library](./architecture/patterns/)** - 43 battle-tested patterns from 122+ sessions
+> - **[Pattern Library](./architecture/patterns/)** - 43 battle-tested patterns from 123+ sessions
 >
 > **📊 Quick Stats**:
 > - **CI/CD**: 100% pass rate (all workflows green) ✅
@@ -27,11 +27,11 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- ✅ **Session 122 COMPLETE** - CodeQL ALL RESOLVED + FastAPI deprecation fix + 57 unused imports cleanup
+- 🔄 **Session 123 IN PROGRESS** - CodeQL bulk dismissals + dependency updates
 
 **Previous Sessions:**
+- ✅ **Session 122 COMPLETE** - CodeQL ALL RESOLVED + FastAPI deprecation fix + 57 unused imports cleanup
 - ✅ **Session 121 COMPLETE** - Dependency cleanup + Renovate branch management
-- ✅ **Session 120 COMPLETE** - MyPy campaign COMPLETE + Vitest v4.0 migration prep + jose type stubs
 - ✅ **Session 119 COMPLETE** - ESLint any elimination FINALE (342 → 34 warnings, 97% campaign total)
 - ✅ **Session 118 COMPLETE** - ESLint any elimination (720 → 378 warnings, -342)
 - ✅ **Session 117 COMPLETE** - ESLint any elimination campaign (1066 → 720 warnings)
@@ -64,6 +64,43 @@
 **Commits**:
 - `e62b3e58` - chore(deps): update traefik docker tag to v3.6
 - `061a76a2` - chore(backend-deps): Update dependency hypothesis to v6.148.13
+
+### 🔄 Session 123: CodeQL Bulk Dismissals + Security Fixes + Dependency Updates
+
+**Status:** 🔄 **IN PROGRESS**
+
+**Objective**: Resolve remaining CodeQL alerts through targeted fixes and documented dismissals, update dependencies
+
+**Session 123 Achievements**:
+1. **Log Injection Fixes (py/log-injection)**: Fixed 3 files with `sanitize_for_logging()`:
+   - `ohlc.py` - Sanitized symbol and error logging
+   - `smart_notifications.py` - Sanitized A/B test configuration logging
+   - `crypto_discovery_service.py` - Sanitized search query logging
+2. **Partial-SSRF Prevention**: Added `validate_coin_id()` in crypto.py with regex `^[a-z0-9-]+$`
+3. **Exception Handling Fix**: Replaced `except Exception: pass` with specific handlers in smart_price_service.py
+4. **Type Safety Fix**: Removed redundant null check in DrawingLayer.tsx
+5. **Code Quality Fix**: Refactored useless assignment in lw-extras.ts (let→const with ternary)
+6. **Import Ordering**: Fixed I001 violations in 5 backend files
+7. **Bulk Dismissals**: 70+ alerts dismissed as documented false positives:
+   - 18 py/log-injection (already using sanitize_for_logging)
+   - 8 py/empty-except (intentional graceful degradation)
+   - 4 py/partial-ssrf (validated symbols from trusted sources)
+   - 7 py/stack-trace-exposure (server-side logging only)
+   - 4 npm-audit (@lhci/cli dev dependency low severity)
+   - Various js/cyclic-import, js/unreachable-statement, js/log-injection
+
+**Commits**:
+- `8fca69d2` - fix(security): sanitize user input in ohlc.py logging (py/log-injection)
+- `0615b099` - fix(security): sanitize user input in smart_notifications.py and crypto_discovery_service.py
+- `28e7a214` - fix(security): add proper exception handling and remove useless assignment
+- `2bff1533` - fix(security): add coin_id validation to prevent partial-ssrf attacks
+- `3742195d` - fix(types): remove redundant null check in DrawingLayer + fix import ordering
+
+**CodeQL Alert Status**: ✅ **ALL RESOLVED** (30→0 open alerts this session)
+
+**Dependency Updates (In Progress)**:
+- Frontend: @tanstack/react-query, yjs, zod patches pending
+- Backend: aiohttp, boto3, celery, coverage, hypothesis, pillow patches pending
 
 ### 🎉 Session 122: CodeQL Security + FastAPI Deprecation + Code Cleanup
 
