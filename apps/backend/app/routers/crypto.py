@@ -3,10 +3,14 @@ Cryptocurrency Market Data Router
 Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
+import logging
+
 import httpx
 from fastapi import APIRouter, HTTPException, Query
 
 from app.core.config import settings
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
 
@@ -39,9 +43,7 @@ async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dic
         raise HTTPException(status_code=504, detail="CoinGecko API request timed out")
     except Exception as e:
         # Log error for debugging without exposing internal details
-        import logging
-
-        logging.error(f"CoinGecko API error: {type(e).__name__}: {e}")
+        logger.error(f"CoinGecko API error: {type(e).__name__}: {e}")
         raise HTTPException(
             status_code=500, detail="Failed to fetch cryptocurrency data"
         )

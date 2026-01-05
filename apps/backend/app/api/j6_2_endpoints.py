@@ -35,6 +35,8 @@ from app.services.smart_notifications import (
     smart_notification_processor,
 )
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/api/v1/notifications", tags=["notifications-j6.2"])
 analytics_service = NotificationAnalytics()
 
@@ -106,7 +108,7 @@ async def get_notification_dashboard(
         dashboard_data = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=dashboard_data)
     except Exception as e:
-        logging.error(f"Failed to get dashboard data: {e}", exc_info=True)
+        logger.error(f"Failed to get dashboard data: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get dashboard data")
 
 
@@ -123,7 +125,7 @@ async def get_user_metrics(
         )
         return JSONResponse(content=metrics)
     except Exception as e:
-        logging.error(f"Failed to get user metrics: {e}", exc_info=True)
+        logger.error(f"Failed to get user metrics: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get user metrics")
 
 
@@ -134,7 +136,7 @@ async def get_performance_metrics(current_user: User = Depends(get_current_user)
         performance = await analytics_service.get_system_performance_metrics()
         return JSONResponse(content=performance)
     except Exception as e:
-        logging.error(f"Failed to get performance metrics: {e}", exc_info=True)
+        logger.error(f"Failed to get performance metrics: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get performance metrics")
 
 
@@ -148,7 +150,7 @@ async def get_notification_trends(
         trends = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=trends)
     except Exception as e:
-        logging.error(f"Failed to get trends: {e}", exc_info=True)
+        logger.error(f"Failed to get trends: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get trends")
 
 
@@ -159,7 +161,7 @@ async def get_system_health_score(current_user: User = Depends(get_current_user)
         health_score = await analytics_service.calculate_system_health_score()
         return JSONResponse(content={"health_score": health_score})
     except Exception as e:
-        logging.error(f"Failed to get health score: {e}", exc_info=True)
+        logger.error(f"Failed to get health score: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get health score")
 
 
@@ -198,7 +200,7 @@ async def send_rich_notification_endpoint(
             }
         )
     except Exception as e:
-        logging.error(f"Failed to send rich notification: {e}", exc_info=True)
+        logger.error(f"Failed to send rich notification: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to send rich notification")
 
 
@@ -227,7 +229,7 @@ async def send_batched_notification_endpoint(
             }
         )
     except Exception as e:
-        logging.error(f"Failed to send batched notification: {e}", exc_info=True)
+        logger.error(f"Failed to send batched notification: {e}", exc_info=True)
         raise HTTPException(
             status_code=500, detail="Failed to send batched notification"
         )
@@ -265,7 +267,7 @@ async def schedule_notification_endpoint(
             }
         )
     except Exception as e:
-        logging.error(f"Failed to schedule notification: {e}", exc_info=True)
+        logger.error(f"Failed to schedule notification: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to schedule notification")
 
 
@@ -279,7 +281,7 @@ async def get_pending_batches(current_user: User = Depends(get_current_user)):
         summary = await smart_notification_processor.get_pending_batches_summary()
         return JSONResponse(content=summary)
     except Exception as e:
-        logging.error(f"Failed to get pending batches: {e}", exc_info=True)
+        logger.error(f"Failed to get pending batches: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get pending batches")
 
 
@@ -306,7 +308,7 @@ async def force_deliver_batch(
         else:
             raise HTTPException(status_code=404, detail="Batch not found")
     except Exception as e:
-        logging.error(f"Failed to deliver batch: {e}", exc_info=True)
+        logger.error(f"Failed to deliver batch: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to deliver batch")
 
 
@@ -332,7 +334,7 @@ async def configure_ab_test(
             }
         )
     except Exception as e:
-        logging.error(f"Failed to configure A/B test: {e}", exc_info=True)
+        logger.error(f"Failed to configure A/B test: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to configure A/B test")
 
 
@@ -347,7 +349,7 @@ async def get_ab_tests(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content={"ab_tests": tests})
     except Exception as e:
-        logging.error(f"Failed to get A/B tests: {e}", exc_info=True)
+        logger.error(f"Failed to get A/B tests: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get A/B tests")
 
 
@@ -367,7 +369,7 @@ async def get_user_notification_preferences(
         )
         return JSONResponse(content=preferences)
     except Exception as e:
-        logging.error(f"Failed to get user preferences: {e}", exc_info=True)
+        logger.error(f"Failed to get user preferences: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get user preferences")
 
 
@@ -401,7 +403,7 @@ async def update_user_notification_preferences(
             }
         )
     except Exception as e:
-        logging.error(f"Failed to update preferences: {e}", exc_info=True)
+        logger.error(f"Failed to update preferences: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to update preferences")
 
 
@@ -422,7 +424,7 @@ async def get_notification_templates(current_user: User = Depends(get_current_us
 
         return JSONResponse(content={"templates": templates})
     except Exception as e:
-        logging.error(f"Failed to get templates: {e}", exc_info=True)
+        logger.error(f"Failed to get templates: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get templates")
 
 
@@ -440,7 +442,7 @@ async def get_delivery_channels(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content={"channels": channels})
     except Exception as e:
-        logging.error(f"Failed to get channels: {e}", exc_info=True)
+        logger.error(f"Failed to get channels: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get channels")
 
 
@@ -470,7 +472,7 @@ async def get_system_status(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content=status)
     except Exception as e:
-        logging.error(f"Failed to get system status: {e}", exc_info=True)
+        logger.error(f"Failed to get system status: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to get system status")
 
 
