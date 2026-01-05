@@ -139,6 +139,10 @@ class SmartNotificationProcessor:
         schedule_id = str(uuid.uuid4())
 
         # Store in Redis with scheduled delivery time
+        if not await redis_client.is_available() or redis_client.client is None:
+            logger.warning("Redis not available, cannot schedule notification")
+            return schedule_id
+
         schedule_key = f"scheduled_notification:{schedule_id}"
         await redis_client.client.set(
             schedule_key,
@@ -356,7 +360,7 @@ class SmartNotificationProcessor:
         """Record analytics for notification"""
         analytics_key = f"notification_analytics:{notification_data.type.value}"
 
-        if await redis_client.is_available():
+        if await redis_client.is_available() and redis_client.client is not None:
             analytics_data = {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "template": notification_data.template.value,

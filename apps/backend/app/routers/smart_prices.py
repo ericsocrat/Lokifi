@@ -241,7 +241,9 @@ async def get_price(
             market_cap=price_data.market_cap,
             high=price_data.high,
             low=price_data.low,
-            last_updated=price_data.last_updated.isoformat(),
+            last_updated=(
+                price_data.last_updated.isoformat() if price_data.last_updated else ""
+            ),
             source=price_data.source,
             cached=price_data.cached,
         )
@@ -275,7 +277,7 @@ async def get_batch_prices(
                     market_cap=pd.market_cap,
                     high=pd.high,
                     low=pd.low,
-                    last_updated=pd.last_updated.isoformat(),
+                    last_updated=pd.last_updated.isoformat() if pd.last_updated else "",
                     source=pd.source,
                     cached=pd.cached,
                 )

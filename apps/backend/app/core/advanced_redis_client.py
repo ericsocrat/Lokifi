@@ -259,6 +259,7 @@ class AdvancedRedisClient:
                 self.metrics.record_miss(time.time() - start_time)
                 return None
 
+            assert self.client is not None  # Type guard after is_available check
             result = await self.client.get(key)
 
             if result:
@@ -289,6 +290,8 @@ class AdvancedRedisClient:
         try:
             if not await self.is_available():
                 return False
+
+            assert self.client is not None  # Type guard after is_available check
 
             # Support both 'expire' and 'ex' parameter names
             ttl = expire or ex
@@ -322,6 +325,8 @@ class AdvancedRedisClient:
             if not await self.is_available():
                 self.metrics.record_miss(time.time() - start_time)
                 return None
+
+            assert self.client is not None  # Type guard after is_available check
 
             # Try to get from specified layer first
             layered_key = f"{layer}:{key}"
@@ -362,6 +367,8 @@ class AdvancedRedisClient:
             if not await self.is_available():
                 return False
 
+            assert self.client is not None  # Type guard after is_available check
+
             layer_config = self.cache_layers.get(layer, self.cache_layers["warm"])
             ttl = custom_ttl or layer_config["ttl"]
             layered_key = f"{layer}:{key}"
@@ -385,6 +392,8 @@ class AdvancedRedisClient:
         """Warm cache with batch operation"""
         if not await self.is_available():
             return {}
+
+        assert self.client is not None  # Type guard after is_available check
 
         try:
             pipeline = self.client.pipeline()
@@ -417,6 +426,8 @@ class AdvancedRedisClient:
         try:
             if not await self.is_available():
                 return 0
+
+            assert self.client is not None  # Type guard after is_available check
 
             if layer:
                 search_pattern = f"{layer}:{pattern}"
