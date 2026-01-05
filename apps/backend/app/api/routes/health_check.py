@@ -59,13 +59,17 @@ async def comprehensive_health_check(
     # Redis health check
     try:
         start_time = time.time()
-        await redis_client.ping()
+        redis_available = await redis_client.is_available()
         redis_response_time = (time.time() - start_time) * 1000
 
-        components["redis"] = {
-            "status": "healthy",
-            "response_time_ms": redis_response_time,
-        }
+        if redis_available:
+            components["redis"] = {
+                "status": "healthy",
+                "response_time_ms": redis_response_time,
+            }
+        else:
+            components["redis"] = {"status": "unhealthy", "error": "Not available"}
+            health_status["status"] = "degraded"
     except Exception as e:
         components["redis"] = {"status": "unhealthy", "error": str(e)}
         health_status["status"] = "degraded"
@@ -132,15 +136,22 @@ async def check_component_health(
     elif component_name == "redis":
         try:
             start_time = time.time()
-            await redis_client.ping()
+            redis_available = await redis_client.is_available()
             response_time = (time.time() - start_time) * 1000
 
-            return {
-                "component": component_name,
-                "status": "healthy",
-                "response_time_ms": response_time,
-                "checks_passed": ["connection", "ping"],
-            }
+            if redis_available:
+                return {
+                    "component": component_name,
+                    "status": "healthy",
+                    "response_time_ms": response_time,
+                    "checks_passed": ["connection", "ping"],
+                }
+            else:
+                return {
+                    "component": component_name,
+                    "status": "unhealthy",
+                    "error": "Not available",
+                }
         except Exception as e:
             return {"component": component_name, "status": "unhealthy", "error": str(e)}
 

@@ -174,6 +174,20 @@ class SmartNotificationProcessor:
         # Fallback to immediate delivery
         return await self._create_rich_notification(notification_data)
 
+    async def _time_based_batching(
+        self, notification_data: RichNotificationData
+    ) -> str:
+        """Time-based batching - batch notifications within time windows"""
+        # For now, fall back to smart grouping
+        return await self._smart_group_notification(notification_data)
+
+    async def _count_based_batching(
+        self, notification_data: RichNotificationData
+    ) -> str:
+        """Count-based batching - batch after N notifications"""
+        # For now, fall back to smart grouping
+        return await self._smart_group_notification(notification_data)
+
     async def _smart_group_notification(
         self, notification_data: RichNotificationData
     ) -> str:
