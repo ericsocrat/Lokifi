@@ -95,6 +95,11 @@
 5. **Branch Cleanup**: Deleted 2 stale local branches
    - pr-83-security-patches
    - renovate/major-linting-tools
+6. **Python 3.12+ Compatibility** (Session 124 continued):
+   - Fixed deprecated `datetime.utcnow()` in db/models.py (8 occurrences)
+   - Fixed deprecated `datetime.utcnow` in models/api.py (1 occurrence)
+   - Added `_utc_now()` helper returning timezone-aware UTC datetime
+   - All models now use `datetime.now(timezone.utc)` per PEP 730
 
 **Commits**:
 - `f1516a5d` - docs: update coverage metrics to January 2026
@@ -103,6 +108,9 @@
 - `b2908015` - chore(deps): update typescript-eslint packages to 8.52.0
 - `a8f334a4` - docs(session124): update checklists.md with session summary
 - `4a6cfa33` - refactor(alembic): replace print() with proper logging
+- `fa8e6eea` - refactor(follow): replace print() with proper logging
+- `89a095f2` - docs(session124): update with code quality improvements
+- `669d175f` - refactor(datetime): replace deprecated datetime.utcnow with timezone-aware UTC
 - `fa8e6eea` - refactor(follow): replace print() with proper logging
 
 ### 🎉 Session 123: CodeQL Bulk Dismissals + Security Fixes + Dependency Updates

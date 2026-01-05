@@ -74,15 +74,31 @@ now = dt.datetime.now(dt.timezone.utc)
 
 **Make all datetimes timezone-aware:**
 
+> ⚠️ **Python 3.12+ Warning**: `datetime.utcnow()` and `datetime.utcfromtimestamp()` are **deprecated** as of Python 3.12 (PEP 730). They will issue `DeprecationWarning` and will be removed in a future Python version.
+
 ```python
 # ❌ BAD - Naive datetime (no timezone)
 now = datetime.now()  # Missing timezone info
-created_at = datetime.utcnow()  # Deprecated, naive
+created_at = datetime.utcnow()  # ⚠️ DEPRECATED in Python 3.12+
 
 # ✅ GOOD - Timezone-aware datetime
 from datetime import datetime, timezone
 now = datetime.now(timezone.utc)  # Explicit UTC
 created_at = datetime.now(timezone.utc)
+
+# For SQLAlchemy model defaults, use a helper function:
+def _utc_now() -> datetime:
+    """Return current UTC datetime (Python 3.12+ compatible)."""
+    return datetime.now(timezone.utc)
+
+class User(Base):
+    created_at = mapped_column(default=_utc_now)  # ✅ Timezone-aware
+
+# For Pydantic models:
+from pydantic import Field
+
+class APIResponse(BaseModel):
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 # For parsing strings with UTC
 timestamp_str = "2025-11-02T10:30:00"
