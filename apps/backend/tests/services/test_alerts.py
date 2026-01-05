@@ -351,7 +351,7 @@ class TestSSEHub:
         queue = await sse_hub.register()
 
         # Fill queue to capacity (default asyncio.Queue has no limit, so create limited one)
-        limited_queue = asyncio.Queue(maxsize=2)
+        limited_queue: asyncio.Queue[str] = asyncio.Queue(maxsize=2)
         sse_hub._clients.clear()
         sse_hub._clients.add(limited_queue)
 

@@ -619,32 +619,6 @@ class AdvancedWebSocketManager:
             }
             await self._send_to_connection(connection_id, response)
 
-    async def _handle_subscribe(self, connection_id: str, data: dict[str, Any]):
-        """Handle subscription request"""
-        subscription = data.get("subscription")
-        if subscription:
-            connection_info = self.connection_pool.connections.get(connection_id)
-            if connection_info:
-                connection_info.subscriptions.add(subscription)
-
-                response = {
-                    "type": "subscription_confirmed",
-                    "data": {"subscription": subscription},
-                }
-                await self._send_to_connection(connection_id, response)
-
-    async def _handle_join_room(self, connection_id: str, data: dict[str, Any]):
-        """Handle room join request"""
-        room = data.get("room")
-        if room:
-            success = await self.connection_pool.join_room(connection_id, room)
-
-            response = {
-                "type": "room_joined" if success else "room_join_failed",
-                "data": {"room": room},
-            }
-            await self._send_to_connection(connection_id, response)
-
     def _start_background_tasks(self):
         """Start background monitoring tasks - deprecated, use start_background_tasks()"""
         pass  # Removed automatic task starting

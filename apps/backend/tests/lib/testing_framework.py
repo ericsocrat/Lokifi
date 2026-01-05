@@ -56,7 +56,7 @@ class AdvancedTestFramework:
 
     def __init__(self, base_url: str = "http://localhost:8002"):
         self.base_url = base_url
-        self.test_results = {
+        self.test_results: dict[str, Any] = {
             "core_api": {},
             "authentication": {},
             "database": {},
@@ -408,7 +408,8 @@ class AdvancedTestFramework:
                 engine = create_async_engine(settings.DATABASE_URL)
                 async with engine.begin() as conn:
                     result = await conn.execute(text("SELECT 1"))
-                    if result.fetchone()[0] == 1:
+                    row = result.fetchone()
+                    if row is not None and row[0] == 1:
                         self.print_test(
                             "Database Connection", "PASS", f"Engine: {engine.name}"
                         )

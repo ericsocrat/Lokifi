@@ -15,9 +15,9 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 app = FastAPI(title="Lokifi Stress Test Server", version="1.0.0")
 
 # Simulate some data storage
-users_data = {}
-notifications_data = []
-portfolio_data = {}
+users_data: dict[str, Any] = {}
+notifications_data: list[Any] = []
+portfolio_data: dict[str, Any] = {}
 
 
 @app.get("/")

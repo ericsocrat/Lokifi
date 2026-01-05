@@ -286,10 +286,10 @@ class SmartPriceService:
 
             results: dict[str, PriceData] = {}
             for coin_id, coin_data in data.items():
-                symbol: str | None = symbol_to_id.get(coin_id)
-                if symbol and "usd" in coin_data:
+                result_symbol: str | None = symbol_to_id.get(coin_id)
+                if result_symbol and "usd" in coin_data:
                     price_data = PriceData(
-                        symbol=symbol,
+                        symbol=result_symbol,
                         price=coin_data["usd"],
                         change_percent=coin_data.get("usd_24h_change"),
                         volume=coin_data.get("usd_24h_vol"),
@@ -300,8 +300,10 @@ class SmartPriceService:
                     )
 
                     # Cache it
-                    await self._set_cache(f"price:{symbol}", price_data.__dict__, 60)
-                    results[symbol] = price_data
+                    await self._set_cache(
+                        f"price:{result_symbol}", price_data.__dict__, 60
+                    )
+                    results[result_symbol] = price_data
 
             logger.info(f"✅ Batch fetched {len(results)} cryptos in ONE request")
             return results

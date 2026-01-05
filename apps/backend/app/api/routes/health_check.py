@@ -8,6 +8,7 @@ import time
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
@@ -42,7 +43,7 @@ async def comprehensive_health_check(
     # Database health check
     try:
         start_time = time.time()
-        await db.execute("SELECT 1")
+        await db.execute(text("SELECT 1"))
         db_response_time = (time.time() - start_time) * 1000
 
         components["database"] = {
@@ -121,7 +122,7 @@ async def check_component_health(
     if component_name == "database":
         try:
             start_time = time.time()
-            await db.execute("SELECT 1")
+            await db.execute(text("SELECT 1"))
             response_time = (time.time() - start_time) * 1000
 
             return {

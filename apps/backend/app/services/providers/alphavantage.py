@@ -26,11 +26,11 @@ async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
         items.append(
             {
                 "ts": int(datetime.fromisoformat(ts).timestamp() * 1000),
-                "o": float(row.get("1. open")),
-                "h": float(row.get("2. high")),
-                "l": float(row.get("3. low")),
-                "c": float(row.get("4. close")),
-                "v": float(row.get("6. volume", 0)),
+                "o": float(row.get("1. open", "0")),
+                "h": float(row.get("2. high", "0")),
+                "l": float(row.get("3. low", "0")),
+                "c": float(row.get("4. close", "0")),
+                "v": float(row.get("6. volume", "0")),
             }
         )
     return items

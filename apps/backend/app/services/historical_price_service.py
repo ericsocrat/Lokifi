@@ -134,7 +134,7 @@ class HistoricalPriceService:
 
     def _period_to_days(self, period: PeriodType) -> int:
         """Convert period string to number of days"""
-        mapping = {
+        mapping: dict[str, int] = {
             "1d": 1,
             "1w": 7,
             "1m": 30,
@@ -142,7 +142,7 @@ class HistoricalPriceService:
             "6m": 180,
             "1y": 365,
             "5y": 1825,
-            "all": "max",
+            "all": 3650,  # ~10 years for 'max'
         }
         return mapping.get(period, 30)
 

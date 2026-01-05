@@ -308,7 +308,7 @@ def portfolio_summary(
 
     total_cost = 0.0
     total_value = 0.0
-    by_symbol: dict[str, dict[str, float]] = {}
+    by_symbol: dict[str, dict[str, float | None]] = {}
 
     for r in rows:
         cur = _latest_price(r.symbol)
@@ -317,7 +317,7 @@ def portfolio_summary(
         if cur is not None:
             val = r.qty * cur
             total_value += val
-            by_symbol[r.symbol] = {  # type: ignore
+            by_symbol[r.symbol] = {
                 "qty": r.qty,
                 "cost_basis": r.cost_basis,
                 "cost_value": cost_val,
@@ -331,7 +331,7 @@ def portfolio_summary(
                 ),
             }
         else:
-            by_symbol[r.symbol] = {  # type: ignore
+            by_symbol[r.symbol] = {
                 "qty": r.qty,
                 "cost_basis": r.cost_basis,
                 "cost_value": cost_val,

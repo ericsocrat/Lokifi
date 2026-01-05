@@ -203,10 +203,11 @@ class NotificationAnalytics:
                 peak_hour: int = 0
                 max_count: int = 0
                 for row in hourly_stats:
-                    row_count = int(row.count)  # type: ignore[arg-type]
+                    # Access count attribute using getattr to avoid SQLAlchemy Row confusion
+                    row_count = int(getattr(row, "count", 0))
                     if row_count > max_count:
                         max_count = row_count
-                        peak_hour = int(row.hour)
+                        peak_hour = int(getattr(row, "hour", 0))
 
                 metrics = NotificationMetrics(
                     total_sent=total_sent,
@@ -268,11 +269,11 @@ class NotificationAnalytics:
                     )
 
                     return UserEngagementMetrics(
-                        active_users=1 if total_notifications > 0 else 0,
+                        active_users=1 if (total_notifications or 0) > 0 else 0,
                         average_notifications_per_user=float(total_notifications or 0),
                         # Note: engagement_rate calculated from read/total ratio
                         # Stored in highly_engaged_users field as the calculation
-                        highly_engaged_users=1 if read_notifications > 0 else 0,
+                        highly_engaged_users=1 if (read_notifications or 0) > 0 else 0,
                     )
 
                 # System-wide metrics

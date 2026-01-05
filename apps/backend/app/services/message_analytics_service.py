@@ -130,7 +130,7 @@ class MessageAnalyticsService:
         # Get user display name (using full_name since User model doesn't have username)
         user_stmt = select(User.full_name).where(User.id == user_id)
         result = await self.db.execute(user_stmt)
-        username = result.scalar() or "Unknown"
+        username = str(result.scalar() or "Unknown")
 
         return UserMessageStats(
             user_id=user_id,

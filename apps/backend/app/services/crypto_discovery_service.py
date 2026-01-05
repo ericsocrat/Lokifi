@@ -307,7 +307,7 @@ class CryptoDiscoveryService:
                 "vs_currency": "usd",
                 "ids": ",".join(coin_ids),
                 "order": "market_cap_desc",
-                "sparkline": False,
+                "sparkline": "false",
                 "price_change_percentage": "24h",
             }
 

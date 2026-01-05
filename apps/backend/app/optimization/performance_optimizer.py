@@ -602,7 +602,7 @@ class CacheOptimizer:
 
         # Type narrowing: explicit list type for errors tracking
         errors: list[str] = []
-        results = {"keys_warmed": 0, "warming_time_ms": 0.0, "errors": errors}
+        keys_warmed: int = 0
 
         start_time = time.time()
 
@@ -618,17 +618,22 @@ class CacheOptimizer:
                         await advanced_redis_client.set_with_layer(
                             key, json.dumps(warm_data), "memory", 3600
                         )
-                        results["keys_warmed"] += 1
+                        keys_warmed += 1
 
                 except Exception as e:
                     errors.append(f"Failed to warm {key}: {e!s}")
 
-            results["warming_time_ms"] = (time.time() - start_time) * 1000
+            warming_time_ms = (time.time() - start_time) * 1000
 
         except Exception as e:
             errors.append(f"Cache warming failed: {e!s}")
+            warming_time_ms = (time.time() - start_time) * 1000
 
-        return results
+        return {
+            "keys_warmed": keys_warmed,
+            "warming_time_ms": warming_time_ms,
+            "errors": errors,
+        }
 
 
 class PerformanceOptimizer:

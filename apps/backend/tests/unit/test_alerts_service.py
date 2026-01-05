@@ -197,6 +197,7 @@ class TestAlertStore:
 
         # Verify persistence
         alert = await alert_store.get("alert-001")
+        assert alert is not None
         assert alert.active is False
 
     @pytest.mark.asyncio
@@ -277,7 +278,7 @@ class TestSSEHub:
     async def test_broadcast_queue_full_handling(self, sse_hub: SSEHub):
         """Test that full queues are handled gracefully"""
         # Create queue with size 1
-        queue = asyncio.Queue(maxsize=1)
+        queue: asyncio.Queue[dict[str, str]] = asyncio.Queue(maxsize=1)
         sse_hub._clients.add(queue)
 
         # Fill queue
@@ -359,6 +360,7 @@ class TestAlertEvaluator:
         await evaluator.stop()
 
         assert evaluator._stop.is_set()
+        assert evaluator._task is not None
         assert evaluator._task.done() or evaluator._task.cancelled()
 
     @pytest.mark.asyncio
@@ -643,6 +645,7 @@ class TestAlertEvaluator:
 
         # Reload alert
         alert = await evaluator.store.get("alert-001")
+        assert alert is not None
         assert alert.last_triggered_at != before
         assert alert.last_triggered_at is not None
 

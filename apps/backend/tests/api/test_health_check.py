@@ -14,6 +14,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.routes.health_check import (
@@ -115,7 +116,7 @@ class TestComprehensiveHealthCheck:
             assert "response_time_ms" in result["components"]["redis"]
 
             # Verify database was queried
-            mock_db_session.execute.assert_called_once_with("SELECT 1")
+            mock_db_session.execute.assert_called_once()
             mock_redis_client.is_available.assert_called_once()
 
     @pytest.mark.asyncio
@@ -326,7 +327,7 @@ class TestCheckComponentHealth:
         assert result["status"] == "healthy"
         assert "response_time_ms" in result
         assert result["checks_passed"] == ["connection", "query_execution"]
-        mock_db_session.execute.assert_called_once_with("SELECT 1")
+        mock_db_session.execute.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_database_component_unhealthy(

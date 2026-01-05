@@ -194,7 +194,7 @@ class J53PerformanceMonitor:
 
     async def check_performance_metrics(self) -> dict[str, Any]:
         """Check key performance metrics"""
-        metrics = {}
+        metrics: dict[str, Any] = {}
 
         try:
             # Get comprehensive metrics
