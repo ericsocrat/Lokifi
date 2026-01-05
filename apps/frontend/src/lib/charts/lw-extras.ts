@@ -27,19 +27,16 @@ export function wireLightweightChartsExtras(
         return;
       }
       const vr = ts?.getVisibleRange?.() ?? ts?.getVisibleLogicalRange?.();
-      let slice = data;
-      if (
+      const slice =
         vr &&
         'from' in vr &&
         'to' in vr &&
         [vr.from, vr.to].every((v) => Number.isFinite(Number(v)))
-      ) {
-        const fromIdx = Math.max(0, Math.floor(Number(vr.from)));
-        const toIdx = Math.ceil(Number(vr.to));
-        slice = data.slice(fromIdx, Math.min(data.length, toIdx + 1));
-      } else {
-        slice = data.slice(-400);
-      }
+          ? data.slice(
+              Math.max(0, Math.floor(Number(vr.from))),
+              Math.min(data.length, Math.ceil(Number(vr.to)) + 1)
+            )
+          : data.slice(-400);
       const xs: number[] = [];
       for (const bar of slice) {
         const x = ts?.timeToCoordinate?.(bar.time as Time);

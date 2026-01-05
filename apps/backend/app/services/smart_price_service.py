@@ -79,8 +79,14 @@ class SmartPriceService:
         try:
             if advanced_redis_client.client:
                 await advanced_redis_client.set(key, value, expire=ttl)
-        except Exception:
-            pass
+        except (ConnectionError, TimeoutError) as e:
+            logger.debug(
+                f"Cache set failed (non-critical): {sanitize_for_logging(str(e))}"
+            )
+        except Exception as e:
+            logger.warning(
+                f"Unexpected cache set error: {sanitize_for_logging(str(e))}"
+            )
 
     async def get_price(
         self, symbol: str, force_refresh: bool = False
