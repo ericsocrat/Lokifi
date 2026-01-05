@@ -40,7 +40,7 @@ def mock_db_session() -> AsyncMock:
 def mock_redis_client() -> MagicMock:
     """Mock Redis client for testing"""
     client = MagicMock()
-    client.ping = AsyncMock()
+    client.is_available = AsyncMock(return_value=True)
     return client
 
 
@@ -116,7 +116,7 @@ class TestComprehensiveHealthCheck:
 
             # Verify database was queried
             mock_db_session.execute.assert_called_once_with("SELECT 1")
-            mock_redis_client.ping.assert_called_once()
+            mock_redis_client.is_available.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_database_failure(
@@ -151,7 +151,9 @@ class TestComprehensiveHealthCheck:
     ) -> None:
         """Should return degraded status when Redis fails"""
         # Arrange
-        mock_redis_client.ping.side_effect = Exception("Redis connection timeout")
+        mock_redis_client.is_available.side_effect = Exception(
+            "Redis connection timeout"
+        )
         with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
@@ -176,7 +178,7 @@ class TestComprehensiveHealthCheck:
         """Should return degraded status when multiple components fail"""
         # Arrange
         mock_db_session.execute.side_effect = Exception("DB error")
-        mock_redis_client.ping.side_effect = Exception("Redis error")
+        mock_redis_client.is_available.side_effect = Exception("Redis error")
         with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
@@ -364,7 +366,7 @@ class TestCheckComponentHealth:
         assert result["status"] == "healthy"
         assert "response_time_ms" in result
         assert result["checks_passed"] == ["connection", "ping"]
-        mock_redis_client.ping.assert_called_once()
+        mock_redis_client.is_available.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_redis_component_unhealthy(
@@ -372,7 +374,7 @@ class TestCheckComponentHealth:
     ) -> None:
         """Should return unhealthy status when Redis fails"""
         # Arrange
-        mock_redis_client.ping.side_effect = Exception("Timeout")
+        mock_redis_client.is_available.side_effect = Exception("Timeout")
 
         # Act
         result = await check_component_health(
@@ -526,4 +528,4 @@ class TestHealthCheckIntegration:
 
             # Assert - Database and Redis called 3 times each
             assert mock_db_session.execute.call_count == 3
-            assert mock_redis_client.ping.call_count == 3
+            assert mock_redis_client.is_available.call_count == 3
