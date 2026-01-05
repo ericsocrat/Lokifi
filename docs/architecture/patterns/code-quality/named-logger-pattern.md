@@ -68,9 +68,9 @@ logging.info("Module loaded")  # Root logger usage
    ```python
    import logging
    from fastapi import APIRouter
-   
+
    logger = logging.getLogger(__name__)
-   
+
    router = APIRouter()
    ```
 
