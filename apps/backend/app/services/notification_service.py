@@ -504,8 +504,8 @@ class NotificationService:
                 all_notifications = all_notifications_result.scalars().all()
 
                 # Analyze by type and priority
-                by_type = {}
-                by_priority = {}
+                by_type: dict[str, int] = {}
+                by_priority: dict[str, int] = {}
                 read_times = []
                 most_recent = None
                 oldest_unread = None

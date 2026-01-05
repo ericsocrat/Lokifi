@@ -494,8 +494,8 @@ class SecurityAlertManager:
             if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
         ]
 
-        severity_counts = {}
-        event_type_counts = {}
+        severity_counts: dict[str, int] = {}
+        event_type_counts: dict[str, int] = {}
 
         for alert in recent_alerts:
             severity_counts[alert.severity.value] = (

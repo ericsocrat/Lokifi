@@ -216,7 +216,7 @@ class DatabaseOptimizer:
         self, explain_data: list[dict[str, Any]] | dict[str, Any]
     ) -> list[str]:
         """Analyze EXPLAIN output to generate optimization suggestions"""
-        suggestions = []
+        suggestions: list[str] = []
 
         try:
             if isinstance(explain_data, list) and len(explain_data) > 0:
@@ -650,7 +650,7 @@ class PerformanceOptimizer:
         """Run comprehensive performance analysis across all components"""
         logger.info("Starting comprehensive performance analysis")
 
-        analysis_results = {
+        analysis_results: dict[str, Any] = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "optimization_level": self.optimization_level.value,
             "database_analysis": {},

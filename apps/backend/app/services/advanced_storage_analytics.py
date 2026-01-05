@@ -518,7 +518,7 @@ class AdvancedStorageAnalytics:
 
     async def analyze_data_patterns(self) -> dict[str, Any]:
         """Analyze data usage patterns for optimization"""
-        patterns = {
+        patterns: dict[str, Any] = {
             "temporal_distribution": {},
             "user_behavior": {},
             "content_analysis": {},

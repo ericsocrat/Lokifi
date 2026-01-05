@@ -100,8 +100,8 @@ class ForexService:
         ]
 
         # Cache for base currency rates to minimize API calls
-        self._rates_cache = {}
-        self._cache_timestamp = {}
+        self._rates_cache: dict[str, dict[str, float]] = {}
+        self._cache_timestamp: dict[str, datetime] = {}
 
     async def get_forex_pairs(self, limit: int = 50) -> list[dict]:
         """

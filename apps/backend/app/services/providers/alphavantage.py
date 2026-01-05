@@ -16,7 +16,9 @@ async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     if interval:
         params["interval"] = interval
     data = await _get("https://www.alphavantage.co/query", params)
-    series = next((v for k, v in data.items() if "Time Series" in k), {})
+    series: dict[str, dict[str, str]] = next(
+        (v for k, v in data.items() if "Time Series" in k), {}
+    )
     items = []
     for ts, row in list(series.items())[:limit][::-1]:
         from datetime import datetime

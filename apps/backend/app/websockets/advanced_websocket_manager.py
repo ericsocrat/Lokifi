@@ -90,7 +90,7 @@ class ConnectionPool:
         self.connections: dict[str, ConnectionInfo] = {}
         self.user_connections: dict[str, set[str]] = defaultdict(set)
         self.room_connections: dict[str, set[str]] = defaultdict(set)
-        self.connection_queue = deque()
+        self.connection_queue: deque[str] = deque()
         self.stats = {
             "total_connections": 0,
             "peak_connections": 0,

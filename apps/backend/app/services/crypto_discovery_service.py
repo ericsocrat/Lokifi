@@ -156,7 +156,7 @@ class CryptoDiscoveryService:
             per_page = min(limit, 250)
             pages_needed = (limit + per_page - 1) // per_page
 
-            all_cryptos = []
+            all_cryptos: list[CryptoAsset] = []
 
             for page in range(1, pages_needed + 1):
                 url = f"{self.coingecko_base}/coins/markets"
