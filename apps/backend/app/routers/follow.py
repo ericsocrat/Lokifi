@@ -3,6 +3,7 @@ Follow router for managing follow relationships and social graph.
 J6.1 Enhanced with notification integration.
 """
 
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
@@ -28,6 +29,8 @@ from app.services.follow_service import FollowService
 
 # Notification Integration
 from scripts.notification_integration_helpers import trigger_follow_notification
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/follow", tags=["follow"])
 
@@ -88,7 +91,7 @@ async def follow_user(
                 )
         except Exception as e:
             # Don't fail the follow action if notification fails
-            print(f"Follow notification failed: {e}")
+            logger.warning("Follow notification failed: %s", e)
 
     else:
         action = "noop"
