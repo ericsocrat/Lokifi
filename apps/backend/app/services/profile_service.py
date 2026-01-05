@@ -253,7 +253,7 @@ class ProfileService:
             .where(and_(Profile.is_public, search_filter))
         )
         result = await self.db.execute(count_stmt)
-        total = result.scalar()
+        total = int(result.scalar() or 0)
 
         public_profiles = []
         if profiles:
@@ -287,10 +287,10 @@ class ProfileService:
 
         return ProfileSearchResponse(
             profiles=public_profiles,
-            total=total or 0,
+            total=total,
             page=page,
             page_size=page_size,
-            has_next=(offset + page_size) < (total or 0),
+            has_next=(offset + page_size) < total,
         )
 
     async def get_notification_preferences(

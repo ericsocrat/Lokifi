@@ -144,7 +144,7 @@ class ConversationService:
             )
         )
         result = await self.db.execute(count_stmt)
-        total = result.scalar() or 0
+        total = int(result.scalar() or 0)
 
         # Build response list
         conversation_responses = []
@@ -259,7 +259,7 @@ class ConversationService:
             .where(Message.conversation_id == conversation_id, ~Message.is_deleted)
         )
         result = await self.db.execute(count_stmt)
-        total = result.scalar() or 0
+        total = int(result.scalar() or 0)
 
         # Build response list
         message_responses = []

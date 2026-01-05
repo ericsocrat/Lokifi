@@ -27,7 +27,7 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
-    Image = None
+    Image = None  # type: ignore[assignment]
 
 
 from app.db.db import get_session

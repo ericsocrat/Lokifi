@@ -286,7 +286,7 @@ class EnhancedProfileService:
             .where(and_(Profile.is_public, search_filter))
         )
         result = await self.db.execute(count_stmt)
-        total = result.scalar()
+        total = int(result.scalar() or 0)
 
         public_profiles = []
         if profiles:
@@ -320,10 +320,10 @@ class EnhancedProfileService:
 
         return ProfileSearchResponse(
             profiles=public_profiles,
-            total=total or 0,
+            total=total,
             page=page,
             page_size=page_size,
-            has_next=(offset + page_size) < (total or 0),
+            has_next=(offset + page_size) < total,
         )
 
     async def delete_user_account(self, user_id: uuid.UUID) -> None:
