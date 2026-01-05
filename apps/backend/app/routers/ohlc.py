@@ -6,6 +6,7 @@ from fastapi import APIRouter, Query
 
 from app.db.schemas.market import OHLCResponse, Timeframe
 from app.services.data_service import ohlc_aggregator
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -108,10 +109,14 @@ async def ohlc(
             for d in ohlc_data
         ]
 
-        logger.info(f"Fetched {len(candles)} candles for {symbol} ({timeframe})")
+        logger.info(
+            f"Fetched {len(candles)} candles for {sanitize_for_logging(symbol)} ({timeframe})"
+        )
         return {"symbol": symbol, "timeframe": str(timeframe), "candles": candles}
 
     except Exception as e:
-        logger.warning(f"Failed to fetch real data for {symbol}: {e}, using mock data")
+        logger.warning(
+            f"Failed to fetch real data for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}, using mock data"
+        )
         mock_candles = generate_mock_data(symbol, str(timeframe), limit)
         return {"symbol": symbol, "timeframe": str(timeframe), "candles": mock_candles}
