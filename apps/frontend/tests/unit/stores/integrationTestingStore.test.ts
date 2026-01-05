@@ -593,165 +593,156 @@ describe('integrationTestingStore', () => {
   // ============================================================================
 
   describe('Test Execution', () => {
-    it(
-      'should run a test suite and track execution',
-      { timeout: 15000 },
-      async () => {
-        // Mock Math.random to return < 0.8, ensuring simulated tests pass (threshold is < 0.8)
-        const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.5);
+    it('should run a test suite and track execution', { timeout: 15000 }, async () => {
+      // Mock Math.random to return < 0.8, ensuring simulated tests pass (threshold is < 0.8)
+      const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.5);
 
-        const { createTestSuite, addTestCase, runTestSuite } =
-          useIntegrationTestingStore.getState();
+      const { createTestSuite, addTestCase, runTestSuite } = useIntegrationTestingStore.getState();
 
-        const suiteId = createTestSuite({
-          name: 'Test Suite',
-          description: 'Test',
-          type: 'api',
-          category: 'integration',
-          config: {
-            timeout: 300,
-            retryCount: 3,
-            parallelExecution: true,
-            maxConcurrency: 5,
-            setupScripts: [],
-            teardownScripts: [],
-            environmentVariables: {},
-            requiredServices: [],
-            dataSeeds: [],
-            reportFormat: ['json' as ReportFormat],
-            notificationChannels: [],
-            successThreshold: 95,
-            performanceThresholds: [],
-            customSettings: {},
+      const suiteId = createTestSuite({
+        name: 'Test Suite',
+        description: 'Test',
+        type: 'api',
+        category: 'integration',
+        config: {
+          timeout: 300,
+          retryCount: 3,
+          parallelExecution: true,
+          maxConcurrency: 5,
+          setupScripts: [],
+          teardownScripts: [],
+          environmentVariables: {},
+          requiredServices: [],
+          dataSeeds: [],
+          reportFormat: ['json' as ReportFormat],
+          notificationChannels: [],
+          successThreshold: 95,
+          performanceThresholds: [],
+          customSettings: {},
+        },
+        tests: [],
+        targetEnvironments: ['staging'],
+        prerequisites: [],
+        isEnabled: true,
+        status: 'active',
+        createdBy: 'test-user',
+        tags: [],
+        lastExecutionId: undefined,
+      });
+
+      // Add test cases
+      addTestCase(suiteId, {
+        name: 'Test 1',
+        description: 'First test',
+        type: 'api_test',
+        steps: [
+          {
+            id: 'step1',
+            name: 'Step 1',
+            type: 'http_request',
+            action: 'GET',
+            parameters: {},
+            continueOnFailure: false,
+            order: 1,
           },
-          tests: [],
-          targetEnvironments: ['staging'],
-          prerequisites: [],
-          isEnabled: true,
-          status: 'active',
-          createdBy: 'test-user',
-          tags: [],
-          lastExecutionId: undefined,
-        });
-
-        // Add test cases
-        addTestCase(suiteId, {
-          name: 'Test 1',
-          description: 'First test',
-          type: 'api_test',
-          steps: [
-            {
-              id: 'step1',
-              name: 'Step 1',
-              type: 'http_request',
-              action: 'GET',
-              parameters: {},
-              continueOnFailure: false,
-              order: 1,
-            },
-          ],
-          assertions: [
-            {
-              id: 'assert1',
-              name: 'Assertion 1',
-              type: 'response_status',
-              target: 'status',
-              operator: 'equals',
-              expected: 200,
-              severity: 'error',
-            },
-          ],
-          timeout: 60,
-          retryCount: 2,
-          isEnabled: true,
-          dependsOn: [],
-          tags: [],
-          testData: [],
-          priority: 'high',
-          estimatedDuration: 30,
-        });
-
-        const executionId = await runTestSuite(suiteId, 'staging');
-
-        expect(executionId).toBeTruthy();
-        expect(executionId).toMatch(/^exec_/);
-
-        const { executions, testSuites } = useIntegrationTestingStore.getState();
-        const execution = executions.find((e) => e.id === executionId);
-        const suite = testSuites.find((s) => s.id === suiteId);
-
-        expect(execution).toBeDefined();
-        expect(execution?.status).toBe('completed');
-        expect(execution?.environment).toBe('staging');
-        expect(execution?.results).toHaveLength(1);
-        expect(suite?.lastExecutionId).toBe(executionId);
-        expect(suite?.executionIds).toContain(executionId);
-
-        // Restore Math.random
-        mockRandom.mockRestore();
-      }
-    );
-
-    it(
-      'should run a single test case',
-      { timeout: 10000 },
-      async () => {
-        const { createTestSuite, addTestCase, runTestCase } = useIntegrationTestingStore.getState();
-
-        const suiteId = createTestSuite({
-          name: 'Test Suite',
-          description: 'Test',
-          type: 'api',
-          category: 'integration',
-          config: {
-            timeout: 300,
-            retryCount: 3,
-            parallelExecution: true,
-            maxConcurrency: 5,
-            setupScripts: [],
-            teardownScripts: [],
-            environmentVariables: {},
-            requiredServices: [],
-            dataSeeds: [],
-            reportFormat: ['json' as ReportFormat],
-            notificationChannels: [],
-            successThreshold: 95,
-            performanceThresholds: [],
-            customSettings: {},
+        ],
+        assertions: [
+          {
+            id: 'assert1',
+            name: 'Assertion 1',
+            type: 'response_status',
+            target: 'status',
+            operator: 'equals',
+            expected: 200,
+            severity: 'error',
           },
-          tests: [],
-          targetEnvironments: ['staging'],
-          prerequisites: [],
-          isEnabled: true,
-          status: 'active',
-          createdBy: 'test-user',
-          tags: [],
-          lastExecutionId: undefined,
-        });
+        ],
+        timeout: 60,
+        retryCount: 2,
+        isEnabled: true,
+        dependsOn: [],
+        tags: [],
+        testData: [],
+        priority: 'high',
+        estimatedDuration: 30,
+      });
 
-        const testCaseId = addTestCase(suiteId, {
-          name: 'Single Test',
-          description: 'Test',
-          type: 'api_test',
-          steps: [],
-          assertions: [],
-          timeout: 60,
-          retryCount: 2,
-          isEnabled: true,
-          dependsOn: [],
-          tags: [],
-          testData: [],
-          priority: 'medium',
-          estimatedDuration: 30,
-        });
+      const executionId = await runTestSuite(suiteId, 'staging');
 
-        const result = await runTestCase(suiteId, testCaseId, 'staging');
+      expect(executionId).toBeTruthy();
+      expect(executionId).toMatch(/^exec_/);
 
-        expect(result).toBeDefined();
-        expect(result.testCaseId).toBe(testCaseId);
-        expect(['passed', 'failed']).toContain(result.status);
-      }
-    );
+      const { executions, testSuites } = useIntegrationTestingStore.getState();
+      const execution = executions.find((e) => e.id === executionId);
+      const suite = testSuites.find((s) => s.id === suiteId);
+
+      expect(execution).toBeDefined();
+      expect(execution?.status).toBe('completed');
+      expect(execution?.environment).toBe('staging');
+      expect(execution?.results).toHaveLength(1);
+      expect(suite?.lastExecutionId).toBe(executionId);
+      expect(suite?.executionIds).toContain(executionId);
+
+      // Restore Math.random
+      mockRandom.mockRestore();
+    });
+
+    it('should run a single test case', { timeout: 10000 }, async () => {
+      const { createTestSuite, addTestCase, runTestCase } = useIntegrationTestingStore.getState();
+
+      const suiteId = createTestSuite({
+        name: 'Test Suite',
+        description: 'Test',
+        type: 'api',
+        category: 'integration',
+        config: {
+          timeout: 300,
+          retryCount: 3,
+          parallelExecution: true,
+          maxConcurrency: 5,
+          setupScripts: [],
+          teardownScripts: [],
+          environmentVariables: {},
+          requiredServices: [],
+          dataSeeds: [],
+          reportFormat: ['json' as ReportFormat],
+          notificationChannels: [],
+          successThreshold: 95,
+          performanceThresholds: [],
+          customSettings: {},
+        },
+        tests: [],
+        targetEnvironments: ['staging'],
+        prerequisites: [],
+        isEnabled: true,
+        status: 'active',
+        createdBy: 'test-user',
+        tags: [],
+        lastExecutionId: undefined,
+      });
+
+      const testCaseId = addTestCase(suiteId, {
+        name: 'Single Test',
+        description: 'Test',
+        type: 'api_test',
+        steps: [],
+        assertions: [],
+        timeout: 60,
+        retryCount: 2,
+        isEnabled: true,
+        dependsOn: [],
+        tags: [],
+        testData: [],
+        priority: 'medium',
+        estimatedDuration: 30,
+      });
+
+      const result = await runTestCase(suiteId, testCaseId, 'staging');
+
+      expect(result).toBeDefined();
+      expect(result.testCaseId).toBe(testCaseId);
+      expect(['passed', 'failed']).toContain(result.status);
+    });
 
     it('should cancel a running execution', async () => {
       const { createTestSuite, addTestCase, cancelExecution } =
@@ -974,53 +965,49 @@ describe('integrationTestingStore', () => {
   // ============================================================================
 
   describe('Pipeline Execution', () => {
-    it(
-      'should run a pipeline successfully',
-      { timeout: 20000 },
-      async () => {
-        const { createPipeline, runPipeline } = useIntegrationTestingStore.getState();
+    it('should run a pipeline successfully', { timeout: 20000 }, async () => {
+      const { createPipeline, runPipeline } = useIntegrationTestingStore.getState();
 
-        const pipelineId = createPipeline({
-          name: 'Test Pipeline',
-          description: 'Test',
-          stages: [
-            {
-              id: 'stage1',
-              name: 'Tests',
-              type: 'test_execution',
-              order: 1,
-              testSuites: [],
-              conditions: [],
-              runInParallel: false,
-              continueOnFailure: false,
-              timeout: 600,
-              approvalRequired: false,
-              approvers: [],
-              environmentOverrides: {},
-            },
-          ],
-          triggers: [],
-          environments: ['staging'],
-          notifications: [],
-          isEnabled: true,
-          status: 'idle',
-          createdBy: 'test-user',
-        });
+      const pipelineId = createPipeline({
+        name: 'Test Pipeline',
+        description: 'Test',
+        stages: [
+          {
+            id: 'stage1',
+            name: 'Tests',
+            type: 'test_execution',
+            order: 1,
+            testSuites: [],
+            conditions: [],
+            runInParallel: false,
+            continueOnFailure: false,
+            timeout: 600,
+            approvalRequired: false,
+            approvers: [],
+            environmentOverrides: {},
+          },
+        ],
+        triggers: [],
+        environments: ['staging'],
+        notifications: [],
+        isEnabled: true,
+        status: 'idle',
+        createdBy: 'test-user',
+      });
 
-        const executionId = await runPipeline(pipelineId, 'staging');
+      const executionId = await runPipeline(pipelineId, 'staging');
 
-        expect(executionId).toBeTruthy();
-        expect(executionId).toMatch(/^pipeline_exec_/);
+      expect(executionId).toBeTruthy();
+      expect(executionId).toMatch(/^pipeline_exec_/);
 
-        const { pipelines } = useIntegrationTestingStore.getState();
-        const pipeline = pipelines.find((p) => p.id === pipelineId);
-        const execution = pipeline?.executions.find((e) => e.id === executionId);
+      const { pipelines } = useIntegrationTestingStore.getState();
+      const pipeline = pipelines.find((p) => p.id === pipelineId);
+      const execution = pipeline?.executions.find((e) => e.id === executionId);
 
-        expect(execution).toBeDefined();
-        expect(execution?.status).toBe('completed');
-        expect(execution?.environment).toBe('staging');
-      }
-    );
+      expect(execution).toBeDefined();
+      expect(execution?.status).toBe('completed');
+      expect(execution?.environment).toBe('staging');
+    });
 
     it('should approve a pipeline stage', () => {
       const { createPipeline, approvePipelineStage } = useIntegrationTestingStore.getState();
@@ -1170,25 +1157,21 @@ describe('integrationTestingStore', () => {
   // ============================================================================
 
   describe('Environment Health', () => {
-    it(
-      'should check environment health',
-      { timeout: 10000 },
-      async () => {
-        const { checkEnvironmentHealth } = useIntegrationTestingStore.getState();
+    it('should check environment health', { timeout: 10000 }, async () => {
+      const { checkEnvironmentHealth } = useIntegrationTestingStore.getState();
 
-        const healthData = await checkEnvironmentHealth('staging');
+      const healthData = await checkEnvironmentHealth('staging');
 
-        expect(healthData).toHaveLength(1);
-        expect(healthData[0].environmentId).toBe('staging');
-        expect(['healthy', 'warning', 'critical', 'unknown']).toContain(healthData[0].status);
-        expect(healthData[0].services).toBeDefined();
-        expect(healthData[0].resources).toBeDefined();
-        expect(healthData[0].testReadiness.overallReady).toBe(true);
+      expect(healthData).toHaveLength(1);
+      expect(healthData[0].environmentId).toBe('staging');
+      expect(['healthy', 'warning', 'critical', 'unknown']).toContain(healthData[0].status);
+      expect(healthData[0].services).toBeDefined();
+      expect(healthData[0].resources).toBeDefined();
+      expect(healthData[0].testReadiness.overallReady).toBe(true);
 
-        const { environmentHealth } = useIntegrationTestingStore.getState();
-        expect(environmentHealth).toEqual(healthData);
-      }
-    );
+      const { environmentHealth } = useIntegrationTestingStore.getState();
+      expect(environmentHealth).toEqual(healthData);
+    });
 
     it('should start health monitoring', () => {
       const { startHealthMonitoring } = useIntegrationTestingStore.getState();
@@ -1431,194 +1414,182 @@ describe('integrationTestingStore', () => {
   // ============================================================================
 
   describe('Reporting', () => {
-    it(
-      'should generate HTML report',
-      { timeout: 20000 },
-      async () => {
-        const { createTestSuite, addTestCase, runTestSuite, generateReport } =
-          useIntegrationTestingStore.getState();
+    it('should generate HTML report', { timeout: 20000 }, async () => {
+      const { createTestSuite, addTestCase, runTestSuite, generateReport } =
+        useIntegrationTestingStore.getState();
 
-        const suiteId = createTestSuite({
-          name: 'Test Suite',
-          description: 'Test',
-          type: 'api',
-          category: 'integration',
-          config: {
-            timeout: 300,
-            retryCount: 3,
-            parallelExecution: true,
-            maxConcurrency: 5,
-            setupScripts: [],
-            teardownScripts: [],
-            environmentVariables: {},
-            requiredServices: [],
-            dataSeeds: [],
-            reportFormat: ['html' as ReportFormat],
-            notificationChannels: [],
-            successThreshold: 95,
-            performanceThresholds: [],
-            customSettings: {},
-          },
-          tests: [],
-          targetEnvironments: ['staging'],
-          prerequisites: [],
-          isEnabled: true,
-          status: 'active',
-          createdBy: 'test-user',
-          tags: [],
-          lastExecutionId: undefined,
-        });
+      const suiteId = createTestSuite({
+        name: 'Test Suite',
+        description: 'Test',
+        type: 'api',
+        category: 'integration',
+        config: {
+          timeout: 300,
+          retryCount: 3,
+          parallelExecution: true,
+          maxConcurrency: 5,
+          setupScripts: [],
+          teardownScripts: [],
+          environmentVariables: {},
+          requiredServices: [],
+          dataSeeds: [],
+          reportFormat: ['html' as ReportFormat],
+          notificationChannels: [],
+          successThreshold: 95,
+          performanceThresholds: [],
+          customSettings: {},
+        },
+        tests: [],
+        targetEnvironments: ['staging'],
+        prerequisites: [],
+        isEnabled: true,
+        status: 'active',
+        createdBy: 'test-user',
+        tags: [],
+        lastExecutionId: undefined,
+      });
 
-        addTestCase(suiteId, {
-          name: 'Test',
-          description: 'Test',
-          type: 'api_test',
-          steps: [],
-          assertions: [],
-          timeout: 60,
-          retryCount: 2,
-          isEnabled: true,
-          dependsOn: [],
-          tags: [],
-          testData: [],
-          priority: 'medium',
-          estimatedDuration: 30,
-        });
+      addTestCase(suiteId, {
+        name: 'Test',
+        description: 'Test',
+        type: 'api_test',
+        steps: [],
+        assertions: [],
+        timeout: 60,
+        retryCount: 2,
+        isEnabled: true,
+        dependsOn: [],
+        tags: [],
+        testData: [],
+        priority: 'medium',
+        estimatedDuration: 30,
+      });
 
-        const executionId = await runTestSuite(suiteId, 'staging');
-        const report = await generateReport(executionId, 'html');
+      const executionId = await runTestSuite(suiteId, 'staging');
+      const report = await generateReport(executionId, 'html');
 
-        expect(report).toBeInstanceOf(Blob);
-        expect(report.type).toBe('text/html');
-        expect(report.size).toBeGreaterThan(0);
-      }
-    );
+      expect(report).toBeInstanceOf(Blob);
+      expect(report.type).toBe('text/html');
+      expect(report.size).toBeGreaterThan(0);
+    });
 
-    it(
-      'should export results as JSON',
-      { timeout: 20000 },
-      async () => {
-        const { createTestSuite, addTestCase, runTestSuite, exportResults } =
-          useIntegrationTestingStore.getState();
+    it('should export results as JSON', { timeout: 20000 }, async () => {
+      const { createTestSuite, addTestCase, runTestSuite, exportResults } =
+        useIntegrationTestingStore.getState();
 
-        const suiteId = createTestSuite({
-          name: 'Test Suite',
-          description: 'Test',
-          type: 'api',
-          category: 'integration',
-          config: {
-            timeout: 300,
-            retryCount: 3,
-            parallelExecution: true,
-            maxConcurrency: 5,
-            setupScripts: [],
-            teardownScripts: [],
-            environmentVariables: {},
-            requiredServices: [],
-            dataSeeds: [],
-            reportFormat: ['json' as ReportFormat],
-            notificationChannels: [],
-            successThreshold: 95,
-            performanceThresholds: [],
-            customSettings: {},
-          },
-          tests: [],
-          targetEnvironments: ['staging'],
-          prerequisites: [],
-          isEnabled: true,
-          status: 'active',
-          createdBy: 'test-user',
-          tags: [],
-          lastExecutionId: undefined,
-        });
+      const suiteId = createTestSuite({
+        name: 'Test Suite',
+        description: 'Test',
+        type: 'api',
+        category: 'integration',
+        config: {
+          timeout: 300,
+          retryCount: 3,
+          parallelExecution: true,
+          maxConcurrency: 5,
+          setupScripts: [],
+          teardownScripts: [],
+          environmentVariables: {},
+          requiredServices: [],
+          dataSeeds: [],
+          reportFormat: ['json' as ReportFormat],
+          notificationChannels: [],
+          successThreshold: 95,
+          performanceThresholds: [],
+          customSettings: {},
+        },
+        tests: [],
+        targetEnvironments: ['staging'],
+        prerequisites: [],
+        isEnabled: true,
+        status: 'active',
+        createdBy: 'test-user',
+        tags: [],
+        lastExecutionId: undefined,
+      });
 
-        addTestCase(suiteId, {
-          name: 'Test',
-          description: 'Test',
-          type: 'api_test',
-          steps: [],
-          assertions: [],
-          timeout: 60,
-          retryCount: 2,
-          isEnabled: true,
-          dependsOn: [],
-          tags: [],
-          testData: [],
-          priority: 'medium',
-          estimatedDuration: 30,
-        });
+      addTestCase(suiteId, {
+        name: 'Test',
+        description: 'Test',
+        type: 'api_test',
+        steps: [],
+        assertions: [],
+        timeout: 60,
+        retryCount: 2,
+        isEnabled: true,
+        dependsOn: [],
+        tags: [],
+        testData: [],
+        priority: 'medium',
+        estimatedDuration: 30,
+      });
 
-        const executionId = await runTestSuite(suiteId, 'staging');
-        const exportBlob = await exportResults([executionId], 'json');
+      const executionId = await runTestSuite(suiteId, 'staging');
+      const exportBlob = await exportResults([executionId], 'json');
 
-        expect(exportBlob).toBeInstanceOf(Blob);
-        expect(exportBlob.type).toBe('application/json');
-        expect(exportBlob.size).toBeGreaterThan(0);
-      }
-    );
+      expect(exportBlob).toBeInstanceOf(Blob);
+      expect(exportBlob.type).toBe('application/json');
+      expect(exportBlob.size).toBeGreaterThan(0);
+    });
 
-    it(
-      'should export results as CSV',
-      { timeout: 20000 },
-      async () => {
-        const { createTestSuite, addTestCase, runTestSuite, exportResults } =
-          useIntegrationTestingStore.getState();
+    it('should export results as CSV', { timeout: 20000 }, async () => {
+      const { createTestSuite, addTestCase, runTestSuite, exportResults } =
+        useIntegrationTestingStore.getState();
 
-        const suiteId = createTestSuite({
-          name: 'Test Suite',
-          description: 'Test',
-          type: 'api',
-          category: 'integration',
-          config: {
-            timeout: 300,
-            retryCount: 3,
-            parallelExecution: true,
-            maxConcurrency: 5,
-            setupScripts: [],
-            teardownScripts: [],
-            environmentVariables: {},
-            requiredServices: [],
-            dataSeeds: [],
-            reportFormat: ['json' as ReportFormat],
-            notificationChannels: [],
-            successThreshold: 95,
-            performanceThresholds: [],
-            customSettings: {},
-          },
-          tests: [],
-          targetEnvironments: ['staging'],
-          prerequisites: [],
-          isEnabled: true,
-          status: 'active',
-          createdBy: 'test-user',
-          tags: [],
-          lastExecutionId: undefined,
-        });
+      const suiteId = createTestSuite({
+        name: 'Test Suite',
+        description: 'Test',
+        type: 'api',
+        category: 'integration',
+        config: {
+          timeout: 300,
+          retryCount: 3,
+          parallelExecution: true,
+          maxConcurrency: 5,
+          setupScripts: [],
+          teardownScripts: [],
+          environmentVariables: {},
+          requiredServices: [],
+          dataSeeds: [],
+          reportFormat: ['json' as ReportFormat],
+          notificationChannels: [],
+          successThreshold: 95,
+          performanceThresholds: [],
+          customSettings: {},
+        },
+        tests: [],
+        targetEnvironments: ['staging'],
+        prerequisites: [],
+        isEnabled: true,
+        status: 'active',
+        createdBy: 'test-user',
+        tags: [],
+        lastExecutionId: undefined,
+      });
 
-        addTestCase(suiteId, {
-          name: 'Test',
-          description: 'Test',
-          type: 'api_test',
-          steps: [],
-          assertions: [],
-          timeout: 60,
-          retryCount: 2,
-          isEnabled: true,
-          dependsOn: [],
-          tags: [],
-          testData: [],
-          priority: 'medium',
-          estimatedDuration: 30,
-        });
+      addTestCase(suiteId, {
+        name: 'Test',
+        description: 'Test',
+        type: 'api_test',
+        steps: [],
+        assertions: [],
+        timeout: 60,
+        retryCount: 2,
+        isEnabled: true,
+        dependsOn: [],
+        tags: [],
+        testData: [],
+        priority: 'medium',
+        estimatedDuration: 30,
+      });
 
-        const executionId = await runTestSuite(suiteId, 'staging');
-        const exportBlob = await exportResults([executionId], 'csv');
+      const executionId = await runTestSuite(suiteId, 'staging');
+      const exportBlob = await exportResults([executionId], 'csv');
 
-        expect(exportBlob).toBeInstanceOf(Blob);
-        expect(exportBlob.type).toBe('text/csv');
-        expect(exportBlob.size).toBeGreaterThan(0);
-      }
-    );
+      expect(exportBlob).toBeInstanceOf(Blob);
+      expect(exportBlob.type).toBe('text/csv');
+      expect(exportBlob.size).toBeGreaterThan(0);
+    });
   });
 
   // ============================================================================

@@ -38,8 +38,8 @@ concurrency:
 
 # Permissions for workflow
 permissions:
-  contents: write  # Required for creating branches with visual regression baselines
-  pull-requests: write  # Required for creating PRs with visual baselines
+  contents: write # Required for creating branches with visual regression baselines
+  pull-requests: write # Required for creating PRs with visual baselines
 
 jobs:
   # Detect which parts of codebase changed
