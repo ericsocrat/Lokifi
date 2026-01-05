@@ -187,7 +187,7 @@ class TestCacheOperations:
         cached_data = json.loads(call_args[0][1])  # Parse JSON
         assert len(cached_data) == 1
         assert cached_data[0]["symbol"] == "AAPL"
-        assert call_args[1]["ttl"] == 30  # 30 seconds TTL
+        assert call_args[1]["expire"] == 30  # 30 seconds TTL
 
     @pytest.mark.asyncio
     async def test_cache_error_graceful_degradation(self):

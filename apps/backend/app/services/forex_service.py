@@ -149,7 +149,7 @@ class ForexService:
                     # Pattern: JSON serialization for Redis (list[dict] → str)
                     forex_json = json.dumps(forex_pairs)
                     await self.redis_client.set(
-                        cache_key, forex_json, ttl=self.cache_ttl
+                        cache_key, forex_json, expire=self.cache_ttl
                     )
                     logger.info(
                         f"Cached {len(forex_pairs)} forex pairs for {self.cache_ttl}s"

@@ -178,7 +178,7 @@ class StockService:
                     # Pattern: JSON serialization for Redis (list[dict] → str)
                     stocks_json = json.dumps(stocks)
                     await self.redis_client.set(
-                        cache_key, stocks_json, ttl=self.cache_ttl
+                        cache_key, stocks_json, expire=self.cache_ttl
                     )
                     logger.info(f"Cached {len(stocks)} stocks for {self.cache_ttl}s")
                 except Exception as e:

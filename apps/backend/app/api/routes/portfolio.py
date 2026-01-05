@@ -58,7 +58,7 @@ class SummaryOut(BaseModel):
     total_value: float
     total_pl: float
     total_pl_pct: float
-    by_symbol: dict[str, dict[str, float]]
+    by_symbol: dict[str, dict[str, float | None]]
 
 
 class ImportTextPayload(BaseModel):

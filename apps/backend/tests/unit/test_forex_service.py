@@ -163,10 +163,10 @@ class TestCacheOperations:
         call_args = mock_redis.set.call_args
         cache_key = call_args[0][0]
         cached_value = call_args[0][1]
-        ttl = call_args[1]["ttl"]
+        expire = call_args[1]["expire"]
 
         assert cache_key == "forex:all:3"
-        assert ttl == 30
+        assert expire == 30
         # Verify JSON serialization
         deserialized = json.loads(cached_value)
         assert len(deserialized) == 3
