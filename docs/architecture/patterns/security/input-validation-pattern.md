@@ -62,16 +62,16 @@ VALID_COIN_ID_PATTERN = re.compile(r"^[a-z0-9-]+$")
 
 def validate_coin_id(coin_id: str) -> str:
     """Validate coin_id to prevent SSRF attacks.
-    
+
     Coin IDs should only contain lowercase alphanumeric characters and hyphens.
     Examples: bitcoin, ethereum, binance-smart-chain, wrapped-bitcoin
-    
+
     Args:
         coin_id: The coin ID from the URL path parameter
-        
+
     Returns:
         The validated coin_id (unchanged if valid)
-        
+
     Raises:
         HTTPException: If coin_id contains invalid characters
     """
@@ -91,7 +91,7 @@ async def get_coin_details(coin_id: str):
     """Get detailed information about a specific cryptocurrency."""
     # ✅ GOOD - Validate before using in URL
     coin_id = validate_coin_id(coin_id)
-    
+
     url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
     # Now safe - coin_id can only be alphanumeric+hyphen
 ```
@@ -106,7 +106,7 @@ async def get_ohlc_data(
 ):
     """Get OHLC candle data for charting."""
     coin_id = validate_coin_id(coin_id)  # Reuse same validation
-    
+
     url = f"https://api.coingecko.com/api/v3/coins/{coin_id}/ohlc"
 ```
 
