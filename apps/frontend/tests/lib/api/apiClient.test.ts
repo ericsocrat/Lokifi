@@ -235,9 +235,7 @@ describe('APIClient', () => {
         })
       );
 
-      await expect(client.getOHLC({ symbol: 'AAPL', timeframe: '1h' })).rejects.toThrow(
-        APIError
-      );
+      await expect(client.getOHLC({ symbol: 'AAPL', timeframe: '1h' })).rejects.toThrow(APIError);
     });
   });
 

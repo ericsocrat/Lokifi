@@ -242,7 +242,7 @@ class AdvancedStorageAnalytics:
                     text(
                         """
                         SELECT EXTRACT(hour FROM created_at) as hour, COUNT(*) as count
-                        FROM ai_messages 
+                        FROM ai_messages
                         WHERE created_at >= :last_week
                         GROUP BY EXTRACT(hour FROM created_at)
                         ORDER BY count DESC
@@ -530,11 +530,11 @@ class AdvancedStorageAnalytics:
                 # Temporal distribution
                 temporal_query = text(
                     """
-                    SELECT 
+                    SELECT
                         DATE(created_at) as date,
                         COUNT(*) as message_count,
                         AVG(LENGTH(content)) as avg_length
-                    FROM ai_messages 
+                    FROM ai_messages
                     WHERE created_at >= :last_30_days
                     GROUP BY DATE(created_at)
                     ORDER BY date DESC
@@ -555,7 +555,7 @@ class AdvancedStorageAnalytics:
                 # User behavior patterns
                 user_behavior_query = text(
                     """
-                    SELECT 
+                    SELECT
                         u.id,
                         COUNT(DISTINCT t.id) as thread_count,
                         COUNT(m.id) as message_count,
@@ -585,14 +585,14 @@ class AdvancedStorageAnalytics:
                 # Content analysis
                 content_query = text(
                     """
-                    SELECT 
+                    SELECT
                         provider,
                         model,
                         COUNT(*) as count,
                         AVG(LENGTH(content)) as avg_length,
                         AVG(token_count) as avg_tokens
                     FROM ai_messages
-                    WHERE role = 'assistant' 
+                    WHERE role = 'assistant'
                     AND provider IS NOT NULL
                     GROUP BY provider, model
                     ORDER BY count DESC

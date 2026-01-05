@@ -258,16 +258,18 @@ class SmokeTestSuite:
         print("🧪 Starting comprehensive smoke tests...")
         start_time = time.time()
 
-        # Test categories
-        test_categories = [
-            ("Health Endpoints", self.test_health_endpoints()),
-            ("API Endpoints", self.test_api_endpoints()),
-            ("WebSocket Connectivity", self.test_websocket_connectivity()),
-            ("Database Connectivity", self.test_database_connectivity()),
-            ("Redis Connectivity", self.test_redis_connectivity()),
-        ]
+        # Test categories with typed coroutines
+        test_categories: list[tuple[str, Any]] = (
+            [  # Coroutines that return SmokeTestResult or list[SmokeTestResult]
+                ("Health Endpoints", self.test_health_endpoints()),
+                ("API Endpoints", self.test_api_endpoints()),
+                ("WebSocket Connectivity", self.test_websocket_connectivity()),
+                ("Database Connectivity", self.test_database_connectivity()),
+                ("Redis Connectivity", self.test_redis_connectivity()),
+            ]
+        )
 
-        category_results = {}
+        category_results: dict[str, dict[str, Any]] = {}
         total_tests = 0
         passed_tests = 0
 
@@ -275,19 +277,16 @@ class SmokeTestSuite:
             print(f"\n📋 Testing: {category_name}")
 
             try:
-                # Type-narrowed results handling
+                # Handle coroutine result as list
+                raw_result = await test_coro
                 results: list[SmokeTestResult]
-                if asyncio.iscoroutine(test_coro):
-                    # Single test - wrap in list for uniform handling
-                    result = await test_coro
-                    if isinstance(result, SmokeTestResult):
-                        results = [result]
-                    else:
-                        # Already a list
-                        results = result
+                if isinstance(raw_result, SmokeTestResult):
+                    results = [raw_result]
+                elif isinstance(raw_result, list):
+                    results = raw_result  # type: ignore[assignment]
                 else:
-                    # Multiple tests - already returns list
-                    results = await test_coro
+                    # Fallback - wrap unexpected return
+                    results = []
 
                 category_results[category_name] = {
                     "tests": len(results),
@@ -325,16 +324,19 @@ class SmokeTestSuite:
 
         total_time = time.time() - start_time
 
+        # Calculate success rate
+        success_rate_value: float = (
+            (passed_tests / total_tests * 100) if total_tests > 0 else 0.0
+        )
+
         # Generate summary
-        summary = {
+        summary: dict[str, Any] = {
             "timestamp": datetime.now().isoformat(),
             "total_time_seconds": total_time,
             "total_tests": total_tests,
             "passed_tests": passed_tests,
             "failed_tests": total_tests - passed_tests,
-            "success_rate": (
-                (passed_tests / total_tests * 100) if total_tests > 0 else 0
-            ),
+            "success_rate": success_rate_value,
             "categories": category_results,
         }
 
@@ -345,12 +347,12 @@ class SmokeTestSuite:
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {total_tests - passed_tests}")
-        print(f"Success Rate: {summary['success_rate']:.1f}%")
+        print(f"Success Rate: {success_rate_value:.1f}%")
         print(f"Total Time: {total_time:.2f}s")
 
-        if summary["success_rate"] >= 90:
+        if success_rate_value >= 90:
             print("\n🎉 SMOKE TESTS PASSED! System is healthy.")
-        elif summary["success_rate"] >= 70:
+        elif success_rate_value >= 70:
             print("\n⚠️  SMOKE TESTS MOSTLY PASSED. Some issues detected.")
         else:
             print("\n❌ SMOKE TESTS FAILED. System has significant issues.")

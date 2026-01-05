@@ -13,9 +13,14 @@ import uuid
 from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from fastapi import UploadFile
+
+# Conditional imports for type checking
+if TYPE_CHECKING:
+    from PIL import Image as PILImage
+    from PIL.ImageFile import ImageFile
 
 try:
     from PIL import Image
@@ -23,7 +28,7 @@ try:
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
-    Image = None
+    Image = None  # type: ignore[assignment,misc]
 
 
 from app.db.db import get_session
@@ -235,7 +240,7 @@ class MultiModalAIService:
             # Open and process image
             if Image is None:
                 raise ImportError("PIL not available")
-            image = Image.open(io.BytesIO(content))
+            image = Image.open(io.BytesIO(content))  # type: ignore[misc]
 
             # Get image info
             width, height = image.size
@@ -246,7 +251,9 @@ class MultiModalAIService:
             if width > self.max_image_size[0] or height > self.max_image_size[1]:
                 if Image is not None:
                     # Use a simple resize instead of thumbnail to avoid PIL version issues
-                    image = image.resize(self.max_image_size, resample=1)
+                    image = image.resize(  # type: ignore[assignment]
+                        self.max_image_size, resample=1
+                    )
 
                 # Convert back to bytes
                 output_buffer = io.BytesIO()

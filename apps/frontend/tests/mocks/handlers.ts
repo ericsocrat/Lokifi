@@ -65,7 +65,7 @@ export const handlers = [
     // Try to parse body, catch errors for malformed/oversized payloads
     let body: Record<string, unknown>;
     try {
-      body = await request.json() as Record<string, unknown>;
+      body = (await request.json()) as Record<string, unknown>;
     } catch (_error) {
       return HttpResponse.json({ detail: 'Invalid or oversized request body' }, { status: 400 });
     }

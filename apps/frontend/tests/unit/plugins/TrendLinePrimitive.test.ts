@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Testing requires private property access and mock objects for chart/series APIs */
 
-import type { TrendLineOptions} from '@/lib/plugins/TrendLinePrimitive';
+import type { TrendLineOptions } from '@/lib/plugins/TrendLinePrimitive';
 import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
 import type { Time } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

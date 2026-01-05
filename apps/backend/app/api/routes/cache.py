@@ -89,7 +89,7 @@ async def cache_health_check() -> dict[str, Any]:
 
     try:
         client = await cache.get_client()
-        await client.ping()
+        await client.ping()  # type: ignore[misc]
 
         return {
             "status": "healthy",

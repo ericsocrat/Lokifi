@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- Testing requires private property access and mock objects for chart/series APIs */
 
-import type { RectangleOptions} from '@/lib/plugins/RectanglePrimitive';
+import type { RectangleOptions } from '@/lib/plugins/RectanglePrimitive';
 import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
 import type { Time } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

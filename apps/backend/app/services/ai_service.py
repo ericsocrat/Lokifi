@@ -383,7 +383,7 @@ class AIService:
                     max_tokens=self.max_tokens_per_request, model=model
                 )
 
-                stream_generator = await provider.stream_chat(
+                stream_generator = await provider.stream_chat(  # type: ignore[misc]
                     messages=conversation_history, options=stream_options
                 )
 

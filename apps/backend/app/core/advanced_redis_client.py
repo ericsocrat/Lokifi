@@ -165,8 +165,8 @@ class AdvancedRedisClient:
                     f"Redis connection pool established: {settings.redis_host}:{settings.redis_port}"
                 )
 
-            # Test connection
-            await self.client.ping()
+            # Test connection (ping returns Awaitable[bool] | bool in redis-py typing)
+            await self.client.ping()  # type: ignore[misc]
             self.connected = True
 
             # Initialize cache layers
@@ -216,8 +216,7 @@ class AdvancedRedisClient:
             if not self.client:
                 return False
 
-            await self.client.ping()
-
+            await self.client.ping()  # type: ignore[misc]
             # Reset circuit breaker on successful ping
             if self.circuit_breaker["state"] != "closed":
                 self.circuit_breaker = {

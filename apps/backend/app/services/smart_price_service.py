@@ -61,7 +61,7 @@ class SmartPriceService:
     async def _check_redis_health(self) -> bool:
         try:
             if advanced_redis_client.client:
-                await advanced_redis_client.client.ping()
+                await advanced_redis_client.client.ping()  # type: ignore[misc]
                 return True
         except Exception:
             pass

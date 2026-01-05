@@ -83,8 +83,8 @@ class CryptoDataService:
 
         self._request_count += 1
 
-    async def _fetch_from_api(self, endpoint: str, params: dict | None = None) -> dict:
-        """Fetch data from CoinGecko API with rate limiting"""
+    async def _fetch_from_api(self, endpoint: str, params: dict | None = None) -> Any:
+        """Fetch data from CoinGecko API with rate limiting (returns dict or list)"""
         if not self.client:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 return await self._do_fetch(client, endpoint, params)
@@ -92,8 +92,8 @@ class CryptoDataService:
 
     async def _do_fetch(
         self, client: httpx.AsyncClient, endpoint: str, params: dict | None = None
-    ) -> dict:
-        """Actually perform the API fetch"""
+    ) -> Any:
+        """Actually perform the API fetch (returns JSON - dict or list)"""
         await self._check_rate_limit()
 
         url = f"{COINGECKO_BASE_URL}/{endpoint}"

@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { act, renderHook } from '@testing-library/react';
-import { useWatchlistStore } from '@/lib/stores/watchlistStore';
 import { useTemplatesStore } from '@/lib/stores/templatesStore';
+import { useWatchlistStore } from '@/lib/stores/watchlistStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags
 vi.mock('../lib/featureFlags', () => ({
@@ -11,8 +11,8 @@ vi.mock('../lib/featureFlags', () => ({
     templates: true,
     imgExport: true,
     alertsV2: true,
-    corpActions: true
-  }
+    corpActions: true,
+  },
 }));
 
 describe('Watchlist Store (G2)', () => {
@@ -25,7 +25,7 @@ describe('Watchlist Store (G2)', () => {
   describe('Watchlist Management', () => {
     it('should create a new watchlist', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         expect(id).toBeTruthy();
@@ -37,11 +37,11 @@ describe('Watchlist Store (G2)', () => {
 
     it('should add symbols to watchlist', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL', 'Test note');
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
         expect(watchlist?.items[0].symbol).toBe('AAPL');
@@ -51,12 +51,12 @@ describe('Watchlist Store (G2)', () => {
 
     it('should prevent duplicate symbols', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL');
         result.current.addToWatchlist(id, 'AAPL'); // Duplicate
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
       });
@@ -64,13 +64,13 @@ describe('Watchlist Store (G2)', () => {
 
     it('should remove symbols from watchlist', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL');
         result.current.addToWatchlist(id, 'GOOGL');
         result.current.removeFromWatchlist(id, 'AAPL');
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
         expect(watchlist?.items[0].symbol).toBe('GOOGL');
@@ -81,7 +81,7 @@ describe('Watchlist Store (G2)', () => {
   describe('Alert Management', () => {
     it('should add alerts to watchlist items', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL');
@@ -89,9 +89,9 @@ describe('Watchlist Store (G2)', () => {
           condition: 'above',
           value: 150,
           field: 'price',
-          isActive: true
+          isActive: true,
         });
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         const item = watchlist?.items[0];
         expect(item?.alerts).toHaveLength(1);
@@ -102,7 +102,7 @@ describe('Watchlist Store (G2)', () => {
 
     it('should toggle alert activation', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL');
@@ -110,15 +110,15 @@ describe('Watchlist Store (G2)', () => {
           condition: 'above',
           value: 150,
           field: 'price',
-          isActive: true
+          isActive: true,
         });
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         const alertId = watchlist?.items[0].alerts?.[0].id;
         expect(alertId).toBeTruthy();
-        
+
         result.current.toggleAlert(id, 'AAPL', alertId!);
-        
+
         const updatedWatchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         const alert = updatedWatchlist?.items[0].alerts?.[0];
         expect(alert?.isActive).toBe(false);
@@ -129,35 +129,35 @@ describe('Watchlist Store (G2)', () => {
   describe('Screener Functionality', () => {
     it('should add and remove screener filters', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         result.current.addScreenerFilter({
           field: 'changePercent',
           operator: 'gt',
           value: 5,
-          label: 'Change > 5%'
+          label: 'Change > 5%',
         });
-        
+
         expect(result.current.screenerQuery.filters).toHaveLength(1);
         expect(result.current.screenerQuery.filters[0].field).toBe('changePercent');
-        
+
         const filterId = result.current.screenerQuery.filters[0].id;
         result.current.removeScreenerFilter(filterId);
-        
+
         expect(result.current.screenerQuery.filters).toHaveLength(0);
       });
     });
 
     it('should update screener query parameters', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         result.current.updateScreenerQuery({
           sortBy: 'volume',
           sortOrder: 'asc',
-          limit: 25
+          limit: 25,
         });
-        
+
         expect(result.current.screenerQuery.sortBy).toBe('volume');
         expect(result.current.screenerQuery.sortOrder).toBe('asc');
         expect(result.current.screenerQuery.limit).toBe(25);
@@ -168,10 +168,10 @@ describe('Watchlist Store (G2)', () => {
   describe('Bulk Operations', () => {
     it('should import symbols into new watchlist', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.importWatchlist(['AAPL', 'GOOGL', 'MSFT']);
-        
+
         const watchlist = result.current.watchlists.find((w: { id: string }) => w.id === id);
         expect(watchlist?.items).toHaveLength(3);
         expect(watchlist?.name).toBe('Imported Watchlist');
@@ -180,12 +180,12 @@ describe('Watchlist Store (G2)', () => {
 
     it('should export watchlist symbols', () => {
       const { result } = renderHook(() => useWatchlistStore());
-      
+
       act(() => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL');
         result.current.addToWatchlist(id, 'GOOGL');
-        
+
         const symbols = result.current.exportWatchlist(id);
         expect(symbols).toEqual(['AAPL', 'GOOGL']);
       });
@@ -203,7 +203,7 @@ describe('Templates Store (G4)', () => {
   describe('Template Management', () => {
     it('should create a template with configuration', async () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       const mockConfig = {
         chartType: 'candlestick' as const,
         timeframe: '1D',
@@ -219,20 +219,20 @@ describe('Templates Store (G4)', () => {
         timeScaleOptions: {
           rightOffset: 12,
           barSpacing: 6,
-          minBarSpacing: 0.5
+          minBarSpacing: 0.5,
         },
         colors: {
           upColor: '#00ff00',
           downColor: '#ff0000',
           backgroundColor: '#000000',
           gridColor: '#333333',
-          textColor: '#ffffff'
-        }
+          textColor: '#ffffff',
+        },
       };
 
       await act(async () => {
         const id = await result.current.createTemplate('Test Template', mockConfig);
-        
+
         expect(id).toBeTruthy();
         expect(result.current.templates).toHaveLength(1);
         expect(result.current.templates[0].name).toBe('Test Template');
@@ -243,7 +243,7 @@ describe('Templates Store (G4)', () => {
 
     it('should duplicate existing template', async () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       const mockConfig = {
         chartType: 'line' as const,
         timeframe: '4H',
@@ -259,24 +259,29 @@ describe('Templates Store (G4)', () => {
         timeScaleOptions: {
           rightOffset: 12,
           barSpacing: 6,
-          minBarSpacing: 0.5
+          minBarSpacing: 0.5,
         },
         colors: {
           upColor: '#26a69a',
           downColor: '#ef5350',
           backgroundColor: '#ffffff',
           gridColor: '#e1e1e1',
-          textColor: '#000000'
-        }
+          textColor: '#000000',
+        },
       };
 
       await act(async () => {
         const originalId = await result.current.createTemplate('Original Template', mockConfig);
-        const duplicateId = await result.current.duplicateTemplate(originalId, 'Duplicate Template');
-        
+        const duplicateId = await result.current.duplicateTemplate(
+          originalId,
+          'Duplicate Template'
+        );
+
         expect(result.current.templates).toHaveLength(2);
-        
-        const duplicate = result.current.templates.find((t: { id: string }) => t.id === duplicateId);
+
+        const duplicate = result.current.templates.find(
+          (t: { id: string }) => t.id === duplicateId
+        );
         expect(duplicate?.name).toBe('Duplicate Template');
         expect(duplicate?.config.chartType).toBe('line');
         expect(duplicate?.config.timeframe).toBe('4H');
@@ -285,12 +290,12 @@ describe('Templates Store (G4)', () => {
 
     it('should apply template to chart', () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       // Mock window.dispatchEvent
       const mockDispatchEvent = vi.fn();
       Object.defineProperty(window, 'dispatchEvent', {
         value: mockDispatchEvent,
-        writable: true
+        writable: true,
       });
 
       const mockTemplate = {
@@ -318,28 +323,28 @@ describe('Templates Store (G4)', () => {
           timeScaleOptions: {
             rightOffset: 12,
             barSpacing: 6,
-            minBarSpacing: 0.5
+            minBarSpacing: 0.5,
           },
           colors: {
             upColor: '#00ff00',
             downColor: '#ff0000',
             backgroundColor: '#000000',
             gridColor: '#333333',
-            textColor: '#ffffff'
-          }
-        }
+            textColor: '#ffffff',
+          },
+        },
       };
 
       act(() => {
         result.current.templates.push(mockTemplate);
         result.current.applyTemplate('test-template', 'AAPL');
-        
+
         expect(result.current.activeTemplate?.id).toBe('test-template');
         expect(result.current.templates[0].usageCount).toBe(1);
         expect(mockDispatchEvent).toHaveBeenCalledWith(
           expect.objectContaining({
             type: 'templateApplied',
-            detail: { template: mockTemplate, symbol: 'AAPL' }
+            detail: { template: mockTemplate, symbol: 'AAPL' },
           })
         );
       });
@@ -349,12 +354,12 @@ describe('Templates Store (G4)', () => {
   describe('Template Search and Filtering', () => {
     beforeEach(async () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       // Add test templates
       const templates = [
         { name: 'Scalping Template', tags: ['scalping', 'short-term'] },
         { name: 'Swing Trading Template', tags: ['swing', 'medium-term'] },
-        { name: 'Long Term Analysis', tags: ['long-term', 'investing'] }
+        { name: 'Long Term Analysis', tags: ['long-term', 'investing'] },
       ];
 
       for (const template of templates) {
@@ -373,11 +378,14 @@ describe('Templates Store (G4)', () => {
             priceLines: [],
             timeScaleOptions: { rightOffset: 12, barSpacing: 6, minBarSpacing: 0.5 },
             colors: {
-              upColor: '#00ff00', downColor: '#ff0000', backgroundColor: '#000000',
-              gridColor: '#333333', textColor: '#ffffff'
-            }
+              upColor: '#00ff00',
+              downColor: '#ff0000',
+              backgroundColor: '#000000',
+              gridColor: '#333333',
+              textColor: '#ffffff',
+            },
           });
-          
+
           // Update template with tags
           result.current.updateTemplate(id, { tags: template.tags });
         });
@@ -386,44 +394,44 @@ describe('Templates Store (G4)', () => {
 
     it('should filter templates by search query', () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       act(() => {
         result.current.setSearchQuery('scalping');
       });
-      
+
       expect(result.current.searchQuery).toBe('scalping');
-      
+
       // Note: useFilteredTemplates would need to be tested in a component context
       // or we need to test the filtering logic directly
     });
 
     it('should filter templates by tags', () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       act(() => {
         result.current.toggleTag('short-term');
         result.current.toggleTag('swing');
       });
-      
+
       expect(result.current.selectedTags).toContain('short-term');
       expect(result.current.selectedTags).toContain('swing');
-      
+
       // Toggle off
       act(() => {
         result.current.toggleTag('short-term');
       });
-      
+
       expect(result.current.selectedTags).not.toContain('short-term');
       expect(result.current.selectedTags).toContain('swing');
     });
 
     it('should update sort options', () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       act(() => {
         result.current.setSortOptions('usage', 'asc');
       });
-      
+
       expect(result.current.sortBy).toBe('usage');
       expect(result.current.sortOrder).toBe('asc');
     });
@@ -432,7 +440,7 @@ describe('Templates Store (G4)', () => {
   describe('Import/Export Functionality', () => {
     it('should export template data', async () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       const mockConfig = {
         chartType: 'candlestick' as const,
         timeframe: '1H',
@@ -447,15 +455,18 @@ describe('Templates Store (G4)', () => {
         priceLines: [],
         timeScaleOptions: { rightOffset: 12, barSpacing: 6, minBarSpacing: 0.5 },
         colors: {
-          upColor: '#00ff00', downColor: '#ff0000', backgroundColor: '#000000',
-          gridColor: '#333333', textColor: '#ffffff'
-        }
+          upColor: '#00ff00',
+          downColor: '#ff0000',
+          backgroundColor: '#000000',
+          gridColor: '#333333',
+          textColor: '#ffffff',
+        },
       };
 
       await act(async () => {
         const id = await result.current.createTemplate('Export Test', mockConfig);
         const exported = result.current.exportTemplate(id);
-        
+
         expect(exported.name).toBe('Export Test');
         expect(exported.config.chartType).toBe('candlestick');
         expect(exported.createdBy).toBe('exported');
@@ -465,7 +476,7 @@ describe('Templates Store (G4)', () => {
 
     it('should import template data', async () => {
       const { result } = renderHook(() => useTemplatesStore());
-      
+
       const templateData = {
         name: 'Imported Template',
         config: {
@@ -482,15 +493,18 @@ describe('Templates Store (G4)', () => {
           priceLines: [],
           timeScaleOptions: { rightOffset: 12, barSpacing: 6, minBarSpacing: 0.5 },
           colors: {
-            upColor: '#26a69a', downColor: '#ef5350', backgroundColor: '#ffffff',
-            gridColor: '#e1e1e1', textColor: '#000000'
-          }
-        }
+            upColor: '#26a69a',
+            downColor: '#ef5350',
+            backgroundColor: '#ffffff',
+            gridColor: '#e1e1e1',
+            textColor: '#000000',
+          },
+        },
       };
 
       await act(async () => {
         const id = await result.current.importTemplate(templateData);
-        
+
         expect(id).toBeTruthy();
         const imported = result.current.templates.find((t: { id: string }) => t.id === id);
         expect(imported?.name).toBe('Imported Template');
@@ -504,15 +518,15 @@ describe('Feature Flag Integration', () => {
   it('should respect feature flags for watchlist operations', () => {
     // Mock flags disabled
     vi.mocked(FLAGS).watchlist = false;
-    
+
     const { result } = renderHook(() => useWatchlistStore());
-    
+
     act(() => {
       const id = result.current.createWatchlist('Should Not Create');
       expect(id).toBe('');
       expect(result.current.watchlists).toHaveLength(0);
     });
-    
+
     // Re-enable for cleanup
     vi.mocked(FLAGS).watchlist = true;
   });
@@ -520,18 +534,17 @@ describe('Feature Flag Integration', () => {
   it('should respect feature flags for template operations', async () => {
     // Mock flags disabled
     vi.mocked(FLAGS).templates = false;
-    
+
     const { result } = renderHook(() => useTemplatesStore());
-    
+
     await act(async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing with incomplete config
       const id = await result.current.createTemplate('Should Not Create', {} as any);
       expect(id).toBe('');
       expect(result.current.templates).toHaveLength(0);
     });
-    
+
     // Re-enable for cleanup
     vi.mocked(FLAGS).templates = true;
   });
 });
-

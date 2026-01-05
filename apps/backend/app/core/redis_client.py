@@ -45,8 +45,8 @@ class RedisClient:
 
             self.client = redis.Redis(connection_pool=self.pool)
 
-            # Test connection
-            await self.client.ping()
+            # Test connection (ping returns Awaitable[bool] | bool in redis-py typing)
+            await self.client.ping()  # type: ignore[misc]
             self.connected = True
             logger.info("✅ Redis connection established successfully")
             return True
@@ -77,21 +77,29 @@ class RedisClient:
             return False
 
         try:
-            await self.client.ping()
+            await self.client.ping()  # type: ignore[misc]
             return True
         except (RedisConnectionError, RedisError):
             self.connected = False
             return False
 
     # Basic Redis Operations
-    async def set(self, key: str, value: str, ttl: int | None = None) -> bool:
-        """Set a key-value pair with optional TTL"""
+    async def set(
+        self,
+        key: str,
+        value: str,
+        ttl: int | None = None,
+        expire: int | None = None,
+    ) -> bool:
+        """Set a key-value pair with optional TTL (supports both ttl and expire params)"""
         if not await self.is_available() or not self.client:
             return False
 
         try:
-            if ttl:
-                await self.client.setex(key, ttl, value)
+            # Support both 'ttl' and 'expire' parameter names (like AdvancedRedisClient)
+            expiry = ttl or expire
+            if expiry:
+                await self.client.setex(key, expiry, value)
             else:
                 await self.client.set(key, value)
             return True
@@ -222,9 +230,9 @@ class RedisClient:
             return True  # Allow if Redis unavailable
 
         try:
-            current = await self.client.incr(key)
+            current = await self.client.incr(key)  # type: ignore[misc]
             if current == 1:
-                await self.client.expire(key, window)
+                await self.client.expire(key, window)  # type: ignore[misc]
             return current <= limit
         except RedisError as e:
             logger.warning(f"Failed to check rate limit for {key}: {e}")
@@ -239,7 +247,7 @@ class RedisClient:
             return
 
         try:
-            await self.client.hset(
+            await self.client.hset(  # type: ignore[misc]
                 f"websocket_sessions:{user_id}",
                 connection_id,
                 json.dumps(metadata, default=str),
@@ -253,7 +261,9 @@ class RedisClient:
             return
 
         try:
-            await self.client.hdel(f"websocket_sessions:{user_id}", connection_id)
+            await self.client.hdel(  # type: ignore[misc]
+                f"websocket_sessions:{user_id}", connection_id
+            )
         except RedisError as e:
             logger.warning(f"Failed to remove WebSocket session for {user_id}: {e}")
 
@@ -263,7 +273,9 @@ class RedisClient:
             return []
 
         try:
-            sessions = await self.client.hgetall(f"websocket_sessions:{user_id}")
+            sessions = await self.client.hgetall(  # type: ignore[misc]
+                f"websocket_sessions:{user_id}"
+            )
             result: list[dict[str, Any]] = []
             for session_data in sessions.values():
                 decoded = (
@@ -288,7 +300,7 @@ class RedisClient:
             return
 
         try:
-            await self.client.hset(
+            await self.client.hset(  # type: ignore[misc]
                 f"websocket_sessions:{user_id}",
                 session_id,
                 json.dumps(metadata, default=str),
@@ -302,7 +314,9 @@ class RedisClient:
             return []
 
         try:
-            sessions = await self.client.hgetall(f"websocket_sessions:{user_id}")
+            sessions = await self.client.hgetall(  # type: ignore[misc]
+                f"websocket_sessions:{user_id}"
+            )
             return [
                 key.decode("utf-8") if isinstance(key, bytes) else key
                 for key in sessions.keys()

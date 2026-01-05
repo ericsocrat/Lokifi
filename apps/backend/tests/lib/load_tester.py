@@ -98,7 +98,7 @@ class WebSocketLoadTester:
 
     def __init__(self, base_url: str = "ws://localhost:8000"):
         self.base_url = base_url
-        self.connections: list[websockets.WebSocketServerProtocol] = []
+        self.connections: list[Any] = []  # WebSocket client connections (type varies)
         self.results: list[LoadTestResult] = []
 
     async def simulate_user_connection(
@@ -377,6 +377,8 @@ class APILoadTester:
             # Execute API request
             start_time = time.time()
             try:
+                if self.session is None:
+                    raise RuntimeError("Session not initialized")
                 async with self.session.request(
                     method, f"{self.base_url}{endpoint}"
                 ) as response:
@@ -525,17 +527,18 @@ class ComprehensiveLoadTester:
         if not self.results:
             return {"error": "No load test results available"}
 
-        summary = {
+        test_summaries: dict[str, dict[str, Any]] = {}
+        summary: dict[str, Any] = {
             "total_tests": len(self.results),
             "overall_success_rate": 0,
             "total_operations": 0,
             "avg_response_time_ms": 0,
-            "test_summaries": {},
+            "test_summaries": test_summaries,
         }
 
         total_successful = 0
         total_operations = 0
-        all_response_times = []
+        all_response_times: list[float] = []
 
         for test_name, report in self.results.items():
             test_summary = {
@@ -550,7 +553,7 @@ class ComprehensiveLoadTester:
                 "operations_per_second": report.operations_per_second,
             }
 
-            summary["test_summaries"][test_name] = test_summary
+            test_summaries[test_name] = test_summary
 
             total_successful += report.successful_operations
             total_operations += report.total_operations

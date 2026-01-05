@@ -1,7 +1,7 @@
-import { render } from '@testing-library/react';
-import { screen, fireEvent, waitFor } from '@testing-library/dom';
 import { jest } from '@jest/globals';
+import { fireEvent, screen, waitFor } from '@testing-library/dom';
 import '@testing-library/jest-dom';
+import { render } from '@testing-library/react';
 import EnhancedChart from '../components/EnhancedChart';
 
 // Mock the lightweight-charts library - v5 API
@@ -51,19 +51,21 @@ jest.mock('../lib/drawingStore', () => ({
 
 jest.mock('../lib/marketDataStore', () => ({
   useMarketDataStore: () => ({
-    fetchOHLCData: jest.fn(() => Promise.resolve([
-      {
-        symbol: 'AAPL',
-        timestamp: '2023-01-01T00:00:00Z',
-        open: 100,
-        high: 105,
-        low: 98,
-        close: 103,
-        volume: 1000000,
-        provider: 'mock',
-        timeframe: '1D',
-      },
-    ])),
+    fetchOHLCData: jest.fn(() =>
+      Promise.resolve([
+        {
+          symbol: 'AAPL',
+          timestamp: '2023-01-01T00:00:00Z',
+          open: 100,
+          high: 105,
+          low: 98,
+          close: 103,
+          volume: 1000000,
+          provider: 'mock',
+          timeframe: '1D',
+        },
+      ])
+    ),
     isLoading: false,
     error: null,
   }),
@@ -107,7 +109,7 @@ describe('EnhancedChart', () => {
 
   it('renders chart container', () => {
     render(<EnhancedChart {...defaultProps} />);
-    
+
     // Check if chart container is rendered
     const chartContainer = screen.getByRole('generic');
     expect(chartContainer).toBeInTheDocument();
@@ -115,7 +117,7 @@ describe('EnhancedChart', () => {
 
   it('displays symbol and timeframe info', () => {
     render(<EnhancedChart {...defaultProps} />);
-    
+
     // Check if symbol badge is displayed
     expect(screen.getByText('AAPL')).toBeInTheDocument();
     expect(screen.getByText('1D')).toBeInTheDocument();
@@ -152,10 +154,10 @@ describe('EnhancedChart', () => {
 
   it('handles chart resize', async () => {
     render(<EnhancedChart {...defaultProps} />);
-    
+
     // Trigger resize event
     fireEvent(window, new Event('resize'));
-    
+
     // Wait for resize handler to be called
     await waitFor(() => {
       // This would typically check if chart.applyOptions was called
@@ -218,7 +220,7 @@ describe('Chart Interactions', () => {
     }));
 
     render(<EnhancedChart {...defaultProps} />);
-    
+
     // Check if drawing mode indicator is shown
     expect(screen.getByText('line mode')).toBeInTheDocument();
   });
@@ -234,7 +236,7 @@ describe('Chart Interactions', () => {
     }));
 
     render(<EnhancedChart {...defaultProps} />);
-    
+
     // Check if drawing indicator is shown
     expect(screen.getByText('Drawing...')).toBeInTheDocument();
   });
