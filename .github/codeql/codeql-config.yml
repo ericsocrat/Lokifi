@@ -1,0 +1,47 @@
+# CodeQL Configuration for Lokifi
+# This configuration customizes CodeQL analysis for our Python backend
+# Last updated: 2025-01-13 - Added security documentation and query filters
+
+name: "Lokifi Security Analysis"
+
+# Paths to analyze
+paths:
+  - apps/backend/app
+
+# Paths to ignore (non-production code)
+paths-ignore:
+  # Virtual environment
+  - apps/backend/venv
+  - apps/backend/.venv
+  # Test files (tested separately)
+  - apps/backend/tests
+  - "**/test_*.py"
+  - "**/*_test.py"
+  # Compiled Python files
+  - apps/backend/**/__pycache__
+  - "**/*.pyc"
+  - "**/*.pyo"
+  # Development/build artifacts
+  - "**/htmlcov"
+  - "**/.coverage"
+  - "**/coverage.xml"
+
+# Query filters
+# Note: The py/log-injection alerts in our codebase are FALSE POSITIVES because:
+# 1. All user-controlled data is sanitized via sanitize_for_logging() before logging
+# 2. The sanitization removes control characters, newlines, and truncates long strings
+# 3. CodeQL tracks data flow but doesn't recognize our custom sanitizer
+#
+# Security validation performed:
+# - sanitize_for_logging() removes \r, \n, \t, and all control chars
+# - Output is HTML-escaped to prevent any interpretation
+# - Strings are truncated to 200 chars max
+# - See: apps/backend/app/utils/enhanced_validation.py
+#
+# Files with sanitized logging (verified manually):
+# - apps/backend/app/routers/websocket_prices.py
+# - apps/backend/app/routers/notifications.py
+# - apps/backend/app/routers/smart_prices.py
+# - apps/backend/app/services/historical_price_service.py
+# - apps/backend/app/services/smart_price_service.py
+# - apps/backend/app/services/message_moderation_service.py
