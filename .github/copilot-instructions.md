@@ -181,6 +181,7 @@
 - Docstrings for all public functions
 - **Ruff Config**: Target Python 3.13, rules include E, F, W, I, C4, SIM, PTH
 - **MyPy Plugins**: pydantic.mypy, sqlalchemy.ext.mypy.plugin enabled
+- **Python 3.12+ Datetime**: Use `datetime.now(timezone.utc)` instead of deprecated `datetime.utcnow()`
 
 ### Testing Conventions
 - **Frontend**: Vitest with `describe()` > `it()` structure
@@ -345,7 +346,7 @@ lokifi/
 > - **CI/CD Patterns** - Workflow Health Check, GitHub CLI Investigation, Service Config Standards
 > - **Code Quality Patterns** - TypeScript Any Elimination, Zustand+Immer, Draft<T>, Python Ruff, ESLint
 > - **Dependencies** - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patches
-> - **Python Patterns** - Python 3.10 Compatibility, UTC Import, Lambda UTC
+> - **Python Patterns** - Python 3.10 Compatibility, UTC Import (datetime.utcnow deprecation), Lambda UTC
 > - **Debugging Patterns** - Root Cause Analysis, Log Analysis
 
 ### Quick Code Templates (For Copilot Generation)
