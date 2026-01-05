@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 from logging.config import fileConfig
@@ -13,6 +14,9 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from app.core.config import Settings
 from app.db.models import Base
 
+# Setup logger
+logger = logging.getLogger("alembic.env")
+
 # Load settings
 settings = Settings()
 
@@ -23,12 +27,12 @@ config = context.config
 # Override the sqlalchemy.url from our settings
 # Convert async drivers to sync drivers for migrations
 db_url = settings.DATABASE_URL
-print(f"DEBUG: Original DATABASE_URL from settings: {db_url}")
+logger.debug("Original DATABASE_URL from settings: %s", db_url)
 if "+asyncpg" in db_url:
     db_url = db_url.replace("+asyncpg", "+psycopg2")
 elif "+aiosqlite" in db_url:
     db_url = db_url.replace("+aiosqlite", "")
-print(f"DEBUG: Converted URL for migrations: {db_url}")
+logger.debug("Converted URL for migrations: %s", db_url)
 config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
