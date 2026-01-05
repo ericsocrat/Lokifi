@@ -1,19 +1,20 @@
 # Test Coverage Baseline
 
-> **Generated**: October 23, 2025
-> **Branch**: `test/workflow-optimizations-validation`
-> **Commit**: 3dfa239a
+> **Last Updated**: January 5, 2026
+> **Previous Baseline**: October 23, 2025
+> **Master Config**: `config/coverage.config.json`
 
 This document establishes the test coverage baseline for the Lokifi project. Coverage metrics help track code quality and identify areas needing additional tests.
 
-## 📊 Overall Coverage Summary
+## 📊 Overall Coverage Summary (January 2026)
 
-| Component | Lines | Branches | Functions | Statements |
-|-----------|-------|----------|-----------|------------|
-| **Frontend** | 11.61% | 88.7% | 84.69% | 11.61% |
-| **Backend** | 27% | N/A | N/A | 26.65% |
+| Component | Lines | Branches | Functions | Statements | Tests |
+|-----------|-------|----------|-----------|------------|-------|
+| **Frontend** | 11.61% | 88.7% | 84.69% | 11.61% | 4,588 |
+| **Backend** | 51.09% | N/A | N/A | 51.09% | 1,780 |
+| **Overall** | 31.35% | - | - | 31.35% | **6,368** |
 
-## 🎯 Coverage Thresholds (Updated: Oct 26, 2025)
+## 🎯 Coverage Thresholds
 
 **Configuration Philosophy**: Realistic baselines that reflect current state while preventing regression.
 
@@ -22,30 +23,25 @@ This document establishes the test coverage baseline for the Lokifi project. Cov
 | Component | Lines | Branches | Functions | Statements | Status |
 |-----------|-------|----------|-----------|------------|--------|
 | **Frontend** | 10% | 80% | 80% | 10% | ✅ Passing (11.61%) |
-| **Backend** | 25% | 70% | 70% | 25% | ✅ Passing (27%) |
-| **Overall** | 20% | 75% | 75% | 20% | ⚠️ Close (19.31%) |
+| **Backend** | 20% | 70% | 70% | 20% | ✅ Passing (51.09%) |
+| **Overall** | 20% | 75% | 75% | 20% | ✅ Passing (31.35%) |
 
-### Threshold Alignment (Fixed: Oct 26, 2025)
+### Threshold Alignment
 
-**Before (Mismatched)**:
-- Backend: coverage.config.json (80%) ≠ pytest.ini (25%) ≠ current (27%)
-- Frontend: vitest.config.ts (disabled) ≠ coverage.config.json (10%)
-
-**After (Aligned)**:
-- ✅ **Backend**: pytest.ini (`--cov-fail-under=25`) = coverage.config.json (25%) = current (27% ✅)
+**All tools aligned**:
+- ✅ **Backend**: pytest.ini (`--cov-fail-under=20`) = coverage.config.json (20%) = current (51.09% ✅)
 - ✅ **Frontend**: vitest.config.ts (lines: 10) = coverage.config.json (10%) = current (11.61% ✅)
-- ✅ **Overall**: All three metrics aligned at 20% (current 19.31% - close, needs +0.69%)
+- ✅ **Overall**: All metrics aligned at 20% (current 31.35% ✅)
 
-### Configuration Files Updated
+### Configuration Files
 
-1. **`coverage.config.json`** (Master Config):
-   - Backend: lines 80% → 25% (realistic)
-   - Frontend: lines 10% (unchanged, already realistic)
-   - Overall: lines 20% (unchanged, baseline)
+1. **`config/coverage.config.json`** (Master Config):
+   - Backend: lines 20% (threshold)
+   - Frontend: lines 10% (threshold)
+   - Overall: lines 20% (threshold)
 
 2. **`apps/backend/pytest.ini`**:
-   - Already correct at 25% (`--cov-fail-under=25`)
-   - No changes needed
+   - `--cov-fail-under=20`
 
 3. **`apps/frontend/vitest.config.ts`**:
    - Re-enabled thresholds (were commented out)
@@ -54,27 +50,27 @@ This document establishes the test coverage baseline for the Lokifi project. Cov
 
 ### Improvement Roadmap
 
-**Short-term (1-2 months)**:
-- Frontend: 11.61% → 15% (+3.39% lines)
-- Backend: 27% → 30% (+3% lines)
-- Overall: 19.31% → 22% (+2.69% lines)
+**Short-term (1-2 weeks)**:
+- Frontend: 11.61% → 30% (+18.39% lines)
+- Backend: 51.09% → 60% (+8.91% lines) ⚡ Nearly achieved!
+- Overall: 31.35% → 45% (+13.65% lines)
 
-**Medium-term (3-6 months)**:
-- Frontend: 15% → 25% (+10% lines)
-- Backend: 30% → 40% (+10% lines)
-- Overall: 22% → 30% (+8% lines)
+**Medium-term (1 month)**:
+- Frontend: 30% → 50% (+20% lines)
+- Backend: 60% → 70% (+10% lines)
+- Overall: 45% → 60% (+15% lines)
 
-**Long-term (6-12 months)**:
-- Frontend: 25% → 40% (+15% lines)
-- Backend: 40% → 60% (+20% lines)
-- Overall: 30% → 50% (+20% lines)
+**Long-term (3 months)**:
+- Frontend: 50% → 70% (+20% lines)
+- Backend: 70% → 80% (+10% lines)
+- Overall: 60% → 75% (+15% lines)
 
 ## 🎯 Frontend Coverage (Apps/Frontend)
 
 **Test Framework**: Vitest 3.2.4 with @vitest/coverage-v8
-**Total Tests**: 2,542 passing, 15 skipped
-**Test Files**: 96 files
-**Execution Time**: ~50 seconds
+**Total Tests**: 4,588 passing, 66 skipped
+**Test Files**: 96+ files
+**Execution Time**: ~135 seconds
 
 ### Detailed Metrics
 
