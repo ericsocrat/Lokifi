@@ -1,5 +1,11 @@
 """
 Enhanced profile router with additional features for Phase J2.
+
+Security Notes:
+    - Avatar filenames are sanitized using UUID generation (no user input in paths)
+    - Path traversal prevention via Path.resolve() validation
+    - File extension whitelist enforced before processing
+    - File size limits enforced before processing
 """
 
 import uuid

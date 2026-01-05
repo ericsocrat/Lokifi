@@ -6,6 +6,11 @@ Advanced API endpoints for J6.2 notification system including:
 - A/B testing configuration
 - Notification scheduling
 - Batch management
+
+Security Notes:
+    - All exception details are logged server-side with exc_info=True
+    - HTTP error responses use generic messages (no stack traces exposed)
+    - User inputs are validated via Pydantic models before processing
 """
 
 import logging
