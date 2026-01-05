@@ -185,7 +185,7 @@ class AdvancedRedisClient:
             self.connected = False
             return False
 
-    async def _initialize_cache_layers(self):
+    async def _initialize_cache_layers(self) -> None:
         """Initialize multi-layer cache structure"""
         self.cache_layers = {
             "hot": {"ttl": 300, "max_size": 1000},  # 5 min, frequently accessed
@@ -194,6 +194,9 @@ class AdvancedRedisClient:
             "session": {"ttl": 7200, "max_size": 2000},  # 2 hours, user sessions
             "persistent": {"ttl": 86400, "max_size": 1000},  # 24 hours, long-term cache
         }
+
+        if self.client is None:
+            return
 
         for layer in self.cache_layers:
             try:

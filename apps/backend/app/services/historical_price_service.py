@@ -308,9 +308,7 @@ class HistoricalPriceService:
             # Calculate timestamps
             end_time = int(datetime.now().timestamp())
             days = self._period_to_days(period)
-
-            if days == "max":
-                days = 1825  # 5 years max for Finnhub free tier
+            # Note: days is always int from _period_to_days mapping
 
             start_time = int((datetime.now() - timedelta(days=days)).timestamp())
             resolution = self._period_to_resolution(period)
@@ -462,9 +460,7 @@ class HistoricalPriceService:
             # Calculate timestamps
             end_time = int(datetime.now().timestamp())
             days = self._period_to_days(period)
-
-            if days == "max":
-                days = 1825
+            # Note: days is always int from _period_to_days mapping
 
             start_time = int((datetime.now() - timedelta(days=days)).timestamp())
             resolution = self._period_to_resolution(period)
