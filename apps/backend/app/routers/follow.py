@@ -79,38 +79,46 @@ async def follow_user(
                 current_profile = current_user.profile
                 target_profile = target_user.profile
 
+                # Extract profile data with null safety for type checker
+                follower_username = (
+                    current_profile.username
+                    if current_profile is not None
+                    else current_user.email
+                )
+                follower_display_name = (
+                    current_profile.display_name
+                    if current_profile is not None
+                    else current_user.full_name
+                )
+                follower_avatar = (
+                    current_profile.avatar_url if current_profile is not None else None
+                )
+                followed_username = (
+                    target_profile.username
+                    if target_profile is not None
+                    else target_user.email
+                )
+                followed_display_name = (
+                    target_profile.display_name
+                    if target_profile is not None
+                    else target_user.full_name
+                )
+                followed_avatar = (
+                    target_profile.avatar_url if target_profile is not None else None
+                )
+
                 await trigger_follow_notification(
                     follower_user_data={
                         "id": str(current_user.id),
-                        "username": (
-                            current_profile.username
-                            if current_profile
-                            else current_user.email
-                        ),
-                        "display_name": (
-                            current_profile.display_name
-                            if current_profile
-                            else current_user.full_name
-                        ),
-                        "avatar_url": (
-                            current_profile.avatar_url if current_profile else None
-                        ),
+                        "username": follower_username,
+                        "display_name": follower_display_name,
+                        "avatar_url": follower_avatar,
                     },
                     followed_user_data={
                         "id": str(target_user.id),
-                        "username": (
-                            target_profile.username
-                            if target_profile
-                            else target_user.email
-                        ),
-                        "display_name": (
-                            target_profile.display_name
-                            if target_profile
-                            else target_user.full_name
-                        ),
-                        "avatar_url": (
-                            target_profile.avatar_url if target_profile else None
-                        ),
+                        "username": followed_username,
+                        "display_name": followed_display_name,
+                        "avatar_url": followed_avatar,
                     },
                 )
         except Exception as e:

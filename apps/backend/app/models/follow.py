@@ -2,14 +2,20 @@
 Follow model for user follow relationships.
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class Follow(Base):
@@ -36,10 +42,10 @@ class Follow(Base):
     )
 
     # Relationships
-    follower = relationship(
+    follower: Mapped[User] = relationship(
         "User", foreign_keys=[follower_id], back_populates="following"
     )
-    followee = relationship(
+    followee: Mapped[User] = relationship(
         "User", foreign_keys=[followee_id], back_populates="followers"
     )
 

@@ -63,9 +63,9 @@ class AuthService:
 
         # Check if username is taken (if provided)
         if user_data.username:
-            stmt = select(Profile).where(Profile.username == user_data.username)
-            result = await self.db.execute(stmt)
-            existing_profile = result.scalar_one_or_none()
+            profile_stmt = select(Profile).where(Profile.username == user_data.username)
+            profile_result = await self.db.execute(profile_stmt)
+            existing_profile = profile_result.scalar_one_or_none()
 
             if existing_profile:
                 raise HTTPException(

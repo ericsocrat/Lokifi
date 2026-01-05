@@ -109,9 +109,13 @@ class ConversationParticipant(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
-    conversation = relationship("Conversation", back_populates="participants")
-    user = relationship("User", back_populates="conversations")
-    last_read_message = relationship("Message", foreign_keys=[last_read_message_id])
+    conversation: Mapped[Conversation] = relationship(
+        "Conversation", back_populates="participants"
+    )
+    user: Mapped[User] = relationship("User", back_populates="conversations")
+    last_read_message: Mapped[Message | None] = relationship(
+        "Message", foreign_keys=[last_read_message_id]
+    )
 
     # Indexes for performance
     __table_args__ = (
@@ -162,7 +166,9 @@ class Message(Base):
     )
 
     # Relationships
-    conversation = relationship("Conversation", back_populates="messages")
+    conversation: Mapped[Conversation] = relationship(
+        "Conversation", back_populates="messages"
+    )
     sender: Mapped[User | None] = relationship(
         "User", foreign_keys=[sender_id], back_populates="sent_messages"
     )
@@ -204,8 +210,8 @@ class MessageReceipt(Base):
     )
 
     # Relationships
-    message = relationship("Message", back_populates="receipts")
-    user = relationship("User")
+    message: Mapped[Message] = relationship("Message", back_populates="receipts")
+    user: Mapped[User] = relationship("User")
 
     # Indexes for performance
     __table_args__ = (

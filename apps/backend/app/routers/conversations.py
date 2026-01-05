@@ -226,6 +226,21 @@ async def send_message(
             # Get current user profile data (with fallbacks)
             current_profile = current_user.profile
 
+            # Extract profile data with null safety for type checker
+            sender_username = (
+                current_profile.username
+                if current_profile is not None
+                else current_user.email
+            )
+            sender_display_name = (
+                current_profile.display_name
+                if current_profile is not None
+                else current_user.full_name
+            )
+            sender_avatar = (
+                current_profile.avatar_url if current_profile is not None else None
+            )
+
             for recipient_id in recipient_ids:
                 # Get recipient user details
                 recipient_stmt = select(User).where(User.id == recipient_id)
@@ -235,40 +250,35 @@ async def send_message(
                 if recipient_user:
                     recipient_profile = recipient_user.profile
 
+                    # Extract recipient profile data with null safety
+                    recipient_username = (
+                        recipient_profile.username
+                        if recipient_profile is not None
+                        else recipient_user.email
+                    )
+                    recipient_display_name = (
+                        recipient_profile.display_name
+                        if recipient_profile is not None
+                        else recipient_user.full_name
+                    )
+                    recipient_avatar = (
+                        recipient_profile.avatar_url
+                        if recipient_profile is not None
+                        else None
+                    )
+
                     await trigger_dm_notification(
                         sender_user_data={
                             "id": str(current_user.id),
-                            "username": (
-                                current_profile.username
-                                if current_profile
-                                else current_user.email
-                            ),
-                            "display_name": (
-                                current_profile.display_name
-                                if current_profile
-                                else current_user.full_name
-                            ),
-                            "avatar_url": (
-                                current_profile.avatar_url if current_profile else None
-                            ),
+                            "username": sender_username,
+                            "display_name": sender_display_name,
+                            "avatar_url": sender_avatar,
                         },
                         recipient_user_data={
                             "id": str(recipient_user.id),
-                            "username": (
-                                recipient_profile.username
-                                if recipient_profile
-                                else recipient_user.email
-                            ),
-                            "display_name": (
-                                recipient_profile.display_name
-                                if recipient_profile
-                                else recipient_user.full_name
-                            ),
-                            "avatar_url": (
-                                recipient_profile.avatar_url
-                                if recipient_profile
-                                else None
-                            ),
+                            "username": recipient_username,
+                            "display_name": recipient_display_name,
+                            "avatar_url": recipient_avatar,
                         },
                         message_data={
                             "id": str(message_response.id),
@@ -282,19 +292,9 @@ async def send_message(
                 message_data.content,
                 mentioning_user_data={
                     "id": str(current_user.id),
-                    "username": (
-                        current_profile.username
-                        if current_profile
-                        else current_user.email
-                    ),
-                    "display_name": (
-                        current_profile.display_name
-                        if current_profile
-                        else current_user.full_name
-                    ),
-                    "avatar_url": (
-                        current_profile.avatar_url if current_profile else None
-                    ),
+                    "username": sender_username,
+                    "display_name": sender_display_name,
+                    "avatar_url": sender_avatar,
                 },
                 context_type="dm_message",
                 context_id=str(message_response.id),

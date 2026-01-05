@@ -1,15 +1,19 @@
 # J6 Enterprise Notifications - Database Models
+from __future__ import annotations
+
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class NotificationType(str, Enum):
@@ -123,8 +127,12 @@ class Notification(Base):
     )
 
     # Relationships
-    user = relationship(User, back_populates="notifications", foreign_keys=[user_id])
-    children = relationship("Notification", backref="parent", remote_side=[id])
+    user: Mapped[User] = relationship(
+        "User", back_populates="notifications", foreign_keys=[user_id]
+    )
+    children: Mapped[list[Notification]] = relationship(
+        "Notification", backref="parent", remote_side=[id]
+    )
 
     # Indexes for performance
     __table_args__ = (
@@ -280,7 +288,7 @@ class NotificationPreference(Base):
     )
 
     # Relationships
-    user = relationship("User", back_populates="notification_preferences")
+    user: Mapped[User] = relationship("User", back_populates="notification_preferences")
 
     def __repr__(self):
         return f"<NotificationPreference(user_id={self.user_id}, email={self.email_enabled}, push={self.push_enabled})>"
@@ -339,23 +347,4 @@ class NotificationPreference(Base):
         }
 
 
-# Update User model to include notification relationships
-def add_notification_relationships():
-    """Add notification relationships to User model"""
-    # This would be called during model initialization
-    if not hasattr(User, "notifications"):
-        User.notifications = relationship(
-            "Notification", back_populates="user", cascade="all, delete-orphan"
-        )
-
-    if not hasattr(User, "notification_preferences"):
-        User.notification_preferences = relationship(
-            "NotificationPreference",
-            back_populates="user",
-            uselist=False,
-            cascade="all, delete-orphan",
-        )
-
-
-# Call this during app initialization
-add_notification_relationships()
+# Note: User model relationships (notifications, notification_preferences) are defined in user.py

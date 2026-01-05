@@ -2,15 +2,22 @@
 Message reactions system for J4 Direct Messages.
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.conversation import Message
+    from app.models.user import User
 
 
 class ReactionType(str, Enum):
@@ -52,8 +59,8 @@ class MessageReaction(Base):
     )
 
     # Relationships
-    message = relationship("Message", back_populates="reactions")
-    user = relationship("User")
+    message: Mapped[Message] = relationship("Message", back_populates="reactions")
+    user: Mapped[User] = relationship("User")
 
     # Constraints
     __table_args__ = (

@@ -2,9 +2,12 @@
 AI thread and conversation models for chatbot interactions.
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
@@ -20,6 +23,9 @@ from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 
 class AiProvider(str, Enum):
@@ -77,8 +83,8 @@ class AiThread(Base):
     )
 
     # Relationships
-    user = relationship("User", back_populates="ai_threads")
-    messages = relationship(
+    user: Mapped[User] = relationship("User", back_populates="ai_threads")
+    messages: Mapped[list[AiMessage]] = relationship(
         "AiMessage", back_populates="thread", order_by="AiMessage.created_at"
     )
 
@@ -118,7 +124,7 @@ class AiMessage(Base):
     )
 
     # Relationships
-    thread = relationship("AiThread", back_populates="messages")
+    thread: Mapped[AiThread] = relationship("AiThread", back_populates="messages")
 
     def __repr__(self) -> str:
         return f"<AiMessage(id={self.id}, role={self.role}, content='{self.content[:50]}...')>"
@@ -159,8 +165,8 @@ class AiUsage(Base):
     )
 
     # Relationships
-    user = relationship("User")
-    thread = relationship("AiThread")
+    user: Mapped[User] = relationship("User")
+    thread: Mapped[AiThread] = relationship("AiThread")
 
     def __repr__(self) -> str:
         return f"<AiUsage(id={self.id}, user_id={self.user_id}, provider={self.ai_provider}, model={self.model_name})>"

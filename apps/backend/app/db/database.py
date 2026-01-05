@@ -17,7 +17,7 @@ try:
     from app.core.database import Base
 except ImportError:
     # Fallback if core database doesn't exist
-    Base = declarative_base()
+    Base = declarative_base()  # type: ignore[misc]
 
 # Default to PostgreSQL (Docker container setup)
 DATABASE_URL = os.getenv(
