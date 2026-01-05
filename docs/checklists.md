@@ -88,9 +88,10 @@ it('test', { timeout: 10000 }, async () => {...});
 - Use `SettingsConfigDict` (not `ConfigDict`) for `pydantic-settings` BaseSettings
 - **Flaky Timeout Pattern**: Calculate worst-case timing for random delays
 - **Vitest Timeout Migration**: Use object syntax for test-level timeouts
+- **MyPy INI Parsing**: The `plugins = [...]` syntax in mypy.ini is invalid INI format. When this is present, MyPy ignores the entire config file and uses lenient defaults (0 errors). Fixing the syntax reveals ~43 additional type errors that would need addressing.
 
 **Backend Status**:
-- MyPy: **0 errors** ✅
+- MyPy: **0 errors** ✅ (with current config - see note above)
 - Tests: **1780 passing** ✅
 - Coverage: **51.21%** ✅
 - Ruff: **0 violations** ✅
