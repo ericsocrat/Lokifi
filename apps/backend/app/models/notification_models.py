@@ -2,7 +2,7 @@
 import uuid
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID

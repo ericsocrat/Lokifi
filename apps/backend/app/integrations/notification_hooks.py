@@ -7,7 +7,7 @@ These hooks integrate notification events into the existing codebase.
 import logging
 from typing import Any
 
-from app.services.notification_emitter import UserLike, notification_emitter
+from app.services.notification_emitter import notification_emitter
 
 logger = logging.getLogger(__name__)
 

@@ -12,9 +12,7 @@ Tests cover:
 - Context manager operations
 """
 
-import time
-from dataclasses import asdict
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import httpx
 import pytest

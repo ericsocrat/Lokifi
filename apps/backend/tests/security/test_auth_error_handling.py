@@ -15,10 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException, status
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.routers.auth import router
 from app.schemas.auth import GoogleOAuthRequest, UserLoginRequest, UserRegisterRequest
 
 

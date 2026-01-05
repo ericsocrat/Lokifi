@@ -7,7 +7,7 @@ public profiles, search, GDPR compliance, and activity statistics.
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest

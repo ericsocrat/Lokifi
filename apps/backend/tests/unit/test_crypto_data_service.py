@@ -24,7 +24,6 @@ Patterns Used:
 Session: 77 Phase 2 - Backend Test Coverage Campaign
 """
 
-import logging
 from datetime import datetime, timedelta
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch

@@ -2,7 +2,6 @@
 import logging
 import re
 from collections.abc import AsyncGenerator
-from typing import Optional
 
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,

@@ -8,7 +8,6 @@ Session 97: Monitoring API route testing
 - Validates metrics, health checks, permissions, analytics
 """
 
-import logging
 from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch

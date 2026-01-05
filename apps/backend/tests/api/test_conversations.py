@@ -41,7 +41,6 @@ from app.schemas.conversation import (
     ConversationResponse,
     MarkReadRequest,
     MessageCreate,
-    MessageResponse,
     MessagesListResponse,
 )
 

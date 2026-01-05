@@ -12,10 +12,9 @@ Coverage focus: Happy path flows, edge cases, error handling, Redis integration
 Session: 63 - Backend Test Coverage Expansion Phase 2
 """
 
-import json
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi import WebSocket

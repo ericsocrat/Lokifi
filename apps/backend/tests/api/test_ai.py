@@ -15,8 +15,7 @@ Coverage targets:
 """
 
 from datetime import datetime, timezone
-from io import BytesIO
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException, status
@@ -24,16 +23,13 @@ from fastapi.testclient import TestClient
 
 from app.db.models import AIMessage, AIThread, User
 from app.main import app
-from app.routers.ai import router
 from app.schemas.ai_schemas import (
-    AIMessageResponse,
     AIProviderStatusResponse,
     AIThreadCreate,
     AIThreadResponse,
     AIThreadUpdate,
     RateLimitResponse,
 )
-from app.services.ai_service import RateLimitError, SafetyFilterError
 
 # Test client
 client = TestClient(app)

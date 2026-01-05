@@ -15,7 +15,7 @@ Session: 62 - Backend Test Coverage Expansion Phase 1
 
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 

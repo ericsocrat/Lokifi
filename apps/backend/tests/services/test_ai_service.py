@@ -9,7 +9,6 @@ Comprehensive test suite for AI service functionality including:
 Coverage focus: Happy path flows, edge cases, error handling
 """
 
-import time
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 

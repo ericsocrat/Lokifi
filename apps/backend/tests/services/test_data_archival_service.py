@@ -6,9 +6,8 @@ Covers storage metrics, archive table creation, conversation archival, database 
 and full maintenance cycles.
 """
 
-import logging
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, MagicMock, call, patch
+from datetime import datetime, timezone
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 

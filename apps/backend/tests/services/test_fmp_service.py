@@ -7,7 +7,7 @@ stock news, quotes, and fundamental data.
 Session 66: Service Layer Tests - Financial Services
 """
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 

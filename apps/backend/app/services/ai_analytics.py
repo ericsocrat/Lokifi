@@ -6,7 +6,6 @@ Provides comprehensive analytics and insights for AI conversations.
 
 import logging
 from collections import Counter
-from collections.abc import Callable, Generator
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any

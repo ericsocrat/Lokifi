@@ -25,7 +25,6 @@ from app.models.conversation import (
     Message,
     MessageReceipt,
 )
-from app.models.user import User
 from app.schemas.conversation import MessageCreate
 from app.services.conversation_service import ConversationService
 
@@ -264,9 +263,6 @@ class TestMessageRetrieval:
         mock_db_session,
     ):
         """Test message pagination works correctly"""
-        from uuid import UUID
-
-        from app.schemas.conversation import MessageResponse
 
         # Mock participant query - user is participant
         mock_participant = MagicMock(is_active=True)
@@ -374,7 +370,6 @@ class TestConversationServiceEdgeCases:
     @pytest.mark.asyncio
     async def test_invalid_user_id_format(self, conversation_service, mock_db_session):
         """Test handling of invalid UUID format"""
-        from uuid import UUID
 
         invalid_id = "not-a-valid-uuid"
 
@@ -1266,7 +1261,6 @@ class TestBuildConversationResponse:
     ):
         """Test building conversation response with participants and last message"""
         from app.models.profile import Profile
-        from app.schemas.conversation import MessageResponse
 
         user_id = sample_user_ids["user1"]
         user2_id = sample_user_ids["user2"]

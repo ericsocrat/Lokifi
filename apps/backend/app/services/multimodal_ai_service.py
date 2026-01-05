@@ -19,8 +19,7 @@ from fastapi import UploadFile
 
 # Conditional imports for type checking
 if TYPE_CHECKING:
-    from PIL import Image as PILImage
-    from PIL.ImageFile import ImageFile
+    pass
 
 try:
     from PIL import Image
