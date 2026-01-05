@@ -203,8 +203,9 @@ class NotificationAnalytics:
                 peak_hour: int = 0
                 max_count: int = 0
                 for row in hourly_stats:
-                    if row.count > max_count:
-                        max_count = row.count
+                    row_count = int(row.count)  # type: ignore[arg-type]
+                    if row_count > max_count:
+                        max_count = row_count
                         peak_hour = int(row.hour)
 
                 metrics = NotificationMetrics(

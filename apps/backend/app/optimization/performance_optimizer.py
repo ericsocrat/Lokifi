@@ -485,7 +485,7 @@ class CacheOptimizer:
         """Analyze performance of specific cache layer"""
         from app.core.advanced_redis_client import advanced_redis_client
 
-        metrics = {
+        metrics: dict[str, Any] = {
             "hit_rate": 0.0,
             "avg_response_time_ms": 0.0,
             "memory_usage_mb": 0.0,

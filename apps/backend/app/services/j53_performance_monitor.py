@@ -92,7 +92,7 @@ class J53PerformanceMonitor:
 
     async def check_database_health(self) -> dict[str, Any]:
         """Comprehensive database health check"""
-        health_data = {}
+        health_data: dict[str, Any] = {}
 
         try:
             async for session in db_manager.get_session(read_only=True):

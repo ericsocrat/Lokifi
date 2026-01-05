@@ -116,7 +116,7 @@ class TestNotificationMetricsDataclass:
         assert metrics.engagement_rate == 0.0
         assert metrics.average_time_to_read == 0.0
         assert metrics.peak_hour == 0
-        assert metrics.top_notification_types is None
+        assert metrics.top_notification_types == []
 
     def test_notification_metrics_custom_values(self):
         """Test NotificationMetrics with custom values."""
@@ -337,11 +337,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={
-                    "delivery_rate": 95.0,
-                    "read_rate": 80.0,
-                    "engagement_rate": 50.0,
-                },
+                return_value=NotificationMetrics(
+                    delivery_rate=95.0,
+                    read_rate=80.0,
+                    engagement_rate=50.0,
+                ),
             ),
             patch.object(
                 analytics,
@@ -365,11 +365,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={
-                    "delivery_rate": 100.0,
-                    "read_rate": 100.0,
-                    "engagement_rate": 100.0,
-                },
+                return_value=NotificationMetrics(
+                    delivery_rate=100.0,
+                    read_rate=100.0,
+                    engagement_rate=100.0,
+                ),
             ),
             patch.object(
                 analytics,
@@ -393,11 +393,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={
-                    "delivery_rate": 95.0,
-                    "read_rate": 80.0,
-                    "engagement_rate": 50.0,
-                },
+                return_value=NotificationMetrics(
+                    delivery_rate=95.0,
+                    read_rate=80.0,
+                    engagement_rate=50.0,
+                ),
             ),
             patch.object(
                 analytics,
@@ -640,13 +640,13 @@ class TestEdgeCasesAndErrorHandling:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={
-                    "total_sent": 0,
-                    "total_delivered": 0,
-                    "total_read": 0,
-                    "delivery_rate": 0.0,
-                    "read_rate": 0.0,
-                },
+                return_value=NotificationMetrics(
+                    total_sent=0,
+                    total_delivered=0,
+                    total_read=0,
+                    delivery_rate=0.0,
+                    read_rate=0.0,
+                ),
             ),
             patch.object(
                 analytics,

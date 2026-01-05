@@ -138,6 +138,9 @@ class SmartNotificationProcessor:
         """Schedule a notification for future delivery"""
         schedule_id = str(uuid.uuid4())
 
+        # Ensure scheduled_for is set (caller should verify this)
+        assert notification_data.scheduled_for is not None
+
         # Store in Redis with scheduled delivery time
         if not await redis_client.is_available() or redis_client.client is None:
             logger.warning("Redis not available, cannot schedule notification")
@@ -384,8 +387,8 @@ class SmartNotificationProcessor:
                 "a_b_test_group": notification_data.a_b_test_group,
             }
 
-            await redis_client.client.lpush(analytics_key, json.dumps(analytics_data))
-            await redis_client.client.ltrim(
+            await redis_client.client.lpush(analytics_key, json.dumps(analytics_data))  # type: ignore[misc]
+            await redis_client.client.ltrim(  # type: ignore[misc]
                 analytics_key, 0, 999
             )  # Keep last 1000 records
 
@@ -464,7 +467,8 @@ class SmartNotificationProcessor:
 smart_notification_processor = SmartNotificationProcessor()
 
 # Service instance for easy import
-smart_notification_service = smart_notification_processor
+# Note: Redefined below with wrapper for testing - using Any for reassignment
+smart_notification_service: Any = smart_notification_processor
 
 
 class SmartNotificationServiceWrapper:
@@ -472,7 +476,7 @@ class SmartNotificationServiceWrapper:
 
     def __init__(self, processor: SmartNotificationProcessor):
         self.processor = processor
-        self.test_batches = []  # For testing purposes
+        self.test_batches: list[dict[str, str]] = []  # For testing purposes
 
     def create_batch(self) -> str:
         """Create a new notification batch"""
@@ -546,7 +550,7 @@ async def send_batched_notification(
     message: str,
     grouping_key: str | None = None,
     **kwargs,
-) -> str:
+) -> bool | str:
     """Send a notification that will be batched with similar notifications"""
     rich_notification = RichNotificationData(
         user_id=user_id,
@@ -570,7 +574,7 @@ async def schedule_notification(
     message: str,
     scheduled_for: datetime,
     **kwargs,
-) -> str:
+) -> bool | str:
     """Schedule a notification for future delivery"""
     rich_notification = RichNotificationData(
         user_id=user_id,

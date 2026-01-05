@@ -87,8 +87,8 @@ class EnhancedProfileService:
     ) -> UserSettingsResponse:
         """Update user settings."""
         # Get user
-        stmt = select(User).where(User.id == user_id)
-        result = await self.db.execute(stmt)
+        select_stmt = select(User).where(User.id == user_id)
+        result = await self.db.execute(select_stmt)
         user = result.scalar_one_or_none()
 
         if not user:
@@ -97,7 +97,7 @@ class EnhancedProfileService:
             )
 
         # Update fields
-        update_data = {}
+        update_data: dict[str, Any] = {}
         if settings_data.full_name is not None:
             update_data["full_name"] = settings_data.full_name
         if settings_data.timezone is not None:
@@ -159,10 +159,10 @@ class EnhancedProfileService:
     ) -> NotificationPreferencesResponse:
         """Update notification preferences."""
         # Get existing preferences
-        stmt = select(NotificationPreference).where(
+        select_stmt = select(NotificationPreference).where(
             NotificationPreference.user_id == user_id
         )
-        result = await self.db.execute(stmt)
+        result = await self.db.execute(select_stmt)
         prefs = result.scalar_one_or_none()
 
         if not prefs:
@@ -185,7 +185,7 @@ class EnhancedProfileService:
             await self.db.flush()
 
         # Update fields
-        update_data = {}
+        update_data: dict[str, Any] = {}
         for field, value in prefs_data.model_dump(exclude_unset=True).items():
             if value is not None:
                 update_data[field] = value
@@ -193,12 +193,12 @@ class EnhancedProfileService:
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc)
 
-            stmt = (
+            update_stmt = (
                 update(NotificationPreference)
                 .where(NotificationPreference.id == prefs.id)
                 .values(**update_data)
             )
-            await self.db.execute(stmt)
+            await self.db.execute(update_stmt)
             await self.db.commit()
 
             # Refresh preferences
