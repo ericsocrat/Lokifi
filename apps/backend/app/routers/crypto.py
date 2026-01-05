@@ -4,6 +4,7 @@ Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
 import logging
+import re
 
 import httpx
 from fastapi import APIRouter, HTTPException, Query
@@ -16,6 +17,19 @@ router = APIRouter(prefix="/crypto", tags=["crypto"])
 
 # CoinGecko API endpoints
 COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
+
+# Pattern for valid coin IDs: alphanumeric with hyphens
+VALID_COIN_ID_PATTERN = re.compile(r"^[a-z0-9-]+$")
+
+
+def validate_coin_id(coin_id: str) -> str:
+    """Validate and sanitize coin ID to prevent path injection attacks."""
+    if not coin_id or not VALID_COIN_ID_PATTERN.match(coin_id.lower()):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid coin ID. Only lowercase alphanumeric characters and hyphens are allowed.",
+        )
+    return coin_id.lower()
 
 
 async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dict:
@@ -141,6 +155,9 @@ async def get_coin_details(
     Returns:
         Detailed coin information
     """
+    # Validate coin_id to prevent path injection
+    coin_id = validate_coin_id(coin_id)
+
     params = {
         "localization": str(localization).lower(),
         "tickers": str(tickers).lower(),
@@ -223,6 +240,9 @@ async def get_ohlc_data(
     Returns:
         OHLC candle data
     """
+    # Validate coin_id to prevent path injection
+    coin_id = validate_coin_id(coin_id)
+
     params = {"vs_currency": vs_currency, "days": days}
 
     data = await fetch_from_coingecko(f"coins/{coin_id}/ohlc", params)
