@@ -3,6 +3,9 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('MobileA11yStore');
 
 // SpeechRecognition API types (not in standard TypeScript lib)
 interface SpeechRecognitionResultList {
@@ -1128,7 +1131,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
 
           if (gesture) {
             // Execute gesture action
-            console.log(`Executing gesture: ${gesture.name} - ${gesture.action}`);
+            logger.debug('Executing gesture', { name: gesture.name, action: gesture.action });
 
             // Provide haptic feedback if available
             if (get().mobileSettings.vibration && 'vibrate' in navigator) {
@@ -1141,7 +1144,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           if (!FLAGS.mobileA11y) return;
 
           // Adjust touch sensitivity based on device and settings
-          console.log('Calibrating touch sensitivity');
+          logger.debug('Calibrating touch sensitivity');
         },
 
         // Performance Optimization
@@ -1240,7 +1243,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           if (!FLAGS.mobileA11y) return;
 
           // Show visual notification
-          console.log(`[${type.toUpperCase()}] ${message}`);
+          logger.debug('Accessibility notification', { type, message });
 
           // Announce to screen reader
           get().announceToScreenReader(message, type === 'error' ? 'assertive' : 'polite');
@@ -1416,7 +1419,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
 
               if (modifiersMatch && event.key.toLowerCase() === shortcut.key.toLowerCase()) {
                 event.preventDefault();
-                console.log(`Executing shortcut: ${shortcut.name}`);
+                logger.debug('Executing shortcut', { name: shortcut.name });
 
                 if (shortcut.announce) {
                   get().announceToScreenReader(
@@ -1663,7 +1666,7 @@ async function performAccessibilityAudit(): Promise<AccessibilityAuditResult> {
 
 async function autoFixAccessibilityIssue(issueId: string): Promise<void> {
   // Auto-fix common accessibility issues
-  console.log(`Auto-fixing accessibility issue: ${issueId}`);
+  logger.debug('Auto-fixing accessibility issue', { issueId });
 }
 
 // Selectors

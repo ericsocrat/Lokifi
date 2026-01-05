@@ -3,6 +3,9 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('ObservabilityStore');
 
 // ============================================================================
 // Window Extensions for Observability
@@ -897,13 +900,13 @@ export const useObservabilityStore = create<ObservabilityStore>()(
           if (!FLAGS.observability) return;
 
           // In a real implementation, this would start collection intervals
-          console.log('Starting system monitoring');
+          logger.debug('Starting system monitoring');
         },
 
         stopSystemMonitoring: () => {
           if (!FLAGS.observability) return;
 
-          console.log('Stopping system monitoring');
+          logger.debug('Stopping system monitoring');
         },
 
         // User Behavior Tracking
@@ -1351,7 +1354,7 @@ export const useObservabilityStore = create<ObservabilityStore>()(
             draft.websocketConnected = true;
           });
 
-          console.log('Connected to observability WebSocket');
+          logger.debug('Connected to observability WebSocket');
         },
 
         disconnectWebSocket: () => {
@@ -1361,7 +1364,7 @@ export const useObservabilityStore = create<ObservabilityStore>()(
             draft.websocketConnected = false;
           });
 
-          console.log('Disconnected from observability WebSocket');
+          logger.debug('Disconnected from observability WebSocket');
         },
 
         // Query & Analysis
@@ -1740,12 +1743,12 @@ export const useObservabilityStore = create<ObservabilityStore>()(
 
                 case 'email':
                   // Would integrate with email service
-                  console.log(`Email alert: ${rule.name} - ${value}`);
+                  logger.debug('Email alert triggered', { rule: rule.name, value });
                   break;
 
                 case 'slack':
                   // Would integrate with Slack API
-                  console.log(`Slack alert: ${rule.name} - ${value}`);
+                  logger.debug('Slack alert triggered', { rule: rule.name, value });
                   break;
               }
             } catch (error) {

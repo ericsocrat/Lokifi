@@ -1,5 +1,9 @@
 import type { Time } from 'lightweight-charts';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('MarketDataAdapter');
+
 export type Candle = {
   time: Time;
   open: number;
@@ -151,9 +155,9 @@ export class MarketDataAdapter {
           }
         } catch {}
       };
-      this.ws.onopen = () => console.log('WS connected');
-      this.ws.onclose = () => console.log('WS closed');
-      this.ws.onerror = (e) => console.log('WS error', e);
+      this.ws.onopen = () => logger.debug('WS connected');
+      this.ws.onclose = () => logger.debug('WS closed');
+      this.ws.onerror = (e) => logger.warn('WS error', { error: e });
     }
   }
 

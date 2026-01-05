@@ -3,6 +3,9 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('PerformanceStore');
 
 // Browser API Extensions (non-standard APIs)
 interface PerformanceWithMemory extends Performance {
@@ -1212,7 +1215,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           });
 
           // Would revert the optimization action
-          console.log(`Reverting optimization: ${ruleId}`);
+          logger.debug('Reverting optimization', { ruleId });
         },
 
         // Alerts

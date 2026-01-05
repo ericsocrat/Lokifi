@@ -5,6 +5,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('useNotifications');
+
 export interface NotificationData {
   id: string;
   user_id: string;
@@ -321,7 +325,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log('Notification WebSocket connected');
+        logger.info('Notification WebSocket connected');
         setIsConnected(true);
         setError(null);
       };
@@ -379,7 +383,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       };
 
       ws.onclose = (event) => {
-        console.log('Notification WebSocket disconnected:', event.code, event.reason);
+        logger.info('Notification WebSocket disconnected', { code: event.code, reason: event.reason });
         setIsConnected(false);
         wsRef.current = null;
 

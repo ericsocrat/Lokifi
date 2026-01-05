@@ -3,6 +3,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('RollbackStore');
 
 // H7: Rollback System - Automated rollback capabilities for seamless upgrades
 // Version management, automated rollback triggers, recovery procedures
@@ -1097,14 +1100,14 @@ export const useRollbackStore = create<RollbackStore>()(
         if (!FLAGS.rollback) return;
 
         // In a real implementation, this would pause the actual execution
-        console.log(`Pausing execution ${executionId}`);
+        logger.debug('Pausing execution', { executionId });
       },
 
       resumeExecution: (executionId: string) => {
         if (!FLAGS.rollback) return;
 
         // In a real implementation, this would resume the paused execution
-        console.log(`Resuming execution ${executionId}`);
+        logger.debug('Resuming execution', { executionId });
       },
 
       // Validation

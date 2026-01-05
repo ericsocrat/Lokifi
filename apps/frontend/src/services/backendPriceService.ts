@@ -9,6 +9,10 @@
  * Created: October 6, 2025
  */
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('BackendPriceService');
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/api';
 
@@ -294,7 +298,7 @@ export class WebSocketPriceService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('✅ WebSocket connected');
+          logger.info('WebSocket connected');
           this.isConnecting = false;
           this.reconnectAttempts = 0;
 
@@ -322,7 +326,7 @@ export class WebSocketPriceService {
         };
 
         this.ws.onclose = () => {
-          console.log('WebSocket disconnected');
+          logger.info('WebSocket disconnected');
           this.isConnecting = false;
           this.ws = null;
           this.attemptReconnect();
@@ -340,7 +344,7 @@ export class WebSocketPriceService {
   private handleMessage(message: WebSocketMessage): void {
     switch (message.type) {
       case 'welcome':
-        console.log(`🎉 ${message.message}`);
+        logger.debug('Welcome message received', { message: message.message });
         break;
 
       case 'price_update':
@@ -355,11 +359,11 @@ export class WebSocketPriceService {
         break;
 
       case 'subscribed':
-        console.log(`✅ Subscribed to: ${message.symbols?.join(', ')}`);
+        logger.debug('Subscribed to symbols', { symbols: message.symbols });
         break;
 
       case 'unsubscribed':
-        console.log(`❌ Unsubscribed from: ${message.symbols?.join(', ')}`);
+        logger.debug('Unsubscribed from symbols', { symbols: message.symbols });
         break;
 
       case 'error':
@@ -367,7 +371,7 @@ export class WebSocketPriceService {
         break;
 
       case 'pong':
-        console.log('🏓 Pong received');
+        logger.debug('Pong received');
         break;
     }
   }
@@ -452,9 +456,11 @@ export class WebSocketPriceService {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(
-      `Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`
-    );
+    logger.info('Reconnecting', {
+      delay: `${delay}ms`,
+      attempt: this.reconnectAttempts,
+      maxAttempts: this.maxReconnectAttempts,
+    });
 
     setTimeout(() => {
       this.connect().catch((error) => {
