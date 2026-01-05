@@ -24,7 +24,10 @@ class WebSocketJWTAuth:
     """JWT authentication handler for WebSocket connections"""
 
     def __init__(self, secret_key: str | None = None):
-        self.secret_key = secret_key or settings.JWT_SECRET_KEY
+        resolved_key = secret_key or settings.JWT_SECRET_KEY
+        if not resolved_key:
+            raise ValueError("JWT_SECRET_KEY must be configured")
+        self.secret_key: str = resolved_key
         self.algorithm = "HS256"
         self.redis_key_manager = RedisKeyManager()
 
