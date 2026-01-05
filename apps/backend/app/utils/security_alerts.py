@@ -356,54 +356,55 @@ class SecurityAlertManager:
 
         emoji = severity_emojis.get(alert.severity, "⚠️")
 
+        # Type the attachments explicitly for mypy
+        attachments: list[dict[str, Any]] = [
+            {
+                "color": (
+                    "danger"
+                    if alert.severity
+                    in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
+                    else "warning"
+                ),
+                "title": f"{emoji} {alert.title}",
+                "text": alert.message,
+                "fields": [
+                    {
+                        "title": "Severity",
+                        "value": alert.severity.value.upper(),
+                        "short": True,
+                    },
+                    {
+                        "title": "Event Type",
+                        "value": alert.event_type.value,
+                        "short": True,
+                    },
+                    {
+                        "title": "Timestamp",
+                        "value": (
+                            alert.timestamp.strftime("%Y-%m-%d %H:%M:%S timezone.utc")
+                            if alert.timestamp
+                            else "N/A"
+                        ),
+                        "short": True,
+                    },
+                ],
+                "ts": (
+                    int(alert.timestamp.timestamp())
+                    if alert.timestamp
+                    else int(datetime.now(timezone.utc).timestamp())
+                ),
+            }
+        ]
+
         payload = {
             "channel": self.slack_channel,
             "username": "Lokifi Security Monitor",
             "icon_emoji": ":shield:",
-            "attachments": [
-                {
-                    "color": (
-                        "danger"
-                        if alert.severity
-                        in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
-                        else "warning"
-                    ),
-                    "title": f"{emoji} {alert.title}",
-                    "text": alert.message,
-                    "fields": [
-                        {
-                            "title": "Severity",
-                            "value": alert.severity.value.upper(),
-                            "short": True,
-                        },
-                        {
-                            "title": "Event Type",
-                            "value": alert.event_type.value,
-                            "short": True,
-                        },
-                        {
-                            "title": "Timestamp",
-                            "value": (
-                                alert.timestamp.strftime(
-                                    "%Y-%m-%d %H:%M:%S timezone.utc"
-                                )
-                                if alert.timestamp
-                                else "N/A"
-                            ),
-                            "short": True,
-                        },
-                    ],
-                    "ts": (
-                        int(alert.timestamp.timestamp())
-                        if alert.timestamp
-                        else int(datetime.now(timezone.utc).timestamp())
-                    ),
-                }
-            ],
+            "attachments": attachments,
         }
 
         if alert.source_ip:
-            payload["attachments"][0]["fields"].append(
+            attachments[0]["fields"].append(
                 {"title": "Source IP", "value": alert.source_ip, "short": True}
             )
 

@@ -173,7 +173,7 @@ async def get_market_overview():
     active_symbols = [s for s in all_symbols if s.is_active]
 
     # Count by asset type
-    asset_type_counts: dict[str, int] = {}
+    asset_type_counts: dict[AssetType, int] = {}
     for symbol in active_symbols:
         asset_type = symbol.asset_type
         asset_type_counts[asset_type] = asset_type_counts.get(asset_type, 0) + 1

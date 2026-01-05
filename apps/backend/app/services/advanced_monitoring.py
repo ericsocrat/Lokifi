@@ -159,8 +159,8 @@ class PerformanceAnalyzer:
         self.metrics_history: deque[SystemMetrics] = deque(
             maxlen=1440
         )  # 24 hours at 1-minute intervals
-        self.performance_baselines: dict[str, Any] = {}
-        self.anomaly_detection: dict[str, Any] = {}
+        self.performance_baselines: dict[str, float] = {}
+        self.anomaly_detection: dict[datetime, list[str]] = {}
 
     def add_metrics(self, metrics: SystemMetrics):
         """Add metrics for analysis"""
