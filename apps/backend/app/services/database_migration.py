@@ -58,6 +58,13 @@ class DatabaseMigrationService:
                     "pending_migrations": [],
                 }
 
+            # Fallback return if async for doesn't yield (shouldn't happen)
+            return {
+                "migrations_table_exists": False,
+                "applied_migrations": [],
+                "pending_migrations": [],
+            }
+
         except Exception as e:
             logger.error(f"Migration status check failed: {e}")
             return {

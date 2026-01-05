@@ -405,6 +405,9 @@ class SmartNotificationProcessor:
 
                 return self._get_default_preferences()
 
+            # Fallback return if async for doesn't yield
+            return self._get_default_preferences()
+
         except Exception as e:
             logger.error(f"Failed to get user preferences for {user_id}: {e}")
             return self._get_default_preferences()

@@ -155,6 +155,9 @@ class NotificationService:
                 )
                 return notification
 
+            # Fallback return if async for doesn't yield
+            return None
+
         except Exception as e:
             logger.error(f"Failed to create notification: {e}")
             return None
@@ -249,6 +252,9 @@ class NotificationService:
 
                 return list(notifications)
 
+            # Fallback return if async for doesn't yield
+            return []
+
         except Exception as e:
             logger.error(f"Failed to get user notifications: {e}")
             return []
@@ -284,6 +290,9 @@ class NotificationService:
 
                 return count
 
+            # Fallback return if async for doesn't yield
+            return 0
+
         except Exception as e:
             logger.error(f"Failed to get unread count: {e}")
             return 0
@@ -314,6 +323,9 @@ class NotificationService:
                     await self._emit_event(NotificationEvent.READ, notification)
 
                 return True
+
+            # Fallback return if async for doesn't yield
+            return False
 
         except Exception as e:
             logger.error(f"Failed to mark notification as read: {e}")
@@ -352,6 +364,9 @@ class NotificationService:
 
                 return count
 
+            # Fallback return if async for doesn't yield
+            return 0
+
         except Exception as e:
             logger.error(f"Failed to mark all as read: {e}")
             return 0
@@ -383,6 +398,9 @@ class NotificationService:
 
                 return True
 
+            # Fallback return if async for doesn't yield
+            return False
+
         except Exception as e:
             logger.error(f"Failed to dismiss notification: {e}")
             return False
@@ -412,6 +430,9 @@ class NotificationService:
                 await self._emit_event(NotificationEvent.CLICKED, notification)
 
                 return True
+
+            # Fallback return if async for doesn't yield
+            return False
 
         except Exception as e:
             logger.error(f"Failed to record notification click: {e}")
@@ -532,6 +553,21 @@ class NotificationService:
                     oldest_unread=oldest_unread,
                 )
 
+            # Fallback return if async for doesn't yield
+            return NotificationStats(
+                total_notifications=0,
+                unread_count=0,
+                read_count=0,
+                dismissed_count=0,
+                delivered_count=0,
+                clicked_count=0,
+                by_type={},
+                by_priority={},
+                avg_read_time_seconds=0.0,
+                most_recent=None,
+                oldest_unread=None,
+            )
+
         except Exception as e:
             logger.error(f"Failed to get notification stats: {e}")
             return NotificationStats(
@@ -575,6 +611,9 @@ class NotificationService:
                     logger.info(f"Cleaned up {count} expired notifications")
 
                 return count
+
+            # Fallback return if async for doesn't yield
+            return 0
 
         except Exception as e:
             logger.error(f"Failed to cleanup expired notifications: {e}")

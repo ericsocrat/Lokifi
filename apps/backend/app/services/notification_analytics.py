@@ -221,6 +221,9 @@ class NotificationAnalytics:
 
                 return metrics
 
+            # Fallback return if async for doesn't yield
+            return NotificationMetrics()
+
         except Exception as e:
             logger.error(f"Failed to get comprehensive metrics: {e}")
             return NotificationMetrics()  # Return empty dataclass on error
@@ -342,6 +345,9 @@ class NotificationAnalytics:
                     average_notifications_per_user=round(avg_notifications_per_user, 2),
                     user_preference_adoption=round(preference_adoption, 2),
                 )
+
+            # Fallback return if async for doesn't yield
+            return UserEngagementMetrics()
 
         except Exception as e:
             logger.error(f"Failed to get user engagement metrics: {e}")

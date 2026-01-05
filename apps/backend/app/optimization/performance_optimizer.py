@@ -141,6 +141,19 @@ class DatabaseOptimizer:
                 self.query_metrics.append(metric)
                 return metric
 
+            # Fallback return if async for doesn't yield (shouldn't happen)
+            return QueryPerformanceMetric(
+                query_hash=query_hash,
+                query_text=query[:500],
+                execution_time_ms=(time.time() - start_time) * 1000,
+                rows_examined=0,
+                rows_returned=0,
+                index_used=False,
+                full_table_scan=True,
+                timestamp=datetime.now(timezone.utc),
+                optimization_suggestions=["Session not available"],
+            )
+
         except Exception as e:
             logger.error(f"Query analysis failed: {e}")
             # Return basic metric without analysis
