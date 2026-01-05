@@ -1,30 +1,38 @@
 # CodeQL Configuration for Lokifi
-# This configuration customizes CodeQL analysis for our Python backend
+# This configuration customizes CodeQL analysis for our full-stack application
 # Last updated: 2025-01-13 - Added security documentation and query filters
 
 name: "Lokifi Security Analysis"
 
-# Paths to analyze
+# Paths to analyze (both frontend and backend)
 paths:
   - apps/backend/app
+  - apps/frontend/src
 
 # Paths to ignore (non-production code)
 paths-ignore:
-  # Virtual environment
+  # Virtual environments
   - apps/backend/venv
   - apps/backend/.venv
   # Test files (tested separately)
   - apps/backend/tests
   - "**/test_*.py"
   - "**/*_test.py"
-  # Compiled Python files
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/tests/**"
+  # Compiled/build artifacts
   - apps/backend/**/__pycache__
+  - apps/frontend/.next
+  - apps/frontend/node_modules
+  - "**/node_modules"
   - "**/*.pyc"
   - "**/*.pyo"
   # Development/build artifacts
   - "**/htmlcov"
   - "**/.coverage"
   - "**/coverage.xml"
+  - "**/coverage-dashboard"
 
 # Query filters
 # Note: The py/log-injection alerts in our codebase are FALSE POSITIVES because:
