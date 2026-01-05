@@ -43,6 +43,8 @@ from app.routers import (
     websocket_prices,
 )
 from app.routers.profile_enhanced import router as profile_enhanced_router
+from app.services.alerts import evaluator as alerts_evaluator, store as alerts_store
+from app.services.websocket_manager import connection_manager
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
@@ -82,6 +84,24 @@ async def lifespan(app: FastAPI):
         # Don't fail startup for websocket issues
         logger.warning("⚠️ Continuing without WebSocket manager")
 
+    logger.info("🔌 Initializing legacy connection manager...")
+    try:
+        await connection_manager.initialize_redis()
+        import asyncio
+
+        asyncio.create_task(connection_manager.handle_redis_messages())
+        logger.info("✅ Connection manager initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ Connection manager initialization error (continuing): {e}")
+
+    logger.info("🔔 Starting alerts evaluator...")
+    try:
+        await alerts_store.load()
+        await alerts_evaluator.start()
+        logger.info("✅ Alerts evaluator started")
+    except Exception as e:
+        logger.warning(f"⚠️ Alerts evaluator error (continuing): {e}")
+
     # Disable data services for faster startup (optional services)
     logger.info("🗄️ Data services disabled for faster startup")
     # await startup_data_services()
@@ -109,6 +129,20 @@ async def lifespan(app: FastAPI):
         logger.info("✅ WebSocket manager stopped")
     except Exception as e:
         logger.error(f"❌ Error stopping websocket manager: {e}")
+
+    logger.info("🔌 Closing legacy connection manager...")
+    try:
+        await connection_manager.close()
+        logger.info("✅ Connection manager closed")
+    except Exception as e:
+        logger.error(f"❌ Error closing connection manager: {e}")
+
+    logger.info("🔔 Stopping alerts evaluator...")
+    try:
+        await alerts_evaluator.stop()
+        logger.info("✅ Alerts evaluator stopped")
+    except Exception as e:
+        logger.error(f"❌ Error stopping alerts evaluator: {e}")
 
     # logger.info("🗄️ Shutting down data services...")
     # await shutdown_data_services()

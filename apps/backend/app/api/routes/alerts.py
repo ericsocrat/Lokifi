@@ -37,15 +37,8 @@ class CreateAlert(BaseModel):
     handle: str | None = None  # optional legacy; must match token if provided
 
 
-@router.on_event("startup")
-async def _startup():
-    await store.load()
-    evaluator.start()
-
-
-@router.on_event("shutdown")
-async def _shutdown():
-    await evaluator.stop()
+# NOTE: Startup/shutdown moved to main.py lifespan (Session 122)
+# alerts_store.load() and alerts_evaluator.start()/stop() handled in app.main.lifespan()
 
 
 @router.get("/alerts")
