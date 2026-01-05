@@ -49,8 +49,8 @@ class ConversationService:
         users_stmt = select(User).where(
             User.id.in_([user1_id, user2_id]), User.is_active
         )
-        result = await self.db.execute(users_stmt)
-        users = result.scalars().all()
+        users_result = await self.db.execute(users_stmt)
+        users = users_result.scalars().all()
 
         if len(users) != 2:
             raise HTTPException(
@@ -74,8 +74,8 @@ class ConversationService:
             .options(selectinload(Conversation.participants))
         )
 
-        result = await self.db.execute(existing_stmt)
-        existing_conversations = result.scalars().all()
+        conversations_result = await self.db.execute(existing_stmt)
+        existing_conversations = conversations_result.scalars().all()
 
         # Check if any existing conversation has exactly these two users
         for conv in existing_conversations:
@@ -226,8 +226,8 @@ class ConversationService:
             ConversationParticipant.user_id == user_id,
             ConversationParticipant.is_active,
         )
-        result = await self.db.execute(participant_stmt)
-        participant = result.scalar_one_or_none()
+        participant_result = await self.db.execute(participant_stmt)
+        participant = participant_result.scalar_one_or_none()
 
         if not participant:
             raise HTTPException(
@@ -247,9 +247,9 @@ class ConversationService:
             .options(selectinload(Message.receipts))
         )
 
-        result = await self.db.execute(stmt)
+        messages_result = await self.db.execute(stmt)
         messages = list(
-            reversed(result.scalars().all())
+            reversed(messages_result.scalars().all())
         )  # Reverse for chronological order
 
         # Get total count
