@@ -33,7 +33,6 @@ paths-ignore:
   - "**/.coverage"
   - "**/coverage.xml"
   - "**/coverage-dashboard"
-
 # Query filters
 # Note: The py/log-injection alerts in our codebase are FALSE POSITIVES because:
 # 1. All user-controlled data is sanitized via sanitize_for_logging() before logging
