@@ -143,8 +143,8 @@ class ConversationService:
                 ConversationParticipant.is_active,
             )
         )
-        result = await self.db.execute(count_stmt)
-        total = int(result.scalar() or 0)
+        count_result = await self.db.execute(count_stmt)
+        total = int(count_result.scalar() or 0)
 
         # Build response list
         conversation_responses = []
@@ -258,8 +258,8 @@ class ConversationService:
             .select_from(Message)
             .where(Message.conversation_id == conversation_id, ~Message.is_deleted)
         )
-        result = await self.db.execute(count_stmt)
-        total = int(result.scalar() or 0)
+        count_result = await self.db.execute(count_stmt)
+        total = int(count_result.scalar() or 0)
 
         # Build response list
         message_responses = []

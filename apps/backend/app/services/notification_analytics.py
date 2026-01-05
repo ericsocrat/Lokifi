@@ -367,8 +367,8 @@ class NotificationAnalytics:
                 cache_hit_rate = 85.0  # Placeholder - would implement proper tracking
 
             # WebSocket connections from performance monitor
-            websocket_connections = len(
-                self.performance_counters.get("websocket_connections", {})
+            websocket_connections = self.performance_counters.get(
+                "websocket_connections", 0
             )
 
             # Database timing

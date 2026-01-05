@@ -170,7 +170,7 @@ class MessageAnalyticsService:
             )
         )
         result = await self.db.execute(total_messages_stmt)
-        total_messages = result.scalar() or 0
+        total_messages = int(result.scalar() or 0)
 
         # Total participants
         participants_stmt = select(func.count(ConversationParticipant.user_id)).where(
@@ -180,7 +180,7 @@ class MessageAnalyticsService:
             )
         )
         result = await self.db.execute(participants_stmt)
-        total_participants = result.scalar() or 0
+        total_participants = int(result.scalar() or 0)
 
         # Messages by day (last 7 days)
         messages_by_day_stmt = (
