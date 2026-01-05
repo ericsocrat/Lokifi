@@ -2,9 +2,12 @@
 Conversation and message models for direct messaging (J4).
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Boolean,
@@ -20,6 +23,10 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.reaction import MessageReaction
+    from app.models.user import User
 
 
 class ContentType(str, Enum):
@@ -62,10 +69,10 @@ class Conversation(Base):
     )
 
     # Relationships
-    participants = relationship(
+    participants: Mapped[list[ConversationParticipant]] = relationship(
         "ConversationParticipant", back_populates="conversation"
     )
-    messages = relationship(
+    messages: Mapped[list[Message]] = relationship(
         "Message", back_populates="conversation", order_by="Message.created_at"
     )
 
@@ -156,11 +163,15 @@ class Message(Base):
 
     # Relationships
     conversation = relationship("Conversation", back_populates="messages")
-    sender = relationship(
+    sender: Mapped[User | None] = relationship(
         "User", foreign_keys=[sender_id], back_populates="sent_messages"
     )
-    receipts = relationship("MessageReceipt", back_populates="message")
-    reactions = relationship("MessageReaction", back_populates="message")
+    receipts: Mapped[list[MessageReceipt]] = relationship(
+        "MessageReceipt", back_populates="message"
+    )
+    reactions: Mapped[list[MessageReaction]] = relationship(
+        "MessageReaction", back_populates="message"
+    )
 
     # Indexes for performance
     __table_args__ = (

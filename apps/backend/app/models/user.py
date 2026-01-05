@@ -2,14 +2,20 @@
 User model for authentication and basic user data.
 """
 
+from __future__ import annotations
+
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.profile import Profile
 
 
 class User(Base):
@@ -68,7 +74,9 @@ class User(Base):
     )
 
     # Relationships
-    profile = relationship("Profile", back_populates="user", uselist=False)
+    profile: Mapped[Profile | None] = relationship(
+        "Profile", back_populates="user", uselist=False
+    )
     following = relationship(
         "Follow", foreign_keys="Follow.follower_id", back_populates="follower"
     )

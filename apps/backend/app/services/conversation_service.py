@@ -303,8 +303,8 @@ class ConversationService:
             Message.id == mark_read_data.message_id,
             Message.conversation_id == conversation_id,
         )
-        result = await self.db.execute(message_stmt)
-        target_message = result.scalar_one_or_none()
+        message_result = await self.db.execute(message_stmt)
+        target_message = message_result.scalar_one_or_none()
 
         if not target_message:
             raise HTTPException(
@@ -318,16 +318,16 @@ class ConversationService:
             Message.created_at <= target_message.created_at,
             ~Message.is_deleted,
         )
-        result = await self.db.execute(messages_stmt)
-        message_ids = [row[0] for row in result.all()]
+        messages_result = await self.db.execute(messages_stmt)
+        message_ids = [row[0] for row in messages_result.all()]
 
         # Create receipts for messages not already read by this user
         existing_receipts_stmt = select(MessageReceipt.message_id).where(
             MessageReceipt.message_id.in_(message_ids),
             MessageReceipt.user_id == user_id,
         )
-        result = await self.db.execute(existing_receipts_stmt)
-        existing_message_ids = {row[0] for row in result.all()}
+        existing_receipts_result = await self.db.execute(existing_receipts_stmt)
+        existing_message_ids = {row[0] for row in existing_receipts_result.all()}
 
         new_receipts = []
         for message_id in message_ids:

@@ -196,6 +196,18 @@ class RedisClient:
             logger.warning(f"Failed to invalidate cache for {user_id}: {e}")
 
     # Pub/Sub Methods for Real-time Notifications
+    async def publish(self, channel: str, message: str) -> int:
+        """Publish a message to a Redis channel (generic pub/sub)"""
+        if not await self.is_available() or not self.client:
+            return 0
+
+        try:
+            result = await self.client.publish(channel, message)
+            return result if isinstance(result, int) else 0
+        except RedisError as e:
+            logger.warning(f"Failed to publish to channel {channel}: {e}")
+            return 0
+
     async def publish_notification(
         self, user_id: str, notification_data: dict[str, Any]
     ) -> None:

@@ -405,12 +405,15 @@ class SmartNotificationProcessor:
                 preference = result.scalar_one_or_none()
 
                 if preference:
+                    # Check if either daily or weekly digest is enabled
+                    digest_enabled = (
+                        preference.daily_digest_enabled
+                        or preference.weekly_digest_enabled
+                    )
                     return {
-                        "batching_enabled": preference.enable_digest,
+                        "batching_enabled": digest_enabled,
                         "preferred_batching_strategy": (
-                            "smart_grouping"
-                            if preference.enable_digest
-                            else "immediate"
+                            "smart_grouping" if digest_enabled else "immediate"
                         ),
                         "quiet_hours_start": preference.quiet_hours_start,
                         "quiet_hours_end": preference.quiet_hours_end,

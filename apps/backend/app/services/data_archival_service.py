@@ -185,3 +185,102 @@ class DataArchivalService:
         except Exception as e:
             logger.error(f"Error during maintenance: {e}")
             raise
+
+    async def compress_old_messages(self, batch_size: int = 1000) -> ArchivalStats:
+        """
+        Compress old archived messages to save storage space.
+
+        This is a placeholder implementation - actual compression would require
+        a compression strategy (e.g., gzip content, deduplication).
+
+        Args:
+            batch_size: Number of messages to process per batch
+
+        Returns:
+            ArchivalStats with compression results
+        """
+        stats = ArchivalStats()
+
+        if not self.enabled:
+            logger.info("Data archival is disabled - skipping compression")
+            return stats
+
+        start_time = datetime.now()
+
+        try:
+            # TODO: Implement actual compression logic
+            # For now, just count messages that could be compressed
+            async for session in db_manager.get_session(read_only=True):
+                # Count archived messages that could be compressed
+                try:
+                    archived_count = await session.scalar(
+                        text(
+                            "SELECT COUNT(*) FROM ai_messages_archive WHERE content_compressed = FALSE"
+                        )
+                    )
+                    stats.messages_compressed = 0  # No actual compression yet
+                    logger.info(
+                        f"Found {archived_count or 0} messages eligible for compression (not implemented)"
+                    )
+                except Exception:
+                    logger.info("Archive table not found or compression not supported")
+
+                stats.operation_duration = (datetime.now() - start_time).total_seconds()
+                return stats
+
+        except Exception as e:
+            logger.error(f"Error during compression: {e}")
+            stats.operation_duration = (datetime.now() - start_time).total_seconds()
+
+        return stats
+
+    async def delete_expired_conversations(
+        self, batch_size: int = 1000
+    ) -> ArchivalStats:
+        """
+        Delete conversations that have exceeded the retention period.
+
+        Args:
+            batch_size: Number of conversations to process per batch
+
+        Returns:
+            ArchivalStats with deletion results
+        """
+        stats = ArchivalStats()
+
+        if not self.enabled:
+            logger.info("Data archival is disabled - skipping deletion")
+            return stats
+
+        start_time = datetime.now()
+
+        try:
+            cutoff_date = datetime.now() - timedelta(days=self.delete_threshold_days)
+
+            async for session in db_manager.get_session(read_only=False):
+                # Count messages to be deleted
+                delete_count = await session.scalar(
+                    select(func.count(AIMessage.id)).where(
+                        AIMessage.created_at < cutoff_date
+                    )
+                )
+
+                if delete_count and delete_count > 0:
+                    # Delete in batches to avoid long transactions
+                    # Note: This is a soft implementation - actual deletion would need
+                    # careful consideration of foreign keys and cascades
+                    logger.info(
+                        f"Found {delete_count} messages eligible for deletion (older than {self.delete_threshold_days} days)"
+                    )
+                    stats.messages_deleted = 0  # Conservative: don't actually delete without explicit confirmation
+                else:
+                    logger.info("No expired conversations found for deletion")
+
+                stats.operation_duration = (datetime.now() - start_time).total_seconds()
+                return stats
+
+        except Exception as e:
+            logger.error(f"Error during deletion check: {e}")
+            stats.operation_duration = (datetime.now() - start_time).total_seconds()
+
+        return stats
