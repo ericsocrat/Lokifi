@@ -104,7 +104,7 @@ class SmartPriceService:
             return price_data
         except Exception as e:
             logger.error(
-                f"Error fetching price for {sanitize_for_logging(symbol)}: {e}"
+                f"Error fetching price for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
             return None
 
@@ -173,7 +173,9 @@ class SmartPriceService:
                         source="finnhub",
                     )
         except Exception as e:
-            logger.error(f"Error fetching {sanitize_for_logging(symbol)}: {e}")
+            logger.error(
+                f"Error fetching {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
+            )
         return None
 
     async def get_batch_prices(

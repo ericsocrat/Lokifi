@@ -163,7 +163,7 @@ class HistoricalPriceService:
         try:
             return await advanced_redis_client.get(key)
         except Exception as e:
-            logger.debug(f"Cache miss: {e}")
+            logger.debug(f"Cache miss: {sanitize_for_logging(str(e))}")
         return None
 
     async def _set_cache_history(self, key: str, value, ttl: int = 1800):
@@ -171,7 +171,7 @@ class HistoricalPriceService:
         try:
             await advanced_redis_client.set(key, value, expire=ttl)
         except Exception as e:
-            logger.debug(f"Cache set failed: {e}")
+            logger.debug(f"Cache set failed: {sanitize_for_logging(str(e))}")
 
     async def get_history(
         self, symbol: str, period: PeriodType = "1m", force_refresh: bool = False
@@ -225,7 +225,7 @@ class HistoricalPriceService:
                 cached=False, duration=duration, error=True
             )
             logger.error(
-                f"❌ Error fetching history for {sanitize_for_logging(symbol)}: {e}"
+                f"❌ Error fetching history for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
             return []
 
@@ -287,11 +287,11 @@ class HistoricalPriceService:
                 )
             else:
                 logger.error(
-                    f"❌ CoinGecko HTTP error for {sanitize_for_logging(symbol)}: {e.response.status_code}"
+                    f"❌ CoinGecko HTTP error for {sanitize_for_logging(symbol)}: {sanitize_for_logging(e.response.status_code)}"
                 )
         except Exception as e:
             logger.error(
-                f"❌ Error fetching crypto history for {sanitize_for_logging(symbol)}: {e}"
+                f"❌ Error fetching crypto history for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
 
         return []
@@ -325,7 +325,7 @@ class HistoricalPriceService:
             }
 
             logger.debug(
-                f"Fetching stock history: {symbol} (resolution={resolution}, days={days})"
+                f"Fetching stock history: {sanitize_for_logging(symbol)} (resolution={resolution}, days={days})"
             )
             resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
@@ -345,7 +345,7 @@ class HistoricalPriceService:
                 )
             else:
                 logger.warning(
-                    f"⚠️ Finnhub returned unexpected response for {sanitize_for_logging(symbol)}: {data.get('s')}"
+                    f"⚠️ Finnhub returned unexpected response for {sanitize_for_logging(symbol)}: {sanitize_for_logging(data.get('s'))}"
                 )
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 429:
@@ -358,11 +358,11 @@ class HistoricalPriceService:
                 )
             else:
                 logger.error(
-                    f"❌ Finnhub HTTP error for {sanitize_for_logging(symbol)}: {e.response.status_code}"
+                    f"❌ Finnhub HTTP error for {sanitize_for_logging(symbol)}: {sanitize_for_logging(e.response.status_code)}"
                 )
         except Exception as e:
             logger.error(
-                f"❌ Error fetching stock history for {sanitize_for_logging(symbol)}: {e}"
+                f"❌ Error fetching stock history for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
 
         return []
@@ -398,7 +398,7 @@ class HistoricalPriceService:
             return data
         except Exception as e:
             logger.error(
-                f"Error fetching OHLCV for {sanitize_for_logging(symbol)}: {e}"
+                f"Error fetching OHLCV for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
             return []
 
@@ -445,7 +445,7 @@ class HistoricalPriceService:
             ]
         except Exception as e:
             logger.error(
-                f"Error fetching crypto OHLCV for {sanitize_for_logging(symbol)}: {e}"
+                f"Error fetching crypto OHLCV for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
 
         return []
@@ -496,7 +496,7 @@ class HistoricalPriceService:
                 ]
         except Exception as e:
             logger.error(
-                f"Error fetching stock OHLCV for {sanitize_for_logging(symbol)}: {e}"
+                f"Error fetching stock OHLCV for {sanitize_for_logging(symbol)}: {sanitize_for_logging(str(e))}"
             )
 
         return []

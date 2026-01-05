@@ -96,8 +96,9 @@ class PriceWebSocketManager:
         if client_id in self.subscriptions:
             symbols_upper = [s.upper() for s in symbols]
             self.subscriptions[client_id].update(symbols_upper)
+            safe_symbols = [sanitize_for_logging(s) for s in symbols_upper[:10]]
             logger.info(
-                f"{sanitize_for_logging(client_id)} subscribed to {len(symbols)} symbols: {symbols_upper[:10]}..."
+                f"{sanitize_for_logging(client_id)} subscribed to {len(symbols)} symbols: {safe_symbols}..."
             )
             return True
         return False
@@ -108,8 +109,9 @@ class PriceWebSocketManager:
             self.subscriptions[client_id].difference_update(
                 [s.upper() for s in symbols]
             )
+            safe_symbols = [sanitize_for_logging(s) for s in symbols]
             logger.info(
-                f"{sanitize_for_logging(client_id)} unsubscribed from: {symbols}"
+                f"{sanitize_for_logging(client_id)} unsubscribed from: {safe_symbols}"
             )
             return True
         return False
@@ -122,7 +124,7 @@ class PriceWebSocketManager:
                 connection_metrics.total_messages_sent += 1
             except Exception as e:
                 logger.error(
-                    f"❌ Error sending to {sanitize_for_logging(client_id)}: {e}"
+                    f"❌ Error sending to {sanitize_for_logging(client_id)}: {sanitize_for_logging(str(e))}"
                 )
                 connection_metrics.total_errors += 1
                 self.disconnect(client_id)
@@ -177,7 +179,9 @@ class PriceWebSocketManager:
                             f"📤 Published {len(price_payload)} prices to Redis"
                         )
                     except Exception as e:
-                        logger.debug(f"Redis publish failed: {e}")
+                        logger.debug(
+                            f"Redis publish failed: {sanitize_for_logging(str(e))}"
+                        )
 
                 # Send targeted updates to each client
                 for client_id, subscribed_symbols in self.subscriptions.items():
@@ -220,7 +224,10 @@ class PriceWebSocketManager:
                 )
 
             except Exception as e:
-                logger.error(f"❌ Error in price update loop: {e}", exc_info=True)
+                logger.error(
+                    f"❌ Error in price update loop: {sanitize_for_logging(str(e))}",
+                    exc_info=True,
+                )
 
             # Wait 30 seconds before next update
             await asyncio.sleep(self.update_interval)
@@ -363,10 +370,10 @@ async def websocket_price_endpoint(
                 )
             except Exception as e:
                 logger.error(
-                    f"Error processing message from {sanitize_for_logging(client_id)}: {e}"
+                    f"Error processing message from {sanitize_for_logging(client_id)}: {sanitize_for_logging(str(e))}"
                 )
                 await price_ws_manager.send_message(
-                    client_id, {"type": "error", "message": str(e)}
+                    client_id, {"type": "error", "message": "Internal error"}
                 )
 
     except WebSocketDisconnect:
@@ -374,6 +381,7 @@ async def websocket_price_endpoint(
         logger.info(f"Client {sanitize_for_logging(client_id)} disconnected normally")
     except Exception as e:
         logger.error(
-            f"WebSocket error for {sanitize_for_logging(client_id)}: {e}", exc_info=True
+            f"WebSocket error for {sanitize_for_logging(client_id)}: {sanitize_for_logging(str(e))}",
+            exc_info=True,
         )
         price_ws_manager.disconnect(client_id)

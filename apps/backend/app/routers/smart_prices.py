@@ -157,7 +157,7 @@ async def get_all_assets(
             )
 
         logger.info(
-            f"🌐 Fetching unified assets: {sanitize_for_logging(type_list)} (limit: {limit_per_type})"
+            f"🌐 Fetching unified assets: {sanitize_for_logging(type_list)} (limit: {sanitize_for_logging(limit_per_type)})"
         )
 
         # Check if data is cached

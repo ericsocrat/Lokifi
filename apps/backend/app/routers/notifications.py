@@ -314,7 +314,7 @@ async def mark_notification_as_read(
         raise
     except Exception as e:
         logger.error(
-            f"Failed to mark notification {sanitize_for_logging(notification_id)} as read: {e}"
+            f"Failed to mark notification {sanitize_for_logging(notification_id)} as read: {sanitize_for_logging(str(e))}"
         )
         raise HTTPException(
             status_code=500, detail="Failed to mark notification as read"
@@ -345,7 +345,9 @@ async def dismiss_notification(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to dismiss notification {notification_id}: {e}")
+        logger.error(
+            f"Failed to dismiss notification {sanitize_for_logging(notification_id)}: {sanitize_for_logging(str(e))}"
+        )
         raise HTTPException(status_code=500, detail="Failed to dismiss notification")
 
 
@@ -374,7 +376,7 @@ async def click_notification(
         raise
     except Exception as e:
         logger.error(
-            f"Failed to record click for notification {sanitize_for_logging(notification_id)}: {e}"
+            f"Failed to record click for notification {sanitize_for_logging(notification_id)}: {sanitize_for_logging(str(e))}"
         )
         raise HTTPException(
             status_code=500, detail="Failed to record notification click"

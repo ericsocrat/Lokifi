@@ -163,7 +163,7 @@ class MessageModerationService:
         try:
             # In a real implementation, this would create a moderation report record
             logger.info(
-                f"Message {message_id} reported by user {reporter_id}: {sanitize_for_logging(reason)}"
+                f"Message {sanitize_for_logging(message_id)} reported by user {sanitize_for_logging(reporter_id)}: {sanitize_for_logging(reason)}"
             )
 
             # Could automatically re-moderate the reported message
