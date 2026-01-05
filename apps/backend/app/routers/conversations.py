@@ -223,6 +223,9 @@ async def send_message(
 
             recipient_ids = participant_ids - {current_user.id}
 
+            # Get current user profile data (with fallbacks)
+            current_profile = current_user.profile
+
             for recipient_id in recipient_ids:
                 # Get recipient user details
                 recipient_stmt = select(User).where(User.id == recipient_id)
@@ -230,18 +233,42 @@ async def send_message(
                 recipient_user = recipient_result.scalar_one_or_none()
 
                 if recipient_user:
+                    recipient_profile = recipient_user.profile
+
                     await trigger_dm_notification(
                         sender_user_data={
                             "id": str(current_user.id),
-                            "username": current_user.handle,
-                            "display_name": current_user.handle,
-                            "avatar_url": current_user.avatar_url,
+                            "username": (
+                                current_profile.username
+                                if current_profile
+                                else current_user.email
+                            ),
+                            "display_name": (
+                                current_profile.display_name
+                                if current_profile
+                                else current_user.full_name
+                            ),
+                            "avatar_url": (
+                                current_profile.avatar_url if current_profile else None
+                            ),
                         },
                         recipient_user_data={
                             "id": str(recipient_user.id),
-                            "username": recipient_user.handle,
-                            "display_name": recipient_user.handle,
-                            "avatar_url": recipient_user.avatar_url,
+                            "username": (
+                                recipient_profile.username
+                                if recipient_profile
+                                else recipient_user.email
+                            ),
+                            "display_name": (
+                                recipient_profile.display_name
+                                if recipient_profile
+                                else recipient_user.full_name
+                            ),
+                            "avatar_url": (
+                                recipient_profile.avatar_url
+                                if recipient_profile
+                                else None
+                            ),
                         },
                         message_data={
                             "id": str(message_response.id),
@@ -255,9 +282,19 @@ async def send_message(
                 message_data.content,
                 mentioning_user_data={
                     "id": str(current_user.id),
-                    "username": current_user.handle,
-                    "display_name": current_user.handle,
-                    "avatar_url": current_user.avatar_url,
+                    "username": (
+                        current_profile.username
+                        if current_profile
+                        else current_user.email
+                    ),
+                    "display_name": (
+                        current_profile.display_name
+                        if current_profile
+                        else current_user.full_name
+                    ),
+                    "avatar_url": (
+                        current_profile.avatar_url if current_profile else None
+                    ),
                 },
                 context_type="dm_message",
                 context_id=str(message_response.id),

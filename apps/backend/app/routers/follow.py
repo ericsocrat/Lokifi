@@ -75,18 +75,42 @@ async def follow_user(
             target_user = target_user_result.scalar_one_or_none()
 
             if target_user:
+                # Get profile data (with fallbacks since profile may be None)
+                current_profile = current_user.profile
+                target_profile = target_user.profile
+
                 await trigger_follow_notification(
                     follower_user_data={
                         "id": str(current_user.id),
-                        "username": current_user.handle,
-                        "display_name": current_user.handle,
-                        "avatar_url": current_user.avatar_url,
+                        "username": (
+                            current_profile.username
+                            if current_profile
+                            else current_user.email
+                        ),
+                        "display_name": (
+                            current_profile.display_name
+                            if current_profile
+                            else current_user.full_name
+                        ),
+                        "avatar_url": (
+                            current_profile.avatar_url if current_profile else None
+                        ),
                     },
                     followed_user_data={
                         "id": str(target_user.id),
-                        "username": target_user.handle,
-                        "display_name": target_user.handle,
-                        "avatar_url": target_user.avatar_url,
+                        "username": (
+                            target_profile.username
+                            if target_profile
+                            else target_user.email
+                        ),
+                        "display_name": (
+                            target_profile.display_name
+                            if target_profile
+                            else target_user.full_name
+                        ),
+                        "avatar_url": (
+                            target_profile.avatar_url if target_profile else None
+                        ),
                     },
                 )
         except Exception as e:

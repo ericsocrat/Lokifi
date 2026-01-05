@@ -276,13 +276,14 @@ async def get_activity_summary(
         # Get activity data from the enhanced service
         user_profile = await enhanced_service.get_profile_by_user_id(current_user.id)
 
-        # Return a basic activity summary for now
+        # Return a basic activity summary
+        # Note: last_login is on User model, login_count doesn't exist
         activity = {
-            "last_login": user_profile.last_login if user_profile else None,
-            "login_count": user_profile.login_count if user_profile else 0,
+            "last_login": current_user.last_login,
+            "login_count": 0,  # login_count not tracked in current schema
             "profile_updates": 0,
             "settings_changes": 0,
-            "created_at": None,
+            "created_at": user_profile.created_at if user_profile else None,
         }
         return activity
 
