@@ -70,10 +70,12 @@ class SystemPerformanceMetrics:
 class NotificationAnalytics:
     """Advanced analytics for notification system"""
 
-    def __init__(self):
-        self.metrics_history = deque(maxlen=1000)  # Store last 1000 data points
-        self.performance_counters = defaultdict(int)
-        self.timing_data = defaultdict(list)
+    def __init__(self) -> None:
+        self.metrics_history: deque[dict[str, Any]] = deque(
+            maxlen=1000
+        )  # Store last 1000 data points
+        self.performance_counters: dict[str, int] = defaultdict(int)
+        self.timing_data: dict[str, list[float]] = defaultdict(list)
 
     async def get_comprehensive_metrics(
         self, start_date: datetime | None = None, end_date: datetime | None = None

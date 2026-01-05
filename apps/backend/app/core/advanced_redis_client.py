@@ -39,12 +39,12 @@ class CacheStrategy:
 class CacheMetrics:
     """Cache performance metrics tracking"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.hits = 0
         self.misses = 0
         self.writes = 0
         self.errors = 0
-        self.response_times = deque(maxlen=1000)
+        self.response_times: deque[float] = deque(maxlen=1000)
         self.last_reset = datetime.now(timezone.utc)
 
     @property
@@ -106,7 +106,9 @@ class AdvancedRedisClient:
         }
 
         # Performance tracking
-        self.operation_stats = defaultdict(lambda: {"count": 0, "total_time": 0.0})
+        self.operation_stats: dict[str, dict[str, int | float]] = defaultdict(
+            lambda: {"count": 0, "total_time": 0.0}
+        )
 
     async def initialize(self) -> bool:
         """Initialize Redis connection with sentinel support"""

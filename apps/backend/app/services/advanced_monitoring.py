@@ -83,11 +83,11 @@ class SystemMetrics:
 class AlertManager:
     """Alert management system"""
 
-    def __init__(self):
-        self.alert_rules = []
-        self.active_alerts = {}
-        self.alert_history = deque(maxlen=1000)
-        self.notification_channels = []
+    def __init__(self) -> None:
+        self.alert_rules: list[dict[str, Any]] = []
+        self.active_alerts: dict[str, dict[str, Any]] = {}
+        self.alert_history: deque[dict[str, Any]] = deque(maxlen=1000)
+        self.notification_channels: list[Callable[[dict[str, Any]], Any]] = []
 
     def add_rule(
         self,
@@ -155,10 +155,12 @@ class AlertManager:
 class PerformanceAnalyzer:
     """Performance analysis and insights"""
 
-    def __init__(self):
-        self.metrics_history = deque(maxlen=1440)  # 24 hours at 1-minute intervals
-        self.performance_baselines = {}
-        self.anomaly_detection = {}
+    def __init__(self) -> None:
+        self.metrics_history: deque[SystemMetrics] = deque(
+            maxlen=1440
+        )  # 24 hours at 1-minute intervals
+        self.performance_baselines: dict[str, Any] = {}
+        self.anomaly_detection: dict[str, Any] = {}
 
     def add_metrics(self, metrics: SystemMetrics):
         """Add metrics for analysis"""
