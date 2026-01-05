@@ -349,7 +349,7 @@ jobs:
           browser: chromium
 
       - name: ⚡ Run performance tests
-        run: npm run test:performance
+        run: npm run test:performance -- --project=chromium
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
