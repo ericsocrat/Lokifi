@@ -875,39 +875,35 @@ describe('configurationSyncStore', () => {
     });
 
     describe('runSyncJob', () => {
-      it(
-        'should execute sync job successfully',
-        { timeout: 10000 },
-        async () => {
-          const { createSyncJob, runSyncJob } = useConfigurationSyncStore.getState();
-          const jobId = createSyncJob({
-            name: 'Test Sync',
-            description: 'Test',
-            sourceEnvironment: 'dev',
-            targetEnvironments: ['staging'],
-            configurations: [],
-            isEnabled: true,
-            includePatterns: [],
-            excludePatterns: [],
-            dryRun: false,
-            overwriteTarget: false,
-            validateBeforeSync: false,
-            createBackup: false,
-            notificationChannels: [],
-            notifyOnSuccess: false,
-            notifyOnFailure: false,
-            createdBy: 'test',
-          });
+      it('should execute sync job successfully', { timeout: 10000 }, async () => {
+        const { createSyncJob, runSyncJob } = useConfigurationSyncStore.getState();
+        const jobId = createSyncJob({
+          name: 'Test Sync',
+          description: 'Test',
+          sourceEnvironment: 'dev',
+          targetEnvironments: ['staging'],
+          configurations: [],
+          isEnabled: true,
+          includePatterns: [],
+          excludePatterns: [],
+          dryRun: false,
+          overwriteTarget: false,
+          validateBeforeSync: false,
+          createBackup: false,
+          notificationChannels: [],
+          notifyOnSuccess: false,
+          notifyOnFailure: false,
+          createdBy: 'test',
+        });
 
-          const executionId = await runSyncJob(jobId);
+        const executionId = await runSyncJob(jobId);
 
-          expect(executionId).toBeTruthy();
-          const { syncJobs, isSyncing, lastSyncAt } = useConfigurationSyncStore.getState();
-          expect(isSyncing).toBe(false);
-          expect(lastSyncAt).toBeDefined();
-          expect(syncJobs[0].executions).toHaveLength(1);
-        }
-      ); // 10 second timeout for async job execution
+        expect(executionId).toBeTruthy();
+        const { syncJobs, isSyncing, lastSyncAt } = useConfigurationSyncStore.getState();
+        expect(isSyncing).toBe(false);
+        expect(lastSyncAt).toBeDefined();
+        expect(syncJobs[0].executions).toHaveLength(1);
+      }); // 10 second timeout for async job execution
     });
 
     describe('syncConfiguration', () => {
@@ -1019,59 +1015,51 @@ describe('configurationSyncStore', () => {
   // ==========================================================================
   describe('Drift Detection', () => {
     describe('scanForDrift', () => {
-      it(
-        'should detect configuration drift',
-        { timeout: 60000 },
-        async () => {
-          const { scanForDrift } = useConfigurationSyncStore.getState();
+      it('should detect configuration drift', { timeout: 60000 }, async () => {
+        const { scanForDrift } = useConfigurationSyncStore.getState();
 
-          // Multiple attempts to account for random drift generation
-          // Note: scanForDrift has 2-5s random delay, so 5 attempts = 10-25s typical
-          let driftsFound = false;
-          for (let i = 0; i < 5; i++) {
-            const drifts = await scanForDrift('env_1');
-            if (drifts.length > 0) {
-              driftsFound = true;
-              break;
-            }
+        // Multiple attempts to account for random drift generation
+        // Note: scanForDrift has 2-5s random delay, so 5 attempts = 10-25s typical
+        let driftsFound = false;
+        for (let i = 0; i < 5; i++) {
+          const drifts = await scanForDrift('env_1');
+          if (drifts.length > 0) {
+            driftsFound = true;
+            break;
           }
-
-          // Either drifts were found or the store should have empty drifts
-          const { drifts } = useConfigurationSyncStore.getState();
-          expect(Array.isArray(drifts)).toBe(true);
         }
-      ); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
+
+        // Either drifts were found or the store should have empty drifts
+        const { drifts } = useConfigurationSyncStore.getState();
+        expect(Array.isArray(drifts)).toBe(true);
+      }); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
     });
 
     describe('resolveDrift', () => {
-      it(
-        'should resolve detected drift',
-        { timeout: 60000 },
-        async () => {
-          const { scanForDrift, resolveDrift } = useConfigurationSyncStore.getState();
+      it('should resolve detected drift', { timeout: 60000 }, async () => {
+        const { scanForDrift, resolveDrift } = useConfigurationSyncStore.getState();
 
-          // Try to generate drift
-          let driftId: string | null = null;
-          for (let i = 0; i < 10; i++) {
-            const drifts = await scanForDrift();
-            if (drifts.length > 0) {
-              driftId = drifts[0].id;
-              break;
-            }
-          }
-
-          if (driftId) {
-            await resolveDrift(driftId, 'accept_actual');
-
-            const { drifts } = useConfigurationSyncStore.getState();
-            const drift = drifts.find((d) => d.id === driftId);
-            expect(drift?.status).toBe('resolved');
-          } else {
-            // No drift generated, test passes
-            expect(true).toBe(true);
+        // Try to generate drift
+        let driftId: string | null = null;
+        for (let i = 0; i < 10; i++) {
+          const drifts = await scanForDrift();
+          if (drifts.length > 0) {
+            driftId = drifts[0].id;
+            break;
           }
         }
-      ); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
+
+        if (driftId) {
+          await resolveDrift(driftId, 'accept_actual');
+
+          const { drifts } = useConfigurationSyncStore.getState();
+          const drift = drifts.find((d) => d.id === driftId);
+          expect(drift?.status).toBe('resolved');
+        } else {
+          // No drift generated, test passes
+          expect(true).toBe(true);
+        }
+      }); // 60 second timeout for multiple scan attempts (scanForDrift has 2-5s delay each)
 
       it('should ignore drift', async () => {
         // Manually add a drift to test resolution

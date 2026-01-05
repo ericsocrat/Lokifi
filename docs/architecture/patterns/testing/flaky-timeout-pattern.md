@@ -1,8 +1,8 @@
 # Flaky Test Timeout Pattern
 
-**Category**: Testing  
-**Difficulty**: Easy  
-**Success Rate**: 100%  
+**Category**: Testing
+**Difficulty**: Easy
+**Success Rate**: 100%
 **Impact**: High (prevents CI flakiness)
 
 ## Problem

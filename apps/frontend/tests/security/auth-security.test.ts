@@ -132,59 +132,51 @@ describe('Security: Authentication', () => {
   });
 
   describe('Rate Limiting', () => {
-    it(
-      'enforces rate limiting on login attempts',
-      { timeout: 15000 },
-      async () => {
-        // Make 20 rapid login attempts
-        const params = new URLSearchParams({
-          username: 'test',
-          password: 'wrong',
-        });
+    it('enforces rate limiting on login attempts', { timeout: 15000 }, async () => {
+      // Make 20 rapid login attempts
+      const params = new URLSearchParams({
+        username: 'test',
+        password: 'wrong',
+      });
 
-        const attempts = Array(20)
-          .fill(null)
-          .map(() =>
-            fetch(`${API_URL}/api/auth/login`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: params.toString(),
-            })
-          );
+      const attempts = Array(20)
+        .fill(null)
+        .map(() =>
+          fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
+          })
+        );
 
-        const responses = await Promise.all(attempts);
-        const rateLimited = responses.filter((r) => r.status === 429);
+      const responses = await Promise.all(attempts);
+      const rateLimited = responses.filter((r) => r.status === 429);
 
-        // Should get rate limited (429) for at least some requests
-        if (rateLimited.length > 0) {
-          expect(rateLimited.length).toBeGreaterThan(0);
-        } else {
-          console.log('ℹ️  Rate limiting not detected - may need configuration');
-        }
+      // Should get rate limited (429) for at least some requests
+      if (rateLimited.length > 0) {
+        expect(rateLimited.length).toBeGreaterThan(0);
+      } else {
+        console.log('ℹ️  Rate limiting not detected - may need configuration');
       }
-    );
+    });
 
-    it(
-      'enforces rate limiting on API endpoints',
-      { timeout: 10000 },
-      async () => {
-        const requests = Array(50)
-          .fill(null)
-          .map(() => fetch(`${API_URL}/api/health`));
+    it('enforces rate limiting on API endpoints', { timeout: 10000 }, async () => {
+      const requests = Array(50)
+        .fill(null)
+        .map(() => fetch(`${API_URL}/api/health`));
 
-        const responses = await Promise.all(requests);
-        const statuses = responses.map((r) => r.status);
+      const responses = await Promise.all(requests);
+      const statuses = responses.map((r) => r.status);
 
-        // Check if any rate limiting occurred
-        const hasRateLimit = statuses.includes(429);
+      // Check if any rate limiting occurred
+      const hasRateLimit = statuses.includes(429);
 
-        if (!hasRateLimit) {
-          console.log('ℹ️  No rate limiting detected for health endpoint');
-        }
+      if (!hasRateLimit) {
+        console.log('ℹ️  No rate limiting detected for health endpoint');
       }
-    );
+    });
   });
 
   describe('Token Security', () => {

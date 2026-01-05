@@ -188,53 +188,45 @@ describe('Security: Input Validation', () => {
     // NOTE: File upload tests with FormData are skipped because MSW's formData()
     // processing hangs in Node.js test environment. These tests should be run as
     // E2E integration tests with a real backend, not unit tests with MSW.
-    it.skip(
-      'validates file types',
-      { timeout: 30000 },
-      async () => {
-        const maliciousFiles = [
-          { name: 'test.exe', type: 'application/x-msdownload' },
-          { name: 'test.php', type: 'application/x-php' },
-          { name: 'test.sh', type: 'application/x-sh' },
-        ];
+    it.skip('validates file types', { timeout: 30000 }, async () => {
+      const maliciousFiles = [
+        { name: 'test.exe', type: 'application/x-msdownload' },
+        { name: 'test.php', type: 'application/x-php' },
+        { name: 'test.sh', type: 'application/x-sh' },
+      ];
 
-        for (const file of maliciousFiles) {
-          const formData = new FormData();
-          formData.append('file', new Blob(['test'], { type: file.type }), file.name);
-
-          const response = await fetch(`${API_URL}/api/upload`, {
-            method: 'POST',
-            body: formData,
-          });
-
-          // Should reject executable files
-          if (response.status === 200) {
-            console.log(`⚠️  Executable file accepted: ${file.name}`);
-          }
-        }
-      }
-    ); // 30 second timeout for file operations
-
-    it.skip(
-      'limits file size',
-      { timeout: 30000 },
-      async () => {
-        // Create a large blob (10MB)
-        const largeFile = new Blob([new ArrayBuffer(10 * 1024 * 1024)]);
+      for (const file of maliciousFiles) {
         const formData = new FormData();
-        formData.append('file', largeFile, 'large.txt');
+        formData.append('file', new Blob(['test'], { type: file.type }), file.name);
 
         const response = await fetch(`${API_URL}/api/upload`, {
           method: 'POST',
           body: formData,
         });
 
-        // Should have file size limit
-        if (response.ok) {
-          console.log('ℹ️  Large file (10MB) accepted');
+        // Should reject executable files
+        if (response.status === 200) {
+          console.log(`⚠️  Executable file accepted: ${file.name}`);
         }
       }
-    ); // 30 second timeout for large file operations
+    }); // 30 second timeout for file operations
+
+    it.skip('limits file size', { timeout: 30000 }, async () => {
+      // Create a large blob (10MB)
+      const largeFile = new Blob([new ArrayBuffer(10 * 1024 * 1024)]);
+      const formData = new FormData();
+      formData.append('file', largeFile, 'large.txt');
+
+      const response = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Should have file size limit
+      if (response.ok) {
+        console.log('ℹ️  Large file (10MB) accepted');
+      }
+    }); // 30 second timeout for large file operations
   });
 
   describe('Content Security Policy', () => {

@@ -36,7 +36,7 @@ it('test name', async () => {
 }, 10000);
 
 it.skip('skipped test', async () => {
-  // test logic  
+  // test logic
 }, 30000);
 ```
 
