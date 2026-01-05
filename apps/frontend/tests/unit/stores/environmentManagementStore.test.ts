@@ -289,7 +289,7 @@ describe('environmentManagementStore', () => {
       });
     });
 
-    it('should start environment', async () => {
+    it('should start environment', { timeout: 10000 }, async () => {
       const { startEnvironment } = useEnvironmentManagementStore.getState();
 
       await startEnvironment(environmentId);
@@ -299,9 +299,9 @@ describe('environmentManagementStore', () => {
         .environments.find((e) => e.id === environmentId);
       expect(environment?.status).toBe('active');
       expect(environment?.health.overall).toBe('healthy');
-    }, 10000);
+    });
 
-    it('should stop environment', async () => {
+    it('should stop environment', { timeout: 15000 }, async () => {
       const { startEnvironment, stopEnvironment } = useEnvironmentManagementStore.getState();
 
       // Start first
@@ -317,9 +317,9 @@ describe('environmentManagementStore', () => {
         .getState()
         .environments.find((e) => e.id === environmentId);
       expect(environment?.status).toBe('inactive');
-    }, 15000);
+    });
 
-    it('should restart environment', async () => {
+    it('should restart environment', { timeout: 25000 }, async () => {
       const { startEnvironment, restartEnvironment } = useEnvironmentManagementStore.getState();
 
       // Start first
@@ -334,7 +334,7 @@ describe('environmentManagementStore', () => {
         .getState()
         .environments.find((e) => e.id === environmentId);
       expect(environment?.status).toBe('active');
-    }, 25000);
+    });
 
     it('should check environment health', async () => {
       const { checkEnvironmentHealth } = useEnvironmentManagementStore.getState();
@@ -1020,7 +1020,7 @@ describe('environmentManagementStore', () => {
       expect(useEnvironmentManagementStore.getState().syncJobs).toHaveLength(0);
     });
 
-    it('should run sync job', async () => {
+    it('should run sync job', { timeout: 10000 }, async () => {
       const { createSyncJob, runSyncJob } = useEnvironmentManagementStore.getState();
 
       const jobId = createSyncJob({
@@ -1047,7 +1047,7 @@ describe('environmentManagementStore', () => {
       expect(job?.history).toHaveLength(1);
       expect(['completed', 'failed']).toContain(job?.status);
       expect(job?.lastRun).toBeInstanceOf(Date);
-    }, 10000);
+    });
   });
 
   // ============================================================================
