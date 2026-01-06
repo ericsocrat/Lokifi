@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-06T02:00:16.613Z",
+  "generated": "2026-01-06T02:07:41.231Z",
   "git": {
     "branch": "main",
-    "commit": "c61860b7",
+    "commit": "c72983ce",
     "author": "ericsocrat",
-    "message": "chore: remove duplicate corporateActionsStore test file"
+    "message": "test(services): add backendPriceService tests (43 tests)"
   },
   "current": {
     "tests": {
@@ -17,26 +17,26 @@
       "duration": "-"
     },
     "coverage": {
-      "statements": 37.71,
-      "branches": 80.87,
-      "functions": 86.35,
-      "lines": 37.71
+      "statements": 38.16,
+      "branches": 80.91,
+      "functions": 86.34,
+      "lines": 38.16
     },
     "totals": {
       "statements": {
-        "covered": 17090,
+        "covered": 17294,
         "total": 45314
       },
       "branches": {
-        "covered": 4188,
-        "total": 5179
+        "covered": 4238,
+        "total": 5238
       },
       "functions": {
-        "covered": 1107,
-        "total": 1282
+        "covered": 1125,
+        "total": 1303
       },
       "lines": {
-        "covered": 17090,
+        "covered": 17294,
         "total": 45314
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 37.714613585205456,
-        "branches": 80.86503185943232,
-        "functions": 86.34945397815913,
-        "lines": 37.714613585205456
+        "statements": 38.1648055788498,
+        "branches": 80.90874379534173,
+        "functions": 86.33921719109748,
+        "lines": 38.1648055788498
       },
       "files": 196,
       "metrics": {
         "totalLines": 45314,
-        "coveredLines": 17090,
-        "uncoveredLines": 28224
+        "coveredLines": 17294,
+        "uncoveredLines": 28020
       },
       "health": "critical"
     }
@@ -292,24 +292,6 @@
         "uncoveredLines": 302,
         "complexity": 2,
         "impact": 308
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "100.0",
-        "functions": "100.0"
-      },
-      "metrics": {
-        "totalLines": 268,
-        "uncoveredLines": 268,
-        "complexity": 2,
-        "impact": 273
       },
       "priority": "HIGH",
       "reason": "No coverage"
@@ -961,6 +943,24 @@
       },
       "priority": "HIGH",
       "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ui\\card.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ui\\card.tsx",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "0.0",
+        "functions": "0.0"
+      },
+      "metrics": {
+        "totalLines": 60,
+        "uncoveredLines": 60,
+        "complexity": 2,
+        "impact": 61
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
     }
   ],
   "recommendations": [
@@ -1066,21 +1066,6 @@
     }
   ],
   "trends": [
-    {
-      "timestamp": "2026-01-01T04:10:49.684Z",
-      "coverage": {
-        "statements": 17.93002592453081,
-        "branches": 87.39956172388604,
-        "functions": 82.45398773006136,
-        "lines": 17.93002592453081
-      },
-      "tests": 0,
-      "files": 197,
-      "git": {
-        "branch": "main",
-        "commit": "55942efa"
-      }
-    },
     {
       "timestamp": "2026-01-01T13:05:59.908Z",
       "coverage": {
@@ -1515,50 +1500,65 @@
         "branch": "main",
         "commit": "c61860b7"
       }
+    },
+    {
+      "timestamp": "2026-01-06T02:07:41.231Z",
+      "coverage": {
+        "statements": 38.1648055788498,
+        "branches": 80.90874379534173,
+        "functions": 86.33921719109748,
+        "lines": 38.1648055788498
+      },
+      "tests": 0,
+      "files": 196,
+      "git": {
+        "branch": "main",
+        "commit": "c72983ce"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↓ 0.02%",
-      "value": -0.019861411484306757,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.45%",
+      "value": 0.4501919936443457,
+      "direction": "↑",
+      "color": "green"
     },
     "branches": {
-      "text": "↓ 0.09%",
-      "value": -0.08826802478226625,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.04%",
+      "value": 0.043711935909414024,
+      "direction": "↑",
+      "color": "green"
     },
     "functions": {
-      "text": "→ 0.00%",
-      "value": 0,
-      "direction": "→",
-      "color": "gray"
-    },
-    "lines": {
-      "text": "↓ 0.02%",
-      "value": -0.019861411484306757,
+      "text": "↓ 0.01%",
+      "value": -0.010236787061657537,
       "direction": "↓",
       "color": "red"
+    },
+    "lines": {
+      "text": "↑ 0.45%",
+      "value": 0.4501919936443457,
+      "direction": "↑",
+      "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 1.4724405540739625,
-    "branches": 0.22116868035787718,
-    "functions": -0.4444998802338631,
-    "lines": 1.4724405540739625
+    "statements": 1.9226325477183082,
+    "branches": 0.272672941879577,
+    "functions": -0.45473666729552065,
+    "lines": 1.9226325477183082
   },
   "metadata": {
-    "totalRuns": 64,
+    "totalRuns": 65,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-06T02:00:16.613Z",
+    "lastRun": "2026-01-06T02:07:41.231Z",
     "bestCoverage": {
-      "statements": 37.73447499668976,
-      "branches": 80.95329988421459,
-      "functions": 86.34945397815913,
-      "lines": 37.73447499668976,
-      "timestamp": "2026-01-06T01:58:43.356Z"
+      "statements": 38.1648055788498,
+      "branches": 80.90874379534173,
+      "functions": 86.33921719109748,
+      "lines": 38.1648055788498,
+      "timestamp": "2026-01-06T02:07:41.231Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1569,7 +1569,7 @@
     "velocity": {
       "testsPerDay": "0.0",
       "filesPerRun": "6.5",
-      "avgCoverageGain": "0.66"
+      "avgCoverageGain": "0.67"
     }
   },
   "insights": [
@@ -1601,11 +1601,11 @@
   "summary": {
     "totalFiles": 196,
     "totalModules": 1,
-    "criticalGaps": 84,
+    "criticalGaps": 83,
     "mediumGaps": 0,
     "lowGaps": 4,
     "healthyFiles": 92,
-    "criticalFiles": 95,
+    "criticalFiles": 94,
     "avgComplexity": 33
   },
   "topFiles": {
@@ -1726,9 +1726,9 @@
     "mostComplex": [
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-        "complexity": 288,
+        "complexity": 289,
         "coverage": "90.8",
-        "branches": 239,
+        "branches": 240,
         "functions": 49
       },
       {
@@ -1775,9 +1775,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-        "complexity": 218,
+        "complexity": 219,
         "coverage": "95.2",
-        "branches": 182,
+        "branches": 183,
         "functions": 36
       },
       {
