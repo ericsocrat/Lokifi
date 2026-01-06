@@ -19,9 +19,9 @@
  * - Edge cases
  */
 
-import { enableMapSet } from 'immer';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { act } from '@testing-library/react';
+import { enableMapSet } from 'immer';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Enable immer MapSet plugin BEFORE any store imports
 enableMapSet();
@@ -502,7 +502,9 @@ describe('integrationTestingStore', () => {
     it('should run disabled test suite (store does not check isEnabled)', async () => {
       // Note: The store implementation doesn't check isEnabled flag
       act(() => {
-        useIntegrationTestingStore.getState().createTestSuite(createTestSuiteData({ isEnabled: false }));
+        useIntegrationTestingStore
+          .getState()
+          .createTestSuite(createTestSuiteData({ isEnabled: false }));
       });
 
       const suiteId = useIntegrationTestingStore.getState().testSuites[0].id;
@@ -594,7 +596,9 @@ describe('integrationTestingStore', () => {
     it('should run disabled pipeline (store does not check isEnabled)', async () => {
       // Note: The store implementation doesn't check isEnabled flag
       act(() => {
-        useIntegrationTestingStore.getState().createPipeline(createPipelineData({ isEnabled: false }));
+        useIntegrationTestingStore
+          .getState()
+          .createPipeline(createPipelineData({ isEnabled: false }));
       });
 
       const pipelineId = useIntegrationTestingStore.getState().pipelines[0].id;
@@ -657,7 +661,9 @@ describe('integrationTestingStore', () => {
       if (executionId) {
         act(() => {
           // Function signature: (executionId, stageId, approverId, comment?)
-          useIntegrationTestingStore.getState().approvePipelineStage(executionId, 'stage_1', 'approver-user', 'Approved');
+          useIntegrationTestingStore
+            .getState()
+            .approvePipelineStage(executionId, 'stage_1', 'approver-user', 'Approved');
         });
 
         const state = useIntegrationTestingStore.getState();
@@ -712,7 +718,9 @@ describe('integrationTestingStore', () => {
       if (executionId) {
         act(() => {
           // Function signature: (executionId, stageId, approverId, comment)
-          useIntegrationTestingStore.getState().rejectPipelineStage(executionId, 'stage_1', 'approver-user', 'Not ready');
+          useIntegrationTestingStore
+            .getState()
+            .rejectPipelineStage(executionId, 'stage_1', 'approver-user', 'Not ready');
         });
 
         const state = useIntegrationTestingStore.getState();
@@ -896,7 +904,9 @@ describe('integrationTestingStore', () => {
       });
 
       // Start run suite
-      const runPromise = useIntegrationTestingStore.getState().runTestSuite(suiteId, 'staging', 'test-user');
+      const runPromise = useIntegrationTestingStore
+        .getState()
+        .runTestSuite(suiteId, 'staging', 'test-user');
 
       await act(async () => {
         await vi.advanceTimersByTimeAsync(10000);
@@ -908,7 +918,9 @@ describe('integrationTestingStore', () => {
 
       if (executionId) {
         // Start report generation
-        const reportPromise = useIntegrationTestingStore.getState().generateReport(executionId, 'json');
+        const reportPromise = useIntegrationTestingStore
+          .getState()
+          .generateReport(executionId, 'json');
 
         await act(async () => {
           await vi.advanceTimersByTimeAsync(6000);
@@ -1232,7 +1244,9 @@ describe('integrationTestingStore', () => {
     it('should not re-initialize if suites already exist', async () => {
       // First, create a test suite manually
       act(() => {
-        useIntegrationTestingStore.getState().createTestSuite(createTestSuiteData({ name: 'Manual Suite' }));
+        useIntegrationTestingStore
+          .getState()
+          .createTestSuite(createTestSuiteData({ name: 'Manual Suite' }));
       });
 
       const initialSuitesCount = useIntegrationTestingStore.getState().testSuites.length;
@@ -1310,7 +1324,9 @@ describe('integrationTestingStore', () => {
     it('should handle updating non-existent test data in suite', () => {
       // Create a suite with a test case
       act(() => {
-        useIntegrationTestingStore.getState().createTestSuite(createTestSuiteData({ name: 'Test Suite' }));
+        useIntegrationTestingStore
+          .getState()
+          .createTestSuite(createTestSuiteData({ name: 'Test Suite' }));
       });
 
       const suiteId = useIntegrationTestingStore.getState().testSuites[0].id;
@@ -1322,7 +1338,9 @@ describe('integrationTestingStore', () => {
 
       // Try to update non-existent test data
       act(() => {
-        useIntegrationTestingStore.getState().updateTestData(suiteId, 'non-existent', { name: 'Updated' });
+        useIntegrationTestingStore
+          .getState()
+          .updateTestData(suiteId, 'non-existent', { name: 'Updated' });
       });
 
       const state = useIntegrationTestingStore.getState();
@@ -1334,7 +1352,9 @@ describe('integrationTestingStore', () => {
     it('should handle deleting non-existent test data in suite', () => {
       // Create a suite with a test case
       act(() => {
-        useIntegrationTestingStore.getState().createTestSuite(createTestSuiteData({ name: 'Test Suite' }));
+        useIntegrationTestingStore
+          .getState()
+          .createTestSuite(createTestSuiteData({ name: 'Test Suite' }));
       });
 
       const suiteId = useIntegrationTestingStore.getState().testSuites[0].id;
@@ -1420,7 +1440,9 @@ describe('integrationTestingStore', () => {
 
     it('should handle exporting results for non-existent executions', async () => {
       // Export with non-existent IDs returns a Blob (empty content)
-      const result = await useIntegrationTestingStore.getState().exportResults(['non-existent'], 'json');
+      const result = await useIntegrationTestingStore
+        .getState()
+        .exportResults(['non-existent'], 'json');
       expect(result).toBeInstanceOf(Blob);
       // Blob size is minimal (empty array "[]" = 2 chars)
       expect(result.size).toBe(2);

@@ -1,8 +1,8 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import DrawingLayer from '@/components/DrawingLayer';
 import * as chartMapModule from '@/lib/charts/chartMap';
 import { useChartStore } from '@/state/store';
+import { fireEvent, render, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Create a mock subscribe function
 const mockSubscribe = vi.fn(() => vi.fn()); // Returns unsubscribe function

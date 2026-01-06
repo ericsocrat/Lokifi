@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-06T14:33:50.442Z",
+  "generated": "2026-01-06T17:55:58.482Z",
   "git": {
     "branch": "main",
-    "commit": "7f0d48ee",
+    "commit": "0e1b4dcb",
     "author": "ericsocrat",
-    "message": "test(api): add auth-protection tests (21 tests)"
+    "message": "test(frontend): add ToastProvider and useNotifications hook tests"
   },
   "current": {
     "tests": {
@@ -17,26 +17,26 @@
       "duration": "-"
     },
     "coverage": {
-      "statements": 86.65,
-      "branches": 82.93,
-      "functions": 86.82,
-      "lines": 86.65
+      "statements": 87.51,
+      "branches": 83.86,
+      "functions": 87.5,
+      "lines": 87.51
     },
     "totals": {
       "statements": {
-        "covered": 39264,
+        "covered": 39653,
         "total": 45315
       },
       "branches": {
-        "covered": 5853,
-        "total": 7058
+        "covered": 6111,
+        "total": 7287
       },
       "functions": {
-        "covered": 1581,
-        "total": 1821
+        "covered": 1610,
+        "total": 1840
       },
       "lines": {
-        "covered": 39264,
+        "covered": 39653,
         "total": 45315
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 86.64680569347898,
-        "branches": 82.92717483706433,
-        "functions": 86.82042833607908,
-        "lines": 86.64680569347898
+        "statements": 87.50524109014674,
+        "branches": 83.86167146974063,
+        "functions": 87.5,
+        "lines": 87.50524109014674
       },
       "files": 196,
       "metrics": {
         "totalLines": 45315,
-        "coveredLines": 39264,
-        "uncoveredLines": 6051
+        "coveredLines": 39653,
+        "uncoveredLines": 5662
       },
       "health": "good"
     }
@@ -135,42 +135,6 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\report.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\report.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 118,
-        "uncoveredLines": 118,
-        "complexity": 2,
-        "impact": 120
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\social.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\social.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 62,
-        "uncoveredLines": 62,
-        "complexity": 2,
-        "impact": 63
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
       "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ui\\card.tsx",
       "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ui\\card.tsx",
       "coverage": 0,
@@ -238,60 +202,6 @@
         "uncoveredLines": 47,
         "complexity": 2,
         "impact": 48
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\globalHotkeys.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\globalHotkeys.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 40,
-        "uncoveredLines": 40,
-        "complexity": 2,
-        "impact": 41
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\exporters.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\exporters.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 36,
-        "uncoveredLines": 36,
-        "complexity": 2,
-        "impact": 37
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\io.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\io.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 32,
-        "uncoveredLines": 32,
-        "complexity": 2,
-        "impact": 33
       },
       "priority": "HIGH",
       "reason": "No coverage"
@@ -493,24 +403,6 @@
       },
       "priority": "LOW",
       "reason": "Medium priority - Needs improvement"
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\hotkeys.ts",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\hotkeys.ts",
-      "coverage": 47.6,
-      "details": {
-        "lines": "47.6",
-        "branches": "100.0",
-        "functions": "50.0"
-      },
-      "metrics": {
-        "totalLines": 21,
-        "uncoveredLines": 11,
-        "complexity": 5,
-        "impact": 22
-      },
-      "priority": "LOW",
-      "reason": "Medium priority - Needs improvement"
     }
   ],
   "recommendations": [
@@ -553,34 +445,9 @@
         "Focus on 1 untested functions",
         "Cover 1 untested branches"
       ]
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\report.ts",
-      "priority": "HIGH",
-      "reason": "High impact file with 118 lines and 0.0% coverage",
-      "actions": [
-        "Add 95 lines of test coverage",
-        "Focus on 1 untested functions",
-        "Cover 1 untested branches"
-      ]
     }
   ],
   "trends": [
-    {
-      "timestamp": "2026-01-01T14:25:42.647Z",
-      "coverage": {
-        "statements": 19.405729986040637,
-        "branches": 86.53974615898463,
-        "functions": 83.9667458432304,
-        "lines": 19.405729986040637
-      },
-      "tests": 0,
-      "files": 197,
-      "git": {
-        "branch": "main",
-        "commit": "238b18de"
-      }
-    },
     {
       "timestamp": "2026-01-01T15:02:40.745Z",
       "coverage": {
@@ -1015,50 +882,65 @@
         "branch": "main",
         "commit": "7f0d48ee"
       }
+    },
+    {
+      "timestamp": "2026-01-06T17:55:58.482Z",
+      "coverage": {
+        "statements": 87.50524109014674,
+        "branches": 83.86167146974063,
+        "functions": 87.5,
+        "lines": 87.50524109014674
+      },
+      "tests": 0,
+      "files": 196,
+      "git": {
+        "branch": "main",
+        "commit": "0e1b4dcb"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↓ 0.01%",
-      "value": -0.011033873993156362,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.86%",
+      "value": 0.8584353966677583,
+      "direction": "↑",
+      "color": "green"
     },
     "branches": {
-      "text": "↑ 0.05%",
-      "value": 0.04735624296002072,
+      "text": "↑ 0.93%",
+      "value": 0.9344966326763,
       "direction": "↑",
       "color": "green"
     },
     "functions": {
-      "text": "→ 0.00%",
-      "value": 0,
-      "direction": "→",
-      "color": "gray"
+      "text": "↑ 0.68%",
+      "value": 0.6795716639209246,
+      "direction": "↑",
+      "color": "green"
     },
     "lines": {
-      "text": "↓ 0.01%",
-      "value": -0.011033873993156362,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.86%",
+      "value": 0.8584353966677583,
+      "direction": "↑",
+      "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 34.902273219354555,
-    "branches": 0.38978940532288675,
-    "functions": -0.3430030978595511,
-    "lines": 34.902273219354555
+    "statements": 35.43850527481781,
+    "branches": 1.2780313224699427,
+    "functions": 0.26463262764632134,
+    "lines": 35.43850527481781
   },
   "metadata": {
-    "totalRuns": 78,
+    "totalRuns": 79,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-06T14:33:50.442Z",
+    "lastRun": "2026-01-06T17:55:58.482Z",
     "bestCoverage": {
-      "statements": 86.65783956747214,
-      "branches": 82.87981859410431,
-      "functions": 86.82042833607908,
-      "lines": 86.65783956747214,
-      "timestamp": "2026-01-06T14:31:18.740Z"
+      "statements": 87.50524109014674,
+      "branches": 83.86167146974063,
+      "functions": 87.5,
+      "lines": 87.50524109014674,
+      "timestamp": "2026-01-06T17:55:58.482Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1069,7 +951,7 @@
     "velocity": {
       "testsPerDay": "0.0",
       "filesPerRun": "6.5",
-      "avgCoverageGain": "2.24"
+      "avgCoverageGain": "2.25"
     }
   },
   "insights": [
@@ -1083,12 +965,12 @@
   "summary": {
     "totalFiles": 196,
     "totalModules": 1,
-    "criticalGaps": 19,
+    "criticalGaps": 14,
     "mediumGaps": 0,
-    "lowGaps": 6,
-    "healthyFiles": 149,
-    "criticalFiles": 29,
-    "avgComplexity": 45
+    "lowGaps": 5,
+    "healthyFiles": 156,
+    "criticalFiles": 24,
+    "avgComplexity": 47
   },
   "topFiles": {
     "bestCoverage": [
@@ -1207,32 +1089,39 @@
     ],
     "mostComplex": [
       {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
+        "complexity": 307,
+        "coverage": "82.2",
+        "branches": 254,
+        "functions": 53
+      },
+      {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-        "complexity": 288,
+        "complexity": 289,
         "coverage": "90.8",
-        "branches": 239,
+        "branches": 240,
         "functions": 49
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-        "complexity": 286,
-        "coverage": "86.8",
-        "branches": 232,
+        "complexity": 287,
+        "coverage": "86.7",
+        "branches": 233,
         "functions": 54
       },
       {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
-        "complexity": 264,
-        "coverage": "77.6",
-        "branches": 211,
-        "functions": 53
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
+        "complexity": 284,
+        "coverage": "83.3",
+        "branches": 241,
+        "functions": 43
       },
       {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
-        "complexity": 263,
-        "coverage": "81.1",
-        "branches": 220,
-        "functions": 43
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
+        "complexity": 259,
+        "coverage": "96.1",
+        "branches": 215,
+        "functions": 44
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
@@ -1242,6 +1131,13 @@
         "functions": 60
       },
       {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
+        "complexity": 242,
+        "coverage": "93.4",
+        "branches": 203,
+        "functions": 39
+      },
+      {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
         "complexity": 234,
         "coverage": "85.8",
@@ -1249,24 +1145,10 @@
         "functions": 38
       },
       {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-        "complexity": 233,
-        "coverage": "95.3",
-        "branches": 189,
-        "functions": 44
-      },
-      {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 219,
-        "coverage": "93.0",
-        "branches": 180,
-        "functions": 39
-      },
-      {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-        "complexity": 219,
+        "complexity": 218,
         "coverage": "95.2",
-        "branches": 183,
+        "branches": 182,
         "functions": 36
       },
       {

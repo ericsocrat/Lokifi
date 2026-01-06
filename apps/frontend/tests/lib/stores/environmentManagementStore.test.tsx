@@ -1,19 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Draft } from 'immer';
 
-import {
-  useEnvironmentManagementStore,
-} from '../../../src/lib/stores/environmentManagementStore';
 import type {
   Environment,
   EnvironmentConfig,
-  EnvironmentType,
-  EnvironmentTemplate,
-  EnvironmentSyncJob,
-  ServiceInstance,
   EnvironmentCredentials,
+  EnvironmentSyncJob,
+  EnvironmentTemplate,
+  EnvironmentType,
+  ServiceInstance,
   SyncScope,
 } from '../../../src/lib/stores/environmentManagementStore';
+import { useEnvironmentManagementStore } from '../../../src/lib/stores/environmentManagementStore';
 import { setDevFlag } from '../../../src/lib/stores/featureFlags';
 
 // Mock localStorage
@@ -213,7 +210,9 @@ const createTestService = (
 
 // Helper to create test template
 const createTestTemplateData = (
-  overrides: Partial<Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>> = {}
+  overrides: Partial<
+    Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+  > = {}
 ): Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'> => ({
   name: 'Test Template',
   description: 'Test template for environment creation',
@@ -390,9 +389,7 @@ describe('environmentManagementStore', () => {
 
     it('should clone an environment', () => {
       const store = useEnvironmentManagementStore.getState();
-      const originalId = store.createEnvironment(
-        createTestEnvironmentData({ name: 'Original' })
-      );
+      const originalId = store.createEnvironment(createTestEnvironmentData({ name: 'Original' }));
 
       const clonedId = store.cloneEnvironment(originalId, 'Cloned', 'staging');
 
@@ -430,9 +427,7 @@ describe('environmentManagementStore', () => {
     it('should start an inactive environment', async () => {
       vi.useFakeTimers();
       const store = useEnvironmentManagementStore.getState();
-      const envId = store.createEnvironment(
-        createTestEnvironmentData({ status: 'inactive' })
-      );
+      const envId = store.createEnvironment(createTestEnvironmentData({ status: 'inactive' }));
 
       const startPromise = store.startEnvironment(envId);
 
@@ -444,7 +439,9 @@ describe('environmentManagementStore', () => {
       await startPromise;
 
       expect(useEnvironmentManagementStore.getState().environments[0].status).toBe('active');
-      expect(useEnvironmentManagementStore.getState().environments[0].health.overall).toBe('healthy');
+      expect(useEnvironmentManagementStore.getState().environments[0].health.overall).toBe(
+        'healthy'
+      );
 
       vi.useRealTimers();
     });
@@ -452,9 +449,7 @@ describe('environmentManagementStore', () => {
     it('should stop an active environment', async () => {
       vi.useFakeTimers();
       const store = useEnvironmentManagementStore.getState();
-      const envId = store.createEnvironment(
-        createTestEnvironmentData({ status: 'active' })
-      );
+      const envId = store.createEnvironment(createTestEnvironmentData({ status: 'active' }));
 
       const stopPromise = store.stopEnvironment(envId);
 
@@ -473,9 +468,7 @@ describe('environmentManagementStore', () => {
     it('should restart an active environment', async () => {
       vi.useFakeTimers();
       const store = useEnvironmentManagementStore.getState();
-      const envId = store.createEnvironment(
-        createTestEnvironmentData({ status: 'active' })
-      );
+      const envId = store.createEnvironment(createTestEnvironmentData({ status: 'active' }));
 
       const restartPromise = store.restartEnvironment(envId);
 
@@ -1105,9 +1098,7 @@ describe('environmentManagementStore', () => {
       await expect(store.compareEnvironments(['a', 'b'])).rejects.toThrow();
       await expect(store.runSyncJob('any')).rejects.toThrow();
       await expect(store.exportEnvironment('any')).rejects.toThrow();
-      await expect(
-        store.importEnvironment(new File(['{}'], 'test.json'))
-      ).rejects.toThrow();
+      await expect(store.importEnvironment(new File(['{}'], 'test.json'))).rejects.toThrow();
     });
 
     it('should handle concurrent environment updates', () => {

@@ -1,20 +1,5 @@
 [
   {
-    "timestamp": "2026-01-01T14:25:42.647Z",
-    "coverage": {
-      "statements": 19.405729986040637,
-      "branches": 86.53974615898463,
-      "functions": 83.9667458432304,
-      "lines": 19.405729986040637
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "238b18de"
-    }
-  },
-  {
     "timestamp": "2026-01-01T15:02:40.745Z",
     "coverage": {
       "statements": 20.061598457822782,
@@ -447,6 +432,21 @@
     "git": {
       "branch": "main",
       "commit": "7f0d48ee"
+    }
+  },
+  {
+    "timestamp": "2026-01-06T17:55:58.482Z",
+    "coverage": {
+      "statements": 87.50524109014674,
+      "branches": 83.86167146974063,
+      "functions": 87.5,
+      "lines": 87.50524109014674
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "0e1b4dcb"
     }
   }
 ]

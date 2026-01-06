@@ -5,7 +5,7 @@ import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags
-vi.mock('../lib/featureFlags', () => ({
+vi.mock('@/lib/utils/featureFlags', () => ({
   FLAGS: {
     watchlist: true,
     templates: true,

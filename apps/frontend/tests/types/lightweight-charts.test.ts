@@ -13,7 +13,7 @@ import type {
   Time,
   TimeRange,
 } from '@/types/lightweight-charts';
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 
 describe('Lightweight Charts Type Definitions', () => {
   describe('Time type', () => {

@@ -1,7 +1,7 @@
+import ChartPanel from '@/components/ChartPanelV2';
 import { render } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import ChartPanel from '@/components/ChartPanelV2';
 
 // Mock ResizeObserver for jsdom environment
 class MockResizeObserver {
@@ -152,7 +152,8 @@ vi.mock('@/components/LeftDock', () => ({
   default: () => React.createElement('div'),
 }));
 vi.mock('@/components/ChartErrorBoundary', () => ({
-  ChartErrorBoundary: ({ children }: { children: React.ReactNode }) => React.createElement('div', null, children),
+  ChartErrorBoundary: ({ children }: { children: React.ReactNode }) =>
+    React.createElement('div', null, children),
 }));
 vi.mock('@/components/ChartLoadingState', () => ({
   ChartLoadingState: () => React.createElement('div'),

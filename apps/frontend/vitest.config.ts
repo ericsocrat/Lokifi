@@ -40,8 +40,8 @@ export default defineConfig({
       // '**/tests/components/DrawingLayer.test.tsx', // ENABLED: Fixed with ResizeObserver + Canvas mocks
       // '**/tests/components/EnhancedChart.test.tsx', // TESTING: Enabling
       // '**/tests/components/IndicatorModal.test.tsx', // TESTING: Enabling
-      '**/tests/unit/charts/chart-reliability.test.tsx',
-      '**/tests/integration/features-g2-g4.test.tsx',
+      // '**/tests/unit/charts/chart-reliability.test.tsx', // TESTING: Enabling
+      '**/tests/integration/features-g2-g4.test.tsx', // TODO: Needs store reset pattern fix (Immer read-only)
       // Tests moved to unit/ subdirectories - now passing!
       // '**/tests/unit/utils/webVitals.test.ts',  // ✅ Fixed and passing
       // '**/tests/unit/utils/perf.test.ts',      // ✅ Fixed and passing
@@ -49,8 +49,8 @@ export default defineConfig({
       // '**/tests/unit/charts/indicators.test.ts',   // ✅ Fixed and passing
       // '**/tests/unit/stores/drawingStore.test.ts', // TESTING: Enabling
       // '**/tests/unit/stores/paneStore.test.ts', // TESTING: Enabling
-      '**/tests/types/drawings.test.ts',
-      '**/tests/types/lightweight-charts.test.ts',
+      // '**/tests/types/drawings.test.ts', // TESTING: Converted to Vitest
+      // '**/tests/types/lightweight-charts.test.ts', // TESTING: Converted to Vitest
     ],
     coverage: {
       provider: 'v8',

@@ -2,12 +2,11 @@ import { act } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { FLAGS, setDevFlag } from '../../src/lib/stores/featureFlags';
 import {
+  useMobileAccessibilityStore,
   type AccessibilitySettings,
   type DeviceInfo,
   type MobileSettings,
   type ResponsiveBreakpoint,
-  type KeyboardShortcut,
-  useMobileAccessibilityStore,
 } from '../../src/lib/stores/mobileA11yStore';
 
 const defaultAccessibilitySettings: AccessibilitySettings = {
@@ -417,7 +416,7 @@ describe('mobileA11yStore', () => {
 
     it('checkFeatureSupport detects browser features', () => {
       const store = useMobileAccessibilityStore.getState();
-      
+
       act(() => {
         store.checkFeatureSupport();
       });
@@ -436,10 +435,10 @@ describe('mobileA11yStore', () => {
       const store = useMobileAccessibilityStore.getState();
 
       act(() => {
-        store.updateAccessibilitySettings({ 
-          highContrast: true, 
+        store.updateAccessibilitySettings({
+          highContrast: true,
           fontSize: 'large',
-          reduceMotion: true 
+          reduceMotion: true,
         });
       });
 
@@ -453,10 +452,10 @@ describe('mobileA11yStore', () => {
       const store = useMobileAccessibilityStore.getState();
 
       act(() => {
-        store.updateMobileSettings({ 
+        store.updateMobileSettings({
           compactMode: true,
           bottomNavigation: true,
-          fullscreenMode: true
+          fullscreenMode: true,
         });
       });
 
@@ -548,9 +547,9 @@ describe('mobileA11yStore', () => {
       });
 
       act(() => {
-        store.updateKeyboardShortcut(shortcutId, { 
+        store.updateKeyboardShortcut(shortcutId, {
           name: 'Updated Shortcut',
-          key: 'j'
+          key: 'j',
         });
       });
 
@@ -652,14 +651,14 @@ describe('mobileA11yStore', () => {
       const store = useMobileAccessibilityStore.getState();
 
       act(() => {
-        store.updateBreakpoint('mobile', { 
+        store.updateBreakpoint('mobile', {
           chartHeight: 350,
-          maxCharts: 2
+          maxCharts: 2,
         });
       });
 
       const state = useMobileAccessibilityStore.getState();
-      const mobileBreakpoint = state.breakpoints.find(bp => bp.name === 'mobile');
+      const mobileBreakpoint = state.breakpoints.find((bp) => bp.name === 'mobile');
       expect(mobileBreakpoint?.chartHeight).toBe(350);
       expect(mobileBreakpoint?.maxCharts).toBe(2);
     });
@@ -767,7 +766,7 @@ describe('mobileA11yStore', () => {
 
     it('getAuditRecommendations returns empty array when no audit exists', () => {
       const store = useMobileAccessibilityStore.getState();
-      
+
       act(() => {
         useMobileAccessibilityStore.setState((state) => ({
           ...state,
@@ -1036,9 +1035,9 @@ describe('mobileA11yStore', () => {
       const nowSpy = vi.spyOn(Date, 'now').mockReturnValue(4444);
 
       act(() => {
-        store.updateMobileSettings({ 
+        store.updateMobileSettings({
           gestureNavigation: true,
-          vibration: true
+          vibration: true,
         });
         store.addGesture({
           name: 'Test Swipe',

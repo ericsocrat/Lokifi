@@ -4,8 +4,8 @@
  * optimization rules, alerts, profiles, and resource tracking
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { enableMapSet } from 'immer';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Enable MapSet support for immer BEFORE any store imports
 enableMapSet();
@@ -1602,11 +1602,7 @@ describe('performanceStore', () => {
       const store = usePerformanceStore.getState();
 
       // Start multiple collections
-      const promises = [
-        store.collectMetrics(),
-        store.collectMetrics(),
-        store.collectMetrics(),
-      ];
+      const promises = [store.collectMetrics(), store.collectMetrics(), store.collectMetrics()];
 
       await vi.advanceTimersByTimeAsync(500);
       await Promise.all(promises);
@@ -1820,9 +1816,7 @@ describe('performanceStore', () => {
 
       const store = usePerformanceStore.getState();
 
-      await expect(store.exportData('metrics')).rejects.toThrow(
-        'Performance features not enabled'
-      );
+      await expect(store.exportData('metrics')).rejects.toThrow('Performance features not enabled');
 
       // Re-enable for other tests
       setDevFlag('performance', true);

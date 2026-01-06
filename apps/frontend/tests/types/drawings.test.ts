@@ -4,17 +4,17 @@
  */
 
 import type {
-    ArrowDrawing,
-    Drawing,
-    DrawingStyle,
-    FibDrawing,
-    GroupDrawing,
-    Point,
-    RectDrawing,
-    TextDrawing,
-    TrendlineDrawing,
+  ArrowDrawing,
+  Drawing,
+  DrawingStyle,
+  FibDrawing,
+  GroupDrawing,
+  Point,
+  RectDrawing,
+  TextDrawing,
+  TrendlineDrawing,
 } from '@/types/drawings';
-import { describe, expect, it } from '@jest/globals';
+import { describe, expect, it } from 'vitest';
 
 describe('Drawing Type Definitions', () => {
   describe('Point type', () => {
@@ -285,4 +285,3 @@ describe('Drawing Type Definitions', () => {
     });
   });
 });
-
