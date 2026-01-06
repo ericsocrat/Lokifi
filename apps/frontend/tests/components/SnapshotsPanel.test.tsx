@@ -221,9 +221,14 @@ describe('SnapshotsPanel', () => {
       });
 
       render(<SnapshotsPanel />);
-      // Date format will vary by locale, just check it contains the date
+      // Date format will vary by locale - check text is present in the document
       const dateText = new Date(createdAt).toLocaleString();
-      expect(screen.getByText(new RegExp(dateText.split(',')[0]))).toBeInTheDocument();
+      const datePart = dateText.split(',')[0];
+      // Use getAllByText to handle multiple matches, then verify at least one exists
+      const dateElements = screen.getAllByText((_content, element) => {
+        return element?.textContent?.includes(datePart) ?? false;
+      });
+      expect(dateElements.length).toBeGreaterThan(0);
     });
 
     it('should display load button for each snapshot', () => {

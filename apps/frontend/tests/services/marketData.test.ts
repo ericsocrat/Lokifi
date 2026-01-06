@@ -355,8 +355,8 @@ describe('marketData', () => {
     });
 
     it('should filter by time period correctly', () => {
-      const now = Date.now();
-      const dayMs = 24 * 60 * 60 * 1000;
+      const _now = Date.now();
+      const _dayMs = 24 * 60 * 60 * 1000;
 
       const history1d = marketData.getHistoricalData('BTC', '1d');
       const history7d = marketData.getHistoricalData('BTC', '7d');

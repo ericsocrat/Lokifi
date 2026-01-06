@@ -33,7 +33,7 @@ vi.mock('@/state/store', async () => {
       selection: Set<string>;
       setStyleForSelection: (patch: Record<string, unknown>) => void;
       setTextForSelection: (text: string) => void;
-    }>()((set) => ({
+    }>()((_set) => ({
       selection: new Set<string>(),
       setStyleForSelection: vi.fn(),
       setTextForSelection: vi.fn(),

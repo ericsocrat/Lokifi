@@ -586,7 +586,7 @@ describe('IndicatorSettingsDrawer', () => {
 
   describe('Default Values Handling', () => {
     it('should use default value when input is cleared (BB period)', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       mockStoreState = createMockStore({ showBB: true });
       render(<IndicatorSettingsDrawer />);
 

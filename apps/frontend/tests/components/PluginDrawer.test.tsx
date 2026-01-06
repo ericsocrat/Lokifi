@@ -54,7 +54,7 @@ beforeEach(() => {
   createdBlobContent = '';
 
   // Mock URL API
-  URL.createObjectURL = vi.fn((blob: Blob) => {
+  URL.createObjectURL = vi.fn((_blob: Blob) => {
     // Capture blob content
     return 'blob:mock-url';
   });
