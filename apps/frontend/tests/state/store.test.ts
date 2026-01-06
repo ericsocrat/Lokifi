@@ -18,7 +18,7 @@
 import { act } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useChartStore, INDICATOR_PRESETS } from '../../src/state/store';
+import { INDICATOR_PRESETS, useChartStore } from '../../src/state/store';
 
 // ============================================================================
 // TEST UTILITIES

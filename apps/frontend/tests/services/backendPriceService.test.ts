@@ -12,7 +12,6 @@
 import { http, HttpResponse } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { server } from '../mocks/server';
 import {
   CryptoDiscoveryService,
   getWebSocketService,
@@ -24,6 +23,7 @@ import {
   type HistoricalPriceResponse,
   type OHLCVResponse,
 } from '../../src/services/backendPriceService';
+import { server } from '../mocks/server';
 
 // ============================================================================
 // MOCK DATA
