@@ -13,11 +13,7 @@ from fastapi import HTTPException
 
 # Import module under test
 try:
-    from app.services.auth import (
-        JWT_ALG,
-        auth_handle_from_header,
-        require_handle,
-    )
+    from app.services.auth import JWT_ALG, auth_handle_from_header, require_handle
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)
 
