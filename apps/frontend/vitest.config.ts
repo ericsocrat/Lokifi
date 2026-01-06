@@ -38,8 +38,8 @@ export default defineConfig({
       // Tests with missing component/file implementations
       // '**/tests/components/ChartPanel.test.tsx', // ENABLED: Fixed with proper mocks
       // '**/tests/components/DrawingLayer.test.tsx', // ENABLED: Fixed with ResizeObserver + Canvas mocks
-      '**/tests/components/EnhancedChart.test.tsx',
-      '**/tests/components/IndicatorModal.test.tsx',
+      // '**/tests/components/EnhancedChart.test.tsx', // TESTING: Enabling
+      // '**/tests/components/IndicatorModal.test.tsx', // TESTING: Enabling
       '**/tests/unit/charts/chart-reliability.test.tsx',
       '**/tests/integration/features-g2-g4.test.tsx',
       // Tests moved to unit/ subdirectories - now passing!
