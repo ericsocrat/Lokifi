@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CopilotChat from '../../components/CopilotChat';
 
 // Hoisted mocks
@@ -79,9 +79,7 @@ describe('CopilotChat', () => {
 
     it('should render chat input', () => {
       render(<CopilotChat />);
-      expect(
-        screen.getByPlaceholderText(/ask about btc, aapl, rsi, news/i)
-      ).toBeInTheDocument();
+      expect(screen.getByPlaceholderText(/ask about btc, aapl, rsi, news/i)).toBeInTheDocument();
     });
 
     it('should render Ask button', () => {
@@ -182,7 +180,8 @@ describe('CopilotChat', () => {
       fireEvent.change(input, { target: { value: 'What is BTC?' } });
       fireEvent.click(askButton);
 
-      const calledUrl = (global.EventSource as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (global.EventSource as unknown as ReturnType<typeof vi.fn>).mock
+        .calls[0][0];
       expect(calledUrl).toContain('q=What%20is%20BTC%3F');
     });
 
@@ -211,7 +210,8 @@ describe('CopilotChat', () => {
       fireEvent.click(askButton);
 
       // Symbol and timeframe store should still be imported but returned value should not be used in URL
-      const calledUrl = (global.EventSource as unknown as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const calledUrl = (global.EventSource as unknown as ReturnType<typeof vi.fn>).mock
+        .calls[0][0];
       expect(calledUrl).not.toContain('ctx_symbols=BTCUSD');
     });
 

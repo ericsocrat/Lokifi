@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MultiChartLayout, MultiChartControls } from '../../components/MultiChartLayout';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { MultiChartControls, MultiChartLayout } from '../../components/MultiChartLayout';
 
 // Hoisted mocks
 const { mockHook, mockFlags, MockLayoutSelector, MockLinkingControls } = vi.hoisted(() => ({
