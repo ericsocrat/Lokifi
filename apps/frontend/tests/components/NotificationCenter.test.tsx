@@ -316,7 +316,9 @@ describe('NotificationCenter', () => {
 
       if (notification) {
         // Click notification to expand (should show expand/collapse icon)
-        const expandButton = notification.querySelector('button[title*="Expand"], button[title*="Collapse"]');
+        const expandButton = notification.querySelector(
+          'button[title*="Expand"], button[title*="Collapse"]'
+        );
         if (expandButton) {
           fireEvent.click(expandButton);
         }
@@ -423,9 +425,7 @@ describe('NotificationCenter', () => {
 
       // All checkboxes should be checked
       const checkboxes = screen.getAllByRole('checkbox');
-      const checkedBoxes = checkboxes.filter(
-        (cb) => (cb as HTMLInputElement).checked
-      );
+      const checkedBoxes = checkboxes.filter((cb) => (cb as HTMLInputElement).checked);
 
       expect(checkedBoxes.length).toBeGreaterThan(0);
     });

@@ -29,8 +29,22 @@ const mockUpdatePaneHeight = vi.fn();
 vi.mock('@/lib/stores/paneStore', () => ({
   usePaneStore: () => ({
     panes: [
-      { id: 'price-pane', type: 'price', visible: true, locked: false, indicators: [], height: 400 },
-      { id: 'indicator-pane-1', type: 'indicator', visible: true, locked: false, indicators: ['RSI', 'MACD'], height: 200 },
+      {
+        id: 'price-pane',
+        type: 'price',
+        visible: true,
+        locked: false,
+        indicators: [],
+        height: 400,
+      },
+      {
+        id: 'indicator-pane-1',
+        type: 'indicator',
+        visible: true,
+        locked: false,
+        indicators: ['RSI', 'MACD'],
+        height: 200,
+      },
     ],
     togglePaneVisibility: mockTogglePaneVisibility,
     togglePaneLock: mockTogglePaneLock,
@@ -180,7 +194,7 @@ describe('MultiPaneChart', () => {
 
       const gripIcon = screen.getAllByTestId('grip-icon')[0];
       const resizeHandle = gripIcon.parentElement!;
-      
+
       fireEvent.mouseDown(resizeHandle, { clientY: 100 });
 
       // Should add event listeners (we can't directly test this, but no error = success)
@@ -191,22 +205,22 @@ describe('MultiPaneChart', () => {
   describe('Window Resize', () => {
     it('should add resize event listener on mount', () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      
+
       render(<MultiPaneChart />);
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
-      
+
       addEventListenerSpy.mockRestore();
     });
 
     it('should remove resize event listener on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-      
+
       const { unmount } = render(<MultiPaneChart />);
       unmount();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
-      
+
       removeEventListenerSpy.mockRestore();
     });
   });
@@ -226,7 +240,7 @@ describe('PaneComponent Hidden State', () => {
   // Test hidden pane behavior with modified store mock
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     global.ResizeObserver = vi.fn().mockImplementation(() => ({
       observe: vi.fn(),
       unobserve: vi.fn(),
@@ -239,7 +253,14 @@ describe('PaneComponent Hidden State', () => {
     vi.doMock('@/lib/stores/paneStore', () => ({
       usePaneStore: () => ({
         panes: [
-          { id: 'price-pane', type: 'price', visible: false, locked: false, indicators: [], height: 400 },
+          {
+            id: 'price-pane',
+            type: 'price',
+            visible: false,
+            locked: false,
+            indicators: [],
+            height: 400,
+          },
         ],
         togglePaneVisibility: vi.fn(),
         togglePaneLock: vi.fn(),

@@ -1,18 +1,18 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
-  indicatorRegistry,
+  BUILTIN_DRAWING_TOOLS,
+  BUILTIN_INDICATORS,
   drawingToolRegistry,
+  generateSettingsUI,
+  indicatorRegistry,
   registerStudy,
   registerTool,
-  generateSettingsUI,
-  BUILTIN_INDICATORS,
-  BUILTIN_DRAWING_TOOLS,
-  type IndicatorDefinition,
   type DrawingToolDefinition,
-  type PluginParameter,
+  type IndicatorDefinition,
   type OHLCData,
+  type PluginParameter,
   type Point,
 } from '@/lib/plugins/pluginSDK';
+import { describe, expect, it, vi } from 'vitest';
 
 // Create test OHLC data
 const createOHLCData = (count: number, startPrice: number = 100): OHLCData[] => {

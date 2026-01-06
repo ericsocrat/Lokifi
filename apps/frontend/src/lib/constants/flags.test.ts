@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Feature Flags', () => {
   // Store original env values
@@ -34,16 +34,16 @@ describe('Feature Flags', () => {
         'ADVANCED_ALERTS',
         'STRATEGY_BACKTESTER',
       ];
-      
-      expectedKeys.forEach(key => {
+
+      expectedKeys.forEach((key) => {
         expect(FEATURE_FLAGS).toHaveProperty(key);
       });
     });
 
     it('should have boolean values for all flags', async () => {
       const { FEATURE_FLAGS } = await import('./flags');
-      
-      Object.values(FEATURE_FLAGS).forEach(value => {
+
+      Object.values(FEATURE_FLAGS).forEach((value) => {
         expect(typeof value).toBe('boolean');
       });
     });
@@ -180,11 +180,11 @@ describe('Feature Flags', () => {
       // at compile time - runtime check just verifies it's an object with boolean values
       expect(typeof FEATURE_FLAGS).toBe('object');
       expect(FEATURE_FLAGS).not.toBeNull();
-      
+
       // Verify all values are booleans (consistent with as const type)
       const values = Object.values(FEATURE_FLAGS);
       expect(values.length).toBeGreaterThan(0);
-      values.forEach(v => expect(typeof v).toBe('boolean'));
+      values.forEach((v) => expect(typeof v).toBe('boolean'));
     });
   });
 });

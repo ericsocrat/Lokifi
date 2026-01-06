@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -42,7 +42,14 @@ vi.mock('@/lib/stores/drawingStore', () => ({
 vi.mock('@/lib/stores/paneStore', () => ({
   usePaneStore: () => ({
     panes: [
-      { id: 'price-pane', type: 'price', visible: true, locked: false, indicators: [], height: 600 },
+      {
+        id: 'price-pane',
+        type: 'price',
+        visible: true,
+        locked: false,
+        indicators: [],
+        height: 600,
+      },
     ],
     updatePaneHeight: vi.fn(),
   }),
@@ -80,7 +87,9 @@ vi.mock('@/lib/utils/logger', () => ({
 
 // Mock child components - use correct paths from components folder
 vi.mock('../../components/ChartErrorBoundary', () => ({
-  ChartErrorBoundary: ({ children }: { children: React.ReactNode }) => <div data-testid="error-boundary">{children}</div>,
+  ChartErrorBoundary: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="error-boundary">{children}</div>
+  ),
 }));
 
 vi.mock('../../components/ChartLoadingState', () => ({
@@ -176,11 +185,11 @@ describe('DrawingChart', () => {
   describe('Resize Handling', () => {
     it('should add resize event listener on mount', () => {
       const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
-      
+
       render(<DrawingChart />);
 
       expect(addEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
-      
+
       addEventListenerSpy.mockRestore();
     });
   });
@@ -206,12 +215,12 @@ describe('DrawingChart', () => {
 
     it('should remove resize event listener on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-      
+
       const { unmount } = render(<DrawingChart />);
       unmount();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
-      
+
       removeEventListenerSpy.mockRestore();
     });
   });
@@ -226,7 +235,7 @@ describe('DrawingPaneComponent', () => {
       render(<DrawingChart />);
 
       const container = screen.getByTestId('chart-container');
-      
+
       fireEvent.mouseDown(container);
       fireEvent.mouseMove(container);
       fireEvent.mouseUp(container);

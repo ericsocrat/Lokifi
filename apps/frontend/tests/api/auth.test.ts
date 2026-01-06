@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { register, login, googleAuth, logout, me, authToken } from '@/lib/api/auth';
 import * as apiFetchModule from '@/lib/api/apiFetch';
+import { authToken, googleAuth, login, logout, me, register } from '@/lib/api/auth';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock apiFetch module
 vi.mock('@/lib/api/apiFetch', () => ({
@@ -59,7 +59,9 @@ describe('auth API', () => {
     it('should propagate errors from apiFetch', async () => {
       mockApiFetch.mockRejectedValue(new Error('Network error'));
 
-      await expect(register('test@example.com', 'password', 'Test')).rejects.toThrow('Network error');
+      await expect(register('test@example.com', 'password', 'Test')).rejects.toThrow(
+        'Network error'
+      );
     });
   });
 

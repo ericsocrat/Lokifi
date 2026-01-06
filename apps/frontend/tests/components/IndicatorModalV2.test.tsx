@@ -1,5 +1,4 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IndicatorModal } from '../../components/IndicatorModalV2';
 
@@ -207,7 +206,7 @@ describe('IndicatorModal', () => {
 
       const trendButtons = screen.getAllByText('Trend');
       fireEvent.click(trendButtons[0]);
-      
+
       const searchInput = screen.getByPlaceholderText('Search indicators...');
       fireEvent.change(searchInput, { target: { value: 'exponential' } });
 
@@ -254,9 +253,7 @@ describe('IndicatorModal', () => {
 
   describe('Active Indicators', () => {
     it('should show Active badge for active indicators', () => {
-      mockPaneStore.panes = [
-        { id: 'price-pane', type: 'price', indicators: ['sma'] },
-      ];
+      mockPaneStore.panes = [{ id: 'price-pane', type: 'price', indicators: ['sma'] }];
 
       render(<IndicatorModal isOpen={true} onClose={mockOnClose} />);
 
@@ -264,14 +261,14 @@ describe('IndicatorModal', () => {
     });
 
     it('should not allow clicking on active indicators', () => {
-      mockPaneStore.panes = [
-        { id: 'price-pane', type: 'price', indicators: ['sma'] },
-      ];
+      mockPaneStore.panes = [{ id: 'price-pane', type: 'price', indicators: ['sma'] }];
 
       render(<IndicatorModal isOpen={true} onClose={mockOnClose} />);
 
       // Click on the SMA indicator
-      const smaIndicator = screen.getByText('Simple Moving Average').closest('div[class*="rounded-lg"]');
+      const smaIndicator = screen
+        .getByText('Simple Moving Average')
+        .closest('div[class*="rounded-lg"]');
       if (smaIndicator) {
         fireEvent.click(smaIndicator);
       }
@@ -281,13 +278,13 @@ describe('IndicatorModal', () => {
     });
 
     it('should have different styling for active indicators', () => {
-      mockPaneStore.panes = [
-        { id: 'price-pane', type: 'price', indicators: ['sma'] },
-      ];
+      mockPaneStore.panes = [{ id: 'price-pane', type: 'price', indicators: ['sma'] }];
 
       render(<IndicatorModal isOpen={true} onClose={mockOnClose} />);
 
-      const smaIndicator = screen.getByText('Simple Moving Average').closest('div[class*="rounded-lg"]');
+      const smaIndicator = screen
+        .getByText('Simple Moving Average')
+        .closest('div[class*="rounded-lg"]');
       expect(smaIndicator).toHaveClass('cursor-not-allowed');
     });
   });
@@ -297,7 +294,9 @@ describe('IndicatorModal', () => {
       render(<IndicatorModal isOpen={true} onClose={mockOnClose} />);
 
       // Click on SMA (overlay indicator)
-      const smaIndicator = screen.getByText('Simple Moving Average').closest('div[class*="rounded-lg"]');
+      const smaIndicator = screen
+        .getByText('Simple Moving Average')
+        .closest('div[class*="rounded-lg"]');
       if (smaIndicator) {
         fireEvent.click(smaIndicator);
       }
@@ -310,7 +309,9 @@ describe('IndicatorModal', () => {
       render(<IndicatorModal isOpen={true} onClose={mockOnClose} />);
 
       // Click on RSI (separate pane indicator)
-      const rsiIndicator = screen.getByText('Relative Strength Index').closest('div[class*="rounded-lg"]');
+      const rsiIndicator = screen
+        .getByText('Relative Strength Index')
+        .closest('div[class*="rounded-lg"]');
       if (rsiIndicator) {
         fireEvent.click(rsiIndicator);
       }

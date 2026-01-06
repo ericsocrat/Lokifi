@@ -134,6 +134,9 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     try {
       const { createChart, CandlestickSeries } = await import('lightweight-charts');
 
+      // Re-check ref after async import - component may have unmounted
+      if (!chartContainerRef.current) return;
+
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
         height: height,

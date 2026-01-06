@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { chat, type ChatMessage } from '@/lib/api/chat';
 import * as apiFetchModule from '@/lib/api/apiFetch';
+import { chat, type ChatMessage } from '@/lib/api/chat';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock apiFetch module
 vi.mock('@/lib/api/apiFetch', () => ({
@@ -16,9 +16,7 @@ describe('chat API', () => {
 
   describe('chat function', () => {
     it('should call apiFetch with correct parameters', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
       const mockResponse = { mode: 'chat', answer: 'Hi there!' };
       mockApiFetch.mockResolvedValue({
         json: () => Promise.resolve(mockResponse),
@@ -58,7 +56,7 @@ describe('chat API', () => {
         { role: 'assistant', content: 'The current price is $50,000' },
         { role: 'user', content: 'Thanks!' },
       ];
-      const mockResponse = { mode: 'chat', answer: 'You\'re welcome!' };
+      const mockResponse = { mode: 'chat', answer: "You're welcome!" };
       mockApiFetch.mockResolvedValue({
         json: () => Promise.resolve(mockResponse),
       });
@@ -69,9 +67,7 @@ describe('chat API', () => {
     });
 
     it('should handle message with name field', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello', name: 'John' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello', name: 'John' }];
       const mockResponse = { mode: 'chat', answer: 'Hello John!' };
       mockApiFetch.mockResolvedValue({
         json: () => Promise.resolve(mockResponse),
@@ -86,11 +82,9 @@ describe('chat API', () => {
     });
 
     it('should return response with result field when present', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Get BTC price' },
-      ];
-      const mockResponse = { 
-        mode: 'price', 
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Get BTC price' }];
+      const mockResponse = {
+        mode: 'price',
         answer: 'BTC is at $50,000',
         result: { symbol: 'BTC', price: 50000 },
       };
@@ -104,9 +98,7 @@ describe('chat API', () => {
     });
 
     it('should propagate errors from apiFetch', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
       mockApiFetch.mockRejectedValue(new Error('Network error'));
 
       await expect(chat(messages)).rejects.toThrow('Network error');

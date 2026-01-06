@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
-  loadPortfolio,
-  savePortfolio,
   addAssets,
   addSection,
   deleteAsset,
+  loadPortfolio,
+  savePortfolio,
   totalValue,
   type Asset,
   type PortfolioSection,
 } from '@/lib/data/portfolioStorage';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -156,7 +156,9 @@ describe('portfolioStorage', () => {
 
       const newSection: PortfolioSection = {
         title: 'Real Estate',
-        assets: [{ id: '1', symbol: 'HOME', name: 'Primary Home', shares: 1, value: 500000, change: 3 }],
+        assets: [
+          { id: '1', symbol: 'HOME', name: 'Primary Home', shares: 1, value: 500000, change: 3 },
+        ],
       };
 
       addSection(newSection);

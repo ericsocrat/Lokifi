@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { requireAuth } from '@/lib/api/auth-guard';
 import * as authModule from '@/lib/api/auth';
+import { requireAuth } from '@/lib/api/auth-guard';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock auth module
 vi.mock('@/lib/api/auth', () => ({

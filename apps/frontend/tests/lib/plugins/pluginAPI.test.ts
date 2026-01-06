@@ -1,9 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {
-  registerContextAction,
-  listContextActions,
-  runAction,
-} from '@/lib/plugins/pluginAPI';
+import { listContextActions, registerContextAction, runAction } from '@/lib/plugins/pluginAPI';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the useChartStore
 vi.mock('@/state/store', () => ({

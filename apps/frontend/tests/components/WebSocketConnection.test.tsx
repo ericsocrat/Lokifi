@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock logger
 vi.mock('@/lib/utils/logger', () => ({
@@ -19,8 +19,8 @@ vi.mock('@/lib/stores/marketDataStore', () => ({
 }));
 
 // Import after mocks
-import WebSocketConnection, { useWebSocketData } from '../../components/WebSocketConnection';
 import { renderHook } from '@testing-library/react';
+import WebSocketConnection, { useWebSocketData } from '../../components/WebSocketConnection';
 
 describe('WebSocketConnection', () => {
   beforeEach(() => {
@@ -204,10 +204,9 @@ describe('useWebSocketData Hook', () => {
   });
 
   it('should reset data when symbol changes', () => {
-    const { result, rerender } = renderHook(
-      ({ symbol }) => useWebSocketData(symbol, true),
-      { initialProps: { symbol: 'BTCUSD' } }
-    );
+    const { result, rerender } = renderHook(({ symbol }) => useWebSocketData(symbol, true), {
+      initialProps: { symbol: 'BTCUSD' },
+    });
 
     expect(result.current.isConnected).toBe(true);
 

@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ObjectTree } from '../../components/ObjectTree';
 
@@ -53,7 +52,7 @@ vi.mock('lucide-react', () => ({
 }));
 
 // Sample drawing objects for testing
-const createMockObject = (overrides: Partial<typeof mockDrawingStore.objects[0]> = {}) => ({
+const createMockObject = (overrides: Partial<(typeof mockDrawingStore.objects)[0]> = {}) => ({
   id: 'object-1',
   type: 'trendline',
   paneId: 'price-pane',
@@ -219,7 +218,10 @@ describe('ObjectTree', () => {
   describe('Objects Display', () => {
     it('should display objects in their pane', () => {
       mockDrawingStore.objects = [
-        createMockObject({ id: '1', properties: { ...createMockObject().properties, name: 'Line A' } }),
+        createMockObject({
+          id: '1',
+          properties: { ...createMockObject().properties, name: 'Line A' },
+        }),
       ];
 
       render(<ObjectTree />);
@@ -238,9 +240,7 @@ describe('ObjectTree', () => {
     });
 
     it('should display object color indicator', () => {
-      mockDrawingStore.objects = [
-        createMockObject({ style: { color: '#ff0000' } }),
-      ];
+      mockDrawingStore.objects = [createMockObject({ style: { color: '#ff0000' } })];
 
       render(<ObjectTree />);
 
@@ -261,9 +261,18 @@ describe('ObjectTree', () => {
 
     it('should sort objects by zIndex (highest first)', () => {
       mockDrawingStore.objects = [
-        createMockObject({ id: '1', properties: { ...createMockObject().properties, name: 'Low Z', zIndex: 1 } }),
-        createMockObject({ id: '2', properties: { ...createMockObject().properties, name: 'High Z', zIndex: 10 } }),
-        createMockObject({ id: '3', properties: { ...createMockObject().properties, name: 'Mid Z', zIndex: 5 } }),
+        createMockObject({
+          id: '1',
+          properties: { ...createMockObject().properties, name: 'Low Z', zIndex: 1 },
+        }),
+        createMockObject({
+          id: '2',
+          properties: { ...createMockObject().properties, name: 'High Z', zIndex: 10 },
+        }),
+        createMockObject({
+          id: '3',
+          properties: { ...createMockObject().properties, name: 'Mid Z', zIndex: 5 },
+        }),
       ];
 
       render(<ObjectTree />);
@@ -325,7 +334,9 @@ describe('ObjectTree', () => {
       render(<ObjectTree />);
       fireEvent.click(screen.getByTitle('Hide'));
 
-      expect(mockDrawingStore.setObjectProperties).toHaveBeenCalledWith('object-1', { visible: false });
+      expect(mockDrawingStore.setObjectProperties).toHaveBeenCalledWith('object-1', {
+        visible: false,
+      });
     });
   });
 
@@ -358,7 +369,9 @@ describe('ObjectTree', () => {
       render(<ObjectTree />);
       fireEvent.click(screen.getByTitle('Lock'));
 
-      expect(mockDrawingStore.setObjectProperties).toHaveBeenCalledWith('object-1', { locked: true });
+      expect(mockDrawingStore.setObjectProperties).toHaveBeenCalledWith('object-1', {
+        locked: true,
+      });
     });
   });
 
@@ -367,7 +380,7 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject()];
 
       render(<ObjectTree />);
-      
+
       const objectElement = screen.getByText('Trend Line 1');
       fireEvent.contextMenu(objectElement);
 
@@ -379,7 +392,7 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject()];
 
       render(<ObjectTree />);
-      
+
       const objectElement = screen.getByText('Trend Line 1');
       fireEvent.contextMenu(objectElement);
 
@@ -393,7 +406,7 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject()];
 
       render(<ObjectTree />);
-      
+
       fireEvent.contextMenu(screen.getByText('Trend Line 1'));
       fireEvent.click(screen.getByText('Duplicate'));
 
@@ -405,7 +418,7 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject()];
 
       render(<ObjectTree />);
-      
+
       fireEvent.contextMenu(screen.getByText('Trend Line 1'));
       fireEvent.click(screen.getByText('Delete'));
 
@@ -416,7 +429,7 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject()];
 
       render(<ObjectTree />);
-      
+
       fireEvent.contextMenu(screen.getByText('Trend Line 1'));
       expect(screen.getByText('Duplicate')).toBeInTheDocument();
 
@@ -432,9 +445,9 @@ describe('ObjectTree', () => {
       mockDrawingStore.objects = [createMockObject({ paneId: 'price-pane' })];
 
       render(<ObjectTree />);
-      
+
       fireEvent.contextMenu(screen.getByText('Trend Line 1'));
-      
+
       // Find and click Indicators option in context menu
       const contextMenu = screen.getByText('Move to').closest('div[class*="fixed"]');
       if (contextMenu) {
@@ -469,9 +482,18 @@ describe('ObjectTree', () => {
   describe('Multiple Objects', () => {
     it('should display multiple objects in same pane', () => {
       mockDrawingStore.objects = [
-        createMockObject({ id: '1', properties: { ...createMockObject().properties, name: 'Line 1' } }),
-        createMockObject({ id: '2', properties: { ...createMockObject().properties, name: 'Line 2' } }),
-        createMockObject({ id: '3', properties: { ...createMockObject().properties, name: 'Line 3' } }),
+        createMockObject({
+          id: '1',
+          properties: { ...createMockObject().properties, name: 'Line 1' },
+        }),
+        createMockObject({
+          id: '2',
+          properties: { ...createMockObject().properties, name: 'Line 2' },
+        }),
+        createMockObject({
+          id: '3',
+          properties: { ...createMockObject().properties, name: 'Line 3' },
+        }),
       ];
 
       render(<ObjectTree />);
@@ -483,17 +505,25 @@ describe('ObjectTree', () => {
 
     it('should display objects in different panes', () => {
       mockDrawingStore.objects = [
-        createMockObject({ id: '1', paneId: 'price-pane', properties: { ...createMockObject().properties, name: 'Price Object' } }),
-        createMockObject({ id: '2', paneId: 'indicator-pane', properties: { ...createMockObject().properties, name: 'Indicator Object' } }),
+        createMockObject({
+          id: '1',
+          paneId: 'price-pane',
+          properties: { ...createMockObject().properties, name: 'Price Object' },
+        }),
+        createMockObject({
+          id: '2',
+          paneId: 'indicator-pane',
+          properties: { ...createMockObject().properties, name: 'Indicator Object' },
+        }),
       ];
 
       render(<ObjectTree />);
 
       expect(screen.getByText('Price Object')).toBeInTheDocument();
-      
+
       // Expand indicator pane
       fireEvent.click(screen.getByText('Indicators'));
-      
+
       expect(screen.getByText('Indicator Object')).toBeInTheDocument();
     });
   });

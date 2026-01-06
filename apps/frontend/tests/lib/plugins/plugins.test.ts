@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  registerPlugin,
-  unregisterPlugin,
-  listPlugins,
-  setPluginEnabled,
   getHooks,
-  type PluginMeta,
+  listPlugins,
+  registerPlugin,
+  setPluginEnabled,
+  unregisterPlugin,
   type PluginHooks,
+  type PluginMeta,
 } from '@/lib/plugins/plugins';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('Plugin Registry', () => {
   // Clear registry between tests by unregistering all plugins

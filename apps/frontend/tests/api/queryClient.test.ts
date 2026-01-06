@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { queryClient, queryKeys } from '@/lib/api/queryClient';
+import { describe, expect, it } from 'vitest';
 
 describe('queryClient', () => {
   describe('configuration', () => {
@@ -10,7 +10,7 @@ describe('queryClient', () => {
 
     it('should have correct default options', () => {
       const defaults = queryClient.getDefaultOptions();
-      
+
       expect(defaults.queries?.staleTime).toBe(30 * 1000); // 30 seconds
       expect(defaults.queries?.gcTime).toBe(5 * 60 * 1000); // 5 minutes
       expect(defaults.queries?.refetchOnWindowFocus).toBe(false);
@@ -128,21 +128,21 @@ describe('queryKeys', () => {
     it('should generate unique keys for different parameters', () => {
       const key1 = queryKeys.cryptos(10);
       const key2 = queryKeys.cryptos(20);
-      
+
       expect(key1).not.toEqual(key2);
     });
 
     it('should generate unique keys for different asset types', () => {
       const cryptoKey = queryKeys.cryptos(10);
       const stocksKey = queryKeys.stocks(10);
-      
+
       expect(cryptoKey).not.toEqual(stocksKey);
     });
 
     it('should generate unique keys for different search queries', () => {
       const key1 = queryKeys.cryptoSearch('btc');
       const key2 = queryKeys.cryptoSearch('eth');
-      
+
       expect(key1).not.toEqual(key2);
     });
   });

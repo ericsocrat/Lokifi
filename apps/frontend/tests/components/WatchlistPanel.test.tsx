@@ -1,5 +1,4 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
-import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ScreenerPanel, WatchlistPanel } from '../../components/WatchlistPanel';
 
@@ -18,7 +17,13 @@ const mockWatchlistStore = {
     marketCap?: number;
   }>,
   screenerQuery: {
-    filters: [] as Array<{ id: string; label: string; field: string; operator: string; value: number }>,
+    filters: [] as Array<{
+      id: string;
+      label: string;
+      field: string;
+      operator: string;
+      value: number;
+    }>,
     sortBy: 'changePercent' as const,
     sortOrder: 'desc' as const,
   },
@@ -66,8 +71,8 @@ describe('WatchlistPanel', () => {
     vi.clearAllMocks();
     mockWatchlistStore.getSymbolMetrics.mockImplementation((symbol: string) => ({
       symbol,
-      price: symbol === 'BTCUSD' ? 45000.00 : 2500.00,
-      change: symbol === 'BTCUSD' ? 1500.00 : -50.00,
+      price: symbol === 'BTCUSD' ? 45000.0 : 2500.0,
+      change: symbol === 'BTCUSD' ? 1500.0 : -50.0,
       changePercent: symbol === 'BTCUSD' ? 3.45 : -1.96,
       volume: 1500000000,
       marketCap: symbol === 'BTCUSD' ? 850000000000 : 300000000000,
@@ -163,10 +168,7 @@ describe('WatchlistPanel', () => {
       fireEvent.change(input, { target: { value: 'solusd' } });
       fireEvent.click(screen.getByText('Add'));
 
-      expect(mockWatchlistStore.addToWatchlist).toHaveBeenCalledWith(
-        'watchlist-1',
-        'SOLUSD'
-      );
+      expect(mockWatchlistStore.addToWatchlist).toHaveBeenCalledWith('watchlist-1', 'SOLUSD');
     });
 
     it('should add symbol on Enter key press', () => {
@@ -177,10 +179,7 @@ describe('WatchlistPanel', () => {
       fireEvent.change(input, { target: { value: 'dogeusd' } });
       fireEvent.keyDown(input, { key: 'Enter' });
 
-      expect(mockWatchlistStore.addToWatchlist).toHaveBeenCalledWith(
-        'watchlist-1',
-        'DOGEUSD'
-      );
+      expect(mockWatchlistStore.addToWatchlist).toHaveBeenCalledWith('watchlist-1', 'DOGEUSD');
     });
 
     it('should cancel add form when cancel clicked', () => {
@@ -239,10 +238,7 @@ describe('WatchlistPanel', () => {
         fireEvent.click(removeButton);
       }
 
-      expect(mockWatchlistStore.removeFromWatchlist).toHaveBeenCalledWith(
-        'watchlist-1',
-        'BTCUSD'
-      );
+      expect(mockWatchlistStore.removeFromWatchlist).toHaveBeenCalledWith('watchlist-1', 'BTCUSD');
     });
   });
 
@@ -261,7 +257,7 @@ describe('WatchlistPanel', () => {
       // The empty state is shown when items array is empty
       // We verify the text exists in the component structure
       const { container } = render(<WatchlistPanel />);
-      
+
       // Component renders - empty state is conditional on items
       expect(container).toBeInTheDocument();
     });
@@ -319,7 +315,9 @@ describe('ScreenerPanel', () => {
       render(<ScreenerPanel />);
 
       // Find and click the toggle button
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -331,7 +329,9 @@ describe('ScreenerPanel', () => {
   describe('Filter Controls', () => {
     beforeEach(() => {
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -365,7 +365,9 @@ describe('ScreenerPanel', () => {
   describe('Adding Filters', () => {
     beforeEach(() => {
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -412,7 +414,13 @@ describe('ScreenerPanel', () => {
     it('should display active filters', () => {
       mockWatchlistStore.screenerQuery = {
         filters: [
-          { id: 'filter-1', label: 'changePercent gt 5', field: 'changePercent', operator: 'gt', value: 5 },
+          {
+            id: 'filter-1',
+            label: 'changePercent gt 5',
+            field: 'changePercent',
+            operator: 'gt',
+            value: 5,
+          },
           { id: 'filter-2', label: 'price lt 100', field: 'price', operator: 'lt', value: 100 },
         ],
         sortBy: 'changePercent',
@@ -420,7 +428,9 @@ describe('ScreenerPanel', () => {
       };
 
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -433,14 +443,22 @@ describe('ScreenerPanel', () => {
     it('should call removeScreenerFilter when filter remove clicked', () => {
       mockWatchlistStore.screenerQuery = {
         filters: [
-          { id: 'filter-1', label: 'changePercent gt 5', field: 'changePercent', operator: 'gt', value: 5 },
+          {
+            id: 'filter-1',
+            label: 'changePercent gt 5',
+            field: 'changePercent',
+            operator: 'gt',
+            value: 5,
+          },
         ],
         sortBy: 'changePercent',
         sortOrder: 'desc',
       };
 
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -458,7 +476,9 @@ describe('ScreenerPanel', () => {
   describe('Sort Options', () => {
     beforeEach(() => {
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -486,7 +506,9 @@ describe('ScreenerPanel', () => {
   describe('Running Screener', () => {
     beforeEach(() => {
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -510,22 +532,24 @@ describe('ScreenerPanel', () => {
       mockWatchlistStore.screenerResults = [
         {
           symbol: 'AAPL',
-          price: 175.50,
-          change: 2.50,
+          price: 175.5,
+          change: 2.5,
           changePercent: 1.45,
           volume: 75000000,
         },
         {
           symbol: 'MSFT',
-          price: 380.00,
-          change: -5.00,
-          changePercent: -1.30,
+          price: 380.0,
+          change: -5.0,
+          changePercent: -1.3,
           volume: 25000000,
         },
       ];
 
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -540,15 +564,17 @@ describe('ScreenerPanel', () => {
       mockWatchlistStore.screenerResults = [
         {
           symbol: 'AAPL',
-          price: 175.50,
-          change: 2.50,
+          price: 175.5,
+          change: 2.5,
           changePercent: 1.45,
           volume: 75000000,
         },
       ];
 
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }
@@ -560,7 +586,9 @@ describe('ScreenerPanel', () => {
       mockWatchlistStore.screenerResults = [];
 
       render(<ScreenerPanel />);
-      const toggleButton = screen.getByText('Stock Screener').parentElement?.querySelector('button');
+      const toggleButton = screen
+        .getByText('Stock Screener')
+        .parentElement?.querySelector('button');
       if (toggleButton) {
         fireEvent.click(toggleButton);
       }

@@ -1,12 +1,11 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Drawing } from '@/lib/utils/drawings';
 import {
-  describeDrawing,
   DEFAULT_LABEL_CONFIG,
+  describeDrawing,
   SUPPORTED_DRAWING_KINDS,
   type LabelConfig,
-  type LabelResult,
 } from '@/lib/utils/labels';
-import type { Drawing } from '@/lib/utils/drawings';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock the chartMap module
 vi.mock('@/lib/charts/chartMap', () => ({
@@ -29,10 +28,7 @@ vi.mock('@/lib/utils/geom', () => ({
 }));
 
 // Helper to create test drawings
-const createDrawing = (
-  kind: string,
-  points: Array<{ x: number; y: number }>
-): Drawing => ({
+const createDrawing = (kind: string, points: Array<{ x: number; y: number }>): Drawing => ({
   id: 'test-drawing',
   kind: kind as Drawing['kind'],
   points,
