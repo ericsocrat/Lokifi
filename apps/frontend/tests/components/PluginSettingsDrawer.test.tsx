@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PluginSettingsDrawer from '../../components/PluginSettingsDrawer';
 
 // Hoisted mocks
@@ -164,7 +164,10 @@ describe('PluginSettingsDrawer', () => {
 
       fireEvent.change(input, { target: { value: '0, 0.5, 1, 1.618' } });
 
-      expect(mockPluginSettingsStore.set).toHaveBeenCalledWith('fibCustomLevels', [0, 0.5, 1, 1.618]);
+      expect(mockPluginSettingsStore.set).toHaveBeenCalledWith(
+        'fibCustomLevels',
+        [0, 0.5, 1, 1.618]
+      );
     });
   });
 

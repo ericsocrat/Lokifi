@@ -66,7 +66,9 @@ const mockCtx = {
   canvas: mockCanvas,
 };
 
-HTMLCanvasElement.prototype.getContext = vi.fn(() => mockCtx) as unknown as typeof HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = vi.fn(
+  () => mockCtx
+) as unknown as typeof HTMLCanvasElement.prototype.getContext;
 
 // Create a mock drawing object helper
 const createMockDrawingObject = (
@@ -314,7 +316,16 @@ describe('DrawingOverlay', () => {
         'invisible-1',
         'hline',
         [{ time: 100 as Time, price: 300 }],
-        { properties: { name: 'Invisible', visible: false, locked: false, zIndex: 1, createdAt: Date.now(), updatedAt: Date.now() } }
+        {
+          properties: {
+            name: 'Invisible',
+            visible: false,
+            locked: false,
+            zIndex: 1,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        }
       );
 
       mockDrawingStore.getObjectsByPane.mockReturnValue([invisibleObject]);

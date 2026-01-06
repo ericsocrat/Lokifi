@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { EnhancedSymbolPicker } from '../../components/EnhancedSymbolPicker';
 
 // Hoisted mocks
@@ -179,9 +179,7 @@ describe('EnhancedSymbolPicker', () => {
       });
 
       // Search should be triggered after debounce (query >= 2 chars)
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/v1/symbols/search')
-      );
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/v1/symbols/search'));
     });
 
     it('should not search when query < 2 chars', async () => {
@@ -344,9 +342,7 @@ describe('EnhancedSymbolPicker', () => {
   describe('Error Handling', () => {
     it('should handle fetch error and use fallback data', async () => {
       // Mock fetch to throw error
-      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(
-        new Error('Network error')
-      );
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Network error'));
 
       render(<EnhancedSymbolPicker />);
 
