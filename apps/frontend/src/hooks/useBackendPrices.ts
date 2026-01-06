@@ -21,7 +21,7 @@ import {
   type HistoricalPriceResponse,
   type OHLCVResponse,
   type PriceUpdate,
-} from '@/src/services/backendPriceService';
+} from '@/services/backendPriceService';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // ============================================================================
