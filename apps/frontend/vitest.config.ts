@@ -41,7 +41,10 @@ export default defineConfig({
       // '**/tests/components/EnhancedChart.test.tsx', // TESTING: Enabling
       // '**/tests/components/IndicatorModal.test.tsx', // TESTING: Enabling
       // '**/tests/unit/charts/chart-reliability.test.tsx', // TESTING: Enabling
-      '**/tests/integration/features-g2-g4.test.tsx', // TODO: Needs store reset pattern fix (Immer read-only)
+      // features-g2-g4 excluded: vi.mock for FLAGS doesn't properly hoist with Zustand persist + immer
+      // The stores check FLAGS at runtime, but mock isn't applied before store initialization
+      // Would need to: 1) Mock stores themselves, or 2) Add test mode to stores
+      '**/tests/integration/features-g2-g4.test.tsx',
       // Tests moved to unit/ subdirectories - now passing!
       // '**/tests/unit/utils/webVitals.test.ts',  // ✅ Fixed and passing
       // '**/tests/unit/utils/perf.test.ts',      // ✅ Fixed and passing
