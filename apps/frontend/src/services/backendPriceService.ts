@@ -9,7 +9,7 @@
  * Created: October 6, 2025
  */
 
-import { createLogger } from '@/lib/utils/logger';
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
 
 const logger = createLogger('BackendPriceService');
 
@@ -367,7 +367,7 @@ export class WebSocketPriceService {
         break;
 
       case 'error':
-        console.error('WebSocket error:', message.error);
+        console.error('WebSocket error:', sanitizeLogInput(message.error));
         break;
 
       case 'pong':

@@ -15,6 +15,7 @@ from app.services.message_analytics_service import MessageAnalyticsService
 from app.services.message_moderation_service import MessageModerationService
 from app.services.performance_monitor import performance_monitor
 from app.services.websocket_manager import connection_manager
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,11 @@ async def add_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.add_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.email} added blocked words: {words}")
+        logger.info(
+            "Admin %s added blocked words: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(str(words)),
+        )
 
         return {
             "added_words": words,
@@ -159,7 +164,11 @@ async def remove_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.remove_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.email} removed blocked words: {words}")
+        logger.info(
+            "Admin %s removed blocked words: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(str(words)),
+        )
 
         return {
             "removed_words": words,
@@ -217,7 +226,11 @@ async def admin_broadcast_message(
         for user_id in online_users:
             await connection_manager.send_personal_message(str(admin_message), user_id)
 
-        logger.info(f"Admin {admin_user.email} sent broadcast: {message}")
+        logger.info(
+            "Admin %s sent broadcast: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(message),
+        )
 
         return {
             "message": message,
