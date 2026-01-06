@@ -98,6 +98,8 @@ export default defineConfig({
       // Primary aliases - keep in specific order for proper resolution
       { find: '@/src', replacement: path.resolve(__dirname, './src') }, // Support @/src/* paths in app/ files
       { find: '@/lib', replacement: path.resolve(__dirname, './src/lib') },
+      // Note: NotificationBell is in top-level components/, other components in src/components/
+      { find: '@/components/NotificationBell', replacement: path.resolve(__dirname, './components/NotificationBell') },
       { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
       { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
       { find: '@/utils', replacement: path.resolve(__dirname, './src/utils') },
