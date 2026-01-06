@@ -106,7 +106,15 @@ export default defineConfig({
       { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
       { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
       { find: '@/utils', replacement: path.resolve(__dirname, './src/utils') },
+      // Additional aliases matching tsconfig paths
+      { find: '@/constants', replacement: path.resolve(__dirname, './src/lib/constants') },
+      { find: '@/stores', replacement: path.resolve(__dirname, './src/lib/stores') },
+      { find: '@/api', replacement: path.resolve(__dirname, './src/lib/api') },
+      { find: '@/charts', replacement: path.resolve(__dirname, './src/lib/charts') },
+      { find: '@/types', replacement: path.resolve(__dirname, './src/lib/types') },
       { find: '@', replacement: path.resolve(__dirname, './src') },
+      // Top-level directories used by components (without @/ prefix)
+      { find: 'plugins', replacement: path.resolve(__dirname, './plugins') },
       // Fix for lucide-react 0.552.0: Force use of ESM build instead of CJS
       // The CJS build tries to require('react') which fails in Vitest's ESM environment
       {
