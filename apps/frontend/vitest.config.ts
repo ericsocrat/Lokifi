@@ -94,19 +94,24 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@/lib': path.resolve(__dirname, './src/lib'),
-      '@/components': path.resolve(__dirname, './src/components'),
-      '@/hooks': path.resolve(__dirname, './src/hooks'),
-      '@/utils': path.resolve(__dirname, './src/utils'),
+    alias: [
+      // Primary aliases - keep in specific order for proper resolution
+      { find: '@/src', replacement: path.resolve(__dirname, './src') }, // Support @/src/* paths in app/ files
+      { find: '@/lib', replacement: path.resolve(__dirname, './src/lib') },
+      { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
+      { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
+      { find: '@/utils', replacement: path.resolve(__dirname, './src/utils') },
+      { find: '@', replacement: path.resolve(__dirname, './src') },
       // Fix for lucide-react 0.552.0: Force use of ESM build instead of CJS
       // The CJS build tries to require('react') which fails in Vitest's ESM environment
-      'lucide-react': path.resolve(
-        __dirname,
-        '../../node_modules/lucide-react/dist/esm/lucide-react.js'
-      ),
-    },
+      {
+        find: 'lucide-react',
+        replacement: path.resolve(
+          __dirname,
+          '../../node_modules/lucide-react/dist/esm/lucide-react.js'
+        ),
+      },
+    ],
     dedupe: ['react', 'react-dom'],
     conditions: ['import', 'module', 'default'],
   },
