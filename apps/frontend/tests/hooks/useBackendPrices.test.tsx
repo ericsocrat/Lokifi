@@ -168,9 +168,7 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should not fetch when enabled is false', async () => {
-      const { result } = renderHook(() =>
-        useHistoricalPrices('BTC', '1m', { enabled: false })
-      );
+      const { result } = renderHook(() => useHistoricalPrices('BTC', '1m', { enabled: false }));
 
       await act(async () => {
         await vi.advanceTimersByTimeAsync(100);
@@ -213,9 +211,7 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should auto-refetch at specified interval', async () => {
-      renderHook(() =>
-        useHistoricalPrices('BTC', '1m', { enabled: true, refetchInterval: 1000 })
-      );
+      renderHook(() => useHistoricalPrices('BTC', '1m', { enabled: true, refetchInterval: 1000 }));
 
       await waitFor(() => {
         expect(mockGetHistory).toHaveBeenCalledTimes(1);
@@ -232,10 +228,9 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should refetch when symbol changes', async () => {
-      const { result, rerender } = renderHook(
-        ({ symbol }) => useHistoricalPrices(symbol, '1m'),
-        { initialProps: { symbol: 'BTC' } }
-      );
+      const { result, rerender } = renderHook(({ symbol }) => useHistoricalPrices(symbol, '1m'), {
+        initialProps: { symbol: 'BTC' },
+      });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -252,10 +247,9 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should refetch when period changes', async () => {
-      const { result, rerender } = renderHook(
-        ({ period }) => useHistoricalPrices('BTC', period),
-        { initialProps: { period: '1m' as const } }
-      );
+      const { result, rerender } = renderHook(({ period }) => useHistoricalPrices('BTC', period), {
+        initialProps: { period: '1m' as const },
+      });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -300,10 +294,9 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should handle different resolutions', async () => {
-      const { rerender } = renderHook(
-        ({ resolution }) => useOHLCV('BTC', '1m', resolution),
-        { initialProps: { resolution: 'D' as const } }
-      );
+      const { rerender } = renderHook(({ resolution }) => useOHLCV('BTC', '1m', resolution), {
+        initialProps: { resolution: 'D' as const },
+      });
 
       await waitFor(() => {
         expect(mockGetOHLCV).toHaveBeenCalledWith('BTC', '1m', 'D');
@@ -393,10 +386,9 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should reset data when query is empty', async () => {
-      const { result, rerender } = renderHook(
-        ({ query }) => useCryptoSearch(query, 300),
-        { initialProps: { query: 'bitcoin' } }
-      );
+      const { result, rerender } = renderHook(({ query }) => useCryptoSearch(query, 300), {
+        initialProps: { query: 'bitcoin' },
+      });
 
       await act(async () => {
         await vi.advanceTimersByTimeAsync(300);
@@ -414,10 +406,9 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should debounce multiple rapid queries', async () => {
-      const { rerender } = renderHook(
-        ({ query }) => useCryptoSearch(query, 300),
-        { initialProps: { query: 'b' } }
-      );
+      const { rerender } = renderHook(({ query }) => useCryptoSearch(query, 300), {
+        initialProps: { query: 'b' },
+      });
 
       // Rapid changes
       rerender({ query: 'bi' });
@@ -445,9 +436,7 @@ describe('useBackendPrices Hooks', () => {
 
   describe('useBatchHistoricalPrices', () => {
     it('should fetch batch historical data for multiple symbols', async () => {
-      const { result } = renderHook(() =>
-        useBatchHistoricalPrices(['BTC', 'ETH'], '1m')
-      );
+      const { result } = renderHook(() => useBatchHistoricalPrices(['BTC', 'ETH'], '1m'));
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -493,9 +482,7 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should return initial state', () => {
-      const { result } = renderHook(() =>
-        useWebSocketPrices({ autoConnect: false })
-      );
+      const { result } = renderHook(() => useWebSocketPrices({ autoConnect: false }));
 
       expect(result.current.prices).toEqual({});
       expect(result.current.connected).toBe(false);
@@ -503,9 +490,7 @@ describe('useBackendPrices Hooks', () => {
     });
 
     it('should provide connect and disconnect functions', () => {
-      const { result } = renderHook(() =>
-        useWebSocketPrices({ autoConnect: false })
-      );
+      const { result } = renderHook(() => useWebSocketPrices({ autoConnect: false }));
 
       expect(typeof result.current.connect).toBe('function');
       expect(typeof result.current.disconnect).toBe('function');
