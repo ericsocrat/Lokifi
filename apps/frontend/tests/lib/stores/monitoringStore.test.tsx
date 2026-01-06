@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { setDevFlag } from '../utils/featureFlags';
-import { useMonitoringStore } from './monitoringStore';
+import { setDevFlag } from '../../../src/lib/stores/featureFlags';
+import { useMonitoringStore } from '../../../src/lib/stores/monitoringStore';
 
 // TODO: Fix test interface mismatches with current MonitoringStore implementation
 // This test file needs updating to match current types (23 compile errors)
