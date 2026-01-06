@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import TimeframePicker from '../../components/TimeframePicker';
 
 // Hoisted mocks for timeframeStore
@@ -40,7 +40,7 @@ describe('TimeframePicker', () => {
       render(<TimeframePicker />);
       const buttons = screen.getAllByRole('button');
       expect(buttons).toHaveLength(9);
-      
+
       // Verify specific button labels exist
       expect(screen.getByText('1m')).toBeInTheDocument();
       expect(screen.getByText('5m')).toBeInTheDocument();

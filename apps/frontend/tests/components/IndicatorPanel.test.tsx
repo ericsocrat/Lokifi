@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import IndicatorPanel from '../../components/IndicatorPanel';
 
 // Hoisted mocks
@@ -81,9 +81,7 @@ describe('IndicatorPanel', () => {
 
       const checkboxes = screen.getAllByRole('checkbox');
       // Find the checkbox that is checked
-      const checkedBoxes = checkboxes.filter(
-        (cb) => (cb as HTMLInputElement).checked
-      );
+      const checkedBoxes = checkboxes.filter((cb) => (cb as HTMLInputElement).checked);
       expect(checkedBoxes.length).toBeGreaterThan(0);
     });
 

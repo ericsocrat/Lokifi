@@ -69,7 +69,14 @@ describe('SymbolPicker', () => {
       render(<SymbolPicker />);
 
       const input = screen.getByPlaceholderText('Symbol (e.g., BTCUSD, AAPL)');
-      expect(input).toHaveClass('px-3', 'py-2', 'bg-neutral-900', 'rounded-xl', 'border', 'border-neutral-800');
+      expect(input).toHaveClass(
+        'px-3',
+        'py-2',
+        'bg-neutral-900',
+        'rounded-xl',
+        'border',
+        'border-neutral-800'
+      );
     });
   });
 

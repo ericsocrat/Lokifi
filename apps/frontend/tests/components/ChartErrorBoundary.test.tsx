@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChartErrorBoundary } from '../../components/ChartErrorBoundary';
 
 // Mock logger
@@ -79,9 +79,7 @@ describe('ChartErrorBoundary', () => {
       );
 
       expect(screen.getByText('Chart Error')).toBeInTheDocument();
-      expect(
-        screen.getByText(/An error occurred while rendering the chart/)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/An error occurred while rendering the chart/)).toBeInTheDocument();
     });
 
     it('should log error with logger', async () => {

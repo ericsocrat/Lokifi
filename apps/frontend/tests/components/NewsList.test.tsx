@@ -54,8 +54,8 @@ vi.mock('swr', () => ({
 }));
 
 // Import component and SWR after mocks
-import NewsList from '../../components/NewsList';
 import useSWR from 'swr';
+import NewsList from '../../components/NewsList';
 
 describe('NewsList', () => {
   beforeEach(() => {
