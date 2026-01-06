@@ -1,16 +1,106 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import DrawingLayer from '../../src/components/DrawingLayer';
-import * as chartMapModule from '../../src/lib/chartMap';
-import { useChartStore } from '../../src/state/store';
+import DrawingLayer from '@/components/DrawingLayer';
+import * as chartMapModule from '@/lib/charts/chartMap';
+import { useChartStore } from '@/state/store';
+
+// Create a mock subscribe function
+const mockSubscribe = vi.fn(() => vi.fn()); // Returns unsubscribe function
+
+// Mock ResizeObserver - jsdom doesn't support it
+class MockResizeObserver {
+  callback: ResizeObserverCallback;
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+global.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+
+// Mock canvas context - jsdom doesn't support canvas
+const mockCanvasContext = {
+  clearRect: vi.fn(),
+  save: vi.fn(),
+  restore: vi.fn(),
+  scale: vi.fn(),
+  beginPath: vi.fn(),
+  moveTo: vi.fn(),
+  lineTo: vi.fn(),
+  stroke: vi.fn(),
+  fill: vi.fn(),
+  fillRect: vi.fn(),
+  strokeRect: vi.fn(),
+  rect: vi.fn(),
+  arc: vi.fn(),
+  closePath: vi.fn(),
+  fillText: vi.fn(),
+  strokeText: vi.fn(),
+  measureText: vi.fn(() => ({ width: 100 })),
+  setLineDash: vi.fn(),
+  getLineDash: vi.fn(() => []),
+  translate: vi.fn(),
+  rotate: vi.fn(),
+  quadraticCurveTo: vi.fn(),
+  bezierCurveTo: vi.fn(),
+  ellipse: vi.fn(),
+  clip: vi.fn(),
+  isPointInPath: vi.fn(() => false),
+  isPointInStroke: vi.fn(() => false),
+  getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 })),
+  putImageData: vi.fn(),
+  createPattern: vi.fn(() => null),
+  createRadialGradient: vi.fn(() => ({ addColorStop: vi.fn() })),
+  createLinearGradient: vi.fn(() => ({
+    addColorStop: vi.fn(),
+  })),
+  drawImage: vi.fn(),
+  canvas: {
+    width: 800,
+    height: 600,
+  },
+  globalAlpha: 1,
+  globalCompositeOperation: 'source-over',
+  strokeStyle: '#000',
+  fillStyle: '#000',
+  lineWidth: 1,
+  lineCap: 'round' as CanvasLineCap,
+  lineJoin: 'round' as CanvasLineJoin,
+  miterLimit: 10,
+  lineDashOffset: 0,
+  shadowBlur: 0,
+  shadowColor: 'rgba(0,0,0,0)',
+  shadowOffsetX: 0,
+  shadowOffsetY: 0,
+  font: '12px sans-serif',
+  textAlign: 'left' as CanvasTextAlign,
+  textBaseline: 'alphabetic' as CanvasTextBaseline,
+  direction: 'ltr' as CanvasDirection,
+  imageSmoothingEnabled: true,
+  imageSmoothingQuality: 'medium' as ImageSmoothingQuality,
+};
+
+// Mock HTMLCanvasElement.getContext
+const originalGetContext = HTMLCanvasElement.prototype.getContext;
+HTMLCanvasElement.prototype.getContext = function (
+  contextId: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  _options?: any
+): RenderingContext | null {
+  if (contextId === '2d') {
+    return mockCanvasContext as unknown as CanvasRenderingContext2D;
+  }
+  return originalGetContext.call(this, contextId, _options);
+};
 
 // Mock the chart store
-vi.mock('../../src/state/store', () => ({
+vi.mock('@/state/store', () => ({
   useChartStore: vi.fn(),
 }));
 
 // Mock chart map functions
-vi.mock('../../src/lib/chartMap', () => ({
+vi.mock('@/lib/charts/chartMap', () => ({
   snapPxToGrid: vi.fn((p: number) => p),
   snapYToPriceLevels: vi.fn((y: number) => y),
   magnetYToOHLC: vi.fn((y: number) => y),
@@ -18,7 +108,7 @@ vi.mock('../../src/lib/chartMap', () => ({
 }));
 
 // Mock drawing functions
-vi.mock('../../src/lib/drawings', () => ({
+vi.mock('@/lib/utils/drawings', () => ({
   createDrawing: vi.fn((kind: string, start: { x: number; y: number }) => ({
     id: 'test-drawing',
     kind,
@@ -36,7 +126,7 @@ vi.mock('../../src/lib/drawings', () => ({
 }));
 
 // Mock geom functions
-vi.mock('../../src/lib/geom', () => ({
+vi.mock('@/lib/utils/geom', () => ({
   distanceToSegment: vi.fn(() => 5),
   rectFromPoints: vi.fn((a: { x: number; y: number }, b: { x: number; y: number }) => ({
     x: a.x,
@@ -73,6 +163,7 @@ describe('DrawingLayer Component', () => {
     drawings: mockDrawings,
     selection: new Set<string>(),
     activeTool: 'cursor',
+    activeLayerId: 'layer-1',
     layers: [{ id: 'layer-1', visible: true, locked: false, opacity: 1 }],
     drawingSettings: {
       snapEnabled: false,
@@ -83,6 +174,7 @@ describe('DrawingLayer Component', () => {
       snapToOHLC: false,
       magnetTolerancePx: 10,
       fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1],
+      lineCap: 'round' as CanvasLineCap,
     },
     addDrawing: vi.fn(),
     updateDrawing: vi.fn(),
@@ -93,7 +185,12 @@ describe('DrawingLayer Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(useChartStore).mockReturnValue(mockStoreState);
+    mockSubscribe.mockClear();
+    mockSubscribe.mockReturnValue(vi.fn()); // Return unsubscribe function
+    const mockedStore = vi.mocked(useChartStore);
+    mockedStore.mockReturnValue(mockStoreState);
+    // Add subscribe method to the mocked function
+    (mockedStore as unknown as { subscribe: typeof mockSubscribe }).subscribe = mockSubscribe;
   });
 
   afterEach(() => {

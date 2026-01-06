@@ -37,7 +37,7 @@ export default defineConfig({
       '**/tests/config/powershell-scripts.test.ts',
       // Tests with missing component/file implementations
       '**/tests/components/ChartPanel.test.tsx',
-      '**/tests/components/DrawingLayer.test.tsx',
+      // '**/tests/components/DrawingLayer.test.tsx', // TESTING: Temporarily enabled
       '**/tests/components/EnhancedChart.test.tsx',
       '**/tests/components/IndicatorModal.test.tsx',
       '**/tests/unit/charts/chart-reliability.test.tsx',
