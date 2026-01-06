@@ -16,8 +16,8 @@ vi.mock('@/lib/charts/chartMap', () => ({
   priceToY: vi.fn(),
 }));
 
-import { useChartStore } from '@/state/store';
 import { priceToY } from '@/lib/charts/chartMap';
+import { useChartStore } from '@/state/store';
 
 const mockGetState = useChartStore.getState as ReturnType<typeof vi.fn>;
 const mockPriceToY = priceToY as ReturnType<typeof vi.fn>;
@@ -127,7 +127,7 @@ describe('startPriceFeed', () => {
     it('should update prevY after each tick', () => {
       const evaluateAlerts = vi.fn();
       mockGetState.mockReturnValue({ evaluateAlerts });
-      
+
       let callCount = 0;
       mockPriceToY.mockImplementation(() => {
         callCount++;
@@ -248,14 +248,14 @@ describe('startPriceFeed', () => {
 
       // Should not throw
       expect(() => vi.advanceTimersByTime(500)).not.toThrow();
-      
+
       cleanup();
     });
 
     it('should handle rapid price changes', () => {
       const evaluateAlerts = vi.fn();
       mockGetState.mockReturnValue({ evaluateAlerts });
-      
+
       let price = 100;
       mockPriceToY.mockImplementation(() => price);
 

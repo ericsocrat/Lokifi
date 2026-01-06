@@ -2,7 +2,7 @@
  * Tests for auth-protection (HOC and hook)
  */
 import { useRequireAuth, withAuth } from '@/lib/api/auth-protection';
-import { act, render, renderHook, screen, waitFor } from '@testing-library/react';
+import { render, renderHook, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
@@ -39,7 +39,10 @@ describe('auth-protection', () => {
 
     describe('when authenticated', () => {
       beforeEach(() => {
-        mockUseAuth.mockReturnValue({ user: { id: '1', email: 'test@example.com' }, loading: false });
+        mockUseAuth.mockReturnValue({
+          user: { id: '1', email: 'test@example.com' },
+          loading: false,
+        });
       });
 
       it('should render the wrapped component', () => {
@@ -138,7 +141,7 @@ describe('auth-protection', () => {
       it('should show content after loading completes with authenticated user', async () => {
         // Start with loading state
         mockUseAuth.mockReturnValue({ user: null, loading: true });
-        
+
         const ProtectedComponent = withAuth(TestComponent);
         const { rerender } = render(<ProtectedComponent name="World" />);
 
@@ -156,7 +159,7 @@ describe('auth-protection', () => {
       it('should redirect after loading completes without user', async () => {
         // Start with loading state
         mockUseAuth.mockReturnValue({ user: null, loading: true });
-        
+
         const ProtectedComponent = withAuth(TestComponent);
         const { rerender } = render(<ProtectedComponent name="Test" />);
 
@@ -176,7 +179,10 @@ describe('auth-protection', () => {
   describe('useRequireAuth hook', () => {
     describe('when authenticated', () => {
       beforeEach(() => {
-        mockUseAuth.mockReturnValue({ user: { id: '1', email: 'test@example.com' }, loading: false });
+        mockUseAuth.mockReturnValue({
+          user: { id: '1', email: 'test@example.com' },
+          loading: false,
+        });
       });
 
       it('should return user and authentication state', () => {
@@ -254,7 +260,7 @@ describe('auth-protection', () => {
     describe('state transitions', () => {
       it('should redirect after loading completes without user', async () => {
         mockUseAuth.mockReturnValue({ user: null, loading: true });
-        
+
         const { rerender } = renderHook(() => useRequireAuth());
 
         expect(mockPush).not.toHaveBeenCalled();

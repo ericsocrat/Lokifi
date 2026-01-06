@@ -1,7 +1,7 @@
 /**
  * Tests for APIClient with zod validation
  */
-import { APIClient, APIError, apiClient } from '@/lib/api/apiClient';
+import { APIClient, apiClient, APIError } from '@/lib/api/apiClient';
 import { http, HttpResponse } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../mocks/server';
@@ -210,9 +210,9 @@ describe('APIClient', () => {
         })
       );
 
-      await expect(
-        client.getOHLC({ symbol: 'BTC-USD', timeframe: '1h' })
-      ).rejects.toThrow(APIError);
+      await expect(client.getOHLC({ symbol: 'BTC-USD', timeframe: '1h' })).rejects.toThrow(
+        APIError
+      );
     });
   });
 

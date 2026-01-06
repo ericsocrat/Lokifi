@@ -67,16 +67,16 @@ describe('useHotkeys', () => {
     testCases.forEach(({ key, tool }) => {
       it(`should set tool to ${tool} when ${key} is pressed`, () => {
         renderHook(() => useHotkeys());
-        
+
         // Get the registered handler
         const handler = addEventListenerSpy.mock.calls.find(
-          call => call[0] === 'keydown'
+          (call) => call[0] === 'keydown'
         )?.[1] as (e: KeyboardEvent) => void;
-        
+
         // Simulate keypress
         const event = new KeyboardEvent('keydown', { key });
         handler(event);
-        
+
         expect(mockSetTool).toHaveBeenCalledWith(tool);
       });
     });
@@ -84,33 +84,33 @@ describe('useHotkeys', () => {
 
   it('should ignore keypresses when target is an input element', () => {
     renderHook(() => useHotkeys());
-    
-    const handler = addEventListenerSpy.mock.calls.find(
-      call => call[0] === 'keydown'
-    )?.[1] as (e: KeyboardEvent) => void;
-    
+
+    const handler = addEventListenerSpy.mock.calls.find((call) => call[0] === 'keydown')?.[1] as (
+      e: KeyboardEvent
+    ) => void;
+
     // Create event with input target
     const event = {
       key: 'v',
       target: { tagName: 'INPUT' },
     } as unknown as KeyboardEvent;
-    
+
     handler(event);
-    
+
     expect(mockSetTool).not.toHaveBeenCalled();
   });
 
   it('should ignore unknown keys', () => {
     renderHook(() => useHotkeys());
-    
-    const handler = addEventListenerSpy.mock.calls.find(
-      call => call[0] === 'keydown'
-    )?.[1] as (e: KeyboardEvent) => void;
-    
+
+    const handler = addEventListenerSpy.mock.calls.find((call) => call[0] === 'keydown')?.[1] as (
+      e: KeyboardEvent
+    ) => void;
+
     // Press unknown key
     const event = new KeyboardEvent('keydown', { key: 'x' });
     handler(event);
-    
+
     expect(mockSetTool).not.toHaveBeenCalled();
   });
 });

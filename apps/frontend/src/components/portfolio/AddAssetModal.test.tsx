@@ -7,11 +7,11 @@
  * 3. Quantity and value input
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { MarketAsset } from '@/services/marketData';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AddAssetModal from './AddAssetModal';
-import type { MarketAsset } from '@/services/marketData';
 
 // Mock the hooks
 vi.mock('@/hooks/useMarketData', () => ({
@@ -608,7 +608,7 @@ describe('AddAssetModal', () => {
         name: 'Shiba Inu',
         type: 'crypto',
         price: 0.00001234,
-        previousClose: 0.00001200,
+        previousClose: 0.000012,
         change: 0.00000034,
         changePercent: 2.83,
         volume: 5000000000,

@@ -1,7 +1,7 @@
 import { apiFetch, getToken, setToken } from '@/lib/api/apiFetch';
+import { http, HttpResponse } from 'msw';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../mocks/server';
-import { http, HttpResponse } from 'msw';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -139,9 +139,9 @@ describe('apiFetch', () => {
     it('should fall back to statusText when response text is empty', async () => {
       server.use(
         http.get('http://localhost:8000/api/error', () => {
-          return new HttpResponse('', { 
-            status: 500, 
-            statusText: 'Internal Server Error' 
+          return new HttpResponse('', {
+            status: 500,
+            statusText: 'Internal Server Error',
           });
         })
       );
@@ -201,7 +201,7 @@ describe('apiFetch', () => {
       // This tests the actual behavior of the function
       const response = await apiFetch('users');
       const data = await response.json();
-      
+
       expect(data).toEqual({ users: [] });
     });
   });

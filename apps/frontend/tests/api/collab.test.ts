@@ -54,8 +54,8 @@ vi.mock('@/state/store', () => ({
 }));
 
 import { useChartStore } from '@/state/store';
-import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
+import * as Y from 'yjs';
 
 const mockChartStore = useChartStore as unknown as {
   getState: ReturnType<typeof vi.fn>;
@@ -158,7 +158,7 @@ describe('startCollab', () => {
 
       // Get the observer callback and call it
       const observerCallback = mockYArrayObserveDeep.mock.calls[0][0];
-      
+
       mockYArrayToArray.mockReturnValue([{ id: '1', type: 'line' }]);
       observerCallback();
 
