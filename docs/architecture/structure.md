@@ -356,11 +356,11 @@ apps/frontend/
 ```
 
 **Key Technologies:**
-- Next.js 15.1.3 (App Router)
+- Next.js 16 (App Router)
 - React 19
-- TypeScript
-- TailwindCSS 3.4.17
-- Zustand (state management)
+- TypeScript 5.9
+- TailwindCSS 4
+- Zustand 5 (state management)
 - Recharts (data visualization)
 - Vitest + Testing Library + Playwright
 

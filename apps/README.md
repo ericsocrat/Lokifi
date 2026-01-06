@@ -34,7 +34,7 @@ uvicorn app.main:app --reload
 
 ### 2. **Frontend** (`frontend/`)
 - **Type**: Web Application
-- **Technology**: Next.js 14 + React 18 + TypeScript
+- **Technology**: Next.js 16 + React 19 + TypeScript 5.9
 - **Purpose**: User interface for trading platform
 - **Port**: 3000
 - **Status**: ✅ Production Ready
@@ -300,4 +300,4 @@ When working on applications:
 ---
 
 **Status**: 2 apps live, 4 planned
-**Last Updated**: October 8, 2025
+**Last Updated**: January 6, 2026

@@ -1,7 +1,7 @@
 # 🎛️ Admin Panel
 
 **Status**: 📋 Planned for Phase 4  
-**Technology**: Next.js 14 + React Admin + TypeScript  
+**Technology**: Next.js 16 + React Admin + TypeScript  
 **Purpose**: Internal administration dashboard for platform management
 
 ---
@@ -64,7 +64,7 @@ The Admin Panel is a comprehensive administrative interface for managing the Lok
 
 ```json
 {
-  "framework": "Next.js 14",
+  "framework": "Next.js 16",
   "ui": "React Admin + Tailwind CSS",
   "state": "React Query + Zustand",
   "forms": "React Hook Form + Zod",
@@ -210,8 +210,8 @@ The admin panel will communicate with the backend API:
 ```json
 {
   "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0",
+    "next": "^16.0.0",
+    "react": "^19.0.0",
     "react-admin": "^4.0.0",
     "react-query": "^5.0.0",
     "zustand": "^4.4.0",

@@ -43,7 +43,7 @@
 
 **Direct Dependencies**: 66 packages total
 - **Production**: 26 packages
-  - Core: React 18, Next.js 15, TypeScript 5.7
+  - Core: React 19, Next.js 16, TypeScript 5.9
   - State: Zustand 5, Jotai 2, TanStack Query 5
   - UI: Lucide React, Tailwind CSS, Recharts
   - Data: date-fns, zod, lz-string
@@ -115,7 +115,7 @@
 ```yaml
 - uses: actions/setup-python@v5
   with:
-    python-version: '3.11'
+    python-version: '3.13'
     cache: "pip"  # ✅ Enabled
     cache-dependency-path: |
       apps/backend/requirements.txt
