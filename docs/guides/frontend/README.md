@@ -39,12 +39,12 @@ frontend/
 
 ## 🚀 Tech Stack
 
-- **Framework**: Next.js 15.1.3 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **UI Library**: React 19
-- **Styling**: TailwindCSS 3.4.17, shadcn/ui
-- **State**: Zustand with Immer
+- **Styling**: TailwindCSS 4, shadcn/ui
+- **State**: Zustand 5 with Immer
 - **Charts**: Recharts
-- **Testing**: Vitest 3.2.4, Testing Library
+- **Testing**: Vitest 3.2, Testing Library
 
 ## 📚 Related Documentation
 

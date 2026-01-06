@@ -28,6 +28,7 @@ backend/data/*
 
 # Testing
 coverage/
+coverage-dashboard/
 test-results/
 playwright-report/
 playwright/.cache/

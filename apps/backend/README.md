@@ -158,8 +158,8 @@ DEBUG=true
 **With pyenv (recommended):**
 ```bash
 # Install pyenv, then:
-pyenv install 3.12.4
-cd backend  # Auto-activates Python 3.12.4
+pyenv install 3.13.9
+cd backend  # Auto-activates Python 3.13.9
 ```
 
 **With direnv:**
@@ -396,4 +396,4 @@ With the server running (`make run`), visit:
 
 ---
 
-**Built with ❤️ using FastAPI, Python 3.12, and modern async patterns.**
+**Built with ❤️ using FastAPI, Python 3.13, and modern async patterns.**

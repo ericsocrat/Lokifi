@@ -38,7 +38,7 @@ describe('IndicatorPanel', () => {
       mockState[key as keyof typeof mockState] = false;
     });
     // Mock subscribe to return unsubscribe function
-    mockFns.subscribe.mockImplementation((callback: (state: typeof mockState) => void) => {
+    mockFns.subscribe.mockImplementation((_callback: (state: typeof mockState) => void) => {
       // Store callback for later use
       return () => {};
     });

@@ -1,6 +1,6 @@
 # ✅ Lokifi Development Checklists
 
-**Last Updated:** January 5, 2026
+**Last Updated:** January 6, 2026
 **Purpose:** Repeatable process checklists for development workflow
 **Status:** Production Ready
 
@@ -14,7 +14,7 @@
 > - **CI/CD**: 100% pass rate (all workflows green) ✅
 > - **Type Safety**: Backend 100% (MyPy 0 errors) ✅, Frontend 0 errors ✅
 > - **Backend Quality**: 0 Ruff violations, 0 pytest warnings ✅ 🎉
-> - **ESLint**: 0 errors, 34 warnings (all detect-non-literal-fs) ✅ 🎉
+> - **ESLint**: 0 errors, 0 warnings (100% clean) ✅ 🎉
 > - **Store Testing**: 25/25 stores tested (100% coverage) ✅ 🎉
 > - **Test Coverage**: Frontend 11.61% lines, 88.7% branches ✅ | Backend 51.09% ✅
 > - **Tests**: 6,368 total (1,780 backend + 4,588 frontend) ✅
@@ -27,9 +27,12 @@
 **Status:** ✅ **COMPLETE**
 
 **Current Session:**
-- ✅ **Session 126 COMPLETE** - MyPy SQLAlchemy relationship type safety (240→87 errors, 64% reduction)
+- ✅ **Session 129 COMPLETE** - Dependency update (supertest 7.1.4 → 7.2.2) + gitignore cleanup
 
 **Previous Sessions:**
+- ✅ **Session 128 COMPLETE** - ESLint warnings cleanup (9 → 0 warnings, 100% clean)
+- ✅ **Session 127 COMPLETE** - Documentation consistency updates (version references)
+- ✅ **Session 126 COMPLETE** - MyPy SQLAlchemy relationship type safety (240→87 errors, 64% reduction)
 - ✅ **Session 125 COMPLETE** - TypeScript type safety improvements + MyPy fix**
 - ✅ **Session 124 COMPLETE** - Coverage documentation sync + dependency updates
 - ✅ **Session 123 COMPLETE** - CodeQL bulk dismissals + dependency updates + pattern docs
@@ -46,6 +49,51 @@
 - ✅ **Session 111 COMPLETE** - ESLint Flat Config Migration!
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
+
+### 🎉 Session 129: Dependency Update + Gitignore Cleanup
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Update safe dependencies and clean up build artifacts from git tracking
+
+**Session 129 Achievements**:
+1. **Dependency Update**:
+   - `supertest`: 7.1.4 → 7.2.2 (minor update, no vulnerabilities)
+   - Verified with GitHub Advisory Database
+
+2. **Gitignore Improvement**:
+   - Added `coverage-dashboard/` to `.gitignore` to prevent committing generated coverage artifacts
+   - Coverage dashboard files are regenerated on each test run
+
+**Quality Validation**:
+- All 6,280 tests passing ✅
+- ESLint: 0 errors, 0 warnings ✅
+- TypeScript: 0 errors ✅
+
+### 🎉 Session 128: ESLint Warnings Cleanup
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Eliminate all remaining ESLint warnings for 100% clean lint output
+
+**Session 128 Achievements**:
+1. **Unused Variables Fixed** (7 test files):
+   - `AuthModal.test.tsx`: `onError` → `_onError`
+   - `DrawingStylePanel.test.tsx`: `set` → `_set`
+   - `IndicatorPanel.test.tsx`: `callback` → `_callback`
+   - `IndicatorSettingsDrawer.test.tsx`: `user` → `_user`
+   - `PluginDrawer.test.tsx`: `blob` → `_blob`
+   - `useMarketData.test.tsx`: `result` → `_result`
+   - `marketData.test.ts`: `now` → `_now`, `dayMs` → `_dayMs`
+
+2. **Security Warning Fixed**:
+   - `SnapshotsPanel.test.tsx`: Replaced non-literal RegExp with safe string-based check
+   - Used `getAllByText` with custom matcher instead of `new RegExp(dynamicString)`
+
+**ESLint Progress**:
+- Before: 9 warnings
+- After: 0 warnings ✅
+- Result: **100% clean lint output** 🎉
 
 ### 🔄 Session 121: Dependency Cleanup + Renovate Management
 
@@ -109,6 +157,39 @@ All `call-arg` errors from SQLAlchemy MyPy plugin limitation:
 **Commits**:
 - `68d954b0` - feat(types): SQLAlchemy relationship type annotations (138→87 errors)
 - `2cda00ed` - chore(lint): disable detect-non-literal-fs-filename in tests/tools
+
+### 🎉 Session 127: Documentation Consistency Updates
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Update outdated version references across documentation to reflect current tech stack
+
+**Session 127 Achievements**:
+1. **Version Reference Updates** (7 documentation files):
+   - Updated Next.js 14 → 16 references
+   - Updated React 18 → 19 references
+   - Updated Python 3.12 → 3.13 references
+   - Updated TypeScript 5.7 → 5.9 references
+   - Updated TailwindCSS 3.4 → 4 references
+   - Updated Zustand and Vitest version references
+
+2. **Files Updated**:
+   - `apps/README.md` - Frontend tech stack, last updated date
+   - `apps/admin/README.md` - Planned tech stack and dependencies
+   - `apps/backend/README.md` - Python version references
+   - `docs/ci-cd/dependencies/management.md` - CI config examples
+   - `docs/guides/frontend/README.md` - Tech stack section
+   - `docs/architecture/structure.md` - Key technologies section
+   - `README.md` - Node.js compatibility note
+
+**Impact**:
+- Documentation now accurately reflects current production stack
+- Prevents confusion for new contributors
+- Aligns with PR #95 merge (Next.js 16, React 19)
+
+**Commits**:
+- `3431d7b` - docs: update version references to reflect current stack (Next.js 16, React 19, Python 3.13)
+- `873ca80` - docs: update checklists.md with Session 127 entry and date update
 
 ### 🎉 Session 125: TypeScript Type Safety + MyPy Fix
 

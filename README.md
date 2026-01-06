@@ -104,7 +104,7 @@ node --version  # Should show v22.x.x
 
 **Why Node.js v22?**
 - ✅ Latest LTS (Long Term Support) with best performance
-- ✅ Required for Next.js 15.1.3 optimal compatibility
+- ✅ Required for Next.js 16 optimal compatibility
 - ✅ Ensures consistency across team and CI/CD environments
 - ✅ Prevents "works on my machine" issues
 

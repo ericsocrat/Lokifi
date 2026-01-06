@@ -17,7 +17,7 @@ vi.mock('@/components/AuthProvider', () => ({
 vi.mock('@react-oauth/google', () => ({
   GoogleLogin: ({
     onSuccess,
-    onError,
+    onError: _onError,
     text,
   }: {
     onSuccess: (response: { credential: string }) => void;

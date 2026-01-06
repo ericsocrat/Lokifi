@@ -202,7 +202,7 @@ describe('useMarketData Hook', () => {
 
   describe('useAllAssets', () => {
     it('should return all assets when no type specified', () => {
-      const { result } = renderHook(() => useAllAssets());
+      const { result: _result } = renderHook(() => useAllAssets());
 
       act(() => {
         subscribeCallback(new Map());
