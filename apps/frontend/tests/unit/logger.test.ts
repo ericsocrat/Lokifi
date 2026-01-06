@@ -6,8 +6,8 @@
 
 /* eslint-disable no-console -- Logger tests require console access to verify logging behavior */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createLogger, isError, Logger, logger, LogLevel } from '@/lib/utils/logger';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Logger Utility', () => {
   // Mock console methods

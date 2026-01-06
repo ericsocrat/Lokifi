@@ -383,7 +383,10 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       };
 
       ws.onclose = (event) => {
-        logger.info('Notification WebSocket disconnected', { code: event.code, reason: event.reason });
+        logger.info('Notification WebSocket disconnected', {
+          code: event.code,
+          reason: event.reason,
+        });
         setIsConnected(false);
         wsRef.current = null;
 
