@@ -38,7 +38,7 @@ defusedxml==0.7.1
 distro==1.9.0
 dnspython==2.8.0
 docker==7.1.0
-ecdsa==0.19.1
+# ecdsa removed - was vulnerable dependency of python-jose (HIGH severity timing attack vulnerability)
 email-validator==2.3.0
 Faker==40.1.0
 fastapi==0.128.0
