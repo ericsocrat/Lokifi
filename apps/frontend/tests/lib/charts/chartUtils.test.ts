@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { angleDeg, tfToSeconds, barsFromTimes } from '@/lib/charts/chartUtils';
+import { angleDeg, barsFromTimes, tfToSeconds } from '@/lib/charts/chartUtils';
+import { describe, expect, it } from 'vitest';
 
 describe('chartUtils', () => {
   describe('angleDeg', () => {

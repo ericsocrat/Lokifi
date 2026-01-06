@@ -46,19 +46,19 @@ describe('ProfileDropdown', () => {
     it('should open dropdown when clicking trigger', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Profile')).toBeInTheDocument();
     });
 
     it('should close dropdown when clicking trigger again', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
       expect(screen.getByText('Profile')).toBeInTheDocument();
-      
+
       await user.click(screen.getAllByRole('button')[0]);
       expect(screen.queryByText('Profile')).not.toBeInTheDocument();
     });
@@ -66,10 +66,10 @@ describe('ProfileDropdown', () => {
     it('should rotate chevron when open', async () => {
       const user = userEvent.setup();
       const { container } = render(<ProfileDropdown {...defaultProps} />);
-      
+
       const chevron = container.querySelector('.lucide-chevron-down');
       expect(chevron).not.toHaveClass('rotate-180');
-      
+
       await user.click(screen.getByRole('button'));
       expect(chevron).toHaveClass('rotate-180');
     });
@@ -79,54 +79,54 @@ describe('ProfileDropdown', () => {
     it('should display user name in dropdown', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('John Doe')).toBeInTheDocument();
     });
 
     it('should display user email in dropdown', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('john@example.com')).toBeInTheDocument();
     });
 
     it('should display default email when not provided', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('user@example.com')).toBeInTheDocument();
     });
 
     it('should show Profile menu item', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Profile')).toBeInTheDocument();
     });
 
     it('should show Settings menu item', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Settings')).toBeInTheDocument();
     });
 
     it('should show Log out menu item', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(screen.getByText('Log out')).toBeInTheDocument();
     });
   });
@@ -135,47 +135,47 @@ describe('ProfileDropdown', () => {
     it('should close dropdown when clicking Profile', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
       await user.click(screen.getByText('Profile'));
-      
+
       expect(screen.queryByText('Profile')).not.toBeInTheDocument();
     });
 
     it('should close dropdown when clicking Settings', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
       await user.click(screen.getByText('Settings'));
-      
+
       expect(screen.queryByText('Settings')).not.toBeInTheDocument();
     });
 
     it('should call onLogout when clicking Log out', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
       await user.click(screen.getByText('Log out'));
-      
+
       expect(defaultProps.onLogout).toHaveBeenCalledTimes(1);
     });
 
     it('should close dropdown when clicking Log out', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
       await user.click(screen.getByText('Log out'));
-      
+
       expect(screen.queryByText('Profile')).not.toBeInTheDocument();
     });
 
     it('should handle missing onLogout callback', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown userName="Test" userEmail="test@test.com" />);
-      
+
       await user.click(screen.getByRole('button'));
       // Should not throw when onLogout is not provided
       await user.click(screen.getByText('Log out'));
@@ -191,26 +191,26 @@ describe('ProfileDropdown', () => {
           <button data-testid="outside">Outside</button>
         </div>
       );
-      
+
       await user.click(screen.getAllByRole('button')[0]);
       expect(screen.getByText('Profile')).toBeInTheDocument();
-      
+
       // Simulate mousedown outside
       fireEvent.mouseDown(screen.getByTestId('outside'));
-      
+
       expect(screen.queryByText('Profile')).not.toBeInTheDocument();
     });
 
     it('should not close dropdown when clicking inside', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       // Click on user name (inside dropdown)
       const userName = screen.getByText('John Doe');
       fireEvent.mouseDown(userName);
-      
+
       // Dropdown should still be open
       expect(screen.getByText('Profile')).toBeInTheDocument();
     });
@@ -220,27 +220,27 @@ describe('ProfileDropdown', () => {
     it('should render User icon', async () => {
       const user = userEvent.setup();
       const { container } = render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(container.querySelector('.lucide-user')).toBeInTheDocument();
     });
 
     it('should render Settings icon', async () => {
       const user = userEvent.setup();
       const { container } = render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(container.querySelector('.lucide-settings')).toBeInTheDocument();
     });
 
     it('should render LogOut icon', async () => {
       const user = userEvent.setup();
       const { container } = render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(container.querySelector('.lucide-log-out')).toBeInTheDocument();
     });
 
@@ -260,9 +260,9 @@ describe('ProfileDropdown', () => {
     it('should apply red color to Log out button', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       const logoutButton = screen.getByText('Log out').closest('button');
       expect(logoutButton).toHaveClass('text-red-600');
     });
@@ -270,9 +270,9 @@ describe('ProfileDropdown', () => {
     it('should apply rounded styling to dropdown', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       // Find the dropdown menu (the container with shadow-lg)
       const triggerButton = screen.getAllByRole('button')[0];
       const dropdown = triggerButton.nextElementSibling;
@@ -282,9 +282,9 @@ describe('ProfileDropdown', () => {
     it('should position dropdown absolutely', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       const triggerButton = screen.getAllByRole('button')[0];
       const dropdown = triggerButton.nextElementSibling;
       expect(dropdown).toHaveClass('absolute');
@@ -293,9 +293,9 @@ describe('ProfileDropdown', () => {
     it('should apply z-50 for proper stacking', async () => {
       const user = userEvent.setup();
       render(<ProfileDropdown {...defaultProps} />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       const triggerButton = screen.getAllByRole('button')[0];
       const dropdown = triggerButton.nextElementSibling;
       expect(dropdown).toHaveClass('z-50');
@@ -330,9 +330,9 @@ describe('ProfileDropdown', () => {
     it('should remove event listener on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
       const { unmount } = render(<ProfileDropdown {...defaultProps} />);
-      
+
       unmount();
-      
+
       expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
       removeEventListenerSpy.mockRestore();
     });

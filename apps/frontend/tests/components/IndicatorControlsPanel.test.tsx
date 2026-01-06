@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within, act } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -95,29 +95,29 @@ describe('IndicatorControlsPanel', () => {
     it('should expand panel when clicking expand button', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       expect(screen.getByText('RSI Period')).toBeInTheDocument();
     });
 
     it('should show collapse button when expanded', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       expect(screen.getByRole('button', { name: /collapse/i })).toBeInTheDocument();
     });
 
     it('should collapse panel when clicking collapse button', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       // Expand
       await user.click(screen.getByRole('button', { name: /expand/i }));
       expect(screen.getByText('RSI Period')).toBeInTheDocument();
-      
+
       // Collapse
       await user.click(screen.getByRole('button', { name: /collapse/i }));
       expect(screen.queryByText('RSI Period')).not.toBeInTheDocument();
@@ -171,11 +171,15 @@ describe('IndicatorControlsPanel', () => {
     });
 
     it('should display OBV message when OBV is enabled', () => {
-      expect(screen.getByText(/OBV \(On-Balance Volume\) - No configurable settings/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/OBV \(On-Balance Volume\) - No configurable settings/)
+      ).toBeInTheDocument();
     });
 
     it('should display A/D Line message when A/D Line is enabled', () => {
-      expect(screen.getByText(/A\/D Line \(Accumulation\/Distribution\) - No configurable settings/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/A\/D Line \(Accumulation\/Distribution\) - No configurable settings/)
+      ).toBeInTheDocument();
     });
   });
 
@@ -184,11 +188,11 @@ describe('IndicatorControlsPanel', () => {
       mockStoreState = createMockStore({
         indicators: { ...mockStoreState.indicators, showRSI: false },
       });
-      
+
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       expect(screen.queryByText('RSI Period')).not.toBeInTheDocument();
     });
 
@@ -196,11 +200,11 @@ describe('IndicatorControlsPanel', () => {
       mockStoreState = createMockStore({
         indicators: { ...mockStoreState.indicators, showMACD: false },
       });
-      
+
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       expect(screen.queryByText('MACD Settings')).not.toBeInTheDocument();
     });
 
@@ -218,12 +222,14 @@ describe('IndicatorControlsPanel', () => {
           showADLine: false,
         },
       });
-      
+
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
-      expect(screen.getByText(/No indicators active. Toggle indicators to customize settings./)).toBeInTheDocument();
+
+      expect(
+        screen.getByText(/No indicators active. Toggle indicators to customize settings./)
+      ).toBeInTheDocument();
     });
   });
 
@@ -232,12 +238,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const rsiInput = inputs[0]; // First input is RSI period
-      
+
       fireEvent.change(rsiInput, { target: { value: '20' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('rsiPeriod', 20);
     });
 
@@ -245,13 +251,13 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const rsiInput = inputs[0];
-      
+
       // Try to set value above max (50)
       fireEvent.change(rsiInput, { target: { value: '100' } });
-      
+
       // Should be clamped to max
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('rsiPeriod', 50);
     });
@@ -260,13 +266,13 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const rsiInput = inputs[0];
-      
+
       // Try to set value below min (5)
       fireEvent.change(rsiInput, { target: { value: '2' } });
-      
+
       // Should be clamped to min
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('rsiPeriod', 5);
     });
@@ -277,7 +283,7 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       // Should find multiple reset buttons (↺)
       const resetButtons = screen.getAllByTitle('Reset to default');
       expect(resetButtons.length).toBeGreaterThan(0);
@@ -291,13 +297,13 @@ describe('IndicatorControlsPanel', () => {
           rsiPeriod: 30, // Non-default value
         },
       });
-      
+
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const resetButtons = screen.getAllByTitle('Reset to default');
       await user.click(resetButtons[0]); // First reset button (RSI)
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('rsiPeriod', 14);
     });
   });
@@ -306,42 +312,44 @@ describe('IndicatorControlsPanel', () => {
     it('should show confirmation dialog when clicking Reset All', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /reset all/i }));
-      
+
       expect(screen.getByText('Reset All Indicators')).toBeInTheDocument();
-      expect(screen.getByText(/This will reset all indicator settings to their default values/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/This will reset all indicator settings to their default values/)
+      ).toBeInTheDocument();
     });
 
     it('should reset settings when confirming', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /reset all/i }));
       await user.click(screen.getByRole('button', { name: /^reset$/i }));
-      
+
       expect(mockStoreState.resetIndicatorSettings).toHaveBeenCalled();
     });
 
     it('should close dialog when canceling', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /reset all/i }));
       await user.click(screen.getByRole('button', { name: /cancel/i }));
-      
+
       expect(screen.queryByText('Reset All Indicators')).not.toBeInTheDocument();
       expect(mockStoreState.resetIndicatorSettings).not.toHaveBeenCalled();
     });
 
     it('should skip confirmation when "dont ask again" was previously set', async () => {
       localStorage.setItem('lokifi_confirm_reset_all_indicators', 'false');
-      
+
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       await user.click(screen.getByRole('button', { name: /reset all/i }));
-      
+
       // Should reset immediately without dialog
       expect(mockStoreState.resetIndicatorSettings).toHaveBeenCalled();
       expect(screen.queryByText('Reset All Indicators')).not.toBeInTheDocument();
@@ -351,10 +359,10 @@ describe('IndicatorControlsPanel', () => {
   describe('Preset Selection', () => {
     it('should have all preset options', () => {
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       expect(select).toBeInTheDocument();
-      
+
       expect(within(select).getByText(/Day Trading/)).toBeInTheDocument();
       expect(within(select).getByText(/Swing Trading/)).toBeInTheDocument();
       expect(within(select).getByText(/Position Trading/)).toBeInTheDocument();
@@ -362,7 +370,7 @@ describe('IndicatorControlsPanel', () => {
 
     it('should disable Apply button when no preset selected', () => {
       render(<IndicatorControlsPanel />);
-      
+
       const applyButton = screen.getByRole('button', { name: /apply/i });
       expect(applyButton).toBeDisabled();
     });
@@ -370,10 +378,10 @@ describe('IndicatorControlsPanel', () => {
     it('should enable Apply button when preset is selected', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       await user.selectOptions(select, 'day-trading');
-      
+
       const applyButton = screen.getByRole('button', { name: /apply/i });
       expect(applyButton).not.toBeDisabled();
     });
@@ -381,11 +389,11 @@ describe('IndicatorControlsPanel', () => {
     it('should show confirmation dialog when applying preset', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       await user.selectOptions(select, 'day-trading');
       await user.click(screen.getByRole('button', { name: /apply/i }));
-      
+
       expect(screen.getByText('Apply Preset Configuration')).toBeInTheDocument();
       expect(screen.getByText(/Apply Day Trading preset/)).toBeInTheDocument();
     });
@@ -393,24 +401,24 @@ describe('IndicatorControlsPanel', () => {
     it('should apply preset when confirmed', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       await user.selectOptions(select, 'swing-trading');
       await user.click(screen.getByRole('button', { name: /apply/i }));
       await user.click(screen.getByRole('button', { name: /^reset$/i })); // Confirm button says "Reset"
-      
+
       expect(mockStoreState.applyPreset).toHaveBeenCalledWith('swing-trading');
     });
 
     it('should not apply preset when cancelled', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       await user.selectOptions(select, 'position-trading');
       await user.click(screen.getByRole('button', { name: /apply/i }));
       await user.click(screen.getByRole('button', { name: /cancel/i }));
-      
+
       expect(mockStoreState.applyPreset).not.toHaveBeenCalled();
     });
   });
@@ -442,18 +450,18 @@ describe('IndicatorControlsPanel', () => {
 
     it('should trigger reset on Ctrl+R', async () => {
       render(<IndicatorControlsPanel />);
-      
+
       fireEvent.keyDown(window, { key: 'r', ctrlKey: true });
-      
+
       // Should show confirmation dialog
       expect(screen.getByText('Reset All Indicators')).toBeInTheDocument();
     });
 
     it('should toggle panel on Ctrl+I', async () => {
       render(<IndicatorControlsPanel />);
-      
+
       fireEvent.keyDown(window, { key: 'i', ctrlKey: true });
-      
+
       expect(mockStoreState.toggleIndicatorControlsPanel).toHaveBeenCalled();
     });
   });
@@ -463,13 +471,13 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       // Find the MACD fast period input (comes after RSI input)
       const inputs = screen.getAllByRole('spinbutton');
       const macdFastInput = inputs[1]; // Second input
-      
+
       fireEvent.change(macdFastInput, { target: { value: '15' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('macdFastPeriod', 15);
     });
 
@@ -477,12 +485,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const macdSlowInput = inputs[2]; // Third input
-      
+
       fireEvent.change(macdSlowInput, { target: { value: '30' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('macdSlowPeriod', 30);
     });
 
@@ -490,12 +498,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const macdSignalInput = inputs[3]; // Fourth input
-      
+
       fireEvent.change(macdSignalInput, { target: { value: '7' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('macdSignalPeriod', 7);
     });
   });
@@ -505,12 +513,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const bbPeriodInput = inputs[4]; // Fifth input
-      
+
       fireEvent.change(bbPeriodInput, { target: { value: '25' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('bbPeriod', 25);
     });
 
@@ -518,12 +526,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const bbMultInput = inputs[5]; // Sixth input
-      
+
       fireEvent.change(bbMultInput, { target: { value: '2.5' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('bbMult', 2.5);
     });
   });
@@ -533,12 +541,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const stochasticKInput = inputs[6]; // Seventh input
-      
+
       fireEvent.change(stochasticKInput, { target: { value: '10' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('stochasticKPeriod', 10);
     });
 
@@ -546,12 +554,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const stochasticDInput = inputs[7]; // Eighth input
-      
+
       fireEvent.change(stochasticDInput, { target: { value: '5' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('stochasticDPeriod', 5);
     });
   });
@@ -561,12 +569,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const adxInput = inputs[8]; // Ninth input
-      
+
       fireEvent.change(adxInput, { target: { value: '20' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('adxPeriod', 20);
     });
 
@@ -574,12 +582,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const cciInput = inputs[9]; // Tenth input
-      
+
       fireEvent.change(cciInput, { target: { value: '25' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('cciPeriod', 25);
     });
 
@@ -587,12 +595,12 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const williamsRInput = inputs[10]; // Eleventh input
-      
+
       fireEvent.change(williamsRInput, { target: { value: '10' } });
-      
+
       expect(mockStoreState.updateIndicatorSetting).toHaveBeenCalledWith('williamsRPeriod', 10);
     });
   });
@@ -611,10 +619,10 @@ describe('IndicatorControlsPanel', () => {
     it('should have proper title on enabled Apply button', async () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
-      
+
       const select = screen.getByTitle('Select a trading strategy preset');
       await user.selectOptions(select, 'day-trading');
-      
+
       expect(screen.getByTitle('Apply selected preset (Ctrl/Cmd+S)')).toBeInTheDocument();
     });
   });
@@ -624,14 +632,14 @@ describe('IndicatorControlsPanel', () => {
       const user = userEvent.setup();
       render(<IndicatorControlsPanel />);
       await user.click(screen.getByRole('button', { name: /expand/i }));
-      
+
       const inputs = screen.getAllByRole('spinbutton');
       const rsiInput = inputs[0] as HTMLInputElement;
-      
+
       // Type invalid value
       fireEvent.change(rsiInput, { target: { value: 'invalid' } });
       fireEvent.blur(rsiInput);
-      
+
       // Should revert to previous valid value
       expect(rsiInput.value).toBe('14');
     });

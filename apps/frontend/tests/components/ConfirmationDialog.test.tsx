@@ -19,9 +19,7 @@ describe('ConfirmationDialog', () => {
 
   describe('Rendering', () => {
     it('should render nothing when not open', () => {
-      const { container } = render(
-        <ConfirmationDialog {...defaultProps} isOpen={false} />
-      );
+      const { container } = render(<ConfirmationDialog {...defaultProps} isOpen={false} />);
       expect(container.firstChild).toBeNull();
     });
 
@@ -47,13 +45,7 @@ describe('ConfirmationDialog', () => {
     });
 
     it('should render custom button texts', () => {
-      render(
-        <ConfirmationDialog
-          {...defaultProps}
-          confirmText="Delete"
-          cancelText="Keep"
-        />
-      );
+      render(<ConfirmationDialog {...defaultProps} confirmText="Delete" cancelText="Keep" />);
       expect(screen.getByText('Keep')).toBeInTheDocument();
       expect(screen.getByText('Delete')).toBeInTheDocument();
     });
@@ -63,39 +55,39 @@ describe('ConfirmationDialog', () => {
     it('should call onClose when clicking cancel button', async () => {
       const user = userEvent.setup();
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       await user.click(screen.getByText('Cancel'));
-      
+
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
 
     it('should call onConfirm when clicking confirm button', async () => {
       const user = userEvent.setup();
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       await user.click(screen.getByText('Confirm'));
-      
+
       expect(defaultProps.onConfirm).toHaveBeenCalledTimes(1);
     });
 
     it('should call onClose when clicking backdrop', async () => {
       const user = userEvent.setup();
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       // Click the backdrop (the outer container with the dialog role)
       const backdrop = screen.getByRole('dialog');
       await user.click(backdrop);
-      
+
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
 
     it('should not close when clicking dialog content', async () => {
       const user = userEvent.setup();
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       // Click the title (inside the dialog content)
       await user.click(screen.getByText('Confirm Action'));
-      
+
       expect(defaultProps.onClose).not.toHaveBeenCalled();
     });
   });
@@ -103,34 +95,34 @@ describe('ConfirmationDialog', () => {
   describe('Keyboard Interactions', () => {
     it('should call onConfirm when pressing Enter', () => {
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       const dialog = screen.getByRole('dialog');
       fireEvent.keyDown(dialog, { key: 'Enter' });
-      
+
       expect(defaultProps.onConfirm).toHaveBeenCalledTimes(1);
     });
 
     it('should call onClose when pressing Escape', () => {
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       const dialog = screen.getByRole('dialog');
       fireEvent.keyDown(dialog, { key: 'Escape' });
-      
+
       expect(defaultProps.onClose).toHaveBeenCalledTimes(1);
     });
 
     it('should not respond to other key presses', () => {
       render(<ConfirmationDialog {...defaultProps} />);
-      
+
       const dialog = screen.getByRole('dialog');
       fireEvent.keyDown(dialog, { key: 'Tab' });
-      
+
       expect(defaultProps.onClose).not.toHaveBeenCalled();
       expect(defaultProps.onConfirm).not.toHaveBeenCalled();
     });
   });
 
-  describe('Don\'t Ask Again Checkbox', () => {
+  describe("Don't Ask Again Checkbox", () => {
     it('should not show checkbox by default', () => {
       render(<ConfirmationDialog {...defaultProps} />);
       expect(screen.queryByText("Don't ask me again")).not.toBeInTheDocument();
@@ -150,10 +142,10 @@ describe('ConfirmationDialog', () => {
     it('should toggle checkbox when clicked', async () => {
       const user = userEvent.setup();
       render(<ConfirmationDialog {...defaultProps} showDontAskAgain={true} />);
-      
+
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
-      
+
       expect(checkbox).toBeChecked();
     });
 
@@ -167,11 +159,11 @@ describe('ConfirmationDialog', () => {
           onDontAskAgainChange={onDontAskAgainChange}
         />
       );
-      
+
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
       await user.click(screen.getByText('Confirm'));
-      
+
       expect(onDontAskAgainChange).toHaveBeenCalledWith(true);
     });
 
@@ -185,10 +177,10 @@ describe('ConfirmationDialog', () => {
           onDontAskAgainChange={onDontAskAgainChange}
         />
       );
-      
+
       // Don't click checkbox, just confirm
       await user.click(screen.getByText('Confirm'));
-      
+
       expect(onDontAskAgainChange).toHaveBeenCalledWith(false);
     });
 
@@ -202,11 +194,11 @@ describe('ConfirmationDialog', () => {
           onDontAskAgainChange={onDontAskAgainChange}
         />
       );
-      
+
       const checkbox = screen.getByRole('checkbox');
       await user.click(checkbox);
       await user.click(screen.getByText('Cancel'));
-      
+
       expect(onDontAskAgainChange).not.toHaveBeenCalled();
     });
   });
@@ -270,17 +262,13 @@ describe('ConfirmationDialog', () => {
     });
 
     it('should handle custom message', () => {
-      render(
-        <ConfirmationDialog
-          {...defaultProps}
-          message="This action cannot be undone."
-        />
-      );
+      render(<ConfirmationDialog {...defaultProps} message="This action cannot be undone." />);
       expect(screen.getByText('This action cannot be undone.')).toBeInTheDocument();
     });
 
     it('should handle long messages', () => {
-      const longMessage = 'This is a very long message that spans multiple lines and contains a lot of text to test how the dialog handles long content.';
+      const longMessage =
+        'This is a very long message that spans multiple lines and contains a lot of text to test how the dialog handles long content.';
       render(<ConfirmationDialog {...defaultProps} message={longMessage} />);
       expect(screen.getByText(longMessage)).toBeInTheDocument();
     });
@@ -293,22 +281,17 @@ describe('ConfirmationDialog', () => {
 
   describe('State Management', () => {
     it('should reset dontAskAgain state when dialog is reopened', () => {
-      const { rerender } = render(
-        <ConfirmationDialog
-          {...defaultProps}
-          showDontAskAgain={true}
-        />
-      );
-      
+      const { rerender } = render(<ConfirmationDialog {...defaultProps} showDontAskAgain={true} />);
+
       // Check the checkbox
       const checkbox = screen.getByRole('checkbox');
       fireEvent.click(checkbox);
       expect(checkbox).toBeChecked();
-      
+
       // Close and reopen dialog
       rerender(<ConfirmationDialog {...defaultProps} showDontAskAgain={true} isOpen={false} />);
       rerender(<ConfirmationDialog {...defaultProps} showDontAskAgain={true} isOpen={true} />);
-      
+
       // Checkbox should be reset (component remounts when isOpen changes from false to true)
       // Note: This tests React's behavior with conditional rendering
     });

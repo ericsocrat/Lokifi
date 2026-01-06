@@ -94,7 +94,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.getByText('Total Market Cap')).toBeInTheDocument();
       // Market cap: 1T + 400B + 3T = 4.4T
       expect(mockFormatCurrency).toHaveBeenCalledWith(4400000000000);
@@ -109,7 +109,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.getByText('2 crypto + 1 stocks')).toBeInTheDocument();
     });
 
@@ -121,7 +121,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.queryByText('Total Market Cap')).not.toBeInTheDocument();
     });
   });
@@ -129,7 +129,7 @@ describe('MarketStats', () => {
   describe('Average 24h Change', () => {
     it('should display average 24h change', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       expect(screen.getByText('Average 24h Change')).toBeInTheDocument();
       // (5.5 + -2.3) / 2 = 1.6%
       expect(screen.getByText('+1.60%')).toBeInTheDocument();
@@ -146,7 +146,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Average is +9.00%
       expect(screen.getByText('+9.00%')).toBeInTheDocument();
     });
@@ -162,7 +162,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Average is -4.00%
       expect(screen.getByText('-4.00%')).toBeInTheDocument();
     });
@@ -177,7 +177,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.getByText('Across 4 assets')).toBeInTheDocument();
     });
 
@@ -193,7 +193,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Should only include BTC and SOL in calculation (10 + 8) / 2 = 9
       expect(screen.getByText('+9.00%')).toBeInTheDocument();
     });
@@ -202,7 +202,7 @@ describe('MarketStats', () => {
   describe('Top Gainer', () => {
     it('should display the top gainer', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       expect(screen.getByText('Top Gainer')).toBeInTheDocument();
       expect(screen.getByText('BTC')).toBeInTheDocument();
       expect(screen.getByText('+5.50%')).toBeInTheDocument();
@@ -216,7 +216,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.queryByText('Top Gainer')).not.toBeInTheDocument();
     });
 
@@ -228,7 +228,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.queryByText('Top Gainer')).not.toBeInTheDocument();
     });
 
@@ -241,7 +241,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // TSLA is the top gainer at 15%
       expect(screen.getByText('TSLA')).toBeInTheDocument();
       expect(screen.getByText('+15.00%')).toBeInTheDocument();
@@ -251,7 +251,7 @@ describe('MarketStats', () => {
   describe('Top Loser', () => {
     it('should display the top loser', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       expect(screen.getByText('Top Loser')).toBeInTheDocument();
       expect(screen.getByText('ETH')).toBeInTheDocument();
       expect(screen.getByText('-2.30%')).toBeInTheDocument();
@@ -265,7 +265,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.queryByText('Top Loser')).not.toBeInTheDocument();
     });
 
@@ -278,7 +278,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // META is the top loser at -10%
       expect(screen.getByText('META')).toBeInTheDocument();
       expect(screen.getByText('-10.00%')).toBeInTheDocument();
@@ -288,27 +288,27 @@ describe('MarketStats', () => {
   describe('Asset Type Combinations', () => {
     it('should handle crypto only', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       expect(screen.getByText('Market Overview')).toBeInTheDocument();
       expect(screen.getByText('Across 2 assets')).toBeInTheDocument();
     });
 
     it('should handle stocks only', () => {
       render(<MarketStats data={{ stocks: mockStockAssets }} />);
-      
+
       expect(screen.getByText('Market Overview')).toBeInTheDocument();
       expect(screen.getByText('Across 1 assets')).toBeInTheDocument();
     });
 
     it('should handle forex only', () => {
       render(<MarketStats data={{ forex: mockForexAssets }} />);
-      
+
       expect(screen.getByText('Market Overview')).toBeInTheDocument();
     });
 
     it('should handle indices only', () => {
       render(<MarketStats data={{ indices: mockIndicesAssets }} />);
-      
+
       expect(screen.getByText('Market Overview')).toBeInTheDocument();
     });
 
@@ -323,7 +323,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(screen.getByText('Across 5 assets')).toBeInTheDocument();
       expect(screen.getByText('2 crypto + 1 stocks')).toBeInTheDocument();
     });
@@ -332,7 +332,7 @@ describe('MarketStats', () => {
   describe('StatCard Component', () => {
     it('should render stat cards with proper titles', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       expect(screen.getByText('Total Market Cap')).toBeInTheDocument();
       expect(screen.getByText('Average 24h Change')).toBeInTheDocument();
       expect(screen.getByText('Top Gainer')).toBeInTheDocument();
@@ -347,7 +347,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Should have green classes for positive changes
       expect(container.querySelector('.bg-green-500\\/10')).toBeInTheDocument();
       // Should have red classes for top loser
@@ -356,7 +356,7 @@ describe('MarketStats', () => {
 
     it('should show subtitle when provided', () => {
       render(<MarketStats data={{ crypto: mockCryptoAssets }} />);
-      
+
       // Subtitles include asset counts
       expect(screen.getByText('2 crypto + 0 stocks')).toBeInTheDocument();
       expect(screen.getByText('Across 2 assets')).toBeInTheDocument();
@@ -375,10 +375,10 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Average: (5 + 3) / 2 = 4
       expect(screen.getByText('+4.00%')).toBeInTheDocument();
-      
+
       rerender(
         <MarketStats
           data={{
@@ -389,7 +389,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Average: (-3 + -5) / 2 = -4
       expect(screen.getByText('-4.00%')).toBeInTheDocument();
     });
@@ -404,7 +404,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Should still render but with 0 average change
       expect(screen.getByText('Average 24h Change')).toBeInTheDocument();
     });
@@ -420,7 +420,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Average change should show +0.00%
       expect(screen.getByText('Average 24h Change')).toBeInTheDocument();
       // +0.00% appears in both average and top gainer
@@ -435,7 +435,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       expect(mockFormatCurrency).toHaveBeenCalledWith(1e15);
     });
 
@@ -457,7 +457,7 @@ describe('MarketStats', () => {
           }}
         />
       );
-      
+
       // Both BTC and ETH should be rendered as gainer/loser
       expect(screen.getByText('Top Gainer')).toBeInTheDocument();
       expect(screen.getByText('Top Loser')).toBeInTheDocument();

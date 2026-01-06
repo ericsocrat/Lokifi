@@ -54,10 +54,7 @@ describe('QuickStats', () => {
     it('should show all as gainers when no losers', () => {
       render(
         <QuickStats
-          data={[
-            { price_change_percentage_24h: 5 },
-            { price_change_percentage_24h: 3 },
-          ]}
+          data={[{ price_change_percentage_24h: 5 }, { price_change_percentage_24h: 3 }]}
         />
       );
       expect(screen.getByText('2 up · 0 down')).toBeInTheDocument();
@@ -66,10 +63,7 @@ describe('QuickStats', () => {
     it('should show all as losers when no gainers', () => {
       render(
         <QuickStats
-          data={[
-            { price_change_percentage_24h: -5 },
-            { price_change_percentage_24h: -3 },
-          ]}
+          data={[{ price_change_percentage_24h: -5 }, { price_change_percentage_24h: -3 }]}
         />
       );
       expect(screen.getByText('0 up · 2 down')).toBeInTheDocument();
@@ -93,10 +87,7 @@ describe('QuickStats', () => {
     it('should show red color for negative average', () => {
       render(
         <QuickStats
-          data={[
-            { price_change_percentage_24h: -5 },
-            { price_change_percentage_24h: -3 },
-          ]}
+          data={[{ price_change_percentage_24h: -5 }, { price_change_percentage_24h: -3 }]}
         />
       );
       const avgChangeValue = screen.getByText('-4.00%');
@@ -200,14 +191,9 @@ describe('QuickStats', () => {
   describe('Edge Cases', () => {
     it('should handle assets without price_change_percentage_24h', () => {
       render(
-        <QuickStats
-          data={[
-            { total_volume: 1000000000 },
-            { price_change_percentage_24h: 5 },
-          ]}
-        />
+        <QuickStats data={[{ total_volume: 1000000000 }, { price_change_percentage_24h: 5 }]} />
       );
-      
+
       // Should count 2 total assets
       expect(screen.getByText('2')).toBeInTheDocument();
       // But only 1 with change data
@@ -217,13 +203,10 @@ describe('QuickStats', () => {
     it('should handle zero price change', () => {
       render(
         <QuickStats
-          data={[
-            { price_change_percentage_24h: 0 },
-            { price_change_percentage_24h: 0 },
-          ]}
+          data={[{ price_change_percentage_24h: 0 }, { price_change_percentage_24h: 0 }]}
         />
       );
-      
+
       // 0 is not > 0 or < 0, so counts as neither gainer nor loser
       expect(screen.getByText('0 up · 0 down')).toBeInTheDocument();
       expect(screen.getByText('+0.00%')).toBeInTheDocument();
@@ -239,7 +222,7 @@ describe('QuickStats', () => {
           ]}
         />
       );
-      
+
       expect(screen.getByText('3')).toBeInTheDocument();
       expect(screen.getByText('1 up · 1 down')).toBeInTheDocument();
     });
@@ -251,7 +234,7 @@ describe('QuickStats', () => {
           showMarketCap={true}
         />
       );
-      
+
       // $100T = $100000.00B
       expect(screen.getByText('$100000.00B')).toBeInTheDocument();
       expect(screen.getByText('$500000.00B')).toBeInTheDocument();

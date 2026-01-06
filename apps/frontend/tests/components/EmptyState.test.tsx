@@ -53,7 +53,7 @@ describe('EmptyState', () => {
     it('should render action button when provided', () => {
       const action = { label: 'Try Again', onClick: vi.fn() };
       render(<EmptyState {...defaultProps} action={action} />);
-      
+
       expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
     });
 
@@ -62,16 +62,16 @@ describe('EmptyState', () => {
       const onClick = vi.fn();
       const action = { label: 'Retry', onClick };
       render(<EmptyState {...defaultProps} action={action} />);
-      
+
       await user.click(screen.getByRole('button', { name: 'Retry' }));
-      
+
       expect(onClick).toHaveBeenCalledTimes(1);
     });
 
     it('should render correct action label', () => {
       const action = { label: 'Clear Filters', onClick: vi.fn() };
       render(<EmptyState {...defaultProps} action={action} />);
-      
+
       expect(screen.getByText('Clear Filters')).toBeInTheDocument();
     });
   });
@@ -92,7 +92,7 @@ describe('EmptyState', () => {
     it('should apply blue styling to action button', () => {
       const action = { label: 'Action', onClick: vi.fn() };
       render(<EmptyState {...defaultProps} action={action} />);
-      
+
       const button = screen.getByRole('button');
       expect(button).toHaveClass('bg-blue-500');
     });
@@ -112,7 +112,9 @@ describe('EmptyState', () => {
           title="This is a very long title that might wrap to multiple lines"
         />
       );
-      expect(screen.getByText('This is a very long title that might wrap to multiple lines')).toBeInTheDocument();
+      expect(
+        screen.getByText('This is a very long title that might wrap to multiple lines')
+      ).toBeInTheDocument();
     });
 
     it('should handle long description', () => {
@@ -140,7 +142,7 @@ describe('EmptyState', () => {
           description="No items match your search"
         />
       );
-      
+
       expect(screen.getByText('No search results')).toBeInTheDocument();
     });
 
@@ -153,7 +155,7 @@ describe('EmptyState', () => {
           action={{ label: 'Retry', onClick: vi.fn() }}
         />
       );
-      
+
       expect(screen.getByText('Something went wrong')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
     });
@@ -166,7 +168,7 @@ describe('EmptyState', () => {
           description="Start adding items to see them here"
         />
       );
-      
+
       expect(screen.getByText('No data available')).toBeInTheDocument();
     });
   });

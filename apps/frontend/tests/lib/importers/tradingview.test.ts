@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseTradingViewCSV, type TVBar, type TVImport } from '@/lib/importers/tradingview';
+import { parseTradingViewCSV } from '@/lib/importers/tradingview';
+import { describe, expect, it } from 'vitest';
 
 describe('tradingview importer', () => {
   describe('parseTradingViewCSV', () => {

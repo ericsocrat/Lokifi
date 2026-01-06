@@ -1,14 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   createDrawing,
-  updateDrawingGeometry,
+  DEFAULT_STYLE,
   drawParallelChannel,
   drawPitchfork,
-  DEFAULT_STYLE,
+  updateDrawingGeometry,
   type Drawing,
-  type Point,
   type DrawingStyle,
+  type Point,
 } from '@/lib/utils/drawings';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock nanoid
 vi.mock('nanoid', () => ({
@@ -122,7 +122,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'trendline',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -133,7 +136,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'arrow',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -144,7 +150,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'ray',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -155,7 +164,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'rect',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -166,7 +178,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'ellipse',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -177,7 +192,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'fib',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -188,7 +206,10 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'ruler',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -201,7 +222,11 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'pitchfork',
-          points: [{ x: 0, y: 0 }, { x: 50, y: 50 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 50, y: 50 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -212,7 +237,11 @@ describe('drawings utilities', () => {
         const drawing: Drawing = {
           id: '1',
           kind: 'parallel-channel',
-          points: [{ x: 0, y: 0 }, { x: 50, y: 50 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 50, y: 50 },
+            { x: 100, y: 100 },
+          ],
         };
         const updated = updateDrawingGeometry(drawing, newPoint);
 
@@ -277,7 +306,10 @@ describe('drawings utilities', () => {
         const original: Drawing = {
           id: '1',
           kind: 'trendline',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
         };
         const originalPoints = [...original.points];
 
@@ -307,14 +339,7 @@ describe('drawings utilities', () => {
     });
 
     it('should draw two parallel lines without fill', () => {
-      drawParallelChannel(
-        mockCtx,
-        { x: 0, y: 0 },
-        { x: 100, y: 0 },
-        { x: 50, y: 50 },
-        800,
-        600
-      );
+      drawParallelChannel(mockCtx, { x: 0, y: 0 }, { x: 100, y: 0 }, { x: 50, y: 50 }, 800, 600);
 
       expect(mockCtx.beginPath).toHaveBeenCalledTimes(2);
       expect(mockCtx.stroke).toHaveBeenCalledTimes(2);
@@ -355,14 +380,7 @@ describe('drawings utilities', () => {
 
     it('should handle zero-length line segment', () => {
       // When a and b are the same point
-      drawParallelChannel(
-        mockCtx,
-        { x: 50, y: 50 },
-        { x: 50, y: 50 },
-        { x: 50, y: 100 },
-        800,
-        600
-      );
+      drawParallelChannel(mockCtx, { x: 50, y: 50 }, { x: 50, y: 50 }, { x: 50, y: 100 }, 800, 600);
 
       // Should not throw, just draw something
       expect(mockCtx.stroke).toHaveBeenCalledTimes(2);
@@ -384,8 +402,8 @@ describe('drawings utilities', () => {
     it('should draw three lines for pitchfork', () => {
       drawPitchfork(
         mockCtx,
-        { x: 50, y: 0 },   // apex
-        { x: 0, y: 100 },  // left
+        { x: 50, y: 0 }, // apex
+        { x: 0, y: 100 }, // left
         { x: 100, y: 100 }, // right
         800,
         600
@@ -396,14 +414,7 @@ describe('drawings utilities', () => {
     });
 
     it('should draw from apex through midpoint', () => {
-      drawPitchfork(
-        mockCtx,
-        { x: 0, y: 0 },
-        { x: 100, y: 100 },
-        { x: 100, y: 100 },
-        800,
-        600
-      );
+      drawPitchfork(mockCtx, { x: 0, y: 0 }, { x: 100, y: 100 }, { x: 100, y: 100 }, 800, 600);
 
       // Middle line should be drawn
       expect(mockCtx.moveTo).toHaveBeenCalled();
@@ -412,14 +423,7 @@ describe('drawings utilities', () => {
 
     it('should handle collinear points', () => {
       // All points on same line
-      drawPitchfork(
-        mockCtx,
-        { x: 0, y: 0 },
-        { x: 100, y: 100 },
-        { x: 200, y: 200 },
-        800,
-        600
-      );
+      drawPitchfork(mockCtx, { x: 0, y: 0 }, { x: 100, y: 100 }, { x: 200, y: 200 }, 800, 600);
 
       // Should not throw
       expect(mockCtx.stroke).toHaveBeenCalledTimes(3);
@@ -429,8 +433,8 @@ describe('drawings utilities', () => {
       // When apex is at midpoint of b and c
       drawPitchfork(
         mockCtx,
-        { x: 50, y: 50 },  // apex at midpoint
-        { x: 0, y: 0 },    // b
+        { x: 50, y: 50 }, // apex at midpoint
+        { x: 0, y: 0 }, // b
         { x: 100, y: 100 }, // c
         800,
         600
@@ -452,7 +456,10 @@ describe('drawings utilities', () => {
       const drawing: Drawing = {
         id: '1',
         kind: 'rect',
-        points: [{ x: 0, y: 0 }, { x: 0, y: 0 }],
+        points: [
+          { x: 0, y: 0 },
+          { x: 0, y: 0 },
+        ],
       };
       const updated = updateDrawingGeometry(drawing, { x: 1e10, y: 1e10 });
 
@@ -470,7 +477,10 @@ describe('drawings utilities', () => {
       const drawing: Drawing = {
         id: '1',
         kind: 'trendline',
-        points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+        points: [
+          { x: 0, y: 0 },
+          { x: 100, y: 100 },
+        ],
         style: customStyle,
       };
       const updated = updateDrawingGeometry(drawing, { x: 200, y: 200 });
@@ -496,7 +506,10 @@ describe('drawings utilities', () => {
       const drawing: Drawing = {
         id: '1',
         kind: 'fib',
-        points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+        points: [
+          { x: 0, y: 0 },
+          { x: 100, y: 100 },
+        ],
         fibLevels: [0, 0.236, 0.382, 0.5, 0.618, 1],
       };
       const updated = updateDrawingGeometry(drawing, { x: 200, y: 200 }) as Drawing & {
