@@ -1,5 +1,5 @@
 import type { DrawingObject, Point } from '@/lib/stores/drawingStore';
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DrawingOverlay } from '../../components/DrawingOverlay';
@@ -724,6 +724,470 @@ describe('DrawingOverlay', () => {
 
       const canvas = container.querySelector('canvas');
       expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Mouse Event Handling Tests
+  // ==========================================================================
+  describe('Mouse Event Handling', () => {
+    it('should handle mouse down on canvas', () => {
+      const lineObject = createMockDrawingObject('line-1', 'line', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+      mockDrawingStore.objects = [lineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+      if (canvas) {
+        fireEvent.mouseDown(canvas, { clientX: 100, clientY: 500 });
+      }
+    });
+
+    it('should handle mouse move on canvas', () => {
+      const lineObject = createMockDrawingObject('line-1', 'line', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+      mockDrawingStore.objects = [lineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.mouseMove(canvas, { clientX: 200, clientY: 300 });
+      }
+      expect(canvas).toBeInTheDocument();
+    });
+
+    it('should handle mouse up on canvas', () => {
+      const lineObject = createMockDrawingObject('line-1', 'line', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+      mockDrawingStore.objects = [lineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.mouseDown(canvas, { clientX: 100, clientY: 500 });
+        fireEvent.mouseUp(canvas, { clientX: 100, clientY: 500 });
+      }
+      expect(canvas).toBeInTheDocument();
+    });
+
+    it('should handle click on canvas', () => {
+      const lineObject = createMockDrawingObject('line-1', 'line', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+      mockDrawingStore.objects = [lineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.click(canvas, { clientX: 100, clientY: 500 });
+      }
+      expect(canvas).toBeInTheDocument();
+    });
+
+    it('should not handle mouse down when in drawing mode', () => {
+      const lineObject = createMockDrawingObject('line-1', 'line', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+      mockDrawingStore.objects = [lineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={true}
+          currentDrawing={{ type: 'line', points: [] }}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.mouseDown(canvas, { clientX: 100, clientY: 500 });
+      }
+      // Selection should not be triggered in drawing mode
+      expect(mockDrawingStore.selectObject).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Object Selection Tests
+  // ==========================================================================
+  describe('Object Selection via Click', () => {
+    it('should deselect when clicking on empty area', () => {
+      mockDrawingStore.objects = [];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.mouseDown(canvas, { clientX: 400, clientY: 400 });
+      }
+
+      expect(mockDrawingStore.selectObject).toHaveBeenCalledWith(null);
+    });
+
+    it('should select object when clicking on it', () => {
+      const hlineObject = createMockDrawingObject('hline-1', 'hline', [
+        { time: 50 as Time, price: 100 },
+      ]);
+      mockDrawingStore.objects = [hlineObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([hlineObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        // Click near the horizontal line (y = 600 - 100 = 500)
+        fireEvent.mouseDown(canvas, { clientX: 200, clientY: 500 });
+      }
+
+      expect(mockDrawingStore.selectObject).toHaveBeenCalledWith('hline-1');
+    });
+  });
+
+  // ==========================================================================
+  // Arrow Drawing Tests
+  // ==========================================================================
+  describe('Arrow Drawing', () => {
+    it('should render arrow objects', () => {
+      const arrowObject = createMockDrawingObject('arrow-1', 'arrow', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([arrowObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Fibonacci Extension Tests
+  // ==========================================================================
+  describe('Fibonacci Extension', () => {
+    it('should render fibonacci extension objects', () => {
+      const fibExtObject = createMockDrawingObject('fibext-1', 'fibonacciExtension', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([fibExtObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Parallel Channel Tests
+  // ==========================================================================
+  describe('Parallel Channel', () => {
+    it('should render parallel channel objects', () => {
+      const channelObject = createMockDrawingObject('channel-1', 'parallelChannel', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([channelObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Pitchfork Tests
+  // ==========================================================================
+  describe('Pitchfork', () => {
+    it('should render pitchfork objects', () => {
+      const pitchforkObject = createMockDrawingObject('pitchfork-1', 'pitchfork', [
+        { time: 10 as Time, price: 100 },
+        { time: 50 as Time, price: 200 },
+      ]);
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([pitchforkObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Fill Color Tests
+  // ==========================================================================
+  describe('Fill Colors', () => {
+    it('should render rectangle with fill color', () => {
+      const rectObject = createMockDrawingObject(
+        'rect-fill-1',
+        'rectangle',
+        [
+          { time: 10 as Time, price: 100 },
+          { time: 50 as Time, price: 200 },
+        ],
+        {
+          style: {
+            color: '#ffffff',
+            lineWidth: 2,
+            lineStyle: 'solid' as const,
+            fillColor: '#ff0000',
+            fillOpacity: 0.5,
+          },
+        }
+      );
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([rectObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+
+    it('should render circle with fill color', () => {
+      const circleObject = createMockDrawingObject(
+        'circle-fill-1',
+        'circle',
+        [
+          { time: 10 as Time, price: 100 },
+          { time: 50 as Time, price: 200 },
+        ],
+        {
+          style: {
+            color: '#ffffff',
+            lineWidth: 2,
+            lineStyle: 'solid' as const,
+            fillColor: '#00ff00',
+            fillOpacity: 0.3,
+          },
+        }
+      );
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([circleObject]);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Locked Object Tests
+  // ==========================================================================
+  describe('Locked Objects', () => {
+    it('should not allow dragging locked objects', () => {
+      const lockedObject = createMockDrawingObject(
+        'locked-1',
+        'hline',
+        [{ time: 50 as Time, price: 100 }],
+        {
+          properties: {
+            name: 'Locked Line',
+            visible: true,
+            locked: true,
+            zIndex: 1,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        }
+      );
+      mockDrawingStore.objects = [lockedObject];
+      mockDrawingStore.getObjectsByPane.mockReturnValue([lockedObject]);
+      mockDrawingStore.selectedObjectId = 'locked-1';
+      mockDrawingStore.getObjectById.mockReturnValue(lockedObject);
+
+      const { container } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = container.querySelector('canvas');
+      if (canvas) {
+        fireEvent.mouseDown(canvas, { clientX: 200, clientY: 500 });
+        fireEvent.mouseMove(canvas, { clientX: 250, clientY: 450 });
+        fireEvent.mouseUp(canvas);
+      }
+
+      // updateObject should not be called for locked objects
+      expect(mockDrawingStore.updateObject).not.toHaveBeenCalled();
+    });
+  });
+
+  // ==========================================================================
+  // Chart Data Change Trigger Tests
+  // ==========================================================================
+  describe('Chart Data Changes', () => {
+    it('should re-render when chartDataLength prop changes', () => {
+      const { container, rerender } = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+          chartDataLength={100}
+        />
+      );
+
+      expect(container.querySelector('canvas')).toBeInTheDocument();
+
+      rerender(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+          chartDataLength={150}
+        />
+      );
+
+      expect(container.querySelector('canvas')).toBeInTheDocument();
     });
   });
 });
