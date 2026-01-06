@@ -1,7 +1,7 @@
 'use client';
 
 import { logger } from '@/lib/utils/logger';
-import { useState, useEffect, createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 interface User {
   id: string;
@@ -31,12 +31,12 @@ export function useAuth(): AuthContextType {
         email: 'test@example.com',
         full_name: 'Test User',
         username: 'testuser',
-        is_verified: true
+        is_verified: true,
       },
       isLoading: false,
       login: async () => true,
       logout: () => {},
-      token: 'mock-token'
+      token: 'mock-token',
     };
   }
   return context;
@@ -63,10 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const response = await fetch('/api/profile/me', {
         headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
+          Authorization: `Bearer ${authToken}`,
+        },
       });
-      
+
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         const authToken = data.tokens?.access_token;
-        
+
         if (authToken) {
           setToken(authToken);
           localStorage.setItem('auth_token', authToken);
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return true;
         }
       }
-      
+
       return false;
     } catch (error) {
       logger.error('Login error', { error });
@@ -122,12 +122,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isLoading,
     login,
     logout,
-    token
+    token,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

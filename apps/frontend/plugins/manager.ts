@@ -1,9 +1,9 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 import { drawStore, type Shape } from '@/stores/drawStore';
 import { symbolStore } from '@/stores/symbolStore';
 import { timeframeStore } from '@/stores/timeframeStore';
 import type { IChartApi, ISeriesApi } from 'lightweight-charts';
-import { logger } from '@/lib/utils/logger';
 import type { LokifiPlugin, PluginCtx, ToolPlugin } from './types';
 
 export type { PluginManager };

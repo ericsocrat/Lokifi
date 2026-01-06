@@ -72,7 +72,10 @@ export default function WebSocketConnection({
             timestamp: new Date().toISOString(),
           };
 
-          logger.debug('WebSocket update (simulated)', { symbol: mockUpdate.symbol, price: mockUpdate.price });
+          logger.debug('WebSocket update (simulated)', {
+            symbol: mockUpdate.symbol,
+            price: mockUpdate.price,
+          });
           setMessageCount((prev) => prev + 1);
           setLastUpdate(new Date());
         });
@@ -124,7 +127,9 @@ export default function WebSocketConnection({
 
   const scheduleReconnect = () => {
     if (reconnectAttempts.current >= 5) {
-      logger.warn('Max WebSocket reconnection attempts reached', { attempts: reconnectAttempts.current });
+      logger.warn('Max WebSocket reconnection attempts reached', {
+        attempts: reconnectAttempts.current,
+      });
       setConnectionStatus('error');
       return;
     }
