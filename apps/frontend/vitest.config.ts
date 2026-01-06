@@ -98,11 +98,129 @@ export default defineConfig({
       // Primary aliases - keep in specific order for proper resolution
       { find: '@/src', replacement: path.resolve(__dirname, './src') }, // Support @/src/* paths in app/ files
       { find: '@/lib', replacement: path.resolve(__dirname, './src/lib') },
-      // Note: NotificationBell is in top-level components/, other components in src/components/
+      // Components in root components/ folder need specific aliases
+      // (Most components are in src/components/, but chart-related ones are in root components/)
+      {
+        find: '@/components/ChartErrorBoundary',
+        replacement: path.resolve(__dirname, './components/ChartErrorBoundary'),
+      },
+      {
+        find: '@/components/ChartHeader',
+        replacement: path.resolve(__dirname, './components/ChartHeader'),
+      },
+      {
+        find: '@/components/ChartLoadingState',
+        replacement: path.resolve(__dirname, './components/ChartLoadingState'),
+      },
+      {
+        find: '@/components/ChartPanelV2',
+        replacement: path.resolve(__dirname, './components/ChartPanelV2'),
+      },
+      {
+        find: '@/components/ChartSidebar',
+        replacement: path.resolve(__dirname, './components/ChartSidebar'),
+      },
+      {
+        find: '@/components/ContextMenu',
+        replacement: path.resolve(__dirname, './components/ContextMenu'),
+      },
+      {
+        find: '@/components/CopilotChat',
+        replacement: path.resolve(__dirname, './components/CopilotChat'),
+      },
+      {
+        find: '@/components/DrawingChart',
+        replacement: path.resolve(__dirname, './components/DrawingChart'),
+      },
+      {
+        find: '@/components/DrawingOverlay',
+        replacement: path.resolve(__dirname, './components/DrawingOverlay'),
+      },
+      {
+        find: '@/components/DrawingToolbar',
+        replacement: path.resolve(__dirname, './components/DrawingToolbar'),
+      },
+      {
+        find: '@/components/EnhancedChart',
+        replacement: path.resolve(__dirname, './components/EnhancedChart'),
+      },
+      {
+        find: '@/components/EnhancedSymbolPicker',
+        replacement: path.resolve(__dirname, './components/EnhancedSymbolPicker'),
+      },
+      {
+        find: '@/components/GlobalHeader',
+        replacement: path.resolve(__dirname, './components/GlobalHeader'),
+      },
+      {
+        find: '@/components/IndicatorModalV2',
+        replacement: path.resolve(__dirname, './components/IndicatorModalV2'),
+      },
+      {
+        find: '@/components/IndicatorPanel',
+        replacement: path.resolve(__dirname, './components/IndicatorPanel'),
+      },
+      {
+        find: '@/components/LeftDock',
+        replacement: path.resolve(__dirname, './components/LeftDock'),
+      },
+      {
+        find: '@/components/MultiChartLayout',
+        replacement: path.resolve(__dirname, './components/MultiChartLayout'),
+      },
+      {
+        find: '@/components/MultiPaneChart',
+        replacement: path.resolve(__dirname, './components/MultiPaneChart'),
+      },
+      {
+        find: '@/components/NewsList',
+        replacement: path.resolve(__dirname, './components/NewsList'),
+      },
       {
         find: '@/components/NotificationBell',
         replacement: path.resolve(__dirname, './components/NotificationBell'),
       },
+      {
+        find: '@/components/NotificationCenter',
+        replacement: path.resolve(__dirname, './components/NotificationCenter'),
+      },
+      {
+        find: '@/components/ObjectTree',
+        replacement: path.resolve(__dirname, './components/ObjectTree'),
+      },
+      {
+        find: '@/components/PluginSettingsDrawer',
+        replacement: path.resolve(__dirname, './components/PluginSettingsDrawer'),
+      },
+      {
+        find: '@/components/PluginSideToolbar',
+        replacement: path.resolve(__dirname, './components/PluginSideToolbar'),
+      },
+      {
+        find: '@/components/SWRProvider',
+        replacement: path.resolve(__dirname, './components/SWRProvider'),
+      },
+      {
+        find: '@/components/SymbolPicker',
+        replacement: path.resolve(__dirname, './components/SymbolPicker'),
+      },
+      {
+        find: '@/components/TimeframePicker',
+        replacement: path.resolve(__dirname, './components/TimeframePicker'),
+      },
+      {
+        find: '@/components/TradingWorkspace',
+        replacement: path.resolve(__dirname, './components/TradingWorkspace'),
+      },
+      {
+        find: '@/components/WatchlistPanel',
+        replacement: path.resolve(__dirname, './components/WatchlistPanel'),
+      },
+      {
+        find: '@/components/WebSocketConnection',
+        replacement: path.resolve(__dirname, './components/WebSocketConnection'),
+      },
+      // Default components alias for src/components/ (must come after specific overrides)
       { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
       { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
       { find: '@/utils', replacement: path.resolve(__dirname, './src/utils') },
