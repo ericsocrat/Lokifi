@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useState, useEffect, createContext, useContext } from 'react';
 
 interface User {
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(null);
       }
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      logger.error('Error fetching user profile', { error });
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return false;
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error('Login error', { error });
       return false;
     }
   };

@@ -4,6 +4,7 @@ import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore'
 import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
+import { logger } from '@/lib/utils/logger';
 import type { IChartApi, ISeriesApi, MouseEventParams, Time } from 'lightweight-charts';
 import { CandlestickSeries, ColorType, createChart } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
@@ -137,7 +138,7 @@ export default function EnhancedChart({
           seriesRef.current.setData(chartData);
         }
       } catch (err) {
-        console.error('Failed to load chart data:', err);
+        logger.error('Failed to load chart data', { error: err });
       }
     };
 

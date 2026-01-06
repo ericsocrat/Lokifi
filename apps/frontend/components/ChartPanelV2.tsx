@@ -5,6 +5,7 @@ import { ChartLoadingState } from '@/components/ChartLoadingState';
 import ChartSidebar from '@/components/ChartSidebar';
 import { API } from '@/lib/api';
 import type { Candle, OHLCResponse } from '@/lib/types';
+import { logger } from '@/lib/utils/logger';
 import { drawStore } from '@/stores/drawStore';
 import { indicatorStore, type IndicatorSnapshot } from '@/stores/indicatorStore';
 import { symbolStore } from '@/stores/symbolStore';
@@ -483,7 +484,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           fibCustomLevels: s.fibCustomLevels,
         });
       } catch (e) {
-        console.warn('Failed to apply symbol settings:', e);
+        logger.warn('Failed to apply symbol settings', { error: e });
       }
     };
 
@@ -491,7 +492,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       try {
         pssym?.clear?.(sym, tf);
       } catch (e) {
-        console.warn('Failed to clear symbol settings:', e);
+        logger.warn('Failed to clear symbol settings', { error: e });
       }
     };
 

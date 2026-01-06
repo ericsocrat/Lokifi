@@ -3,6 +3,7 @@ import { drawStore, type Shape } from '@/stores/drawStore';
 import { symbolStore } from '@/stores/symbolStore';
 import { timeframeStore } from '@/stores/timeframeStore';
 import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import { logger } from '@/lib/utils/logger';
 import type { LokifiPlugin, PluginCtx, ToolPlugin } from './types';
 
 export type { PluginManager };
@@ -45,7 +46,7 @@ class PluginManager {
       try {
         plugin.mount?.(this.ctx());
       } catch (err) {
-        console.error(`Failed to mount plugin ${plugin.id}:`, err);
+        logger.error('Failed to mount plugin', { pluginId: plugin.id, error: err });
       }
     }
   }
@@ -57,7 +58,7 @@ class PluginManager {
       try {
         plugin.unmount?.();
       } catch (err) {
-        console.error(`Failed to unmount plugin ${plugin.id}:`, err);
+        logger.error('Failed to unmount plugin', { pluginId: plugin.id, error: err });
       }
     }
     this.env = null;
@@ -118,7 +119,7 @@ class PluginManager {
           const snapped = snap(time, price);
           return { x, y, t: time, p: price, snapped };
         } catch (err) {
-          console.error('Error computing coordinates:', err);
+          logger.error('Error computing coordinates', { error: err });
           return { x: 0, y: 0, t: 0, p: 0, snapped: { t: 0, p: 0 } };
         }
       },
@@ -127,28 +128,28 @@ class PluginManager {
           try {
             drawStore.addShape(shape);
           } catch (err) {
-            console.error('Error adding shape:', err);
+            logger.error('Error adding shape', { error: err });
           }
         },
         update: (id: string, updater: (s: Shape) => Shape) => {
           try {
             drawStore.updateShape(id, updater);
           } catch (err) {
-            console.error('Error updating shape:', err);
+            logger.error('Error updating shape', { shapeId: id, error: err });
           }
         },
         select: (ids: string[]) => {
           try {
             drawStore.setSelection(Array.isArray(ids) ? ids : Array.from(ids));
           } catch (err) {
-            console.error('Error setting selection:', err);
+            logger.error('Error setting selection', { ids, error: err });
           }
         },
         clearSelection: () => {
           try {
             drawStore.clearSelection();
           } catch (err) {
-            console.error('Error clearing selection:', err);
+            logger.error('Error clearing selection', { error: err });
           }
         },
       },
@@ -167,7 +168,7 @@ class PluginManager {
       activePlugin.onPointerDown(e, this.ctx());
       return true;
     } catch (err) {
-      console.error('Plugin pointer down error:', err);
+      logger.error('Plugin pointer down error', { pluginId: this._activeToolId, error: err });
       return false;
     }
   }
@@ -179,7 +180,7 @@ class PluginManager {
       activePlugin.onPointerMove(e, this.ctx());
       return true;
     } catch (err) {
-      console.error('Plugin pointer move error:', err);
+      logger.error('Plugin pointer move error', { pluginId: this._activeToolId, error: err });
       return false;
     }
   }
@@ -191,7 +192,7 @@ class PluginManager {
       activePlugin.onPointerUp(e, this.ctx());
       return true;
     } catch (err) {
-      console.error('Plugin pointer up error:', err);
+      logger.error('Plugin pointer up error', { pluginId: this._activeToolId, error: err });
       return false;
     }
   }

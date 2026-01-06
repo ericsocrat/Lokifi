@@ -1,5 +1,6 @@
 'use client';
 import { symbolStore } from '@/lib/stores/symbolStore';
+import { logger } from '@/lib/utils/logger';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -92,7 +93,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
         setPopularSymbols(data);
       }
     } catch (error) {
-      console.error('Failed to load popular symbols:', error);
+      logger.error('Failed to load popular symbols', { error });
       // Fallback to mock data
       setPopularSymbols([
         {
@@ -149,7 +150,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
         setSymbols(data.symbols);
       }
     } catch (error) {
-      console.error('Search failed:', error);
+      logger.error('Symbol search failed', { error, query });
       setSymbols([]);
     } finally {
       setLoading(false);

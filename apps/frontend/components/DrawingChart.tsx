@@ -4,6 +4,7 @@ import { useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
+import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
@@ -92,11 +93,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         const response = await fetch(url);
 
         if (!response.ok) {
-          console.error(
-            '[DrawingChart] API response not ok:',
-            response.status,
-            response.statusText
-          );
+          logger.error('DrawingChart API response not ok', {
+            status: response.status,
+            statusText: response.statusText,
+          });
           throw new Error('Failed to fetch OHLC data');
         }
 
@@ -113,7 +113,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
         setChartData(transformedData);
       } catch (error) {
-        console.error('Failed to fetch OHLC data:', error);
+        logger.error('Failed to fetch OHLC data', { error });
         setChartData([
           { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
           { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
@@ -199,7 +199,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
     } catch (error) {
-      console.error('Failed to initialize chart:', error);
+      logger.error('Failed to initialize chart', { error });
       throw error;
     }
   }, [height, chartData]);

@@ -3,6 +3,7 @@ import type { Pane } from '@/lib/stores/paneStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
+import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -131,7 +132,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
     } catch (error) {
-      console.error('Failed to initialize chart:', error);
+      logger.error('Failed to initialize chart', { error });
       throw error;
     }
   }, [height, mockData]);

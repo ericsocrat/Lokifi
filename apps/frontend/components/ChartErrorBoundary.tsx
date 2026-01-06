@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/utils/logger';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Component } from 'react';
@@ -25,7 +26,10 @@ export class ChartErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Chart error boundary caught error:', error, errorInfo);
+    logger.error('Chart error boundary caught error', {
+      error,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleRetry = () => {

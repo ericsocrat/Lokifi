@@ -3,6 +3,7 @@ import { useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
+import { logger } from '@/lib/utils/logger';
 import { Maximize2, Minimize2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ChartHeader from '../components/ChartHeader';
@@ -42,7 +43,7 @@ export const TradingWorkspace: React.FC = () => {
   const toggleFullscreen = async () => {
     try {
       if (!document.documentElement.requestFullscreen) {
-        console.warn('Fullscreen API not supported');
+        logger.warn('Fullscreen API not supported');
         return;
       }
 
@@ -56,7 +57,7 @@ export const TradingWorkspace: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Fullscreen toggle failed:', error);
+      logger.error('Fullscreen toggle failed', { error });
     }
   };
 

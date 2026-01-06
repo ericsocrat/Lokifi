@@ -1,5 +1,6 @@
 'use client';
 import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useRef, useState } from 'react';
 
 interface WebSocketConnectionProps {
@@ -42,7 +43,7 @@ export default function WebSocketConnection({
     }
 
     setConnectionStatus('connecting');
-    console.log('Attempting WebSocket connection...');
+    logger.debug('Attempting WebSocket connection', { symbols });
 
     // Simulate WebSocket connection
     // In a real implementation, this would be: new WebSocket('wss://your-websocket-url')
@@ -51,7 +52,7 @@ export default function WebSocketConnection({
       setLastUpdate(new Date());
       reconnectAttempts.current = 0;
 
-      console.log('WebSocket connected (simulated)');
+      logger.debug('WebSocket connected (simulated)', { symbolCount: symbols.length });
 
       // Simulate periodic updates
       const updateInterval = setInterval(() => {
@@ -71,7 +72,7 @@ export default function WebSocketConnection({
             timestamp: new Date().toISOString(),
           };
 
-          console.log('WebSocket update (simulated):', mockUpdate);
+          logger.debug('WebSocket update (simulated)', { symbol: mockUpdate.symbol, price: mockUpdate.price });
           setMessageCount((prev) => prev + 1);
           setLastUpdate(new Date());
         });
@@ -84,7 +85,7 @@ export default function WebSocketConnection({
           setConnectionStatus('disconnected');
         },
         send: (data: string) => {
-          console.log('WebSocket send (simulated):', data);
+          logger.debug('WebSocket send (simulated)', { data });
         },
       };
     };
@@ -123,7 +124,7 @@ export default function WebSocketConnection({
 
   const scheduleReconnect = () => {
     if (reconnectAttempts.current >= 5) {
-      console.log('Max reconnection attempts reached');
+      logger.warn('Max WebSocket reconnection attempts reached', { attempts: reconnectAttempts.current });
       setConnectionStatus('error');
       return;
     }
@@ -131,7 +132,10 @@ export default function WebSocketConnection({
     const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000); // Exponential backoff
     reconnectAttempts.current++;
 
-    console.log(`Scheduling reconnection attempt ${reconnectAttempts.current} in ${delay}ms`);
+    logger.debug('Scheduling WebSocket reconnection', {
+      attempt: reconnectAttempts.current,
+      delayMs: delay,
+    });
 
     reconnectTimeoutRef.current = setTimeout(() => {
       if (enabled && symbols.length > 0) {
@@ -219,7 +223,7 @@ export function useWebSocketData(symbol: string, enabled: boolean = true) {
     if (!enabled || !symbol) return;
 
     // This would typically subscribe to WebSocket updates for the specific symbol
-    console.log(`Subscribing to WebSocket data for ${symbol}`);
+    logger.debug('Subscribing to WebSocket data', { symbol });
     setIsConnected(true);
 
     // Simulate data updates
@@ -238,7 +242,7 @@ export function useWebSocketData(symbol: string, enabled: boolean = true) {
     return () => {
       clearInterval(interval);
       setIsConnected(false);
-      console.log(`Unsubscribing from WebSocket data for ${symbol}`);
+      logger.debug('Unsubscribing from WebSocket data', { symbol });
     };
   }, [symbol, enabled]);
 
