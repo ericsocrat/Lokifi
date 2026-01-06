@@ -70,8 +70,9 @@ class User(Base):
     )
 
     # Relationships - Using string-based forward references to avoid circular imports
-    # With PEP 563 (from __future__ import annotations), type hints are stored as strings
-    # and evaluated lazily, preventing module-level circular import issues
+    # With PEP 563 (from __future__ import annotations), all type hints are stored as strings
+    # and evaluated lazily at runtime, preventing module-level circular import issues
+    # SQLAlchemy's relationship() already uses string literals for model names
     profile: Mapped["Profile | None"] = relationship(
         "Profile", back_populates="user", uselist=False
     )

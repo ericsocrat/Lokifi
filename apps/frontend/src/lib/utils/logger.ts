@@ -326,7 +326,8 @@ export const sanitizeLogInput = (value: unknown, maxLength: number = 200): strin
   // Convert to string
   let text = String(value);
 
-  // Remove control characters (ASCII 0-31 and 127) including \n, \r, \t
+  // Remove all ASCII control characters (0-31 and 127)
+  // This includes: newlines (\n), carriage returns (\r), tabs (\t), and all other control chars
   // Replace with underscore to preserve visibility of attempted injection
   text = text.replace(/[\x00-\x1F\x7F]/g, '_');
 
