@@ -89,7 +89,7 @@ packaging==25.0
 parse==1.20.2
 passlib[bcrypt]==1.7.4
 pathable==0.4.4
-pathspec==0.12.1
+pathspec==1.0.0
 pillow==12.1.0
 pip_audit==2.10.0
 pip-api==0.0.34
