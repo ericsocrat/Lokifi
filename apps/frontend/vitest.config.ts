@@ -36,8 +36,8 @@ export default defineConfig({
       '**/tests/config/vscode-workspace.test.ts',
       '**/tests/config/powershell-scripts.test.ts',
       // Tests with missing component/file implementations
-      '**/tests/components/ChartPanel.test.tsx',
-      // '**/tests/components/DrawingLayer.test.tsx', // TESTING: Temporarily enabled
+      // '**/tests/components/ChartPanel.test.tsx', // ENABLED: Fixed with proper mocks
+      // '**/tests/components/DrawingLayer.test.tsx', // ENABLED: Fixed with ResizeObserver + Canvas mocks
       '**/tests/components/EnhancedChart.test.tsx',
       '**/tests/components/IndicatorModal.test.tsx',
       '**/tests/unit/charts/chart-reliability.test.tsx',
@@ -47,8 +47,8 @@ export default defineConfig({
       // '**/tests/unit/utils/perf.test.ts',      // ✅ Fixed and passing
       // '**/tests/unit/charts/chartUtils.test.ts',   // ✅ Fixed and passing
       // '**/tests/unit/charts/indicators.test.ts',   // ✅ Fixed and passing
-      '**/tests/unit/stores/drawingStore.test.ts',
-      '**/tests/unit/stores/paneStore.test.ts',
+      // '**/tests/unit/stores/drawingStore.test.ts', // TESTING: Enabling
+      // '**/tests/unit/stores/paneStore.test.ts', // TESTING: Enabling
       '**/tests/types/drawings.test.ts',
       '**/tests/types/lightweight-charts.test.ts',
     ],
