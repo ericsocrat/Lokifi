@@ -1182,7 +1182,11 @@ export const useSocialStore = create<SocialStore>()(
       connectRealtime: () => {
         if (!FLAGS.social || !get().isAuthenticated) return;
 
-        const ws = new WebSocket('/ws/social');
+        // Construct WebSocket URL from current location or environment
+        const wsProtocol = typeof window !== 'undefined' && window.location?.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsHost = typeof window !== 'undefined' && window.location?.host ? window.location.host : 'localhost:8000';
+        const wsUrl = `${wsProtocol}//${wsHost}/ws/social`;
+        const ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
           set((draft: Draft<SocialStore>) => {
