@@ -20,7 +20,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ToastProvider, useToast } from '@/components/dashboard/ToastProvider';
 
@@ -322,7 +322,11 @@ describe('ToastProvider', () => {
     it('should not auto-remove if duration is 0', async () => {
       function PersistentConsumer() {
         const toast = useToast();
-        return <button onClick={() => toast.addToast('Persistent Toast', 'info', 0)}>Add Persistent</button>;
+        return (
+          <button onClick={() => toast.addToast('Persistent Toast', 'info', 0)}>
+            Add Persistent
+          </button>
+        );
       }
 
       render(

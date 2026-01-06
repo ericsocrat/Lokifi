@@ -57,7 +57,8 @@ describe('DrawingStylePanel', () => {
   const user = userEvent.setup();
 
   // Helper to get mock functions from store
-  const getSetStyle = () => useChartStore.getState().setStyleForSelection as ReturnType<typeof vi.fn>;
+  const getSetStyle = () =>
+    useChartStore.getState().setStyleForSelection as ReturnType<typeof vi.fn>;
   const getSetText = () => useChartStore.getState().setTextForSelection as ReturnType<typeof vi.fn>;
 
   beforeEach(() => {

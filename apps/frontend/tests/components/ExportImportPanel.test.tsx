@@ -121,7 +121,9 @@ describe('ExportImportPanel', () => {
 
     it('should render help text', () => {
       render(<ExportImportPanel />);
-      expect(screen.getByText(/JSON includes drawings, indicators, and settings/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/JSON includes drawings, indicators, and settings/)
+      ).toBeInTheDocument();
     });
   });
 
@@ -138,10 +140,7 @@ describe('ExportImportPanel', () => {
         fireEvent.click(exportButton);
       });
 
-      expect(downloadText).toHaveBeenCalledWith(
-        'lokifi-scene-.json',
-        expect.any(String)
-      );
+      expect(downloadText).toHaveBeenCalledWith('lokifi-scene-.json', expect.any(String));
     });
 
     it('should include drawings in exported JSON', async () => {
@@ -444,7 +443,9 @@ describe('ExportImportPanel', () => {
     it('should show alert on PNG export failure', async () => {
       const mockElement = document.createElement('main');
       vi.spyOn(document, 'querySelector').mockReturnValue(mockElement);
-      (exportPngFromRoot as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Export failed'));
+      (exportPngFromRoot as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error('Export failed')
+      );
 
       render(<ExportImportPanel />);
       const pngButton = screen.getByText('Export PNG');
@@ -454,7 +455,9 @@ describe('ExportImportPanel', () => {
       });
 
       await waitFor(() => {
-        expect(window.alert).toHaveBeenCalledWith('PNG export failed. Make sure the chart is visible.');
+        expect(window.alert).toHaveBeenCalledWith(
+          'PNG export failed. Make sure the chart is visible.'
+        );
       });
     });
   });

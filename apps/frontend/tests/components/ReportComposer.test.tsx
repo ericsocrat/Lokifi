@@ -16,7 +16,7 @@
  * 5. Report Content - Block generation from store data
  * 6. Integration - Complete export workflow
  */
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -278,10 +278,7 @@ describe('ReportComposer', () => {
       await user.click(exportButton);
 
       await waitFor(() => {
-        expect(downloadPdf).toHaveBeenCalledWith(
-          expect.any(Uint8Array),
-          'My_Trading_Analysis.pdf'
-        );
+        expect(downloadPdf).toHaveBeenCalledWith(expect.any(Uint8Array), 'My_Trading_Analysis.pdf');
       });
     });
 
@@ -325,9 +322,7 @@ describe('ReportComposer', () => {
       await user.click(exportButton);
 
       await waitFor(() => {
-        expect(alertSpy).toHaveBeenCalledWith(
-          'Failed to export PDF. Check console for details.'
-        );
+        expect(alertSpy).toHaveBeenCalledWith('Failed to export PDF. Check console for details.');
       });
 
       alertSpy.mockRestore();

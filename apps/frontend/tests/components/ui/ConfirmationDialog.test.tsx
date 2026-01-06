@@ -89,13 +89,17 @@ describe('ConfirmationDialog', () => {
     });
 
     it('should render "Don\'t ask again" checkbox when showDontAskAgain is true', () => {
-      render(<ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />);
+      render(
+        <ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />
+      );
       expect(screen.getByText("Don't ask me again")).toBeInTheDocument();
       expect(screen.getByRole('checkbox')).toBeInTheDocument();
     });
 
     it('should have checkbox unchecked by default', () => {
-      render(<ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />);
+      render(
+        <ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />
+      );
       expect(screen.getByRole('checkbox')).not.toBeChecked();
     });
   });
@@ -182,7 +186,9 @@ describe('ConfirmationDialog', () => {
 
   describe("don't ask again", () => {
     it('should toggle checkbox when clicked', async () => {
-      render(<ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />);
+      render(
+        <ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />
+      );
       const checkbox = screen.getByRole('checkbox');
 
       expect(checkbox).not.toBeChecked();
@@ -391,7 +397,9 @@ describe('ConfirmationDialog', () => {
     });
 
     it('should have accessible checkbox when shown', () => {
-      render(<ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />);
+      render(
+        <ConfirmationDialog {...defaultProps} showDontAskAgain onDontAskAgainChange={vi.fn()} />
+      );
 
       const checkbox = screen.getByRole('checkbox');
       expect(checkbox).toBeInTheDocument();

@@ -464,9 +464,7 @@ describe('AlertsPanel', () => {
     it('should show events section when events exist', () => {
       act(() => {
         useChartStore.setState({
-          alertEvents: [
-            { id: 'alert-1', kind: 'price-above', at: Date.now(), price: 150.5 },
-          ],
+          alertEvents: [{ id: 'alert-1', kind: 'price-above', at: Date.now(), price: 150.5 }],
         });
       });
 
