@@ -617,7 +617,6 @@ describe('observabilityStore', () => {
 
   describe('Real-time Features', () => {
     it('enables real-time and connects websocket', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
       const store = useObservabilityStore.getState();
 
       act(() => {
@@ -627,13 +626,10 @@ describe('observabilityStore', () => {
       const state = useObservabilityStore.getState();
       expect(state.isRealTimeEnabled).toBe(true);
       expect(state.websocketConnected).toBe(true);
-      expect(consoleSpy).toHaveBeenCalledWith('Connected to observability WebSocket');
-
-      consoleSpy.mockRestore();
+      // Note: Store uses structured logger (logger.debug) internally
     });
 
     it('disables real-time and disconnects websocket', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => undefined);
       const store = useObservabilityStore.getState();
 
       act(() => {
@@ -644,8 +640,6 @@ describe('observabilityStore', () => {
       const state = useObservabilityStore.getState();
       expect(state.isRealTimeEnabled).toBe(false);
       expect(state.websocketConnected).toBe(false);
-
-      consoleSpy.mockRestore();
     });
   });
 
