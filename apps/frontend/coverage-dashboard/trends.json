@@ -1,50 +1,5 @@
 [
   {
-    "timestamp": "2026-01-01T03:52:22.017Z",
-    "coverage": {
-      "statements": 17.431477255101814,
-      "branches": 87.89136175028291,
-      "functions": 81.03448275862068,
-      "lines": 17.431477255101814
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "55942efa"
-    }
-  },
-  {
-    "timestamp": "2026-01-01T03:54:07.506Z",
-    "coverage": {
-      "statements": 17.431477255101814,
-      "branches": 87.89136175028291,
-      "functions": 81.03448275862068,
-      "lines": 17.431477255101814
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "55942efa"
-    }
-  },
-  {
-    "timestamp": "2026-01-01T03:55:09.620Z",
-    "coverage": {
-      "statements": 17.431477255101814,
-      "branches": 87.89136175028291,
-      "functions": 81.03448275862068,
-      "lines": 17.431477255101814
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "55942efa"
-    }
-  },
-  {
     "timestamp": "2026-01-01T04:10:49.684Z",
     "coverage": {
       "statements": 17.93002592453081,
@@ -447,6 +402,51 @@
     "git": {
       "branch": "main",
       "commit": "5c60cc6c"
+    }
+  },
+  {
+    "timestamp": "2026-01-06T01:55:29.253Z",
+    "coverage": {
+      "statements": 37.71902723220197,
+      "branches": 80.96064814814815,
+      "functions": 86.34945397815913,
+      "lines": 37.71902723220197
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "c61860b7"
+    }
+  },
+  {
+    "timestamp": "2026-01-06T01:58:43.356Z",
+    "coverage": {
+      "statements": 37.73447499668976,
+      "branches": 80.95329988421459,
+      "functions": 86.34945397815913,
+      "lines": 37.73447499668976
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "c61860b7"
+    }
+  },
+  {
+    "timestamp": "2026-01-06T02:00:16.613Z",
+    "coverage": {
+      "statements": 37.714613585205456,
+      "branches": 80.86503185943232,
+      "functions": 86.34945397815913,
+      "lines": 37.714613585205456
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "c61860b7"
     }
   }
 ]
