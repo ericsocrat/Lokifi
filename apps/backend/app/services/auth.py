@@ -2,8 +2,9 @@ from __future__ import annotations
 
 __all__ = ["JWT_ALG", "JWT_SECRET", "auth_handle_from_header", "require_handle"]
 
+import jwt
 from fastapi import HTTPException
-from jose import JWTError, jwt
+from jwt.exceptions import PyJWTError
 
 from app.core.config import get_settings
 
@@ -20,7 +21,7 @@ def auth_handle_from_header(authorization: str | None) -> str | None:
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
         return data.get("sub")
-    except JWTError:
+    except PyJWTError:
         return None
 
 

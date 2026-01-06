@@ -7,9 +7,9 @@ NO database required - pure unit tests for maximum coverage.
 
 from datetime import datetime, timedelta, timezone
 
+import jwt
 import pytest
 from fastapi import HTTPException
-from jose import jwt
 
 from app.core.config import settings
 from app.core.security import (

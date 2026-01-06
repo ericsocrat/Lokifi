@@ -14,9 +14,9 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
+import jwt
 import pytest
 from fastapi import HTTPException
-from jose import jwt
 
 from app.api.routes.auth import (
     JWT_ALG,

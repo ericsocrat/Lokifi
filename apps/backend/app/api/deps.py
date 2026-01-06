@@ -2,8 +2,9 @@
 Dependencies for Lokifi API endpoints.
 """
 
+import jwt
 from fastapi import Depends, Header, HTTPException
-from jose import JWTError, jwt
+from jwt.exceptions import PyJWTError
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
@@ -30,7 +31,7 @@ def _auth_handle(authorization: str | None) -> str | None:
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
         return data.get("sub")
-    except JWTError:
+    except PyJWTError:
         return None
 
 

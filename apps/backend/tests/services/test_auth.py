@@ -32,7 +32,7 @@ def mock_jwt_secret():
 @pytest.fixture
 def valid_token(mock_jwt_secret):
     """Generate a valid JWT token for testing."""
-    from jose import jwt
+    import jwt
 
     payload = {"sub": "testuser"}
     return jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -43,7 +43,7 @@ def expired_token(mock_jwt_secret):
     """Generate an expired JWT token for testing."""
     from datetime import datetime, timedelta, timezone
 
-    from jose import jwt
+    import jwt
 
     payload = {
         "sub": "testuser",
@@ -55,7 +55,7 @@ def expired_token(mock_jwt_secret):
 @pytest.fixture
 def token_wrong_secret():
     """Generate a token signed with wrong secret."""
-    from jose import jwt
+    import jwt
 
     payload = {"sub": "testuser"}
     return jwt.encode(payload, "wrong-secret", algorithm=JWT_ALG)
@@ -140,7 +140,7 @@ class TestAuthHandleFromHeader:
 
     def test_token_without_sub_claim(self, mock_jwt_secret):
         """Test with token missing 'sub' claim."""
-        from jose import jwt
+        import jwt
 
         payload = {"user_id": "12345", "role": "admin"}  # No 'sub' claim
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -267,7 +267,7 @@ class TestEdgeCases:
 
     def test_token_with_special_characters_in_payload(self, mock_jwt_secret):
         """Test token with special characters in sub claim."""
-        from jose import jwt
+        import jwt
 
         # Special characters in handle
         payload = {"sub": "user@example.com"}
@@ -279,7 +279,7 @@ class TestEdgeCases:
 
     def test_token_with_unicode_handle(self, mock_jwt_secret):
         """Test token with unicode characters in handle."""
-        from jose import jwt
+        import jwt
 
         # Unicode in handle
         payload = {"sub": "用户名"}  # Chinese characters
@@ -293,7 +293,7 @@ class TestEdgeCases:
         self, valid_token, mock_jwt_secret
     ):
         """Test that require_handle preserves the case of the token handle."""
-        from jose import jwt
+        import jwt
 
         # Mixed case handle
         payload = {"sub": "TestUser123"}
@@ -305,7 +305,7 @@ class TestEdgeCases:
 
     def test_require_handle_case_sensitive_comparison(self, mock_jwt_secret):
         """Test that handle comparison is case-sensitive."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": "TestUser"}
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -332,7 +332,7 @@ class TestTokenPayloadVariations:
 
     def test_token_with_additional_claims(self, mock_jwt_secret):
         """Test token with additional claims beyond sub."""
-        from jose import jwt
+        import jwt
 
         payload = {
             "sub": "testuser",
@@ -349,7 +349,7 @@ class TestTokenPayloadVariations:
 
     def test_token_with_empty_sub(self, mock_jwt_secret):
         """Test token with empty string sub claim."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": ""}
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -361,7 +361,7 @@ class TestTokenPayloadVariations:
 
     def test_require_handle_with_empty_sub_raises_401(self, mock_jwt_secret):
         """Test require_handle with empty sub raises 401."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": ""}
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -375,7 +375,7 @@ class TestTokenPayloadVariations:
 
     def test_token_with_null_sub(self, mock_jwt_secret):
         """Test token with null/None sub claim."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": None}
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)
@@ -387,7 +387,7 @@ class TestTokenPayloadVariations:
 
     def test_token_with_numeric_sub(self, mock_jwt_secret):
         """Test token with numeric sub claim returns None due to validation error."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": 12345}
         # Token can be encoded with numeric sub
@@ -401,7 +401,7 @@ class TestTokenPayloadVariations:
 
     def test_token_with_string_numeric_sub(self, mock_jwt_secret):
         """Test token with string-numeric sub claim."""
-        from jose import jwt
+        import jwt
 
         payload = {"sub": "12345"}
         token = jwt.encode(payload, mock_jwt_secret, algorithm=JWT_ALG)

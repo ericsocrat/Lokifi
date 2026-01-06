@@ -119,7 +119,7 @@ pytest-timeout==2.4.0
 pytest==9.0.2
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
-python-jose==3.5.0
+# python-jose removed in favor of PyJWT (fixes HIGH severity ecdsa timing attack vulnerability)
 python-multipart==0.0.21
 pytokens==0.3.0
 PyYAML==6.0.3

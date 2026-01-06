@@ -11,9 +11,9 @@ Comprehensive test suite for API dependency injection:
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
+import jwt
 import pytest
 from fastapi import HTTPException
-from jose import jwt
 
 # Import module under test
 try:

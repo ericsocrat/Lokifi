@@ -4,10 +4,11 @@ __all__ = ["router"]
 
 from datetime import datetime, timedelta, timezone
 
+import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import APIRouter, Header, HTTPException
-from jose import JWTError, jwt
+from jwt.exceptions import PyJWTError
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -66,7 +67,7 @@ def _auth_handle(authorization: str | None) -> str | None:
     try:
         data = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALG])
         return data.get("sub")
-    except JWTError:
+    except PyJWTError:
         return None
 
 

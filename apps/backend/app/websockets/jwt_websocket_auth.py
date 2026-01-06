@@ -7,8 +7,9 @@ import json
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+import jwt
 from fastapi import WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
+from jwt.exceptions import PyJWTError
 
 # Import core components
 from app.core.config import settings
@@ -53,7 +54,7 @@ class WebSocketJWTAuth:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
             return payload
-        except JWTError as e:
+        except PyJWTError as e:
             logger.warning(f"JWT verification failed: {e}")
             return None
 
