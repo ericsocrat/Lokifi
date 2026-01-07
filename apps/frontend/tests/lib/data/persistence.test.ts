@@ -12,6 +12,22 @@ import {
 import type { Drawing } from '@/lib/utils/drawings';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Use vi.hoisted to define mock before vi.mock hoisting
+const { mockLoggerWarn } = vi.hoisted(() => ({
+  mockLoggerWarn: vi.fn(),
+}));
+
+// Mock logger module
+vi.mock('@/lib/utils/logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: mockLoggerWarn,
+    error: vi.fn(),
+    debug: vi.fn(),
+  }),
+  sanitizeLogInput: vi.fn((input) => (input instanceof Error ? input.message : String(input))),
+}));
+
 describe('persistence', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -270,10 +286,12 @@ describe('persistence', () => {
       parsed.checksum = 'invalid00';
       localStorage.setItem('lokifi.project.checksumTest', JSON.stringify(parsed));
 
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      mockLoggerWarn.mockClear();
       const loaded = loadSlot('checksumTest');
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith('Checksum mismatch for slot', 'checksumTest');
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Checksum mismatch for slot', {
+        slotName: 'checksumTest',
+      });
       expect(loaded).toEqual(project); // Still loads despite warning
     });
 

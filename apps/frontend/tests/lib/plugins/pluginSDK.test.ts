@@ -14,6 +14,22 @@ import {
 } from '@/lib/plugins/pluginSDK';
 import { describe, expect, it, vi } from 'vitest';
 
+// Use vi.hoisted to define mock before vi.mock hoisting
+const { mockLoggerWarn } = vi.hoisted(() => ({
+  mockLoggerWarn: vi.fn(),
+}));
+
+// Mock logger module
+vi.mock('@/lib/utils/logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: mockLoggerWarn,
+    error: vi.fn(),
+    debug: vi.fn(),
+  }),
+  sanitizeLogInput: vi.fn((input) => (input instanceof Error ? input.message : String(input))),
+}));
+
 // Create test OHLC data
 const createOHLCData = (count: number, startPrice: number = 100): OHLCData[] => {
   return Array.from({ length: count }, (_, i) => ({
@@ -45,7 +61,7 @@ describe('Plugin SDK', () => {
     });
 
     it('should warn when registering duplicate indicator', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      mockLoggerWarn.mockClear();
 
       const indicator: IndicatorDefinition = {
         id: 'duplicate-indicator',
@@ -60,9 +76,10 @@ describe('Plugin SDK', () => {
       indicatorRegistry.register(indicator);
       indicatorRegistry.register(indicator);
 
-      expect(warnSpy).toHaveBeenCalledWith('Indicator duplicate-indicator is already registered');
-
-      warnSpy.mockRestore();
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        'Indicator duplicate-indicator is already registered',
+        { indicatorId: 'duplicate-indicator' }
+      );
     });
 
     it('should return undefined for non-existent indicator', () => {
@@ -113,7 +130,7 @@ describe('Plugin SDK', () => {
     });
 
     it('should warn when registering duplicate tool', () => {
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      mockLoggerWarn.mockClear();
 
       const tool: DrawingToolDefinition = {
         id: 'duplicate-tool',
@@ -131,9 +148,10 @@ describe('Plugin SDK', () => {
       drawingToolRegistry.register(tool);
       drawingToolRegistry.register(tool);
 
-      expect(warnSpy).toHaveBeenCalledWith('Drawing tool duplicate-tool is already registered');
-
-      warnSpy.mockRestore();
+      expect(mockLoggerWarn).toHaveBeenCalledWith(
+        'Drawing tool duplicate-tool is already registered',
+        { toolId: 'duplicate-tool' }
+      );
     });
 
     it('should filter tools by category', () => {

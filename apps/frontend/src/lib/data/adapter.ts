@@ -83,7 +83,7 @@ export class MarketDataAdapter {
     if (this.provider === 'http') {
       const url = process.env.NEXT_PUBLIC_CANDLES_URL;
       if (!url) {
-        console.warn('NEXT_PUBLIC_CANDLES_URL not set; falling back to mock.');
+        logger.warn('NEXT_PUBLIC_CANDLES_URL not set; falling back to mock.');
         this.provider = 'mock';
         return this.start();
       }
@@ -95,7 +95,7 @@ export class MarketDataAdapter {
         this.candles = normalizeCandles(raw);
         this.emit('snapshot');
       } catch (e) {
-        console.error('HTTP provider failed; falling back to mock.', e);
+        logger.error('HTTP provider failed; falling back to mock.', { error: e });
         this.provider = 'mock';
         return this.start();
       }
@@ -122,7 +122,7 @@ export class MarketDataAdapter {
     if (this.provider === 'ws') {
       const stream = process.env.NEXT_PUBLIC_STREAM_URL;
       if (!stream) {
-        console.warn('NEXT_PUBLIC_STREAM_URL not set; falling back to mock.');
+        logger.warn('NEXT_PUBLIC_STREAM_URL not set; falling back to mock.');
         this.provider = 'mock';
         return this.start();
       }

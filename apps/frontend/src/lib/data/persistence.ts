@@ -1,4 +1,7 @@
 import type { Drawing } from '@/lib/utils/drawings';
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('Persistence');
 
 export type ProjectV1 = {
   version: 1;
@@ -44,7 +47,7 @@ export function loadSlot(slotName: string): ProjectV1 | null {
     const { checksum, payload } = JSON.parse(raw);
     const json = JSON.stringify(payload);
     if (checksum !== fnv1a(json)) {
-      console.warn('Checksum mismatch for slot', slotName);
+      logger.warn('Checksum mismatch for slot', { slotName });
     }
     if (payload?.version === 1) return payload as ProjectV1;
     return null;

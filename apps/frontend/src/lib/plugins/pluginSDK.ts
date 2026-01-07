@@ -3,6 +3,10 @@
  * Provides registries and auto-generated UIs
  */
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('PluginSDK');
+
 export interface PluginParameter {
   name: string;
   type: 'number' | 'boolean' | 'string' | 'select' | 'color';
@@ -71,7 +75,7 @@ class IndicatorRegistry {
 
   register(definition: IndicatorDefinition) {
     if (this.indicators.has(definition.id)) {
-      console.warn(`Indicator ${definition.id} is already registered`);
+      logger.warn(`Indicator ${definition.id} is already registered`, { indicatorId: definition.id });
     }
     this.indicators.set(definition.id, definition);
   }
@@ -94,7 +98,7 @@ class DrawingToolRegistry {
 
   register(definition: DrawingToolDefinition) {
     if (this.tools.has(definition.id)) {
-      console.warn(`Drawing tool ${definition.id} is already registered`);
+      logger.warn(`Drawing tool ${definition.id} is already registered`, { toolId: definition.id });
     }
     this.tools.set(definition.id, definition);
   }
