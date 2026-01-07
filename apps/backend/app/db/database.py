@@ -2,7 +2,7 @@
 Database configuration and connection management.
 """
 
-__all__ = ["engine", "get_db", "get_db_session"]
+__all__ = ["Base", "engine", "get_db", "get_db_session"]
 
 import os
 import sys

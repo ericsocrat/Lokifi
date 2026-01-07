@@ -1,12 +1,8 @@
 # J6 Enterprise Notification Event Emitters
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import Any, Protocol
 
-if TYPE_CHECKING:
-    from app.models.profile import Profile as ProfileType
-
-from app.models.user import User
 from app.services.notification_service import (
     NotificationData,
     NotificationPriority,
