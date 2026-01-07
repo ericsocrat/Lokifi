@@ -208,7 +208,8 @@ class TestGetStorageMetrics:
                 143800,  # total_messages
                 datetime(2024, 1, 1, tzinfo=timezone.utc),  # oldest_message_date
                 datetime(2024, 11, 18, tzinfo=timezone.utc),  # newest_message_date
-                26420,  # archived_messages
+                26420,  # archived_messages (COUNT from archive table)
+                25.5,  # ai_messages_archive_size_mb (SUM(LENGTH)/1024/1024)
             ]
         )
 
@@ -229,6 +230,7 @@ class TestGetStorageMetrics:
             2024, 11, 18, tzinfo=timezone.utc
         )
         assert metrics.archived_messages == 26420
+        assert metrics.ai_messages_archive_size_mb == 25.5
 
         # Size calculations: threads * 1 / 1024, messages * 5 / 1024
         assert metrics.ai_threads_size_mb == (10450 * 1) / 1024
@@ -251,6 +253,7 @@ class TestGetStorageMetrics:
                 None,  # oldest_message_date
                 None,  # newest_message_date
                 None,  # archived_messages (null)
+                None,  # ai_messages_archive_size_mb (null)
             ]
         )
 
@@ -268,6 +271,7 @@ class TestGetStorageMetrics:
         assert metrics.oldest_message_date is None
         assert metrics.newest_message_date is None
         assert metrics.archived_messages == 0
+        assert metrics.ai_messages_archive_size_mb == 0.0
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
@@ -333,7 +337,7 @@ class TestGetStorageMetrics:
         """Test storage metrics logs information correctly."""
         # Mock session
         mock_session = MagicMock()
-        mock_session.scalar = AsyncMock(side_effect=[1000, 5000, None, None, 0])
+        mock_session.scalar = AsyncMock(side_effect=[1000, 5000, None, None, 0, 0.0])
 
         async def mock_get_session(read_only=True):
             yield mock_session
@@ -623,6 +627,109 @@ class TestArchiveOldConversations:
 
             # Verify - cutoff should be 90 days ago (from settings)
             assert service.archive_threshold_days == 90
+
+
+# ============================================================================
+# Test Compress Old Messages
+# ============================================================================
+
+
+class MockArchiveRow:
+    """Simple row mock for archive table queries."""
+
+    def __init__(self, row_id: int, content: str):
+        self._mapping = {"id": row_id, "content": content}
+
+
+class TestCompressOldMessages:
+    """Test compression of archived messages."""
+
+    @pytest.mark.asyncio
+    @patch("app.services.data_archival_service.db_manager")
+    async def test_compress_old_messages_success(self, mock_db_manager, service):
+        """Test successful compression of archived messages."""
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
+            mock_session = MagicMock()
+            rows = [
+                MockArchiveRow(1, "a" * 200),
+                MockArchiveRow(2, "b" * 200),
+            ]
+            mock_result = MagicMock()
+            mock_result.fetchall = MagicMock(return_value=rows)
+            mock_session.execute = AsyncMock(return_value=mock_result)
+
+            async def mock_get_session(read_only=False):
+                yield mock_session
+
+            mock_db_manager.get_session = mock_get_session
+
+            stats = await service.compress_old_messages(batch_size=500)
+
+            assert stats.messages_compressed == 2
+            assert stats.space_freed_mb >= 0
+            assert stats.operation_duration > 0
+            # First call is the select; subsequent calls are updates
+            assert mock_session.execute.await_count >= 1 + len(rows)
+            select_call = mock_session.execute.await_args_list[0]
+            assert "content_compressed = FALSE" in str(select_call.args[0])
+
+    @pytest.mark.asyncio
+    @patch("app.services.data_archival_service.db_manager")
+    async def test_compress_old_messages_no_candidates(self, mock_db_manager, service):
+        """Test compression when no messages are eligible."""
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
+            mock_session = MagicMock()
+            mock_result = MagicMock()
+            mock_result.fetchall = MagicMock(return_value=[])
+            mock_session.execute = AsyncMock(return_value=mock_result)
+
+            async def mock_get_session(read_only=False):
+                yield mock_session
+
+            mock_db_manager.get_session = mock_get_session
+
+            stats = await service.compress_old_messages()
+
+            assert stats.messages_compressed == 0
+            assert stats.space_freed_mb == 0.0
+            assert stats.operation_duration > 0
+
+    @pytest.mark.asyncio
+    async def test_compress_old_messages_disabled(self, service_disabled):
+        """Test compression is skipped when feature is disabled."""
+        stats = await service_disabled.compress_old_messages()
+
+        assert stats.messages_compressed == 0
+        assert stats.space_freed_mb == 0.0
+        assert stats.operation_duration == 0.0
+
+    @pytest.mark.asyncio
+    @patch("app.services.data_archival_service.db_manager")
+    @patch("app.services.data_archival_service.logger")
+    async def test_compress_old_messages_error(
+        self, mock_logger, mock_db_manager, service
+    ):
+        """Test compression handles database errors gracefully."""
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
+
+            async def mock_get_session(read_only=False):
+                raise Exception("Compression failure")
+                yield  # pragma: no cover
+
+            mock_db_manager.get_session = mock_get_session
+
+            stats = await service.compress_old_messages()
+
+            assert stats.messages_compressed == 0
+            assert stats.space_freed_mb == 0.0
+            assert stats.operation_duration > 0
+            mock_logger.error.assert_called()
 
 
 # ============================================================================
