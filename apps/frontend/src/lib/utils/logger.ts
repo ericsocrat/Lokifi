@@ -301,5 +301,52 @@ export const isError = (error: unknown): error is Error => {
   return error instanceof Error;
 };
 
+/**
+ * Sanitize user-controlled input for safe logging to prevent log injection attacks
+ * 
+ * This function removes control characters (including newlines and carriage returns)
+ * that could be used to forge log entries or inject malicious content into logs.
+ * 
+ * @param value - The value to sanitize (will be converted to string)
+ * @param maxLength - Maximum length of the output string (default: 200)
+ * @returns A safe string representation suitable for logging
+ * 
+ * @example
+ * // Prevent log injection from WebSocket errors
+ * console.error('WebSocket error:', sanitizeLogInput(message.error));
+ * 
+ * // Prevent log injection from user input
+ * logger.info('User action', { userId: sanitizeLogInput(userId) });
+ */
+export const sanitizeLogInput = (value: unknown, maxLength: number = 200): string => {
+  if (value === null || value === undefined) {
+    return '<null>';
+  }
+
+  // Convert to string
+  let text = String(value);
+
+  // Remove all ASCII control characters (0-31 and 127)
+  // This includes: newlines (\n), carriage returns (\r), tabs (\t), and all other control chars
+  // Replace with underscore to preserve visibility of attempted injection
+  // eslint-disable-next-line no-control-regex -- Required for security: sanitize control characters in logs
+  text = text.replace(/[\x00-\x1F\x7F]/g, '_');
+
+  // Truncate if too long to prevent log flooding
+  if (text.length > maxLength) {
+    text = text.substring(0, maxLength) + '...';
+  }
+
+  // Basic HTML escape to prevent log viewer exploits
+  text = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+
+  return text;
+};
+
 // Export default logger for convenience
 export default logger;

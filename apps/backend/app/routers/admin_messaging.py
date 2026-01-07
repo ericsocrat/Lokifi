@@ -15,6 +15,7 @@ from app.services.message_analytics_service import MessageAnalyticsService
 from app.services.message_moderation_service import MessageModerationService
 from app.services.performance_monitor import performance_monitor
 from app.services.websocket_manager import connection_manager
+from app.utils.enhanced_validation import sanitize_for_logging
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ async def get_platform_messaging_stats(
         }
 
     except Exception as e:
-        logger.error(f"Error getting platform stats: {e}")
+        logger.error("Error getting platform stats: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get platform statistics",
@@ -86,7 +87,9 @@ async def get_performance_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Error getting performance metrics: {e}")
+        logger.error(
+            "Error getting performance metrics: %s", sanitize_for_logging(str(e))
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get performance metrics",
@@ -114,7 +117,7 @@ async def get_moderation_stats(
         }
 
     except Exception as e:
-        logger.error(f"Error getting moderation stats: {e}")
+        logger.error("Error getting moderation stats: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get moderation statistics",
@@ -132,7 +135,11 @@ async def add_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.add_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.email} added blocked words: {words}")
+        logger.info(
+            "Admin %s added blocked words: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(str(words)),
+        )
 
         return {
             "added_words": words,
@@ -141,7 +148,7 @@ async def add_blocked_words(
         }
 
     except Exception as e:
-        logger.error(f"Error adding blocked words: {e}")
+        logger.error("Error adding blocked words: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to add blocked words",
@@ -159,7 +166,11 @@ async def remove_blocked_words(
         moderation_service = MessageModerationService(db)
         moderation_service.remove_blocked_words(words)
 
-        logger.info(f"Admin {admin_user.email} removed blocked words: {words}")
+        logger.info(
+            "Admin %s removed blocked words: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(str(words)),
+        )
 
         return {
             "removed_words": words,
@@ -168,7 +179,7 @@ async def remove_blocked_words(
         }
 
     except Exception as e:
-        logger.error(f"Error removing blocked words: {e}")
+        logger.error("Error removing blocked words: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to remove blocked words",
@@ -191,7 +202,7 @@ async def get_active_connections(admin_user: User = Depends(get_admin_user)):
         }
 
     except Exception as e:
-        logger.error(f"Error getting connection info: {e}")
+        logger.error("Error getting connection info: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get connection information",
@@ -217,7 +228,11 @@ async def admin_broadcast_message(
         for user_id in online_users:
             await connection_manager.send_personal_message(str(admin_message), user_id)
 
-        logger.info(f"Admin {admin_user.email} sent broadcast: {message}")
+        logger.info(
+            "Admin %s sent broadcast: %s",
+            sanitize_for_logging(admin_user.email),
+            sanitize_for_logging(message),
+        )
 
         return {
             "message": message,
@@ -226,7 +241,7 @@ async def admin_broadcast_message(
         }
 
     except Exception as e:
-        logger.error(f"Error sending admin broadcast: {e}")
+        logger.error("Error sending admin broadcast: %s", sanitize_for_logging(str(e)))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to send broadcast message",
@@ -286,7 +301,9 @@ async def comprehensive_health_check(
         }
 
     except Exception as e:
-        logger.error(f"Error in comprehensive health check: {e}")
+        logger.error(
+            "Error in comprehensive health check: %s", sanitize_for_logging(str(e))
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Health check failed",
