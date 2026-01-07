@@ -101,6 +101,29 @@ This folder contains all security-related documentation, audits, and implementat
 
 **Review Date**: January 2026 | **Next Review**: February 2026 (check for upstream fix)
 
+### CVE-2025-26319 (tmp) - Accepted Risk
+
+**Package**: `tmp` 0.0.33, 0.1.0 (transitive dependency of `@lhci/cli` dev tooling)
+
+**Vulnerability**: Arbitrary temporary file/directory write via symbolic link `dir` parameter. Attacker with control over the `dir` option can write outside intended temp directory.
+
+**Severity**: Low (CVSS 4.8)
+
+**Why Accepted**:
+1. **Development tooling only**: `tmp` is used by Lighthouse CI (`@lhci/cli`) for local testing
+2. **No production exposure**: Package never runs in production environment
+3. **Transitive dependency**: Cannot update directly; fix requires upstream `@lhci/cli` update
+4. **Local execution**: Attack would require local code execution (already compromised)
+5. **No user input**: Temp directories created programmatically, not from user input
+
+**Mitigation**:
+- `@lhci/cli` only runs in CI and local development
+- Never use in production deployments
+- Monitor for upstream fix in `@lhci/cli`
+- Fixed version 0.2.4+ already used by selenium-webdriver path
+
+**Review Date**: January 2026 | **Next Review**: April 2026
+
 ## 🔗 Related Documentation
 - [Development Guides](../guides/) - Secure coding practices and standards
 - [API Documentation](../api/) - Security considerations for API development
