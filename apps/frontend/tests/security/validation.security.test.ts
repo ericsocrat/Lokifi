@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
 import { sanitizeLogInput } from '@/lib/utils/logger';
+import { describe, expect, it } from 'vitest';
 
 /**
  * Security Tests: Input Validation
@@ -34,26 +34,26 @@ const validateUrl = (url: string, allowedProtocols = ['https:', 'http:']): boole
 const containsPathTraversal = (input: string): boolean => {
   // Check for ../ or ..\ sequences and encoded variants
   const patterns = [
-    /\.\.\//,      // ../
-    /\.\.\\/,      // ..\
-    /%2e%2e%2f/i,  // encoded ../
-    /%2e%2e%5c/i,  // encoded ..\
-    /\.\.%2f/i,    // partial encoded
-    /\.\.%5c/i,    // partial encoded
+    /\.\.\//, // ../
+    /\.\.\\/, // ..\
+    /%2e%2e%2f/i, // encoded ../
+    /%2e%2e%5c/i, // encoded ..\
+    /\.\.%2f/i, // partial encoded
+    /\.\.%5c/i, // partial encoded
   ];
-  return patterns.some(pattern => pattern.test(input));
+  return patterns.some((pattern) => pattern.test(input));
 };
 
 // SQL injection pattern detection (for client-side validation)
 const containsSqlKeywords = (input: string): boolean => {
   const sqlPatterns = [
     /(\bSELECT\b|\bUNION\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i,
-    /--\s*$/,           // SQL comment
-    /;\s*--/,           // Statement terminator with comment
-    /'\s*OR\s*'.*'/i,   // Classic injection pattern
-    /1\s*=\s*1/,        // Tautology
+    /--\s*$/, // SQL comment
+    /;\s*--/, // Statement terminator with comment
+    /'\s*OR\s*'.*'/i, // Classic injection pattern
+    /1\s*=\s*1/, // Tautology
   ];
-  return sqlPatterns.some(pattern => pattern.test(input));
+  return sqlPatterns.some((pattern) => pattern.test(input));
 };
 
 // Numeric validation helper
@@ -78,12 +78,12 @@ describe('Security: Input Validation', () => {
       const injectionAttempts = [
         "' OR '1'='1",
         "admin'--",
-        "1; DROP TABLE users--",
-        "UNION SELECT * FROM users",
-        "1 OR 1=1",
+        '1; DROP TABLE users--',
+        'UNION SELECT * FROM users',
+        '1 OR 1=1',
       ];
 
-      injectionAttempts.forEach(attempt => {
+      injectionAttempts.forEach((attempt) => {
         expect(containsSqlKeywords(attempt)).toBe(true);
       });
     });
@@ -97,7 +97,7 @@ describe('Security: Input Validation', () => {
       ];
 
       // These should be safe (words in context, not SQL commands)
-      safeInputs.forEach(input => {
+      safeInputs.forEach((input) => {
         // Exact SQL keywords without word boundaries are detected
         // but contextual uses may be allowed
         expect(typeof containsSqlKeywords(input)).toBe('boolean');
@@ -114,7 +114,7 @@ describe('Security: Input Validation', () => {
         'input && malicious_command',
       ];
 
-      dangerousInputs.forEach(input => {
+      dangerousInputs.forEach((input) => {
         const sanitized = sanitizeLogInput(input);
         // Log sanitizer should not allow control chars and should escape
         expect(sanitized).not.toContain('<');
@@ -127,12 +127,12 @@ describe('Security: Input Validation', () => {
       const dangerousFunctions = ['eval', 'Function', 'setTimeout', 'setInterval'];
       const safeAlternatives = ['JSON.parse', 'parseInt', 'parseFloat'];
 
-      dangerousFunctions.forEach(fn => {
+      dangerousFunctions.forEach((fn) => {
         // Dangerous when called with string argument
         expect(typeof fn).toBe('string');
       });
 
-      safeAlternatives.forEach(fn => {
+      safeAlternatives.forEach((fn) => {
         expect(typeof fn).toBe('string');
       });
 
@@ -152,7 +152,7 @@ describe('Security: Input Validation', () => {
         '..%2fetc/passwd',
       ];
 
-      traversalAttempts.forEach(attempt => {
+      traversalAttempts.forEach((attempt) => {
         expect(containsPathTraversal(attempt)).toBe(true);
       });
     });
@@ -165,21 +165,21 @@ describe('Security: Input Validation', () => {
         'assets/styles.css',
       ];
 
-      safePaths.forEach(path => {
+      safePaths.forEach((path) => {
         expect(containsPathTraversal(path)).toBe(false);
       });
     });
 
     it('should detect encoded path traversal attempts', () => {
       const encodedAttempts = [
-        '%2e%2e%2f',           // ../
-        '%2e%2e%5c',           // ..\
-        '%252e%252e%252f',     // double encoded
+        '%2e%2e%2f', // ../
+        '%2e%2e%5c', // ..\
+        '%252e%252e%252f', // double encoded
         'a%2e%2e%2fb',
       ];
 
       // At least the standard encoded ones should be detected
-      encodedAttempts.slice(0, 2).forEach(attempt => {
+      encodedAttempts.slice(0, 2).forEach((attempt) => {
         expect(containsPathTraversal(attempt)).toBe(true);
       });
     });
@@ -189,10 +189,10 @@ describe('Security: Input Validation', () => {
     it('should validate file types by magic bytes', () => {
       // Common magic bytes for file type detection
       const magicBytes: Record<string, number[]> = {
-        'png': [0x89, 0x50, 0x4E, 0x47],
-        'jpg': [0xFF, 0xD8, 0xFF],
-        'gif': [0x47, 0x49, 0x46],
-        'pdf': [0x25, 0x50, 0x44, 0x46],
+        png: [0x89, 0x50, 0x4e, 0x47],
+        jpg: [0xff, 0xd8, 0xff],
+        gif: [0x47, 0x49, 0x46],
+        pdf: [0x25, 0x50, 0x44, 0x46],
       };
 
       const checkMagicBytes = (data: number[], expected: number[]): boolean => {
@@ -200,7 +200,7 @@ describe('Security: Input Validation', () => {
       };
 
       // Test PNG detection
-      expect(checkMagicBytes([0x89, 0x50, 0x4E, 0x47, 0x0D], magicBytes.png)).toBe(true);
+      expect(checkMagicBytes([0x89, 0x50, 0x4e, 0x47, 0x0d], magicBytes.png)).toBe(true);
       // Fake PNG (wrong magic bytes)
       expect(checkMagicBytes([0x00, 0x00, 0x00, 0x00], magicBytes.png)).toBe(false);
     });
@@ -213,23 +213,29 @@ describe('Security: Input Validation', () => {
         return size >= MIN_FILE_SIZE && size <= MAX_FILE_SIZE;
       };
 
-      expect(validateFileSize(1024)).toBe(true);           // 1KB - valid
+      expect(validateFileSize(1024)).toBe(true); // 1KB - valid
       expect(validateFileSize(5 * 1024 * 1024)).toBe(true); // 5MB - valid
-      expect(validateFileSize(0)).toBe(false);              // 0 bytes - invalid
+      expect(validateFileSize(0)).toBe(false); // 0 bytes - invalid
       expect(validateFileSize(11 * 1024 * 1024)).toBe(false); // 11MB - too large
     });
 
     it('should reject potentially dangerous file extensions', () => {
       const dangerousExtensions = [
-        '.exe', '.bat', '.cmd', '.msi',
-        '.vbs', '.js', '.jse', '.ps1',
-        '.scr', '.pif', '.com', '.dll',
+        '.exe',
+        '.bat',
+        '.cmd',
+        '.msi',
+        '.vbs',
+        '.js',
+        '.jse',
+        '.ps1',
+        '.scr',
+        '.pif',
+        '.com',
+        '.dll',
       ];
 
-      const safeExtensions = [
-        '.jpg', '.png', '.gif', '.pdf',
-        '.doc', '.docx', '.txt', '.csv',
-      ];
+      const safeExtensions = ['.jpg', '.png', '.gif', '.pdf', '.doc', '.docx', '.txt', '.csv'];
 
       const isDangerousExtension = (filename: string): boolean => {
         const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
@@ -239,9 +245,9 @@ describe('Security: Input Validation', () => {
       // Test dangerous extensions
       expect(isDangerousExtension('malware.exe')).toBe(true);
       expect(isDangerousExtension('script.ps1')).toBe(true);
-      
+
       // Test safe extensions
-      safeExtensions.forEach(ext => {
+      safeExtensions.forEach((ext) => {
         expect(isDangerousExtension(`file${ext}`)).toBe(false);
       });
     });
@@ -281,11 +287,11 @@ describe('Security: Input Validation', () => {
         'user\n@example.com',
       ];
 
-      validEmails.forEach(email => {
+      validEmails.forEach((email) => {
         expect(validateEmail(email)).toBe(true);
       });
 
-      invalidEmails.forEach(email => {
+      invalidEmails.forEach((email) => {
         expect(validateEmail(email)).toBe(false);
       });
     });
@@ -305,11 +311,11 @@ describe('Security: Input Validation', () => {
         'not-a-url',
       ];
 
-      validUrls.forEach(url => {
+      validUrls.forEach((url) => {
         expect(validateUrl(url)).toBe(true);
       });
 
-      invalidUrls.forEach(url => {
+      invalidUrls.forEach((url) => {
         expect(validateUrl(url, ['https:', 'http:'])).toBe(false);
       });
     });
@@ -321,7 +327,7 @@ describe('Security: Input Validation', () => {
         'vbscript:msgbox("XSS")',
       ];
 
-      xssAttempts.forEach(url => {
+      xssAttempts.forEach((url) => {
         expect(validateUrl(url, ['https:', 'http:'])).toBe(false);
       });
     });
@@ -335,7 +341,7 @@ describe('Security: Input Validation', () => {
         'Input\x00with\x1Fcontrol\x7Fchars',
       ];
 
-      logInjectionAttempts.forEach(attempt => {
+      logInjectionAttempts.forEach((attempt) => {
         const sanitized = sanitizeLogInput(attempt);
         // Should not contain newlines or control chars
         // eslint-disable-next-line no-control-regex -- Required for security: testing control character sanitization

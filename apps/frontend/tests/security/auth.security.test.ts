@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
  * Security Tests: Authentication
@@ -35,9 +35,21 @@ const getPasswordStrength = (pwd: string): { score: number; label: string; color
 
 // Common weak passwords list (top passwords to reject)
 const COMMON_PASSWORDS = [
-  'password', '123456', '12345678', 'qwerty', 'abc123',
-  'password1', 'admin', 'letmein', 'welcome', 'monkey',
-  'iloveyou', 'sunshine', 'princess', '1234567890', 'football',
+  'password',
+  '123456',
+  '12345678',
+  'qwerty',
+  'abc123',
+  'password1',
+  'admin',
+  'letmein',
+  'welcome',
+  'monkey',
+  'iloveyou',
+  'sunshine',
+  'princess',
+  '1234567890',
+  'football',
 ];
 
 // Rate limiter simulation
@@ -263,12 +275,12 @@ describe('Security: Authentication', () => {
       const shortPasswords = ['pass', '1234567', 'short'];
       const validPasswords = ['password8', '12345678', 'longpassword'];
 
-      shortPasswords.forEach(pwd => {
+      shortPasswords.forEach((pwd) => {
         expect(pwd.length).toBeLessThan(8);
         expect(getPasswordStrength(pwd).label).toBe('Weak');
       });
 
-      validPasswords.forEach(pwd => {
+      validPasswords.forEach((pwd) => {
         expect(pwd.length).toBeGreaterThanOrEqual(8);
       });
     });
@@ -294,7 +306,7 @@ describe('Security: Authentication', () => {
         return COMMON_PASSWORDS.includes(pwd.toLowerCase());
       };
 
-      COMMON_PASSWORDS.forEach(pwd => {
+      COMMON_PASSWORDS.forEach((pwd) => {
         expect(isCommonPassword(pwd)).toBe(true);
       });
 
@@ -435,7 +447,7 @@ describe('Security: Authentication', () => {
       const sessionIds = new Set<string>();
       const userIds = ['user-1', 'user-2', 'user-3', 'user-4', 'user-5'];
 
-      userIds.forEach(userId => {
+      userIds.forEach((userId) => {
         const sessionId = sessionManager.createSession(userId);
         sessionIds.add(sessionId);
       });
@@ -447,11 +459,7 @@ describe('Security: Authentication', () => {
 
   describe('Email Validation Security', () => {
     it('should validate proper email format', () => {
-      const validEmails = [
-        'user@example.com',
-        'test.user@domain.org',
-        'user+tag@example.co.uk',
-      ];
+      const validEmails = ['user@example.com', 'test.user@domain.org', 'user+tag@example.co.uk'];
 
       const invalidEmails = [
         'invalid',
@@ -461,11 +469,11 @@ describe('Security: Authentication', () => {
         'user\n@hack.com', // Newline injection
       ];
 
-      validEmails.forEach(email => {
+      validEmails.forEach((email) => {
         expect(validateEmail(email)).toBe(true);
       });
 
-      invalidEmails.forEach(email => {
+      invalidEmails.forEach((email) => {
         expect(validateEmail(email)).toBe(false);
       });
     });
