@@ -78,6 +78,29 @@ This folder contains all security-related documentation, audits, and implementat
 
 **Review Date**: January 2026 | **Next Review**: April 2026
 
+### CVE-2026-0621 (@modelcontextprotocol/sdk) - Accepted Risk
+
+**Package**: `@modelcontextprotocol/sdk` 1.25.1 (development tooling only)
+
+**Vulnerability**: ReDoS (Regular Expression Denial of Service) in UriTemplate class when processing RFC 6570 exploded array patterns. Malicious URIs can cause Node.js process to become unresponsive.
+
+**Severity**: High (CVSS 8.7)
+
+**Why Accepted**:
+1. **Development tooling only**: MCP servers run locally for Copilot integration, not in production
+2. **No fix available**: Upstream fix pending in Anthropic's SDK
+3. **Local execution**: Attack surface limited to local development machine
+4. **No network exposure**: MCP servers communicate via stdio, not exposed to network
+5. **Controlled inputs**: Only accepts requests from VS Code Copilot, not arbitrary network traffic
+
+**Mitigation**:
+- MCP servers are gitignored development tools
+- Never run MCP servers in production environment
+- Monitor for upstream fix release
+- Consider alternative patterns if vulnerability becomes exploitable
+
+**Review Date**: January 2026 | **Next Review**: February 2026 (check for upstream fix)
+
 ## 🔗 Related Documentation
 - [Development Guides](../guides/) - Secure coding practices and standards
 - [API Documentation](../api/) - Security considerations for API development
