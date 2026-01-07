@@ -24,6 +24,7 @@ vi.mock('@/lib/utils/logger', () => ({
     error: vi.fn(),
     debug: vi.fn(),
   }),
+  sanitizeLogInput: (input: unknown) => input,
 }));
 
 // Mock fetch
