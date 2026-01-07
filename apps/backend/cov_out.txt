@@ -1,0 +1,221 @@
+......................................................s................. [  2%]
+.............s.sssssss.s................................................ [  4%]
+................................s.......s......................s........ [  6%]
+...................s..............s..................................... [  8%]
+s......s......s......s....................s......s......s............... [ 10%]
+.................ssssss......sssss...................................... [ 12%]
+........................................................................ [ 14%]
+........................................................................ [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 24%]
+........................................................................ [ 26%]
+........................................................................ [ 28%]
+........................................................................ [ 30%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+....s................................s.................................. [ 37%]
+........................................................................ [ 39%]
+........................................................................ [ 41%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+.................................s......s.............ss............s... [ 49%]
+........................................................................ [ 51%]
+..............................................s......................... [ 53%]
+........................................................................ [ 55%]
+.....................................................................s.. [ 57%]
+....s................................................................... [ 59%]
+........................................................................ [ 61%]
+.....s.................................................................. [ 63%]
+..................s.s.s.s.s.s........................................... [ 65%]
+.......s......s......s.................................................. [ 67%]
+.s......s............................................................... [ 69%]
+.s.................s......s......s......s............................... [ 72%]
+..............s......s...........s......s......s......s................. [ 74%]
+........................................................................ [ 76%]
+...........s................................................s......s.... [ 78%]
+..s..........................s.....................................s.... [ 80%]
+..s..................................................................... [ 82%]
+.................sssss..........................s....................... [ 84%]
+....................s.................................s......s.......s.. [ 86%]
+..........................................s.........................s... [ 88%]
+...s......s......s....................................s......s......s... [ 90%]
+...s......s......s......s............................................... [ 92%]
+..............s......s......s......s.................................... [ 94%]
+.......s......s.......s......ss.........s............................... [ 96%]
+........................................................................ [ 98%]
+..........................................                               [100%]
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.9-final-0 _______________
+
+Name                                             Stmts   Miss Branch BrPart  Cover
+----------------------------------------------------------------------------------
+app\__init__.py                                      0      0      0      0   100%
+app\analytics\cross_database_compatibility.py      236     82     60      8    64%
+app\api\__init__.py                                  0      0      0      0   100%
+app\api\deps.py                                     37      0      8      0   100%
+app\api\j6_2_endpoints.py                          197    112      8      0    41%
+app\api\market\routes.py                            31      5      0      0    84%
+app\api\routes\__init__.py                           0      0      0      0   100%
+app\api\routes\alerts.py                            92     56     22      0    32%
+app\api\routes\auth.py                              82      0     10      0   100%
+app\api\routes\cache.py                             51      0      2      0   100%
+app\api\routes\chat.py                             105      0     38      2    99%
+app\api\routes\crypto.py                             3      0      0      0   100%
+app\api\routes\health_check.py                      74      9      8      2    87%
+app\api\routes\market.py                            20      0      0      0   100%
+app\api\routes\monitoring.py                       137     24     18      0    85%
+app\api\routes\portfolio.py                        173    107     24      0    34%
+app\api\routes\security.py                          84     55     16      0    29%
+app\api\routes\social.py                           128      2     24      2    97%
+app\core\__init__.py                                 0      0      0      0   100%
+app\core\advanced_redis_client.py                  263    165     58      6    32%
+app\core\auth_deps.py                               40     20     14      4    44%
+app\core\config.py                                  72      0     10      0   100%
+app\core\database.py                               118     59     40      8    41%
+app\core\optimized_imports.py                       25      0      4      0   100%
+app\core\performance_monitor.py                     51      0      4      0   100%
+app\core\redis_cache.py                            172    122     40      3    25%
+app\core\redis_client.py                           204     26     54     11    86%
+app\core\redis_keys.py                             122     46     10      1    60%
+app\core\security.py                                86      1     20      1    98%
+app\core\security_config.py                         39      0      4      0   100%
+app\db\__init__.py                                   0      0      0      0   100%
+app\db\base.py                                       3      0      0      0   100%
+app\db\database.py                                  25      4      2      0    78%
+app\db\db.py                                        25      1      0      0    96%
+app\db\models.py                                    83      4      2      0    93%
+app\db\schemas\alert.py                             14      0      0      0   100%
+app\db\schemas\market.py                            14      0      0      0   100%
+app\db\schemas\portfolio.py                         14      0      0      0   100%
+app\db\schemas\social.py                            12      0      0      0   100%
+app\db\session.py                                    6      0      0      0   100%
+app\enhanced_startup.py                            213    126     32      1    36%
+app\integrations\notification_hooks.py              68     34      2      0    49%
+app\main.py                                        125     71      4      1    43%
+app\middleware\__init__.py                           0      0      0      0   100%
+app\middleware\rate_limiting.py                     93      1     26      2    97%
+app\middleware\security.py                          30     12      6      0    61%
+app\models\__init__.py                               8      0      0      0   100%
+app\models\ai_thread.py                             58      1      2      1    97%
+app\models\api.py                                   90      0      0      0   100%
+app\models\conversation.py                          63      2      2      1    95%
+app\models\follow.py                                19      1      2      1    90%
+app\models\notification_models.py                  114     31     18      1    64%
+app\models\profile.py                               26      1      2      1    93%
+app\models\reaction.py                              30      2      2      1    91%
+app\models\user.py                                  40      5      2      1    86%
+app\optimization\__init__.py                         0      0      0      0   100%
+app\optimization\performance_optimizer.py          298     36     72      9    85%
+app\routers\__init__.py                              0      0      0      0   100%
+app\routers\admin_messaging.py                     108     78      8      0    26%
+app\routers\ai.py                                  218     98     30      0    52%
+app\routers\ai_websocket.py                        104      0     28      1    99%
+app\routers\alerts.py                                9      2      0      0    78%
+app\routers\auth.py                                 99     27     10      4    72%
+app\routers\chat.py                                 10      4      2      0    50%
+app\routers\conversations.py                       198     38     24      5    81%
+app\routers\crypto.py                               95     62      8      0    32%
+app\routers\fmp.py                                   2      0      0      0   100%
+app\routers\follow.py                              149     24     18      2    84%
+app\routers\health.py                                5      0      0      0   100%
+app\routers\market_data.py                          90     52     22      0    34%
+app\routers\mock_ohlc.py                            20     14      2      0    27%
+app\routers\news.py                                  6      1      0      0    83%
+app\routers\notifications.py                       211     95     14      0    52%
+app\routers\ohlc.py                                 44     31      6      0    26%
+app\routers\portfolio.py                             9      2      0      0    78%
+app\routers\profile.py                              62      0      4      0   100%
+app\routers\profile_enhanced.py                    125     90     28      0    23%
+app\routers\smart_prices.py                        210    124     22      0    37%
+app\routers\social.py                                9      2      0      0    78%
+app\routers\websocket.py                           119      4     22      2    96%
+app\routers\websocket_prices.py                    149      5     46      4    95%
+app\schemas\ai_schemas.py                           82      5      2      0    92%
+app\schemas\auth.py                                 47      0      0      0   100%
+app\schemas\conversation.py                         84      0      0      0   100%
+app\schemas\follow.py                               69      0      0      0   100%
+app\schemas\profile.py                              85      0      0      0   100%
+app\services\__init__.py                             0      0      0      0   100%
+app\services\advanced_monitoring.py                328     66     66      5    80%
+app\services\advanced_storage_analytics.py         216     92     56      5    51%
+app\services\ai.py                                 114      4     44      5    94%
+app\services\ai_analytics.py                       113     73     22      0    30%
+app\services\ai_context_manager.py                 123      7     28      3    92%
+app\services\ai_provider.py                         87     13     10      2    82%
+app\services\ai_provider_manager.py                109      6     30      1    95%
+app\services\ai_service.py                         208     29     56      7    86%
+app\services\alerts.py                             172      5     34      1    97%
+app\services\auth.py                                25      0      6      0   100%
+app\services\auth_service.py                        94      0     22      1    99%
+app\services\content_moderation.py                 131      1     52      3    98%
+app\services\conversation_export.py                259     58     98     14    74%
+app\services\conversation_service.py               138      2     34      3    97%
+app\services\crypto_data_service.py                151      4     48      9    92%
+app\services\crypto_discovery_service.py           187      7     42      5    95%
+app\services\data_archival_service.py              147     38     22      4    69%
+app\services\data_service.py                       256     33     94     13    81%
+app\services\database_migration.py                  61      0     12      0   100%
+app\services\enhanced_performance_monitor.py       146     85     22      0    36%
+app\services\enhanced_rate_limiter.py               36      9      8      1    68%
+app\services\errors.py                               3      0      0      0   100%
+app\services\follow_service.py                     187      6     36      2    96%
+app\services\forex_service.py                       82      6     16      0    94%
+app\services\historical_price_service.py           222      9     54      8    94%
+app\services\indicators.py                          46      0     18      0   100%
+app\services\indices_service.py                    140     12     48     11    88%
+app\services\j53_performance_monitor.py            280      7     68     10    95%
+app\services\j53_scheduler.py                       23      6      0      0    74%
+app\services\message_analytics_service.py           93      0      4      0   100%
+app\services\message_moderation_service.py         104     72     30      0    24%
+app\services\message_search_service.py              68     36     16      0    38%
+app\services\multimodal_ai_service.py              137     96     38      1    24%
+app\services\news.py                                10      0      4      0   100%
+app\services\notification_analytics.py             182     66     30      4    58%
+app\services\notification_emitter.py               132      1     14      1    99%
+app\services\notification_service.py               313     16     96     16    92%
+app\services\performance_monitor.py                121     78     28      0    29%
+app\services\prices.py                              27      0      8      0   100%
+app\services\profile_enhanced.py                   173      0     50      5    98%
+app\services\profile_service.py                    138      4     54      5    95%
+app\services\providers\__init__.py                   0      0      0      0   100%
+app\services\providers\alphavantage.py              15      0      4      0   100%
+app\services\providers\base.py                      12      1      2      1    86%
+app\services\providers\cmc.py                       12      0      4      0   100%
+app\services\providers\coingecko.py                  7      0      0      0   100%
+app\services\providers\finnhub.py                    7      0      2      0   100%
+app\services\providers\fmp.py                        5      0      0      0   100%
+app\services\providers\huggingface_provider.py     114     28     52      6    67%
+app\services\providers\marketaux.py                  5      0      0      0   100%
+app\services\providers\newsapi.py                    5      0      0      0   100%
+app\services\providers\ollama_provider.py           99      9     26      4    88%
+app\services\providers\openrouter_provider.py       74      0     26      4    96%
+app\services\providers\polygon.py                    9      0      0      0   100%
+app\services\rate_limit_service.py                  42      0      4      0   100%
+app\services\smart_notifications.py                222    124     38      0    38%
+app\services\smart_price_service.py                176     79     68     15    49%
+app\services\stock_service.py                       79      3     16      0    97%
+app\services\timeframes.py                          12      0      2      0   100%
+app\services\unified_asset_service.py              161     83     32      4    46%
+app\services\websocket_manager.py                  177     91     50      3    47%
+app\tasks\maintenance.py                           132      0      8      0   100%
+app\utils\__init__.py                                2      0      0      0   100%
+app\utils\enhanced_validation.py                   164     10     66      5    93%
+app\utils\input_validation.py                       49      7     16      1    88%
+app\utils\logger.py                                122     22     32      6    78%
+app\utils\redis.py                                  13      6      2      0    47%
+app\utils\security_alerts.py                       208     85     38      8    54%
+app\utils\security_logger.py                       141     21     32      7    82%
+app\utils\sse.py                                    10      5      2      0    42%
+app\websockets\advanced_websocket_manager.py       347     36     72     15    86%
+app\websockets\jwt_websocket_auth.py               203     18     50      3    89%
+app\websockets\notifications.py                    134      6     32      1    96%
+----------------------------------------------------------------------------------
+TOTAL                                            14871   3562   3062    314    74%
+Coverage HTML written to dir htmlcov
+Coverage XML written to file coverage.xml
+Coverage JSON written to file coverage.json
+Required test coverage of 20% reached. Total coverage: 73.52%
+3393 passed, 108 skipped in 247.25s (0:04:07)
