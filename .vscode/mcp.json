@@ -1,0 +1,28 @@
+{
+  "servers": {
+    "lokifi-coverage": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"],
+      "description": "Real-time test coverage metrics (7 tools)"
+    },
+    "lokifi-patterns": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-pattern-library-server.js"],
+      "description": "44 battle-tested patterns from /docs/architecture/patterns/"
+    },
+    "lokifi-docs": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-docs-search-server.js"],
+      "description": "Search 109+ markdown documentation files"
+    },
+    "lokifi-git": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-git-history-server.js"],
+      "description": "Search 900+ commits and git history"
+    }
+  }
+}

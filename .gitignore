@@ -49,6 +49,14 @@ tools/.cache/
 .DS_Store
 Thumbs.db
 .vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/mcp.json
+!.vscode/copilot-settings.json
+!.vscode/keybindings.json
+!.vscode/README.md
 .idea/
 
 # Database files
