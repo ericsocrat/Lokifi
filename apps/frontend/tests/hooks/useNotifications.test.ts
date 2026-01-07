@@ -279,6 +279,8 @@ describe('useNotifications', () => {
 
   describe('loadMore', () => {
     it('appends more notifications when hasMore is true', async () => {
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
@@ -361,6 +363,8 @@ describe('useNotifications', () => {
   describe('markAsRead', () => {
     it('marks notification as read and updates count', async () => {
       const notification = createNotification({ id: 'mark-read-1', is_read: false });
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
@@ -407,6 +411,8 @@ describe('useNotifications', () => {
         createNotification({ id: '1', is_read: false }),
         createNotification({ id: '2', is_read: false }),
       ];
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
@@ -450,6 +456,8 @@ describe('useNotifications', () => {
   describe('dismissNotification', () => {
     it('removes notification from list', async () => {
       const notification = createNotification({ id: 'dismiss-1' });
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
@@ -492,6 +500,8 @@ describe('useNotifications', () => {
 
   describe('clearAllNotifications', () => {
     it('clears all notifications and resets counts', async () => {
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>
