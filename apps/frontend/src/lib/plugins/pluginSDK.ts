@@ -75,7 +75,9 @@ class IndicatorRegistry {
 
   register(definition: IndicatorDefinition) {
     if (this.indicators.has(definition.id)) {
-      logger.warn(`Indicator ${definition.id} is already registered`, { indicatorId: definition.id });
+      logger.warn(`Indicator ${definition.id} is already registered`, {
+        indicatorId: definition.id,
+      });
     }
     this.indicators.set(definition.id, definition);
   }
