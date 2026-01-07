@@ -27,7 +27,7 @@
 **Status:** ✅ **COMPLETE**
 
 **Current Session:**
-- ✅ **Session 131 COMPLETE** - Test fix (data_archival_service mock side_effect count)
+- ✅ **Session 131 COMPLETE** - Test fix + formatting cleanup
 
 **Previous Sessions:**
 - ✅ **Session 130 COMPLETE** - ESLint warnings cleanup + security documentation
@@ -75,6 +75,10 @@
    - 4 new tests for `compress_old_messages` functionality (added by pre-push hook)
    - All passing: success, no_candidates, disabled, error cases
 
+3. **Formatting Cleanup**:
+   - Applied Black formatting to test_data_archival_service.py
+   - Fixed Ruff I001 import ordering violation
+
 **Quality Validation**:
 - All 43 tests in test_data_archival_service.py passing (was 42 + 1 failed) ✅
 - Ruff: 0 violations ✅
@@ -82,6 +86,7 @@
 
 **Commits**:
 - `abe40f15` - fix(tests): correct mock side_effect count for storage metrics tests
+- `14527a7e` - style(tests): apply Black formatting to test_data_archival_service.py
 
 ### 🎉 Session 130: ESLint Warnings Cleanup + Quality Sweep
 
