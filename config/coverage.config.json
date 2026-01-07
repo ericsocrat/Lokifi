@@ -40,38 +40,38 @@
       "passingTests": 7676,
       "skippedTests": 66,
       "testFiles": 247,
-      "executionTimeSeconds": 145,
+      "executionTimeSeconds": 143,
       "lastMeasured": "2026-01-07",
       "status": "passing",
       "notes": "Frontend exceeds threshold (11.61% > 10%)"
     },
     "backend": {
-      "lines": 28.21,
+      "lines": 79,
       "branches": null,
       "functions": null,
-      "statements": 28.21,
-      "totalTests": 3988,
-      "passingTests": 3988,
+      "statements": 79,
+      "totalTests": 3894,
+      "passingTests": 3894,
       "failingTests": 0,
-      "skippedTests": 0,
+      "skippedTests": 101,
       "testFiles": 150,
-      "executionTimeSeconds": 216,
+      "executionTimeSeconds": 256,
       "lastMeasured": "2026-01-07",
       "status": "passing",
-      "notes": "Backend coverage 51.09%, exceeds 20% threshold"
+      "notes": "Backend coverage 79%, exceeds 20% threshold"
     },
     "overall": {
-      "lines": 31.35,
+      "lines": 45,
       "branches": 88.7,
       "functions": 84.69,
-      "statements": 31.35,
-      "totalTests": 6561,
-      "passingTests": 6368,
+      "statements": 45,
+      "totalTests": 11570,
+      "passingTests": 11570,
       "failingTests": 0,
-      "skippedTests": 193,
-      "lastMeasured": "2026-01-05",
+      "skippedTests": 167,
+      "lastMeasured": "2026-01-07",
       "status": "passing",
-      "notes": "Overall project coverage passing with 6368 tests (51% backend, 11.61% frontend)"
+      "notes": "Overall project coverage passing with 11,570 tests (79% backend, 11.61% frontend)"
     }
   },
 
