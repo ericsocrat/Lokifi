@@ -329,6 +329,7 @@ export const sanitizeLogInput = (value: unknown, maxLength: number = 200): strin
   // Remove all ASCII control characters (0-31 and 127)
   // This includes: newlines (\n), carriage returns (\r), tabs (\t), and all other control chars
   // Replace with underscore to preserve visibility of attempted injection
+  // eslint-disable-next-line no-control-regex -- Required for security: sanitize control characters in logs
   text = text.replace(/[\x00-\x1F\x7F]/g, '_');
 
   // Truncate if too long to prevent log flooding
