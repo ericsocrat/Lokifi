@@ -1,3 +1,7 @@
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('ApiFetch');
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8000/api';
 
 // Lightweight token store (localStorage). In a production app, consider httpOnly cookies.
@@ -45,7 +49,7 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
   } catch (error) {
     // Development-only error logging
     if (process.env.NODE_ENV === 'development') {
-      console.error('❌ apiFetch failed:', error);
+      logger.error('apiFetch failed', { url: input, error: sanitizeLogInput(error) });
     }
     throw error;
   }

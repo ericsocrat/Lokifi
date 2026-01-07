@@ -5,7 +5,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { createLogger } from '@/lib/utils/logger';
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
 
 const logger = createLogger('useNotifications');
 
@@ -132,7 +132,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       const token = getAuthToken();
       if (!token) {
         // Don't throw error, just return null to prevent console spam
-        console.warn('No authentication token found for notifications');
+        logger.warn('No authentication token found for notifications');
         return null;
       }
 
@@ -193,7 +193,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         setTotalCount(data.total_count || 0);
         setHasMore(data.has_more || false);
       } catch (err) {
-        console.error('Failed to load notifications:', err);
+        logger.error('Failed to load notifications', { error: sanitizeLogInput(err) });
         setError(err instanceof Error ? err.message : 'Failed to load notifications');
       } finally {
         setIsLoading(false);
@@ -228,7 +228,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (err) {
-        console.error('Failed to mark notification as read:', err);
+        logger.error('Failed to mark notification as read', { notificationId, error: sanitizeLogInput(err) });
         setError(err instanceof Error ? err.message : 'Failed to mark as read');
       }
     },
@@ -252,7 +252,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
       setUnreadCount(0);
     } catch (err) {
-      console.error('Failed to mark all notifications as read:', err);
+      logger.error('Failed to mark all notifications as read', { error: sanitizeLogInput(err) });
       setError(err instanceof Error ? err.message : 'Failed to mark all as read');
     }
   }, [apiCall]);
@@ -274,7 +274,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
         setTotalCount((prev) => Math.max(0, prev - 1));
       } catch (err) {
-        console.error('Failed to dismiss notification:', err);
+        logger.error('Failed to dismiss notification', { notificationId, error: sanitizeLogInput(err) });
         setError(err instanceof Error ? err.message : 'Failed to dismiss notification');
       }
     },
@@ -293,7 +293,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       setHasMore(false);
       offset.current = 0;
     } catch (err) {
-      console.error('Failed to clear all notifications:', err);
+      logger.error('Failed to clear all notifications', { error: sanitizeLogInput(err) });
       setError(err instanceof Error ? err.message : 'Failed to clear notifications');
     }
   }, [apiCall]);
@@ -305,7 +305,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       setStats(data);
       return data;
     } catch (err) {
-      console.error('Failed to get notification stats:', err);
+      logger.error('Failed to get notification stats', { error: sanitizeLogInput(err) });
       return null;
     }
   }, [apiCall]);
@@ -378,7 +378,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
               break;
           }
         } catch (err) {
-          console.error('Error processing WebSocket message:', err);
+          logger.error('Error processing WebSocket message', { error: sanitizeLogInput(err) });
         }
       };
 
@@ -397,11 +397,11 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       };
 
       ws.onerror = (error) => {
-        console.error('Notification WebSocket error:', error);
+        logger.error('Notification WebSocket error', { error: sanitizeLogInput(error) });
         setError('WebSocket connection failed');
       };
     } catch (err) {
-      console.error('Failed to connect WebSocket:', err);
+      logger.error('Failed to connect WebSocket', { error: sanitizeLogInput(err) });
       setError('Failed to connect to real-time notifications');
     }
   }, [realTimeEnabled, getAuthToken, maxNotifications]);

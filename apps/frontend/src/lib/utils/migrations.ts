@@ -3,6 +3,10 @@
  * All persisted state carries { schemaVersion } for safe migrations
  */
 
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('Migrations');
+
 export const CURRENT_SCHEMA_VERSION = 1;
 
 export interface VersionedState {
@@ -173,7 +177,7 @@ export function migrateAll(allState: Record<string, VersionedState>): Record<str
     try {
       migrated[stateType] = migrateState(stateType, state);
     } catch (error) {
-      console.warn(`Failed to migrate ${stateType}:`, error);
+      logger.warn(`Failed to migrate ${stateType}`, { stateType, error: sanitizeLogInput(error) });
       // Preserve original state if migration fails
       migrated[stateType] = state;
     }

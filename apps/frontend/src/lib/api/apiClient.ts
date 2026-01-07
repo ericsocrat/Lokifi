@@ -11,6 +11,10 @@ import type {
 } from 'types/api';
 import { z } from 'zod';
 
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('APIClient');
+
 // Zod schemas for validation
 const OHLCBarSchema = z.object({
   timestamp: z.number(),
@@ -129,16 +133,16 @@ export class APIClient {
         } else {
           // Backend returned JSON but not in expected format - preserve it
           errorDetails = errorData;
-          console.warn('[APIClient] Received error response not matching schema:', {
+          logger.warn('Received error response not matching schema', {
             status: response.status,
             statusText: response.statusText,
-            data: errorData,
+            data: sanitizeLogInput(errorData),
             parseErrors: parsedError.error?.issues,
           });
         }
       } catch (jsonError) {
         // Could not parse JSON - fallback to statusText
-        console.warn('[APIClient] Could not parse error response as JSON:', {
+        logger.warn('Could not parse error response as JSON', {
           status: response.status,
           statusText: response.statusText,
           parseError: jsonError instanceof Error ? jsonError.message : String(jsonError),
@@ -154,14 +158,14 @@ export class APIClient {
       const result = schema.safeParse(data);
 
       if (!result.success) {
-        console.error('API response validation failed:', result.error);
+        logger.error('API response validation failed', { error: sanitizeLogInput(result.error) });
         throw new APIError('Invalid response format from server', 'VALIDATION_ERROR', 500);
       }
 
       return result.data;
     } catch (parseError) {
       // Handle Zod parsing crashes or other unexpected errors
-      console.error('[APIClient] Unexpected error during response validation:', parseError);
+      logger.error('Unexpected error during response validation', { error: sanitizeLogInput(parseError) });
       throw new APIError('Invalid response format from server', 'VALIDATION_ERROR', 500);
     }
   }

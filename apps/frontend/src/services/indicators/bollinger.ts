@@ -18,6 +18,10 @@
  * - Wide bands: High volatility
  */
 
+import { createLogger } from '@/lib/utils/logger';
+
+const logger = createLogger('BollingerBands');
+
 export interface BollingerBandsData {
   index: number;
   middle: number; // SMA (Middle Band)
@@ -100,12 +104,12 @@ export function calculateBollingerBands(
   }
 
   if (period <= 0 || !Number.isFinite(period)) {
-    console.warn('Bollinger Bands: Invalid period, must be positive number');
+    logger.warn('Bollinger Bands: Invalid period, must be positive number', { period });
     return [];
   }
 
   if (multiplier <= 0 || !Number.isFinite(multiplier)) {
-    console.warn('Bollinger Bands: Invalid multiplier, must be positive number');
+    logger.warn('Bollinger Bands: Invalid multiplier, must be positive number', { multiplier });
     return [];
   }
 

@@ -15,6 +15,10 @@
  * - Symbol-based lookup
  */
 
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('MarketDataService');
+
 export interface MarketAsset {
   symbol: string;
   name: string;
@@ -2200,7 +2204,7 @@ class MarketDataService {
       });
 
       if (!response.ok) {
-        console.warn('Failed to fetch real prices, using simulated data');
+        logger.warn('Failed to fetch real prices, using simulated data');
         return false;
       }
 
@@ -2247,7 +2251,7 @@ class MarketDataService {
 
       return true;
     } catch (error) {
-      console.error('Error fetching real prices:', error);
+      logger.error('Error fetching real prices', { error: sanitizeLogInput(error) });
       return false;
     }
   }

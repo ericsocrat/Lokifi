@@ -142,7 +142,7 @@ export class HistoricalDataService {
 
       return await response.json();
     } catch (error) {
-      console.error(`Failed to fetch history for ${symbol}:`, error);
+      logger.error(`Failed to fetch history for ${symbol}`, { error: sanitizeLogInput(error) });
       throw error;
     }
   }
@@ -169,7 +169,7 @@ export class HistoricalDataService {
 
       return await response.json();
     } catch (error) {
-      console.error(`Failed to fetch OHLCV for ${symbol}:`, error);
+      logger.error(`Failed to fetch OHLCV for ${symbol}`, { error: sanitizeLogInput(error) });
       throw error;
     }
   }
@@ -189,7 +189,7 @@ export class HistoricalDataService {
           const data = await this.getHistory(symbol, period);
           results.set(symbol, data);
         } catch (error) {
-          console.error(`Failed to fetch history for ${symbol}:`, error);
+          logger.error(`Failed to fetch history for ${symbol}`, { error: sanitizeLogInput(error) });
         }
       })
     );
@@ -217,7 +217,7 @@ export class CryptoDiscoveryService {
 
       return await response.json();
     } catch (error) {
-      console.error('Failed to fetch top cryptos:', error);
+      logger.error('Failed to fetch top cryptos', { error: sanitizeLogInput(error) });
       throw error;
     }
   }
@@ -238,7 +238,7 @@ export class CryptoDiscoveryService {
 
       return await response.json();
     } catch (error) {
-      console.error(`Failed to search cryptos with query "${query}":`, error);
+      logger.error(`Failed to search cryptos with query "${query}"`, { error: sanitizeLogInput(error) });
       throw error;
     }
   }
@@ -258,7 +258,7 @@ export class CryptoDiscoveryService {
       const data = await response.json();
       return data.mapping || {};
     } catch (error) {
-      console.error('Failed to fetch crypto mapping:', error);
+      logger.error('Failed to fetch crypto mapping', { error: sanitizeLogInput(error) });
       throw error;
     }
   }
@@ -315,12 +315,12 @@ export class WebSocketPriceService {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
           } catch (error) {
-            console.error('Failed to parse WebSocket message:', error);
+            logger.error('Failed to parse WebSocket message', { error: sanitizeLogInput(error) });
           }
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          logger.error('WebSocket error', { error: sanitizeLogInput(error) });
           this.isConnecting = false;
           reject(error);
         };
@@ -367,7 +367,7 @@ export class WebSocketPriceService {
         break;
 
       case 'error':
-        console.error('WebSocket error:', sanitizeLogInput(message.error));
+        logger.error('WebSocket error', { error: sanitizeLogInput(message.error) });
         break;
 
       case 'pong':
@@ -381,7 +381,7 @@ export class WebSocketPriceService {
    */
   subscribe(symbols: string[]): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn('WebSocket not connected. Storing subscriptions for later.');
+      logger.warn('WebSocket not connected. Storing subscriptions for later.');
       symbols.forEach((s) => this.subscriptions.add(s));
       return;
     }
@@ -449,7 +449,7 @@ export class WebSocketPriceService {
    */
   private attemptReconnect(): void {
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('Max reconnect attempts reached');
+      logger.error('Max reconnect attempts reached', { attempts: this.reconnectAttempts });
       return;
     }
 
@@ -464,7 +464,7 @@ export class WebSocketPriceService {
 
     setTimeout(() => {
       this.connect().catch((error) => {
-        console.error('Reconnection failed:', error);
+        logger.error('Reconnection failed', { error: sanitizeLogInput(error) });
       });
     }, delay);
   }

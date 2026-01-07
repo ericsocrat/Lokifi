@@ -11,6 +11,7 @@
  * Created: October 6, 2025
  */
 
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
 import {
   CryptoDiscoveryService,
   getWebSocketService,
@@ -23,6 +24,8 @@ import {
   type PriceUpdate,
 } from '@/services/backendPriceService';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+const logger = createLogger('useBackendPrices');
 
 // ============================================================================
 // HISTORICAL DATA HOOK (Task 6)
@@ -53,7 +56,7 @@ export function useHistoricalPrices(
       setData(result);
     } catch (err) {
       setError(err as Error);
-      console.error('Failed to fetch historical prices:', err);
+      logger.error('Failed to fetch historical prices', { symbol, period, error: sanitizeLogInput(err) });
     } finally {
       setLoading(false);
     }
@@ -106,7 +109,7 @@ export function useOHLCV(
       setData(result);
     } catch (err) {
       setError(err as Error);
-      console.error('Failed to fetch OHLCV data:', err);
+      logger.error('Failed to fetch OHLCV data', { symbol, period, resolution, error: sanitizeLogInput(err) });
     } finally {
       setLoading(false);
     }
@@ -154,7 +157,7 @@ export function useTopCryptos(limit: number = 100, enabled: boolean = true) {
       setData(result);
     } catch (err) {
       setError(err as Error);
-      console.error('Failed to fetch top cryptos:', err);
+      logger.error('Failed to fetch top cryptos', { limit, error: sanitizeLogInput(err) });
     } finally {
       setLoading(false);
     }
@@ -198,7 +201,7 @@ export function useCryptoSearch(query: string, debounceMs: number = 300) {
       setData(result);
     } catch (err) {
       setError(err as Error);
-      console.error('Failed to search cryptos:', err);
+      logger.error('Failed to search cryptos', { query: searchQuery, error: sanitizeLogInput(err) });
     } finally {
       setLoading(false);
     }
@@ -259,7 +262,7 @@ export function useWebSocketPrices(options: UseWebSocketPricesOptions = {}) {
     } catch (err) {
       setError(err as Error);
       setConnected(false);
-      console.error('Failed to connect to WebSocket:', err);
+      logger.error('Failed to connect to WebSocket', { error: sanitizeLogInput(err) });
     }
   }, []);
 
@@ -344,7 +347,7 @@ export function useBatchHistoricalPrices(
       setData(results);
     } catch (err) {
       setError(err as Error);
-      console.error('Failed to fetch batch historical prices:', err);
+      logger.error('Failed to fetch batch historical prices', { symbols, period, error: sanitizeLogInput(err) });
     } finally {
       setLoading(false);
     }

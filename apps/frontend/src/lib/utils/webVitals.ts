@@ -5,6 +5,10 @@
 
 import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('WebVitals');
+
 export interface WebVitalsReport {
   id: string;
   name: string;
@@ -143,7 +147,7 @@ class WebVitalsMonitor {
       });
     } catch (error) {
       if (this.config.consoleLog) {
-        console.error('Failed to report Web Vitals:', error);
+        logger.error('Failed to report Web Vitals', { error: sanitizeLogInput(error) });
       }
     }
   }

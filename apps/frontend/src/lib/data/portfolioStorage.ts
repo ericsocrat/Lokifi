@@ -1,3 +1,7 @@
+import { createLogger, sanitizeLogInput } from '@/lib/utils/logger';
+
+const logger = createLogger('PortfolioStorage');
+
 export interface Asset {
   id: string;
   symbol: string;
@@ -22,7 +26,7 @@ export function loadPortfolio(): PortfolioSection[] {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Error loading portfolio:', error);
+    logger.error('Error loading portfolio', { error: sanitizeLogInput(error) });
   }
 
   return [];
@@ -35,7 +39,7 @@ export function savePortfolio(sections: PortfolioSection[]): void {
   try {
     localStorage.setItem('portfolio', JSON.stringify(sections));
   } catch (error) {
-    console.error('Error saving portfolio:', error);
+    logger.error('Error saving portfolio', { error: sanitizeLogInput(error) });
   }
 }
 
