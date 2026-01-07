@@ -162,3 +162,6 @@ build/
 dist/
 wheels/
 *.whl
+
+# Lighthouse CI reports (generated, not source)
+apps/frontend/.lighthouseci/
