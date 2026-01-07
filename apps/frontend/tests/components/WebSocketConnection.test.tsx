@@ -121,7 +121,7 @@ describe('WebSocketConnection', () => {
       });
 
       // After connection, messages count should be visible
-      const messagesText = screen.queryByText(/Messages:/);
+      const _messagesText = screen.queryByText(/Messages:/);
       // Either shows messages count or error state
       expect(screen.getByText(/Connected|Error/)).toBeInTheDocument();
     });

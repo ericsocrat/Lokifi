@@ -200,7 +200,7 @@ describe('Plugin Registry', () => {
   describe('PluginHooks Types', () => {
     it('should support onContextMenu hook', () => {
       const contextMenuHook: PluginHooks = {
-        onContextMenu: ({ selection, add }) => {
+        onContextMenu: ({ selection: _selection, add }) => {
           add([{ label: 'Test Action', action: () => {} }]);
         },
       };

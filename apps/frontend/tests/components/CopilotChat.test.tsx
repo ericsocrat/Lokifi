@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CopilotChat from '../../components/CopilotChat';
 
 // Hoisted mocks
-const { mockSymbolStore, mockTimeframeStore, mockAPI, MockEventSource } = vi.hoisted(() => {
+const { mockSymbolStore, mockTimeframeStore, mockAPI, _MockEventSource } = vi.hoisted(() => {
   const mockEventSource = vi.fn();
   return {
     mockSymbolStore: {
@@ -15,7 +15,7 @@ const { mockSymbolStore, mockTimeframeStore, mockAPI, MockEventSource } = vi.hoi
       get: vi.fn(() => '1h'),
     },
     mockAPI: 'http://localhost:8000',
-    MockEventSource: mockEventSource,
+    _MockEventSource: mockEventSource,
   };
 });
 

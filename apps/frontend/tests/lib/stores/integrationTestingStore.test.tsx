@@ -197,8 +197,8 @@ const createPipelineData = (overrides: Record<string, unknown> = {}) => ({
   ...overrides,
 });
 
-// Helper to create test data
-const createTestDataItem = (overrides: Record<string, unknown> = {}) => ({
+// Helper to create test data (unused but kept for future use)
+const _createTestDataItem = (overrides: Record<string, unknown> = {}) => ({
   name: 'Test Data',
   type: 'mock' as const,
   source: 'inline',
@@ -455,7 +455,6 @@ describe('integrationTestingStore', () => {
 
       const testId = useIntegrationTestingStore.getState().testSuites[0].tests[0].id;
 
-      let result: unknown;
       const promise = useIntegrationTestingStore.getState().runTestCase(suiteId, testId, 'staging');
 
       // Advance timers to complete the simulated delay
@@ -463,7 +462,7 @@ describe('integrationTestingStore', () => {
         await vi.advanceTimersByTimeAsync(5000);
       });
 
-      result = await promise;
+      const result = await promise;
 
       // runTestCase returns a TestResult, not creating an execution
       expect(result).toBeDefined();

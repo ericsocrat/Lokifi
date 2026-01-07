@@ -443,7 +443,7 @@ describe('NotificationCenter', () => {
       render(<NotificationCenter />);
 
       // Should have an external link icon or link element
-      const links = document.querySelectorAll('a[href="/profile/user123"]');
+      const _links = document.querySelectorAll('a[href="/profile/user123"]');
       // At least the notification should be rendered
       expect(screen.getByText('New Follower')).toBeInTheDocument();
     });

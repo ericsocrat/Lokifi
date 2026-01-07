@@ -22,13 +22,13 @@ vi.mock('web-vitals', () => ({
 import type { WebVitalsConfig, WebVitalsReport, WebVitalsSnapshot } from '@/lib/utils/webVitals';
 
 describe('webVitals', () => {
-  let consoleLogSpy: ReturnType<typeof vi.spyOn>;
-  let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let _consoleLogSpy: ReturnType<typeof vi.spyOn>;
+  let _consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    _consoleLogSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    _consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.useFakeTimers();
     vi.spyOn(Math, 'random').mockReturnValue(0.5); // Always pass sample rate
   });
@@ -55,8 +55,9 @@ describe('webVitals', () => {
 
     it('should initialize web vitals monitoring', async () => {
       vi.resetModules();
-      const module = await import('@/lib/utils/webVitals');
-      const monitor = new (module as any).default.constructor({ enableReporting: true });
+      const _module = await import('@/lib/utils/webVitals');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing internal constructor requires any cast
+      const monitor = new (_module as any).default.constructor({ enableReporting: true });
 
       monitor.init();
 
@@ -210,7 +211,7 @@ describe('webVitals', () => {
 
 describe('WebVitals types', () => {
   it('should export WebVitalsReport interface', async () => {
-    const module = await import('@/lib/utils/webVitals');
+    const _module = await import('@/lib/utils/webVitals');
 
     // Type checking via usage
     const report: WebVitalsReport = {

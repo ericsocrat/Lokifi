@@ -69,7 +69,7 @@ describe('report', () => {
     });
 
     // Mock atob for base64 decoding
-    globalThis.atob = vi.fn((base64) => 'decoded-binary-content');
+    globalThis.atob = vi.fn((_base64) => 'decoded-binary-content');
   });
 
   afterEach(() => {
