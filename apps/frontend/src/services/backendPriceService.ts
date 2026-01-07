@@ -238,7 +238,9 @@ export class CryptoDiscoveryService {
 
       return await response.json();
     } catch (error) {
-      logger.error(`Failed to search cryptos with query "${query}"`, { error: sanitizeLogInput(error) });
+      logger.error(`Failed to search cryptos with query "${query}"`, {
+        error: sanitizeLogInput(error),
+      });
       throw error;
     }
   }

@@ -165,7 +165,9 @@ export class APIClient {
       return result.data;
     } catch (parseError) {
       // Handle Zod parsing crashes or other unexpected errors
-      logger.error('Unexpected error during response validation', { error: sanitizeLogInput(parseError) });
+      logger.error('Unexpected error during response validation', {
+        error: sanitizeLogInput(parseError),
+      });
       throw new APIError('Invalid response format from server', 'VALIDATION_ERROR', 500);
     }
   }

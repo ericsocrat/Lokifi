@@ -170,7 +170,9 @@ export function migrateState<T extends VersionedState>(
 /**
  * Migrate all state types
  */
-export function migrateAll(allState: Record<string, VersionedState>): Record<string, VersionedState> {
+export function migrateAll(
+  allState: Record<string, VersionedState>
+): Record<string, VersionedState> {
   const migrated: Record<string, VersionedState> = {};
 
   for (const [stateType, state] of Object.entries(allState)) {

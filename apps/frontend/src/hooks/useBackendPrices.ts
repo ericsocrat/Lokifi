@@ -56,7 +56,11 @@ export function useHistoricalPrices(
       setData(result);
     } catch (err) {
       setError(err as Error);
-      logger.error('Failed to fetch historical prices', { symbol, period, error: sanitizeLogInput(err) });
+      logger.error('Failed to fetch historical prices', {
+        symbol,
+        period,
+        error: sanitizeLogInput(err),
+      });
     } finally {
       setLoading(false);
     }
@@ -109,7 +113,12 @@ export function useOHLCV(
       setData(result);
     } catch (err) {
       setError(err as Error);
-      logger.error('Failed to fetch OHLCV data', { symbol, period, resolution, error: sanitizeLogInput(err) });
+      logger.error('Failed to fetch OHLCV data', {
+        symbol,
+        period,
+        resolution,
+        error: sanitizeLogInput(err),
+      });
     } finally {
       setLoading(false);
     }
@@ -201,7 +210,10 @@ export function useCryptoSearch(query: string, debounceMs: number = 300) {
       setData(result);
     } catch (err) {
       setError(err as Error);
-      logger.error('Failed to search cryptos', { query: searchQuery, error: sanitizeLogInput(err) });
+      logger.error('Failed to search cryptos', {
+        query: searchQuery,
+        error: sanitizeLogInput(err),
+      });
     } finally {
       setLoading(false);
     }
@@ -347,7 +359,11 @@ export function useBatchHistoricalPrices(
       setData(results);
     } catch (err) {
       setError(err as Error);
-      logger.error('Failed to fetch batch historical prices', { symbols, period, error: sanitizeLogInput(err) });
+      logger.error('Failed to fetch batch historical prices', {
+        symbols,
+        period,
+        error: sanitizeLogInput(err),
+      });
     } finally {
       setLoading(false);
     }

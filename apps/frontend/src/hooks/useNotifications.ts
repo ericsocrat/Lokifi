@@ -228,7 +228,10 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
         setUnreadCount((prev) => Math.max(0, prev - 1));
       } catch (err) {
-        logger.error('Failed to mark notification as read', { notificationId, error: sanitizeLogInput(err) });
+        logger.error('Failed to mark notification as read', {
+          notificationId,
+          error: sanitizeLogInput(err),
+        });
         setError(err instanceof Error ? err.message : 'Failed to mark as read');
       }
     },
@@ -274,7 +277,10 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
         setTotalCount((prev) => Math.max(0, prev - 1));
       } catch (err) {
-        logger.error('Failed to dismiss notification', { notificationId, error: sanitizeLogInput(err) });
+        logger.error('Failed to dismiss notification', {
+          notificationId,
+          error: sanitizeLogInput(err),
+        });
         setError(err instanceof Error ? err.message : 'Failed to dismiss notification');
       }
     },
