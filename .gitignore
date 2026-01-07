@@ -165,3 +165,4 @@ wheels/
 
 # Lighthouse CI reports (generated, not source)
 apps/frontend/.lighthouseci/
+.lighthouseci/
