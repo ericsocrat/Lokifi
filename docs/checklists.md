@@ -16,8 +16,8 @@
 > - **Backend Quality**: 0 Ruff violations, 0 pytest warnings ✅ 🎉
 > - **ESLint**: 0 errors, 0 warnings (100% clean) ✅ 🎉
 > - **Store Testing**: 25/25 stores tested (100% coverage) ✅ 🎉
-> - **Test Coverage**: Frontend 11.61% lines, 88.7% branches ✅ | Backend 51.09% ✅
-> - **Tests**: 6,368 total (1,780 backend + 4,588 frontend) ✅
+> - **Test Coverage**: Frontend 11.61% lines, 88.7% branches ✅ | Backend 28.21% ✅
+> - **Tests**: 11,730 total (3,988 backend + 7,742 frontend) ✅
 > - **Pre-commit Hooks**: Active (quality + security gates) ✅
 
 ---

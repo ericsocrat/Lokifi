@@ -1,4 +1,6 @@
 # Simple data archival service
+import base64
+import gzip
 import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
@@ -75,8 +77,20 @@ class DataArchivalService:
                         )
                         or 0
                     )
+                    metrics.ai_messages_archive_size_mb = (
+                        await session.scalar(
+                            text(
+                                """
+                                SELECT COALESCE(SUM(LENGTH(content)), 0) / 1024.0 / 1024.0
+                                FROM ai_messages_archive
+                                """
+                            )
+                        )
+                        or 0.0
+                    )
                 except Exception:
                     metrics.archived_messages = 0
+                    metrics.ai_messages_archive_size_mb = 0.0
 
                 logger.info(
                     f"Storage: {metrics.total_size_mb:.2f}MB, {metrics.total_messages:,} messages"
@@ -208,24 +222,73 @@ class DataArchivalService:
         start_time = datetime.now()
 
         try:
-            # TODO: Implement actual compression logic
-            # For now, just count messages that could be compressed
-            async for session in db_manager.get_session(read_only=True):
-                # Count archived messages that could be compressed
-                try:
-                    archived_count = await session.scalar(
-                        text(
-                            "SELECT COUNT(*) FROM ai_messages_archive WHERE content_compressed = FALSE"
-                        )
-                    )
-                    stats.messages_compressed = 0  # No actual compression yet
-                    logger.info(
-                        f"Found {archived_count or 0} messages eligible for compression (not implemented)"
-                    )
-                except Exception:
-                    logger.info("Archive table not found or compression not supported")
+            await self.create_archive_table_if_not_exists()
+            async for session in db_manager.get_session(read_only=False):
+                result = await session.execute(
+                    text(
+                        """
+                        SELECT id, content
+                        FROM ai_messages_archive
+                        WHERE content_compressed = FALSE
+                        ORDER BY id
+                        LIMIT :limit
+                        """
+                    ),
+                    {"limit": batch_size},
+                )
+                rows = result.fetchall()
 
+                if not rows:
+                    logger.info("No archived messages eligible for compression")
+                    stats.operation_duration = (
+                        datetime.now() - start_time
+                    ).total_seconds()
+                    return stats
+
+                original_bytes = 0
+                compressed_bytes = 0
+
+                for row in rows:
+                    content = ""
+                    if hasattr(row, "_mapping"):
+                        content = row._mapping.get("content", "")
+                        row_id = row._mapping.get("id")
+                    else:
+                        # Fallback for simple tuple-like rows
+                        row_id, content = row
+
+                    if row_id is None:
+                        logger.warning("Skipped compression for row without id")
+                        continue
+
+                    original_data = content.encode("utf-8")
+                    compressed_data = gzip.compress(original_data)
+                    encoded_content = base64.b64encode(compressed_data).decode("ascii")
+
+                    await session.execute(
+                        text(
+                            """
+                            UPDATE ai_messages_archive
+                            SET content = :content,
+                                content_compressed = TRUE
+                            WHERE id = :id
+                            """
+                        ),
+                        {"content": encoded_content, "id": row_id},
+                    )
+
+                    original_bytes += len(original_data)
+                    compressed_bytes += len(compressed_data)
+
+                stats.messages_compressed = len(rows)
+                savings_bytes = max(original_bytes - compressed_bytes, 0)
+                stats.space_freed_mb = savings_bytes / (1024 * 1024)
                 stats.operation_duration = (datetime.now() - start_time).total_seconds()
+
+                logger.info(
+                    f"Compressed {stats.messages_compressed} archived messages; "
+                    f"estimated space freed: {stats.space_freed_mb:.4f} MB"
+                )
                 return stats
 
         except Exception as e:
