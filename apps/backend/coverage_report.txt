@@ -1,52 +1,240 @@
-......................................................s................. [  2%]
-.............s.sssssss.s................................................ [  4%]
-................................s.......s......................s........ [  6%]
-...................s..............s..................................... [  8%]
-s......s......s......s....................s......s......s............... [ 10%]
-.................ssssss......sssss...................................... [ 12%]
-........................................................................ [ 14%]
-........................................................................ [ 16%]
-........................................................................ [ 18%]
-........................................................................ [ 20%]
-........................................................................ [ 22%]
-........................................................................ [ 24%]
-........................................................................ [ 26%]
-........................................................................ [ 28%]
-........................................................................ [ 30%]
-........................................................................ [ 32%]
-........................................................................ [ 34%]
-....s................................s.................................. [ 37%]
-........................................................................ [ 39%]
-........................................................................ [ 41%]
-........................................................................ [ 43%]
-........................................................................ [ 45%]
-........................................................................ [ 47%]
-.................................s......s.............ss............s... [ 49%]
-........................................................................ [ 51%]
-..............................................s......................... [ 53%]
-........................................................................ [ 55%]
-.....................................................................s.. [ 57%]
-....s................................................................... [ 59%]
-........................................................................ [ 61%]
-.....s.................................................................. [ 63%]
-..................s.s.s.s.s.s........................................... [ 65%]
-.......s......s......s.................................................. [ 67%]
-.s......s............................................................... [ 69%]
-.s.................s......s......s......s............................... [ 72%]
-..............s......s...........s......s......s......s................. [ 74%]
-........................................................................ [ 76%]
-...........s................................................s......s.... [ 78%]
-..s..........................s.....................................s.... [ 80%]
-..s..................................................................... [ 82%]
-.................sssss..........................s....................... [ 84%]
-....................s.................................s......s.......s.. [ 86%]
-..........................................s.........................s... [ 88%]
-...s......s......s....................................s......s......s... [ 90%]
-...s......s......s......s............................................... [ 92%]
-..............s......s......s......s.................................... [ 94%]
-.......s......s.......s......ss.........s............................... [ 96%]
-........................................................................ [ 98%]
-..........................................                               [100%]
+============================= test session starts =============================
+platform win32 -- Python 3.13.9, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\ericsocrat\Desktop\lokifi\apps\backend
+configfile: pytest.ini
+testpaths: tests
+plugins: anyio-4.12.1, Faker-40.1.0, hypothesis-6.150.0, asyncio-1.3.0, cov-7.0.0, mock-3.15.1, timeout-2.4.0, schemathesis-4.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 4107 items / 3 skipped
+
+tests\analytics\test_cross_database_compatibility.py ................... [  0%]
+.............................                                            [  1%]
+tests\api\routes\test_portfolio_routes.py .............................. [  1%]
+................                                                         [  2%]
+tests\api\routes\test_routes_alerts.py ................................. [  3%]
+..............                                                           [  3%]
+tests\api\routes\test_routes_security.py ............................... [  4%]
+................................                                         [  4%]
+tests\api\test_admin_messaging.py ...........                            [  5%]
+tests\api\test_ai.py ........................                            [  5%]
+tests\api\test_alerts.py ......s                                         [  5%]
+tests\api\test_api.py .sssssss.s.                                        [  6%]
+tests\api\test_auth.py ......................                            [  6%]
+tests\api\test_auth_endpoints.py .                                       [  6%]
+tests\api\test_cache.py ............................                     [  7%]
+tests\api\test_conversations.py ......................                   [  8%]
+tests\api\test_endpoints.py .                                            [  8%]
+tests\api\test_fmp.py ......s                                            [  8%]
+tests\api\test_follow.py ......................                          [  8%]
+tests\api\test_follow_endpoints.py s                                     [  8%]
+tests\api\test_health.py .                                               [  8%]
+tests\api\test_health_check.py ....................                      [  9%]
+tests\api\test_market_data.py ......s                                    [  9%]
+tests\api\test_market_routes.py ........                                 [  9%]
+tests\api\test_monitoring.py ...............................             [ 10%]
+tests\api\test_news.py ......s                                           [ 10%]
+tests\api\test_notifications.py ......s                                  [ 10%]
+tests\api\test_portfolio.py ......s                                      [ 10%]
+tests\api\test_profile.py ....................                           [ 11%]
+tests\api\test_profile_endpoints.py s                                    [ 11%]
+tests\api\test_smart_prices.py ......s                                   [ 11%]
+tests\api\test_social.py ......s                                         [ 11%]
+tests\api\test_social_routes.py ................                         [ 12%]
+tests\core\test_advanced_redis_client.py ............................... [ 12%]
+...........................                                              [ 13%]
+tests\core\test_optimized_imports.py ................                    [ 13%]
+tests\core\test_redis_cache.py ......................................... [ 14%]
+.................                                                        [ 15%]
+tests\integration\test_follow_service_integration.py ssssss              [ 15%]
+tests\integration\test_new_features.py ......                            [ 15%]
+tests\integration\test_profile_service_integration.py sssss              [ 15%]
+tests\middleware\test_rate_limiting.py ................................. [ 16%]
+.......                                                                  [ 16%]
+tests\optimization\test_performance_optimizer.py ....................... [ 17%]
+.................................................                        [ 18%]
+tests\routers\test_admin_messaging.py ...............................    [ 19%]
+tests\routers\test_ai_router.py ........................................ [ 20%]
+...............................                                          [ 21%]
+tests\routers\test_ai_websocket_router.py .............................. [ 21%]
+...........                                                              [ 22%]
+tests\routers\test_profile_enhanced_router.py .......................... [ 22%]
+..........................                                               [ 23%]
+tests\routers\test_routers_crypto.py ................................... [ 24%]
+..............                                                           [ 24%]
+tests\routers\test_routers_mock_ohlc.py .............................    [ 25%]
+tests\routers\test_routers_ohlc.py ..................................... [ 26%]
+...........                                                              [ 26%]
+tests\routers\test_websocket_prices_router.py .......................... [ 26%]
+..............                                                           [ 27%]
+tests\routers\test_websocket_router.py ................................. [ 28%]
+                                                                         [ 28%]
+tests\routes\test_chat_routes.py .....................................   [ 29%]
+tests\security\test_alert_system.py .                                    [ 29%]
+tests\security\test_auth_error_handling.py ...............               [ 29%]
+tests\security\test_infra_enhanced_security.py .                         [ 29%]
+tests\security\test_infra_security_enhancements.py .....                 [ 29%]
+tests\security\test_security_features.py ....                            [ 29%]
+tests\services\providers\test_alphavantage.py ..................         [ 30%]
+tests\services\providers\test_base.py .........                          [ 30%]
+tests\services\providers\test_cmc.py ................                    [ 30%]
+tests\services\providers\test_coingecko.py ..............                [ 31%]
+tests\services\providers\test_finnhub.py .............                   [ 31%]
+tests\services\providers\test_huggingface_provider.py .................. [ 31%]
+..............................                                           [ 32%]
+tests\services\providers\test_marketaux.py ...........                   [ 32%]
+tests\services\providers\test_newsapi.py ..........                      [ 33%]
+tests\services\providers\test_ollama_provider.py ....................... [ 33%]
+..........................                                               [ 34%]
+tests\services\providers\test_openrouter_provider.py ................... [ 34%]
+...........................                                              [ 35%]
+tests\services\providers\test_polygon.py .................               [ 35%]
+tests\services\test_advanced_monitoring.py ............................. [ 36%]
+...............................                                          [ 37%]
+tests\services\test_advanced_storage_analytics.py ...................... [ 37%]
+........                                                                 [ 37%]
+tests\services\test_ai.py ...................................            [ 38%]
+tests\services\test_ai_context_manager.py .............................. [ 39%]
+..............                                                           [ 39%]
+tests\services\test_ai_provider_manager.py ............................. [ 40%]
+...............                                                          [ 40%]
+tests\services\test_ai_service.py ..........s........................... [ 41%]
+.....s                                                                   [ 42%]
+tests\services\test_alerts.py ...............................            [ 42%]
+tests\services\test_auth.py .................................            [ 43%]
+tests\services\test_auth_service.py .........................            [ 44%]
+tests\services\test_content_moderation.py .............................. [ 44%]
+......................................                                   [ 45%]
+tests\services\test_conversation_export.py ............................. [ 46%]
+..........................................                               [ 47%]
+tests\services\test_conversation_service.py ............................ [ 48%]
+....                                                                     [ 48%]
+tests\services\test_crypto_discovery_service.py ........................ [ 48%]
+......................                                                   [ 49%]
+tests\services\test_data_archival_service.py ........................... [ 50%]
+................                                                         [ 50%]
+tests\services\test_data_service.py .................................... [ 51%]
+........................................                                 [ 52%]
+tests\services\test_enhanced_performance_monitor.py ......s              [ 52%]
+tests\services\test_enhanced_rate_limiter.py ......s                     [ 52%]
+tests\services\test_fmp_service.py .............s                        [ 53%]
+tests\services\test_follow_service.py s............s.................... [ 53%]
+......                                                                   [ 54%]
+tests\services\test_historical_price_service.py ........................ [ 54%]
+.......................................                                  [ 55%]
+tests\services\test_indicators.py ................................s      [ 56%]
+tests\services\test_indices_service.py ............................      [ 57%]
+tests\services\test_j53_performance_monitor.py ......................... [ 57%]
+........................................................................ [ 59%]
+                                                                         [ 59%]
+tests\services\test_message_analytics_service.py ....................... [ 59%]
+............                                                             [ 60%]
+tests\services\test_message_moderation_service.py ...................... [ 60%]
+...................................                                      [ 61%]
+tests\services\test_message_search_service.py ......s                    [ 61%]
+tests\services\test_multimodal_ai_service.py ........................... [ 62%]
+..........................                                               [ 63%]
+tests\services\test_new_services.py ...                                  [ 63%]
+tests\services\test_notification_analytics.py .......................... [ 63%]
+....................                                                     [ 64%]
+tests\services\test_notification_emitter.py ............................ [ 64%]
+.........                                                                [ 65%]
+tests\services\test_notification_service.py ............................ [ 65%]
+..............................s                                          [ 66%]
+tests\services\test_prices.py ................................           [ 67%]
+tests\services\test_profile_enhanced.py ................................ [ 68%]
+..............                                                           [ 68%]
+tests\services\test_profile_service.py ......s.s.s.s.s.s................ [ 69%]
+.......                                                                  [ 69%]
+tests\services\test_rate_limit_service.py .....................          [ 70%]
+tests\services\test_service_providers_base.py ......s                    [ 70%]
+tests\services\test_services_performance_monitor.py .................... [ 70%]
+................................                                         [ 71%]
+tests\services\test_smart_notifications.py ......s                       [ 71%]
+tests\services\test_smart_price_service.py ......s                       [ 71%]
+tests\services\test_stock_service.py ......................              [ 72%]
+tests\services\test_timeframes.py .............................s         [ 73%]
+tests\services\test_unified_asset_service.py ......s                     [ 73%]
+tests\services\test_websocket_manager.py ..............                  [ 73%]
+tests\tasks\test_maintenance_tasks.py .................................. [ 74%]
+.............                                                            [ 74%]
+tests\test_api_contracts.py ...s                                         [ 74%]
+tests\test_openapi_schema.py ...........                                 [ 75%]
+tests\unit\test_advanced_redis_client.py ......s                         [ 75%]
+tests\unit\test_advanced_websocket_manager.py ......s                    [ 75%]
+tests\unit\test_ai_schemas.py ......s                                    [ 75%]
+tests\unit\test_ai_thread.py ......s                                     [ 75%]
+tests\unit\test_alerts_service.py ...................................... [ 76%]
+.                                                                        [ 76%]
+tests\unit\test_alerts_unit.py ......s                                   [ 76%]
+tests\unit\test_application_main.py ......s                              [ 77%]
+tests\unit\test_auth.py .....                                            [ 77%]
+tests\unit\test_auth_deps.py ......s                                     [ 77%]
+tests\unit\test_cache.py ......s                                         [ 77%]
+tests\unit\test_config.py ......s                                        [ 77%]
+tests\unit\test_conversation.py ......s                                  [ 77%]
+tests\unit\test_core_config.py ........................................  [ 78%]
+tests\unit\test_core_security.py ....................................... [ 79%]
+...............                                                          [ 80%]
+tests\unit\test_cross_database_compatibility.py ......s                  [ 80%]
+tests\unit\test_crypto_data_service.py ................................. [ 81%]
+.........                                                                [ 81%]
+tests\unit\test_crypto_unit.py ......s                                   [ 81%]
+tests\unit\test_database.py ......s                                      [ 81%]
+tests\unit\test_database_base.py ......s                                 [ 81%]
+tests\unit\test_database_migration.py ....................               [ 82%]
+tests\unit\test_db.py ......s                                            [ 82%]
+tests\unit\test_deps.py .....................................s           [ 83%]
+tests\unit\test_enhanced_startup.py ......s                              [ 83%]
+tests\unit\test_enhanced_validation.py ................................. [ 84%]
+.....................................................                    [ 85%]
+tests\unit\test_follow_actions.py s                                      [ 85%]
+tests\unit\test_follow_extended.py ss                                    [ 85%]
+tests\unit\test_follow_notifications_unit.py s                           [ 85%]
+tests\unit\test_follow_unit.py s                                         [ 85%]
+tests\unit\test_forex_service.py ....................                    [ 86%]
+tests\unit\test_health_check.py ......s                                  [ 86%]
+tests\unit\test_input_validation.py .................................... [ 87%]
+.                                                                        [ 87%]
+tests\unit\test_jwt_websocket_auth.py ......s                            [ 87%]
+tests\unit\test_logger.py ...........................                    [ 88%]
+tests\unit\test_maintenance.py ......s                                   [ 88%]
+tests\unit\test_market.py ......s                                        [ 88%]
+tests\unit\test_minimal_server.py .                                      [ 88%]
+tests\unit\test_models.py ......s                                        [ 88%]
+tests\unit\test_models_api.py ......................................     [ 89%]
+tests\unit\test_monitoring.py ......s                                    [ 89%]
+tests\unit\test_news_service.py ...................                      [ 90%]
+tests\unit\test_notification_hooks.py ......s                            [ 90%]
+tests\unit\test_notification_models.py ......s                           [ 90%]
+tests\unit\test_notifications_unit.py ......s                            [ 90%]
+tests\unit\test_optimized_imports.py ......s                             [ 90%]
+tests\unit\test_performance_monitor.py ................................. [ 91%]
+...s                                                                     [ 91%]
+tests\unit\test_performance_optimizer.py ......s                         [ 92%]
+tests\unit\test_portfolio_unit.py ......s                                [ 92%]
+tests\unit\test_profile_unit.py ......s                                  [ 92%]
+tests\unit\test_reaction.py ......s                                      [ 92%]
+tests\unit\test_redis.py ......s                                         [ 92%]
+tests\unit\test_redis_client.py ........................................ [ 93%]
+...............                                                          [ 94%]
+tests\unit\test_redis_keys.py ......s                                    [ 94%]
+tests\unit\test_routes.py ......s                                        [ 94%]
+tests\unit\test_security_alerts.py ......s                               [ 94%]
+tests\unit\test_security_config.py ..................................... [ 95%]
+......s                                                                  [ 95%]
+tests\unit\test_security_logger.py ......s                               [ 95%]
+tests\unit\test_server_startup.py .                                      [ 95%]
+tests\unit\test_session.py ......s                                       [ 96%]
+tests\unit\test_social_unit.py ......s                                   [ 96%]
+tests\unit\test_specific_issues.py s...                                  [ 96%]
+tests\unit\test_sse.py ......s                                           [ 96%]
+tests\unit\test_timeframes.py .........................                  [ 97%]
+tests\websockets\test_advanced_websocket_manager.py .................... [ 97%]
+.............................                                            [ 98%]
+tests\websockets\test_jwt_websocket_auth.py ............................ [ 98%]
+...............                                                          [ 99%]
+tests\websockets\test_notifications_ws.py ............................   [100%]
+
 =============================== tests coverage ================================
 _______________ coverage: platform win32, python 3.13.9-final-0 _______________
 
@@ -59,7 +247,7 @@ app\api\deps.py                                     37      0      8      0   10
 app\api\j6_2_endpoints.py                          197    112      8      0    41%
 app\api\market\routes.py                            31      5      0      0    84%
 app\api\routes\__init__.py                           0      0      0      0   100%
-app\api\routes\alerts.py                            92     56     22      0    32%
+app\api\routes\alerts.py                            92     14     22      1    83%
 app\api\routes\auth.py                              82      0     10      0   100%
 app\api\routes\cache.py                             51      0      2      0   100%
 app\api\routes\chat.py                             105      0     38      2    99%
@@ -67,17 +255,17 @@ app\api\routes\crypto.py                             3      0      0      0   10
 app\api\routes\health_check.py                      74      9      8      2    87%
 app\api\routes\market.py                            20      0      0      0   100%
 app\api\routes\monitoring.py                       137     24     18      0    85%
-app\api\routes\portfolio.py                        173    107     24      0    34%
-app\api\routes\security.py                          84     55     16      0    29%
+app\api\routes\portfolio.py                        173     79     24      1    51%
+app\api\routes\security.py                          84      0     16      0   100%
 app\api\routes\social.py                           128      2     24      2    97%
 app\core\__init__.py                                 0      0      0      0   100%
-app\core\advanced_redis_client.py                  263    165     58      6    32%
+app\core\advanced_redis_client.py                  263     54     58      5    79%
 app\core\auth_deps.py                               40     20     14      4    44%
 app\core\config.py                                  72      0     10      0   100%
 app\core\database.py                               118     59     40      8    41%
 app\core\optimized_imports.py                       25      0      4      0   100%
 app\core\performance_monitor.py                     51      0      4      0   100%
-app\core\redis_cache.py                            172    122     40      3    25%
+app\core\redis_cache.py                            172      7     40      4    95%
 app\core\redis_client.py                           204     26     54     11    86%
 app\core\redis_keys.py                             122     46     10      1    60%
 app\core\security.py                                86      1     20      1    98%
@@ -110,25 +298,25 @@ app\models\user.py                                  40      5      2      1    8
 app\optimization\__init__.py                         0      0      0      0   100%
 app\optimization\performance_optimizer.py          298     36     72      9    85%
 app\routers\__init__.py                              0      0      0      0   100%
-app\routers\admin_messaging.py                     108     78      8      0    26%
+app\routers\admin_messaging.py                     109      0      8      0   100%
 app\routers\ai.py                                  218     98     30      0    52%
 app\routers\ai_websocket.py                        104      0     28      1    99%
 app\routers\alerts.py                                9      2      0      0    78%
 app\routers\auth.py                                 99     27     10      4    72%
 app\routers\chat.py                                 10      4      2      0    50%
 app\routers\conversations.py                       198     38     24      5    81%
-app\routers\crypto.py                               95     62      8      0    32%
+app\routers\crypto.py                               95      8      8      1    91%
 app\routers\fmp.py                                   2      0      0      0   100%
 app\routers\follow.py                              149     24     18      2    84%
 app\routers\health.py                                5      0      0      0   100%
 app\routers\market_data.py                          90     52     22      0    34%
-app\routers\mock_ohlc.py                            20     14      2      0    27%
+app\routers\mock_ohlc.py                            20      0      2      0   100%
 app\routers\news.py                                  6      1      0      0    83%
 app\routers\notifications.py                       211     95     14      0    52%
-app\routers\ohlc.py                                 44     31      6      0    26%
+app\routers\ohlc.py                                 44      0      6      0   100%
 app\routers\portfolio.py                             9      2      0      0    78%
 app\routers\profile.py                              62      0      4      0   100%
-app\routers\profile_enhanced.py                    125     90     28      0    23%
+app\routers\profile_enhanced.py                    125      3     28      5    95%
 app\routers\smart_prices.py                        210    124     22      0    37%
 app\routers\social.py                                9      2      0      0    78%
 app\routers\websocket.py                           119      4     22      2    96%
@@ -155,7 +343,7 @@ app\services\conversation_export.py                259     58     98     14    7
 app\services\conversation_service.py               138      2     34      3    97%
 app\services\crypto_data_service.py                151      4     48      9    92%
 app\services\crypto_discovery_service.py           187      7     42      5    95%
-app\services\data_archival_service.py              147     38     22      4    69%
+app\services\data_archival_service.py              173     22     30      7    83%
 app\services\data_service.py                       256     33     94     13    81%
 app\services\database_migration.py                  61      0     12      0   100%
 app\services\enhanced_performance_monitor.py       146     85     22      0    36%
@@ -169,14 +357,14 @@ app\services\indices_service.py                    140     12     48     11    8
 app\services\j53_performance_monitor.py            280      7     68     10    95%
 app\services\j53_scheduler.py                       23      6      0      0    74%
 app\services\message_analytics_service.py           93      0      4      0   100%
-app\services\message_moderation_service.py         104     72     30      0    24%
+app\services\message_moderation_service.py         104      0     30      0   100%
 app\services\message_search_service.py              68     36     16      0    38%
-app\services\multimodal_ai_service.py              137     96     38      1    24%
+app\services\multimodal_ai_service.py              137     15     38      8    85%
 app\services\news.py                                10      0      4      0   100%
 app\services\notification_analytics.py             182     66     30      4    58%
-app\services\notification_emitter.py               132      1     14      1    99%
+app\services\notification_emitter.py               129      0     12      0   100%
 app\services\notification_service.py               313     16     96     16    92%
-app\services\performance_monitor.py                121     78     28      0    29%
+app\services\performance_monitor.py                121      5     28      3    95%
 app\services\prices.py                              27      0      8      0   100%
 app\services\profile_enhanced.py                   173      0     50      5    98%
 app\services\profile_service.py                    138      4     54      5    95%
@@ -213,9 +401,9 @@ app\websockets\advanced_websocket_manager.py       347     36     72     15    8
 app\websockets\jwt_websocket_auth.py               203     18     50      3    89%
 app\websockets\notifications.py                    134      6     32      1    96%
 ----------------------------------------------------------------------------------
-TOTAL                                            14871   3562   3062    314    74%
+TOTAL                                            14895   2704   3068    334    80%
 Coverage HTML written to dir htmlcov
 Coverage XML written to file coverage.xml
 Coverage JSON written to file coverage.json
-Required test coverage of 20% reached. Total coverage: 73.52%
-3393 passed, 108 skipped in 247.93s (0:04:07)
+Required test coverage of 20% reached. Total coverage: 79.68%
+================ 4009 passed, 101 skipped in 251.42s (0:04:11) ================
