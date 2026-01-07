@@ -27,9 +27,10 @@
 **Status:** ✅ **COMPLETE**
 
 **Current Session:**
-- ✅ **Session 130 COMPLETE** - ESLint warnings cleanup + security documentation
+- ✅ **Session 131 COMPLETE** - Test fix (data_archival_service mock side_effect count)
 
 **Previous Sessions:**
+- ✅ **Session 130 COMPLETE** - ESLint warnings cleanup + security documentation
 - ✅ **Session 129 COMPLETE** - Dependency update (supertest 7.1.4 → 7.2.2) + gitignore cleanup
 - ✅ **Session 128 COMPLETE** - ESLint warnings cleanup (9 → 0 warnings, 100% clean)
 - ✅ **Session 127 COMPLETE** - Documentation consistency updates (version references)
@@ -50,6 +51,37 @@
 - ✅ **Session 111 COMPLETE** - ESLint Flat Config Migration!
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
+
+### 🎉 Session 131: Backend Test Fix
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Fix failing backend test discovered during quality sweep
+
+**Session 131 Achievements**:
+1. **Test Fix** (`test_data_archival_service.py`):
+   - `test_get_storage_metrics_success` was failing: `assert metrics.archived_messages == 26420` got 0
+   - Root cause: Mock `side_effect` only provided 5 values, but implementation makes 6 scalar calls:
+     1. total_threads
+     2. total_messages
+     3. oldest_message_date
+     4. newest_message_date
+     5. archived_messages (COUNT from archive table)
+     6. ai_messages_archive_size_mb (SUM query) ← **missing!**
+   - Added 6th value to both `test_get_storage_metrics_success` and `test_get_storage_metrics_null_counts`
+   - Also added assertion for `ai_messages_archive_size_mb` field
+
+2. **New Tests Preserved**:
+   - 4 new tests for `compress_old_messages` functionality (added by pre-push hook)
+   - All passing: success, no_candidates, disabled, error cases
+
+**Quality Validation**:
+- All 43 tests in test_data_archival_service.py passing (was 42 + 1 failed) ✅
+- Ruff: 0 violations ✅
+- Black: Properly formatted ✅
+
+**Commits**:
+- `abe40f15` - fix(tests): correct mock side_effect count for storage metrics tests
 
 ### 🎉 Session 130: ESLint Warnings Cleanup + Quality Sweep
 
