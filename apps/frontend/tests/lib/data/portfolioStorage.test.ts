@@ -10,6 +10,21 @@ import {
 } from '@/lib/data/portfolioStorage';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// Mock the logger using vi.hoisted to ensure it's defined before vi.mock
+const { mockLoggerError } = vi.hoisted(() => ({
+  mockLoggerError: vi.fn(),
+}));
+
+vi.mock('@/lib/utils/logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: mockLoggerError,
+    debug: vi.fn(),
+  }),
+  sanitizeLogInput: (input: unknown) => input,
+}));
+
 // Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -58,13 +73,12 @@ describe('portfolioStorage', () => {
 
     it('should handle parse errors gracefully', () => {
       localStorageMock.setItem('portfolio', 'invalid json');
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockLoggerError.mockClear();
 
       const result = loadPortfolio();
 
       expect(result).toEqual([]);
-      expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
+      expect(mockLoggerError).toHaveBeenCalled();
     });
   });
 
