@@ -935,7 +935,7 @@ class TestEdgeCases:
         """Test storage metrics with completely empty database."""
         # Mock session with all zeros
         mock_session = MagicMock()
-        mock_session.scalar = AsyncMock(side_effect=[0, 0, None, None, 0])
+        mock_session.scalar = AsyncMock(side_effect=[0, 0, None, None, 0, 0.0])
 
         async def mock_get_session(read_only=True):
             yield mock_session
@@ -1033,7 +1033,9 @@ class TestSizeCalculations:
         mock_session = MagicMock()
         threads = 1024  # Exactly 1024 threads
         messages = 1024  # Exactly 1024 messages
-        mock_session.scalar = AsyncMock(side_effect=[threads, messages, None, None, 0])
+        mock_session.scalar = AsyncMock(
+            side_effect=[threads, messages, None, None, 0, 0.0]
+        )
 
         async def mock_get_session(read_only=True):
             yield mock_session
@@ -1058,7 +1060,9 @@ class TestSizeCalculations:
         mock_session = MagicMock()
         threads = 1000000  # 1 million threads
         messages = 10000000  # 10 million messages
-        mock_session.scalar = AsyncMock(side_effect=[threads, messages, None, None, 0])
+        mock_session.scalar = AsyncMock(
+            side_effect=[threads, messages, None, None, 0, 0.0]
+        )
 
         async def mock_get_session(read_only=True):
             yield mock_session
