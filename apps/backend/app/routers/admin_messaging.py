@@ -87,7 +87,9 @@ async def get_performance_metrics(
         }
 
     except Exception as e:
-        logger.error("Error getting performance metrics: %s", sanitize_for_logging(str(e)))
+        logger.error(
+            "Error getting performance metrics: %s", sanitize_for_logging(str(e))
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get performance metrics",
@@ -299,7 +301,9 @@ async def comprehensive_health_check(
         }
 
     except Exception as e:
-        logger.error("Error in comprehensive health check: %s", sanitize_for_logging(str(e)))
+        logger.error(
+            "Error in comprehensive health check: %s", sanitize_for_logging(str(e))
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Health check failed",

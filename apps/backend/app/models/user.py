@@ -6,12 +6,20 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
+
+if TYPE_CHECKING:
+    from app.models.ai_thread import AiThread
+    from app.models.conversation import ConversationParticipant, Message
+    from app.models.follow import Follow
+    from app.models.notification_models import Notification, NotificationPreference
+    from app.models.profile import Profile
 
 
 class User(Base):
@@ -69,30 +77,27 @@ class User(Base):
         DateTime(timezone=True), nullable=True
     )
 
-    # Relationships - Using string-based forward references to avoid circular imports
-    # With PEP 563 (from __future__ import annotations), all type hints are stored as strings
-    # and evaluated lazily at runtime, preventing module-level circular import issues
-    # SQLAlchemy's relationship() already uses string literals for model names
-    profile: "Mapped[Profile | None]" = relationship(
+    # Relationships
+    profile: Mapped[Profile | None] = relationship(
         "Profile", back_populates="user", uselist=False
     )
-    following: "Mapped[list[Follow]]" = relationship(
+    following: Mapped[list[Follow]] = relationship(
         "Follow", foreign_keys="Follow.follower_id", back_populates="follower"
     )
-    followers: "Mapped[list[Follow]]" = relationship(
+    followers: Mapped[list[Follow]] = relationship(
         "Follow", foreign_keys="Follow.followee_id", back_populates="followee"
     )
-    conversations: "Mapped[list[ConversationParticipant]]" = relationship(
+    conversations: Mapped[list[ConversationParticipant]] = relationship(
         "ConversationParticipant", back_populates="user"
     )
-    sent_messages: "Mapped[list[Message]]" = relationship(
+    sent_messages: Mapped[list[Message]] = relationship(
         "Message", foreign_keys="Message.sender_id", back_populates="sender"
     )
-    ai_threads: "Mapped[list[AiThread]]" = relationship("AiThread", back_populates="user")
-    notifications: "Mapped[list[Notification]]" = relationship(
+    ai_threads: Mapped[list[AiThread]] = relationship("AiThread", back_populates="user")
+    notifications: Mapped[list[Notification]] = relationship(
         "Notification", foreign_keys="Notification.user_id", back_populates="user"
     )
-    notification_preferences: "Mapped[NotificationPreference | None]" = relationship(
+    notification_preferences: Mapped[NotificationPreference | None] = relationship(
         "NotificationPreference", back_populates="user", uselist=False
     )
     # Optional: notifications where this user is the related_user (no back_populates to avoid cycles)
