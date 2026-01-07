@@ -264,6 +264,70 @@ gh api /repos/ericsocrat/Lokifi/dependabot/alerts --jq '[.[] | select(.state=="o
 
 ---
 
+---
+
+## ⚡ Quick Reference Card
+
+### Session Commands
+| Action | Command |
+|--------|--------|
+| Check repo state | `git status && git log --oneline -5` |
+| Pull latest | `git pull origin main` |
+| Check CI status | `gh run list --repo ericsocrat/Lokifi --limit 3` |
+| Check security alerts | `gh api /repos/ericsocrat/Lokifi/code-scanning/alerts --jq 'length'` |
+| Frontend quality | `cd apps/frontend && npm run typecheck && npm run lint` |
+| Backend quality | `cd apps/backend && ruff check . && pytest` |
+| Run all tests | `cd apps/frontend && npm test` / `cd apps/backend && pytest --cov` |
+| Push changes | `git push origin main` |
+
+### MCP Quick Queries
+| Need | Query |
+|------|-------|
+| Coverage status | "What's my test coverage?" |
+| Low coverage files | "Which files need more tests?" |
+| Find pattern | "Show me the AsyncMock pattern" |
+| Search docs | "Search docs for deployment" |
+| Recent commits | "What was done in Session 135?" |
+
+---
+
+## 🎯 Behavioral Triggers
+
+When you see these phrases, activate the corresponding behavior:
+
+| Trigger Phrase | Behavior |
+|----------------|----------|
+| **"continue"** / **"next steps"** | Autonomously determine the highest-impact next action for Lokifi. Consider: coverage gaps, open issues, security alerts, technical debt, documentation gaps, or new features. You have full authority to start large sessions if needed. |
+| **"session start"** | Run the full Session Start Checklist (git status, pull, check issues/PRs, security alerts, CI status, quality checks) |
+| **"wrap up"** / **"end session"** | Run Session End Checklist, update `/docs/checklists.md` with session summary, ensure working tree is clean |
+| **"what's the status"** | Check git state, CI status, coverage metrics, security alerts, open issues/PRs - provide comprehensive status report |
+| **"check coverage"** | Use `lokifi-coverage` MCP to get summary, low-coverage files, and recommendations |
+| **"check security"** | Run security alert checks (CodeQL, Dependabot), report any open alerts |
+| **"find pattern for X"** | Use `lokifi-patterns` MCP to search and recommend relevant patterns |
+
+### Autonomous Decision Making
+
+When user says **"continue"** or **"next steps"**, you have **full authority** to:
+
+1. **Assess the current state** - Check coverage, security, CI, open issues
+2. **Prioritize autonomously** - Choose the highest-impact work:
+   - 🔴 **Critical**: Security alerts, CI failures, broken tests
+   - 🟠 **High**: Coverage < 80%, open issues, technical debt
+   - 🟡 **Medium**: Documentation gaps, refactoring opportunities
+   - 🟢 **Strategic**: New features, architecture improvements, tooling
+3. **Execute without asking** - Start the work, commit incrementally
+4. **Go deep if needed** - Marathon sessions are acceptable for complex work
+
+**Coverage is not always the priority** - You decide what's most valuable:
+- If coverage is near targets (80%+), consider other improvements
+- If security alerts exist, prioritize those
+- If architecture needs work, tackle that
+- If you want to reach 90% coverage first, that's your call
+
+**You are the master of this codebase. Make decisions like a principal engineer would.**
+
+---
+
 ## 🧭 Autonomous Authority
 
 - **If something is missing, add it**
@@ -627,131 +691,41 @@ lokifi/
 
 ## Common Patterns
 
-> **📚 Pattern Library**: For battle-tested patterns with success metrics, examples, and anti-patterns, see:
-> - **Testing Patterns** - AsyncMock, Pure Functions, Mathematical Indicator Testing, Fixtures
-> - **UI/UX Patterns** - React Keyboard Shortcuts
-> - **CI/CD Patterns** - Workflow Health Check, GitHub CLI Investigation, Service Config Standards
-> - **Code Quality Patterns** - TypeScript Any Elimination, Zustand+Immer, Draft<T>, Python Ruff, ESLint
-> - **Dependencies** - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patches
-> - **Python Patterns** - Python 3.10 Compatibility, UTC Import (datetime.utcnow deprecation), Lambda UTC
-> - **Debugging Patterns** - Root Cause Analysis, Log Analysis
+> **⚡ USE MCP FOR PATTERNS**: All 44 battle-tested patterns are accessible via the **lokifi-patterns** MCP server. Query patterns on-demand instead of searching this file.
 
-### Quick Code Templates (For Copilot Generation)
+### Quick Pattern Access (MCP Queries)
 
-**Note**: These are minimal boilerplate templates for fast code generation. For comprehensive production patterns with real-world examples and success metrics, see the Pattern Library above.
+| Need | MCP Query |
+|------|----------|
+| List all patterns | "List all patterns" |
+| Testing pattern | "Show me the AsyncMock pattern" |
+| Zustand pattern | "Get the Zustand+Immer pattern" |
+| Type safety | "Search patterns for TypeScript" |
+| Compare options | "Compare AsyncMock vs Pure Functions" |
+| Recommendations | "Recommend patterns for API testing" |
 
-### Frontend Component Pattern
-```typescript
-import { FC } from 'react';
+### Pattern Categories (44 total)
 
-interface Props {
-  // Props with types
-}
+| Category | Count | Key Patterns |
+|----------|-------|-------------|
+| **Testing** | 18 | AsyncMock, Pure Functions, Fixtures, Branch Coverage |
+| **Code Quality** | 6 | Zustand+Immer, Draft<T>, TypeScript Any Elimination |
+| **Python** | 7 | arg-type, attr-defined, UTC Imports |
+| **CI/CD** | 5 | Workflow Health Check, Service Config Standards |
+| **Dependencies** | 4 | Conflict Resolution, Renovate Migration |
+| **Security** | 3 | Secure Logging, Input Validation |
+| **Debugging** | 3 | Root Cause Analysis, Log Analysis |
 
-export const ComponentName: FC<Props> = ({ prop1, prop2 }) => {
-  // Component logic
-  return (
-    <div>
-      {/* JSX */}
-    </div>
-  );
-};
-```
+### When to Query Patterns
 
-### Zustand Store Pattern (Basic)
+- **Before implementing**: "Recommend patterns for [use case]"
+- **When stuck**: "Search patterns for [problem keyword]"
+- **For best practices**: "Get pattern [name]" for full details with examples
+- **To compare approaches**: "Compare [pattern1] vs [pattern2]"
 
-```typescript
-import { create } from 'zustand';
+**Pattern details include**: Problem context, solution approach, code examples, anti-patterns, success metrics, and references.
 
-interface StoreState {
-  data: DataType[];
-  isLoading: boolean;
-  error: string | null;
-}
-
-interface StoreActions {
-  fetchData: () => Promise<void>;
-  updateData: (data: DataType) => void;
-  reset: () => void;
-}
-
-type Store = StoreState & StoreActions;
-
-export const useStore = create<Store>((set, get) => ({
-  // State
-  data: [],
-  isLoading: false,
-  error: null,
-
-  // Actions
-  fetchData: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await fetch('/api/data');
-      const data = await response.json();
-      set({ data, isLoading: false });
-    } catch (error) {
-      set({ error: error.message, isLoading: false });
-    }
-  },
-
-  updateData: (newData) => {
-    set((state) => ({
-      data: [...state.data, newData]
-    }));
-  },
-
-  reset: () => set({ data: [], isLoading: false, error: null })
-}));
-```
-
-### Backend Route Pattern
-```python
-from fastapi import APIRouter, Depends
-from app.models.schemas import ResponseModel
-
-router = APIRouter()
-
-@router.get("/endpoint", response_model=ResponseModel)
-async def get_endpoint(
-    param: str,
-    db: Session = Depends(get_db)
-) -> ResponseModel:
-    """Function docstring."""
-    # Implementation
-    return result
-```
-
-### Test Pattern (Frontend)
-
-```typescript
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
-
-describe('ComponentName', () => {
-  it('should render correctly', () => {
-    render(<ComponentName />);
-    expect(screen.getByText('text')).toBeInTheDocument();
-  });
-});
-```
-
-### Test Pattern (Backend)
-```python
-import pytest
-from app.models.schemas import Model
-
-def test_function_name(client, db_session):
-    """Test description."""
-    # Arrange
-    data = {"key": "value"}
-
-    # Act
-    response = client.post("/endpoint", json=data)
-
-    # Assert
-    assert response.status_code == 200
-```
+> **📍 Pattern Library Location**: `/docs/architecture/patterns/` (single source of truth)
 
 ## Key Guidelines
 
@@ -768,85 +742,19 @@ def test_function_name(client, db_session):
    - ✅ **Document acceptable `any`**: If unavoidable, add comment explaining why
    - 🎯 **Target**: 95%+ type coverage (only 5% acceptable `any` for valid reasons)
 
-**TypeScript Type Inference Best Practices** (Sprint 3 learnings):
-```typescript
-// ❌ BAD: Redundant type annotations when TypeScript can infer
-const numbers = [1, 2, 3];
-numbers.map((n: number) => n * 2);  // number is inferred from array
-store.subscribe((state: StoreType) => ...);  // StoreType inferred from store
+**TypeScript Best Practices Summary**:
+- Let TypeScript **infer types** when obvious (arrays, callbacks)
+- **Annotate explicitly** when inference needs help (complex returns, API responses)
+- **Document acceptable `any`** inline with `// any required: <reason>`
 
-// ✅ GOOD: Let TypeScript infer when obvious
-numbers.map((n) => n * 2);  // Inferred
-store.subscribe((state) => ...);  // Inferred
+**Acceptable `any` Categories**:
+- Dynamic config systems, variadic wrappers, external API adapters
+- Plugin systems, incomplete browser APIs, test mocking
+- **Never acceptable**: Laziness - always define proper interfaces!
 
-// ✅ GOOD: Annotate when inference needs help
-const data = response.data as ApiResponse;  // Type assertion when needed
-const callback: (id: string) => void = handleDelete;  // Complex callback
-```
+**For detailed type patterns**: Query `lokifi-patterns` MCP for "TypeScript Any Elimination" or "Zustand+Immer" patterns.
 
-**Acceptable `any` Categories** (Document inline with reason):
-```typescript
-// ✅ ACCEPTABLE: Dynamic configuration systems
-const config: Record<string, any> = { ... };  // any required: user-defined config values
-
-// ✅ ACCEPTABLE: Generic performance wrappers (variadic arguments)
-function debounce<T extends (...args: any[]) => any>(fn: T): T { ... }  // any required: variadic args
-
-// ✅ ACCEPTABLE: External API adapters (varying formats)
-function normalizeData(raw: any): NormalizedType { ... }  // any required: external API formats vary
-
-// ✅ ACCEPTABLE: Plugin systems (runtime loading)
-const plugin: any = (globalThis as any).dynamicPlugin;  // any required: runtime plugin loading
-
-// ✅ ACCEPTABLE: Browser APIs with incomplete types
-const observer = new PerformanceObserver((list: any) => { ... });  // any required: PerformanceObserverEntryList incomplete
-
-// ✅ ACCEPTABLE: Test mocking (test files only)
-const mockFn = vi.fn() as any;  // any required: flexible test mock
-
-// ❌ NEVER ACCEPTABLE: Lack of effort or laziness
-function process(data: any) { ... }  // NO - define proper interface!
-const items: any[] = [...];  // NO - use proper Item[] type!
-```
-
-**Zustand + Immer Store Pattern**: For type-safe state mutations with `Draft<T>`, see **Zustand+Immer Pattern** via Pattern Library MCP.
-
-**React Event Handler Types** (Common patterns):
-```typescript
-import type React from 'react';
-
-// ✅ GOOD: Use React type imports for all event handlers
-const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { ... };
-const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => { ... };
-const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => { ... };
-const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => { ... };
-const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => { ... };
-const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { ... };
-
-// ❌ BAD: Don't use any for event handlers
-const handleChange = (e: any) => { ... };  // NO!
-```
-
-**API Response Types** (External data):
-```typescript
-// ✅ GOOD: Define interfaces for API responses
-interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-}
-
-async function fetchData(): Promise<ApiResponse<User[]>> {
-  const response = await fetch('/api/users');
-  return response.json();  // Type-safe return
-}
-
-// ❌ BAD: Implicit any return
-async function fetchData() {  // Returns Promise<any>
-  const response = await fetch('/api/users');
-  return response.json();
-}
-```
+**React Event Types** (use `React.ChangeEvent<T>`, `React.MouseEvent<T>`, etc. - never `any`)
 
 2. **Error Handling** (COMPREHENSIVE coverage)
    - ✅ **Try/catch all async operations**: Every API call, file operation, external service
