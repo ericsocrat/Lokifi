@@ -82,6 +82,13 @@
 3. **Commits**:
    - `1c43acd4` - refactor(logging): migrate console.error/warn to structured logger
    - `378353f4` - refactor(logging): complete console→logger migration (6 statements in 3 files)
+   - `2e7c584e` - fix(deps): update @modelcontextprotocol/sdk to 1.25.2 (HIGH severity ReDoS fix)
+
+4. **Security Fix**:
+   - ✅ Fixed HIGH severity ReDoS vulnerability (CVE-2026-0621, GHSA-8r9q-7v3j-jr4g)
+   - ✅ Updated @modelcontextprotocol/sdk from 1.0.4 → 1.25.2
+   - ✅ Dependabot Alert #6 resolved
+   - ✅ 0 open security alerts remaining
 
 ---
 
