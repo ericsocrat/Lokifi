@@ -114,6 +114,94 @@
       </div>
     </section>
 
+    <!-- Frontend / Backend / Overall Coverage Cards -->
+    <section class="container mx-auto px-6 py-8">
+      <h2 class="text-3xl font-bold mb-6">📊 Coverage by Stack</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Frontend Coverage -->
+        <div class="bg-gradient-to-br from-blue-900/50 to-blue-800/30 p-6 rounded-lg shadow-lg border border-blue-700/50">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-blue-400">🖥️ Frontend</h3>
+            <span class="text-xs px-2 py-1 bg-blue-600/30 rounded text-blue-300">Next.js + React</span>
+          </div>
+          <div class="text-4xl font-bold text-white mb-2" id="frontendCoverage">89.48%</div>
+          <div class="text-sm text-gray-400 mb-4">Lines Coverage</div>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-gray-400">Tests</div>
+              <div class="text-lg font-semibold text-blue-300" id="frontendTests">7,846</div>
+            </div>
+            <div>
+              <div class="text-gray-400">Files</div>
+              <div class="text-lg font-semibold text-blue-300" id="frontendFiles">253</div>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-blue-700/30">
+            <div class="flex justify-between text-xs text-gray-400">
+              <span>Threshold: 10%</span>
+              <span class="text-green-400" id="frontendStatus">✅ Passing</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Backend Coverage -->
+        <div class="bg-gradient-to-br from-green-900/50 to-green-800/30 p-6 rounded-lg shadow-lg border border-green-700/50">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-green-400">⚙️ Backend</h3>
+            <span class="text-xs px-2 py-1 bg-green-600/30 rounded text-green-300">FastAPI + Python</span>
+          </div>
+          <div class="text-4xl font-bold text-white mb-2" id="backendCoverage">81.06%</div>
+          <div class="text-sm text-gray-400 mb-4">Lines Coverage</div>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-gray-400">Tests</div>
+              <div class="text-lg font-semibold text-green-300" id="backendTests">4,267</div>
+            </div>
+            <div>
+              <div class="text-gray-400">Files</div>
+              <div class="text-lg font-semibold text-green-300" id="backendFiles">150</div>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-green-700/30">
+            <div class="flex justify-between text-xs text-gray-400">
+              <span>Threshold: 20%</span>
+              <span class="text-green-400" id="backendStatus">✅ Passing</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Coverage -->
+        <div class="bg-gradient-to-br from-purple-900/50 to-purple-800/30 p-6 rounded-lg shadow-lg border border-purple-700/50">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-purple-400">🎯 Overall</h3>
+            <span class="text-xs px-2 py-1 bg-purple-600/30 rounded text-purple-300">Combined</span>
+          </div>
+          <div class="text-4xl font-bold text-white mb-2" id="overallCoverage">~85%</div>
+          <div class="text-sm text-gray-400 mb-4">Weighted Average</div>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <div class="text-gray-400">Total Tests</div>
+              <div class="text-lg font-semibold text-purple-300" id="overallTests">12,113</div>
+            </div>
+            <div>
+              <div class="text-gray-400">Pass Rate</div>
+              <div class="text-lg font-semibold text-purple-300" id="overallPassRate">99.1%</div>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-purple-700/30">
+            <div class="flex justify-between text-xs text-gray-400">
+              <span>Threshold: 20%</span>
+              <span class="text-green-400" id="overallStatus">✅ Passing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-4 text-center">
+        📝 Data from <code class="bg-gray-800 px-1 rounded">config/coverage.config.json</code> • 
+        Frontend via Vitest • Backend via Pytest
+      </p>
+    </section>
+
     <!-- Coverage Overview Gauges -->
     <section class="container mx-auto px-6 py-8">
       <h2 class="text-3xl font-bold mb-6">Coverage Overview</h2>
@@ -2169,6 +2257,78 @@
           document.getElementById('passingTests').textContent = current.tests.passing || '-';
           document.getElementById('testFiles').textContent = current.tests.files || '-';
           document.getElementById('testDuration').textContent = current.tests.duration || '-';
+
+          // Update stack-level coverage cards (Frontend/Backend/Overall)
+          // These values come from config/coverage.config.json - updated when tests run
+          const stackConfig = {
+            frontend: {
+              lines: 89.48,
+              tests: 7846,
+              files: 253,
+              threshold: 10,
+              passing: true
+            },
+            backend: {
+              lines: 81.06,
+              tests: 4267,
+              files: 150,
+              threshold: 20,
+              passing: true
+            },
+            overall: {
+              lines: 85,
+              tests: 12113,
+              passRate: 99.1,
+              threshold: 20,
+              passing: true
+            }
+          };
+
+          // Try to load from config file if available, otherwise use defaults
+          try {
+            const configResponse = await fetch('../../../config/coverage.config.json');
+            if (configResponse.ok) {
+              const config = await configResponse.json();
+              if (config.current) {
+                stackConfig.frontend.lines = config.current.frontend?.lines || stackConfig.frontend.lines;
+                stackConfig.frontend.tests = config.current.frontend?.totalTests || stackConfig.frontend.tests;
+                stackConfig.frontend.files = config.current.frontend?.testFiles || stackConfig.frontend.files;
+                stackConfig.backend.lines = config.current.backend?.lines || stackConfig.backend.lines;
+                stackConfig.backend.tests = config.current.backend?.totalTests || stackConfig.backend.tests;
+                stackConfig.backend.files = config.current.backend?.testFiles || stackConfig.backend.files;
+                stackConfig.overall.lines = config.current.overall?.lines || stackConfig.overall.lines;
+                stackConfig.overall.tests = config.current.overall?.totalTests || stackConfig.overall.tests;
+              }
+              if (config.thresholds) {
+                stackConfig.frontend.threshold = config.thresholds.frontend?.lines || stackConfig.frontend.threshold;
+                stackConfig.backend.threshold = config.thresholds.backend?.lines || stackConfig.backend.threshold;
+                stackConfig.overall.threshold = config.thresholds.overall?.lines || stackConfig.overall.threshold;
+              }
+            }
+          } catch (e) {
+            console.log('Using default stack config values');
+          }
+
+          // Update Frontend card
+          document.getElementById('frontendCoverage').textContent = `${stackConfig.frontend.lines.toFixed(2)}%`;
+          document.getElementById('frontendTests').textContent = stackConfig.frontend.tests.toLocaleString();
+          document.getElementById('frontendFiles').textContent = stackConfig.frontend.files.toLocaleString();
+          document.getElementById('frontendStatus').textContent = stackConfig.frontend.lines >= stackConfig.frontend.threshold ? '✅ Passing' : '❌ Below threshold';
+          document.getElementById('frontendStatus').className = stackConfig.frontend.lines >= stackConfig.frontend.threshold ? 'text-green-400' : 'text-red-400';
+
+          // Update Backend card
+          document.getElementById('backendCoverage').textContent = `${stackConfig.backend.lines.toFixed(2)}%`;
+          document.getElementById('backendTests').textContent = stackConfig.backend.tests.toLocaleString();
+          document.getElementById('backendFiles').textContent = stackConfig.backend.files.toLocaleString();
+          document.getElementById('backendStatus').textContent = stackConfig.backend.lines >= stackConfig.backend.threshold ? '✅ Passing' : '❌ Below threshold';
+          document.getElementById('backendStatus').className = stackConfig.backend.lines >= stackConfig.backend.threshold ? 'text-green-400' : 'text-red-400';
+
+          // Update Overall card
+          document.getElementById('overallCoverage').textContent = `~${stackConfig.overall.lines.toFixed(0)}%`;
+          document.getElementById('overallTests').textContent = stackConfig.overall.tests.toLocaleString();
+          document.getElementById('overallPassRate').textContent = `${stackConfig.overall.passRate}%`;
+          document.getElementById('overallStatus').textContent = stackConfig.overall.lines >= stackConfig.overall.threshold ? '✅ Passing' : '❌ Below threshold';
+          document.getElementById('overallStatus').className = stackConfig.overall.lines >= stackConfig.overall.threshold ? 'text-green-400' : 'text-red-400';
 
           // Create gauges
           const coverage = current.coverage;
