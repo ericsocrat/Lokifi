@@ -1287,7 +1287,14 @@
 
         // Filter data by time range
         const filteredData = filterDataByRange(dashboardData.trends, range);
+
+        // Update all trend-related charts
         updateTrendChart(filteredData);
+
+        // Also update velocity chart if it exists
+        if (charts.velocity && filteredData.length > 1) {
+          updateVelocityChart(filteredData);
+        }
       }
 
       // Filter analytics by time range
@@ -1306,6 +1313,11 @@
         // Filter and update analytics
         const filteredData = filterDataByRange(dashboardData.trends, range);
         updateAnalyticsSection(filteredData);
+
+        // Update velocity chart with filtered data
+        if (charts.velocity && filteredData.length > 1) {
+          updateVelocityChart(filteredData);
+        }
       }
 
       // Filter history by count
@@ -1331,14 +1343,21 @@
         const periodLabel = document.getElementById('historyPeriodLabel');
         if (periodLabel) periodLabel.textContent = `(${labelMap[count] || count + ' runs'})`;
 
-        // Update history table
-        updateHistoryTable(count === 'all' ? dashboardData.trends.length : count);
+        // Update history table and detailed history chart
+        const numCount = count === 'all' ? dashboardData.trends.length : parseInt(count);
+        updateHistoryTable(numCount);
+
+        // Update detailed history chart
+        if (charts.detailedHistory) {
+          const trends = dashboardData.trends.slice(-numCount);
+          updateDetailedHistoryChart(trends);
+        }
       }
 
       // Helper: Filter data by time range
       function filterDataByRange(trends, range) {
         if (!trends || trends.length === 0) return [];
-        if (range === 'all') return trends;
+        if (range === 'all') return [...trends];
 
         const now = new Date();
         const rangeMs = {
@@ -1354,15 +1373,65 @@
 
       // Update trend chart with filtered data
       function updateTrendChart(filteredTrends) {
-        if (charts.trend) {
-          charts.trend.data.labels = filteredTrends.map((t) =>
-            new Date(t.timestamp).toLocaleDateString()
-          );
-          charts.trend.data.datasets[0].data = filteredTrends.map((t) => t.coverage.statements);
-          charts.trend.data.datasets[1].data = filteredTrends.map((t) => t.coverage.branches);
-          charts.trend.data.datasets[2].data = filteredTrends.map((t) => t.coverage.functions);
-          charts.trend.update();
+        if (!charts.trend || !filteredTrends || filteredTrends.length === 0) return;
+
+        charts.trend.data.labels = filteredTrends.map((t) =>
+          new Date(t.timestamp).toLocaleDateString()
+        );
+        charts.trend.data.datasets[0].data = filteredTrends.map((t) => t.coverage.statements);
+        charts.trend.data.datasets[1].data = filteredTrends.map((t) => t.coverage.branches);
+        charts.trend.data.datasets[2].data = filteredTrends.map((t) => t.coverage.functions);
+        charts.trend.update('none'); // 'none' for faster update without animation
+      }
+
+      // Update velocity chart with filtered data
+      function updateVelocityChart(filteredTrends) {
+        if (!charts.velocity || !filteredTrends || filteredTrends.length < 2) return;
+
+        // Calculate velocity (change between consecutive runs)
+        const velocityData = [];
+        const labels = [];
+        for (let i = 1; i < filteredTrends.length; i++) {
+          const change = filteredTrends[i].coverage.lines - filteredTrends[i - 1].coverage.lines;
+          velocityData.push(change);
+          labels.push(new Date(filteredTrends[i].timestamp).toLocaleDateString());
         }
+
+        charts.velocity.data.labels = labels;
+        charts.velocity.data.datasets[0].data = velocityData;
+        charts.velocity.update('none');
+
+        // Update velocity stats
+        if (velocityData.length > 0) {
+          const avg = (velocityData.reduce((a, b) => a + b, 0) / velocityData.length).toFixed(2);
+          const maxInc = Math.max(...velocityData).toFixed(2);
+          const maxDec = Math.min(...velocityData).toFixed(2);
+          const volatility = (Math.max(...velocityData) - Math.min(...velocityData)).toFixed(2);
+
+          const avgEl = document.getElementById('avgVelocity');
+          const maxIncEl = document.getElementById('maxIncrease');
+          const maxDecEl = document.getElementById('maxDecrease');
+          const volEl = document.getElementById('volatility');
+
+          if (avgEl) avgEl.textContent = (avg >= 0 ? '+' : '') + avg + '%';
+          if (maxIncEl) maxIncEl.textContent = '+' + maxInc + '%';
+          if (maxDecEl) maxDecEl.textContent = maxDec + '%';
+          if (volEl) volEl.textContent = volatility + '%';
+        }
+      }
+
+      // Update detailed history chart with filtered data
+      function updateDetailedHistoryChart(trends) {
+        if (!charts.detailedHistory || !trends || trends.length === 0) return;
+
+        charts.detailedHistory.data.labels = trends.map((t) =>
+          new Date(t.timestamp).toLocaleDateString()
+        );
+        charts.detailedHistory.data.datasets[0].data = trends.map((t) => t.coverage.statements);
+        charts.detailedHistory.data.datasets[1].data = trends.map((t) => t.coverage.branches);
+        charts.detailedHistory.data.datasets[2].data = trends.map((t) => t.coverage.functions);
+        charts.detailedHistory.data.datasets[3].data = trends.map((t) => t.coverage.lines);
+        charts.detailedHistory.update('none');
       }
 
       // Update analytics section with filtered data
@@ -1527,7 +1596,7 @@
         });
       }
 
-      // Create module chart
+      // Create module chart - generates synthetic modules from gaps data
       function createModuleChart(data) {
         const ctx = document.getElementById('moduleChart').getContext('2d');
         const moduleDetailsGrid = document.getElementById('moduleDetailsGrid');
@@ -1535,6 +1604,12 @@
         if (charts.module) {
           charts.module.destroy();
         }
+
+        // Generate synthetic modules from gaps data by categorizing files
+        const syntheticModules = generateSyntheticModules(data);
+
+        // Use synthetic modules if available and more detailed, otherwise use original
+        const modulesToDisplay = syntheticModules.length > 1 ? syntheticModules : data.modules;
 
         // Helper to get coverage value (handles both number and object formats)
         const getCoverage = (m) => {
@@ -1544,15 +1619,20 @@
           return 0;
         };
 
-        // Populate module details grid as fallback/additional info
-        if (moduleDetailsGrid && data.modules && data.modules.length > 0) {
-          moduleDetailsGrid.innerHTML = data.modules
+        // Populate module details grid
+        if (moduleDetailsGrid && modulesToDisplay && modulesToDisplay.length > 0) {
+          moduleDetailsGrid.innerHTML = modulesToDisplay
             .map((m) => {
               const cov = getCoverage(m);
               const covObj =
                 typeof m.coverage === 'object'
                   ? m.coverage
-                  : { lines: cov, statements: cov, branches: 0, functions: 0 };
+                  : {
+                      lines: cov,
+                      statements: cov,
+                      branches: m.branches || 0,
+                      functions: m.functions || 0,
+                    };
               const colorClass =
                 cov >= 80
                   ? 'text-green-400 bg-green-500/10 border-green-500/30'
@@ -1560,10 +1640,12 @@
                     ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30'
                     : 'text-red-400 bg-red-500/10 border-red-500/30';
 
+              const icon = getModuleIcon(m.name);
+
               return `
               <div class="rounded-lg p-4 border ${colorClass}">
                 <div class="flex justify-between items-start mb-3">
-                  <h4 class="font-semibold capitalize">${m.name}</h4>
+                  <h4 class="font-semibold capitalize">${icon} ${m.name}</h4>
                   <span class="text-2xl font-bold">${cov.toFixed(1)}%</span>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs">
@@ -1572,11 +1654,14 @@
                   <div class="text-gray-400">Functions: <span class="text-gray-200">${(covObj.functions || 0).toFixed(1)}%</span></div>
                   <div class="text-gray-400">Lines: <span class="text-gray-200">${(covObj.lines || 0).toFixed(1)}%</span></div>
                 </div>
+                <div class="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
+                  <span class="mr-3">📁 ${m.files || 0} files</span>
+                  ${m.uncoveredLines ? `<span class="text-red-400">⚠️ ${m.uncoveredLines} uncovered lines</span>` : ''}
+                </div>
                 ${
-                  m.files
-                    ? `<div class="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
-                  <span class="mr-3">📁 ${m.files} files</span>
-                  ${m.metrics ? `<span>📊 ${m.metrics.coveredLines || 0}/${m.metrics.totalLines || 0} lines</span>` : ''}
+                  m.examples
+                    ? `<div class="mt-2 text-xs text-gray-500 truncate" title="${m.examples.join(', ')}">
+                  Examples: ${m.examples.slice(0, 2).join(', ')}${m.examples.length > 2 ? '...' : ''}
                 </div>`
                     : ''
                 }
@@ -1589,12 +1674,12 @@
         charts.module = new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: data.modules.map((m) => m.name),
+            labels: modulesToDisplay.map((m) => m.name),
             datasets: [
               {
                 label: 'Coverage %',
-                data: data.modules.map((m) => getCoverage(m)),
-                backgroundColor: data.modules.map((m) => getCoverageColor(getCoverage(m)).bg),
+                data: modulesToDisplay.map((m) => getCoverage(m)),
+                backgroundColor: modulesToDisplay.map((m) => getCoverageColor(getCoverage(m)).bg),
               },
             ],
           },
@@ -1607,7 +1692,7 @@
               tooltip: {
                 callbacks: {
                   label: function (context) {
-                    const module = data.modules[context.dataIndex];
+                    const module = modulesToDisplay[context.dataIndex];
                     const cov = getCoverage(module);
                     const covObj =
                       typeof module.coverage === 'object' ? module.coverage : { lines: cov };
@@ -1636,6 +1721,102 @@
             },
           },
         });
+      }
+
+      // Generate synthetic modules from gaps data by categorizing files
+      function generateSyntheticModules(data) {
+        if (!data.gaps || data.gaps.length === 0) return [];
+
+        const categories = {
+          Components: { pattern: /components/i, files: [], icon: '🧩' },
+          Hooks: { pattern: /hooks/i, files: [], icon: '🪝' },
+          Stores: { pattern: /stores/i, files: [], icon: '🗄️' },
+          'API/Services': { pattern: /(api|services)/i, files: [], icon: '🔌' },
+          'Utils/Lib': { pattern: /(utils|lib|helpers)/i, files: [], icon: '🔧' },
+          Charts: { pattern: /charts/i, files: [], icon: '📊' },
+          Types: { pattern: /types/i, files: [], icon: '📝' },
+          'App Core': { pattern: /(app|pages|routes)/i, files: [], icon: '🏠' },
+          Other: { pattern: /.*/, files: [], icon: '📁' },
+        };
+
+        // Categorize each gap file
+        data.gaps.forEach((gap) => {
+          const filePath = gap.file || gap.fullPath || '';
+          let categorized = false;
+
+          for (const [name, cat] of Object.entries(categories)) {
+            if (name !== 'Other' && cat.pattern.test(filePath)) {
+              cat.files.push(gap);
+              categorized = true;
+              break;
+            }
+          }
+
+          if (!categorized) {
+            categories['Other'].files.push(gap);
+          }
+        });
+
+        // Calculate coverage stats for each category
+        const modules = [];
+        for (const [name, cat] of Object.entries(categories)) {
+          if (cat.files.length === 0) continue;
+
+          const avgCoverage =
+            cat.files.reduce((sum, f) => sum + (f.coverage || 0), 0) / cat.files.length;
+          const avgBranches =
+            cat.files.reduce((sum, f) => sum + parseFloat(f.details?.branches || 0), 0) /
+            cat.files.length;
+          const avgFunctions =
+            cat.files.reduce((sum, f) => sum + parseFloat(f.details?.functions || 0), 0) /
+            cat.files.length;
+          const totalUncovered = cat.files.reduce(
+            (sum, f) => sum + (f.metrics?.uncoveredLines || 0),
+            0
+          );
+
+          modules.push({
+            name: name,
+            icon: cat.icon,
+            coverage: {
+              lines: avgCoverage,
+              statements: avgCoverage,
+              branches: avgBranches,
+              functions: avgFunctions,
+            },
+            files: cat.files.length,
+            uncoveredLines: totalUncovered,
+            examples: cat.files.slice(0, 3).map((f) => {
+              const parts = (f.file || f.fullPath || '').split(/[/\\]/);
+              return parts[parts.length - 1];
+            }),
+          });
+        }
+
+        // Sort by coverage (lowest first to highlight problem areas)
+        modules.sort((a, b) => {
+          const covA = typeof a.coverage === 'object' ? a.coverage.lines : a.coverage;
+          const covB = typeof b.coverage === 'object' ? b.coverage.lines : b.coverage;
+          return covA - covB;
+        });
+
+        return modules;
+      }
+
+      // Get icon for module type
+      function getModuleIcon(moduleName) {
+        const icons = {
+          Components: '🧩',
+          Hooks: '🪝',
+          Stores: '🗄️',
+          'API/Services': '🔌',
+          'Utils/Lib': '🔧',
+          Charts: '📊',
+          Types: '📝',
+          'App Core': '🏠',
+          Other: '📁',
+        };
+        return icons[moduleName] || '📁';
       }
 
       // Populate coverage gaps table

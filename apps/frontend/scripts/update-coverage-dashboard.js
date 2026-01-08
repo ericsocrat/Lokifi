@@ -381,7 +381,9 @@ trends.push({
   },
 });
 
-if (trends.length > 30) trends = trends.slice(-30);
+// Keep up to 365 days of history (approximately 1000 runs at 3 runs/day)
+// This allows for meaningful long-term trend analysis
+if (trends.length > 1000) trends = trends.slice(-1000);
 
 // Update metadata
 metadata.totalRuns = (metadata.totalRuns || 0) + 1;
