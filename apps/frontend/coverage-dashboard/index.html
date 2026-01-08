@@ -130,6 +130,27 @@
           </div>
           <div class="text-4xl font-bold text-white mb-2" id="frontendCoverage">89.48%</div>
           <div class="text-sm text-gray-400 mb-4">Lines Coverage</div>
+
+          <!-- Detailed Metrics -->
+          <div class="grid grid-cols-4 gap-2 text-xs mb-4 bg-blue-900/30 rounded-lg p-3">
+            <div class="text-center">
+              <div class="text-gray-400">Stmts</div>
+              <div class="font-semibold text-blue-300" id="frontendStatements">89.5%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Branch</div>
+              <div class="font-semibold text-blue-300" id="frontendBranches">83.7%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Funcs</div>
+              <div class="font-semibold text-blue-300" id="frontendFunctions">87.6%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Lines</div>
+              <div class="font-semibold text-blue-300" id="frontendLines">89.5%</div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
               <div class="text-gray-400">Tests</div>
@@ -144,6 +165,10 @@
             <div class="flex justify-between text-xs text-gray-400">
               <span>Threshold: 10%</span>
               <span class="text-green-400" id="frontendStatus">✅ Passing</span>
+            </div>
+            <div class="flex items-center mt-2 text-xs">
+              <span class="text-gray-500 mr-2">7d trend:</span>
+              <span class="text-green-400" id="frontendTrend">↗ +0.2%</span>
             </div>
           </div>
         </div>
@@ -160,6 +185,27 @@
           </div>
           <div class="text-4xl font-bold text-white mb-2" id="backendCoverage">81.06%</div>
           <div class="text-sm text-gray-400 mb-4">Lines Coverage</div>
+
+          <!-- Detailed Metrics -->
+          <div class="grid grid-cols-4 gap-2 text-xs mb-4 bg-green-900/30 rounded-lg p-3">
+            <div class="text-center">
+              <div class="text-gray-400">Stmts</div>
+              <div class="font-semibold text-green-300" id="backendStatements">81.1%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Branch</div>
+              <div class="font-semibold text-green-300" id="backendBranches">75.2%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Funcs</div>
+              <div class="font-semibold text-green-300" id="backendFunctions">78.9%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Lines</div>
+              <div class="font-semibold text-green-300" id="backendLines">81.1%</div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
               <div class="text-gray-400">Tests</div>
@@ -175,6 +221,10 @@
               <span>Threshold: 20%</span>
               <span class="text-green-400" id="backendStatus">✅ Passing</span>
             </div>
+            <div class="flex items-center mt-2 text-xs">
+              <span class="text-gray-500 mr-2">7d trend:</span>
+              <span class="text-green-400" id="backendTrend">↗ +0.1%</span>
+            </div>
           </div>
         </div>
 
@@ -188,6 +238,27 @@
           </div>
           <div class="text-4xl font-bold text-white mb-2" id="overallCoverage">~85%</div>
           <div class="text-sm text-gray-400 mb-4">Weighted Average</div>
+
+          <!-- Detailed Metrics -->
+          <div class="grid grid-cols-4 gap-2 text-xs mb-4 bg-purple-900/30 rounded-lg p-3">
+            <div class="text-center">
+              <div class="text-gray-400">Stmts</div>
+              <div class="font-semibold text-purple-300" id="overallStatements">85.3%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Branch</div>
+              <div class="font-semibold text-purple-300" id="overallBranches">79.5%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Funcs</div>
+              <div class="font-semibold text-purple-300" id="overallFunctions">83.3%</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-400">Lines</div>
+              <div class="font-semibold text-purple-300" id="overallLines">85.3%</div>
+            </div>
+          </div>
+
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
               <div class="text-gray-400">Total Tests</div>
@@ -202,6 +273,10 @@
             <div class="flex justify-between text-xs text-gray-400">
               <span>Threshold: 20%</span>
               <span class="text-green-400" id="overallStatus">✅ Passing</span>
+            </div>
+            <div class="flex items-center mt-2 text-xs">
+              <span class="text-gray-500 mr-2">7d trend:</span>
+              <span class="text-green-400" id="overallTrend">↗ +0.15%</span>
             </div>
           </div>
         </div>
@@ -226,6 +301,16 @@
           <div class="text-center mt-4">
             <span class="text-sm text-gray-400" id="statementsDelta">-</span>
           </div>
+          <div class="mt-3 pt-3 border-t border-gray-700 grid grid-cols-2 gap-2 text-xs">
+            <div class="text-center">
+              <div class="text-gray-500">Covered</div>
+              <div class="text-blue-300 font-semibold" id="statementsCovered">-</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-500">Total</div>
+              <div class="text-gray-300 font-semibold" id="statementsTotal">-</div>
+            </div>
+          </div>
         </div>
 
         <!-- Branches -->
@@ -237,6 +322,16 @@
           </div>
           <div class="text-center mt-4">
             <span class="text-sm text-gray-400" id="branchesDelta">-</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-700 grid grid-cols-2 gap-2 text-xs">
+            <div class="text-center">
+              <div class="text-gray-500">Covered</div>
+              <div class="text-green-300 font-semibold" id="branchesCovered">-</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-500">Total</div>
+              <div class="text-gray-300 font-semibold" id="branchesTotal">-</div>
+            </div>
           </div>
         </div>
 
@@ -250,6 +345,16 @@
           <div class="text-center mt-4">
             <span class="text-sm text-gray-400" id="functionsDelta">-</span>
           </div>
+          <div class="mt-3 pt-3 border-t border-gray-700 grid grid-cols-2 gap-2 text-xs">
+            <div class="text-center">
+              <div class="text-gray-500">Covered</div>
+              <div class="text-yellow-300 font-semibold" id="functionsCovered">-</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-500">Total</div>
+              <div class="text-gray-300 font-semibold" id="functionsTotal">-</div>
+            </div>
+          </div>
         </div>
 
         <!-- Lines -->
@@ -261,6 +366,16 @@
           </div>
           <div class="text-center mt-4">
             <span class="text-sm text-gray-400" id="linesDelta">-</span>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-700 grid grid-cols-2 gap-2 text-xs">
+            <div class="text-center">
+              <div class="text-gray-500">Covered</div>
+              <div class="text-purple-300 font-semibold" id="linesCovered">-</div>
+            </div>
+            <div class="text-center">
+              <div class="text-gray-500">Total</div>
+              <div class="text-gray-300 font-semibold" id="linesTotal">-</div>
+            </div>
           </div>
         </div>
       </div>
@@ -498,10 +613,52 @@
 
     <!-- Trend Charts -->
     <section class="container mx-auto px-6 py-8">
-      <h2 class="text-3xl font-bold mb-6">Coverage Trends</h2>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold">Coverage Trends</h2>
+        <div class="flex gap-2" id="trendTimeFilter">
+          <button
+            onclick="filterTrends('7d')"
+            class="time-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+            data-range="7d"
+          >
+            7 Days
+          </button>
+          <button
+            onclick="filterTrends('30d')"
+            class="time-filter-btn px-3 py-1 text-sm rounded bg-blue-600 text-white"
+            data-range="30d"
+          >
+            30 Days
+          </button>
+          <button
+            onclick="filterTrends('90d')"
+            class="time-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+            data-range="90d"
+          >
+            90 Days
+          </button>
+          <button
+            onclick="filterTrends('1y')"
+            class="time-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+            data-range="1y"
+          >
+            1 Year
+          </button>
+          <button
+            onclick="filterTrends('all')"
+            class="time-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+            data-range="all"
+          >
+            All Time
+          </button>
+        </div>
+      </div>
       <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
         <div class="mb-4">
-          <h3 class="text-xl font-semibold">Historical Coverage (Last 30 Days)</h3>
+          <h3 class="text-xl font-semibold">
+            Historical Coverage
+            <span id="trendPeriodLabel" class="text-blue-400">(Last 30 Days)</span>
+          </h3>
           <p class="text-sm text-gray-400">Track how your test coverage has evolved over time</p>
         </div>
         <canvas id="trendChart" class="w-full" style="max-height: 400px"></canvas>
@@ -516,7 +673,16 @@
           <h3 class="text-xl font-semibold">Coverage by Module</h3>
           <p class="text-sm text-gray-400">Identify which modules need more test coverage</p>
         </div>
-        <canvas id="moduleChart" class="w-full" style="max-height: 400px"></canvas>
+        <div id="moduleChartContainer">
+          <canvas id="moduleChart" class="w-full" style="max-height: 400px"></canvas>
+        </div>
+        <!-- Module Details Grid (fallback when chart has limited data) -->
+        <div
+          id="moduleDetailsGrid"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
+        >
+          <!-- Dynamically populated -->
+        </div>
       </div>
     </section>
 
@@ -524,12 +690,44 @@
     <section class="container mx-auto px-6 py-8" id="advancedVisualizationsSection">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-3xl font-bold">📈 Advanced Analytics</h2>
-        <button
-          onclick="toggleVisualizationView()"
-          class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition-colors"
-        >
-          <span id="vizToggleText">📊 Switch View</span>
-        </button>
+        <div class="flex gap-2">
+          <div class="flex gap-1" id="analyticsTimeFilter">
+            <button
+              onclick="filterAnalytics('7d')"
+              class="analytics-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="7d"
+            >
+              7D
+            </button>
+            <button
+              onclick="filterAnalytics('30d')"
+              class="analytics-filter-btn px-3 py-1 text-sm rounded bg-blue-600 text-white"
+              data-range="30d"
+            >
+              30D
+            </button>
+            <button
+              onclick="filterAnalytics('90d')"
+              class="analytics-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="90d"
+            >
+              90D
+            </button>
+            <button
+              onclick="filterAnalytics('all')"
+              class="analytics-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="all"
+            >
+              All
+            </button>
+          </div>
+          <button
+            onclick="toggleVisualizationView()"
+            class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition-colors ml-2"
+          >
+            <span id="vizToggleText">📊 Switch View</span>
+          </button>
+        </div>
       </div>
 
       <!-- Coverage Velocity Chart -->
@@ -618,14 +816,54 @@
 
       <!-- Detailed History with All Metrics -->
       <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
-        <div class="mb-4">
-          <h3 class="text-xl font-semibold">📉 Detailed Coverage History</h3>
-          <p class="text-sm text-gray-400">
-            Last 30 test runs with all coverage metrics and trend analysis
-          </p>
+        <div class="mb-4 flex items-center justify-between">
+          <div>
+            <h3 class="text-xl font-semibold">📉 Detailed Coverage History</h3>
+            <p class="text-sm text-gray-400">
+              Test runs with all coverage metrics and trend analysis
+              <span id="historyPeriodLabel" class="text-blue-400">(Last 30 runs)</span>
+            </p>
+          </div>
+          <div class="flex gap-1" id="historyTimeFilter">
+            <button
+              onclick="filterHistory('10')"
+              class="history-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="10"
+            >
+              10
+            </button>
+            <button
+              onclick="filterHistory('30')"
+              class="history-filter-btn px-3 py-1 text-sm rounded bg-blue-600 text-white"
+              data-range="30"
+            >
+              30
+            </button>
+            <button
+              onclick="filterHistory('50')"
+              class="history-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="50"
+            >
+              50
+            </button>
+            <button
+              onclick="filterHistory('all')"
+              class="history-filter-btn px-3 py-1 text-sm rounded bg-gray-700 hover:bg-gray-600 text-gray-300"
+              data-range="all"
+            >
+              All
+            </button>
+          </div>
         </div>
         <div class="relative" style="height: 400px">
           <canvas id="detailedHistoryChart"></canvas>
+        </div>
+        <!-- History Cards Grid (for filtered view) -->
+        <div
+          id="historyGrid"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 mt-6"
+        >
+          <!-- Dynamically populated by filterHistory() -->
         </div>
         <!-- Metric Sparklines -->
         <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -1017,6 +1255,173 @@
     <script>
       let dashboardData = null;
       let charts = {};
+      let currentFilters = {
+        trends: '30d',
+        analytics: '30d',
+        history: 30,
+      };
+
+      // Filter trends chart by time range
+      function filterTrends(range) {
+        if (!dashboardData) return;
+        currentFilters.trends = range;
+
+        // Update active button
+        document.querySelectorAll('#trendTimeFilter button').forEach((btn) => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-gray-700', 'text-gray-300');
+        });
+        event.target.classList.remove('bg-gray-700', 'text-gray-300');
+        event.target.classList.add('bg-blue-600', 'text-white');
+
+        // Update period label
+        const labelMap = {
+          '7d': 'Last 7 Days',
+          '30d': 'Last 30 Days',
+          '90d': 'Last 90 Days',
+          '1y': 'Last Year',
+          all: 'All Time',
+        };
+        const periodLabel = document.getElementById('trendPeriodLabel');
+        if (periodLabel) periodLabel.textContent = `(${labelMap[range] || range})`;
+
+        // Filter data by time range
+        const filteredData = filterDataByRange(dashboardData.trends, range);
+        updateTrendChart(filteredData);
+      }
+
+      // Filter analytics by time range
+      function filterAnalytics(range) {
+        if (!dashboardData) return;
+        currentFilters.analytics = range;
+
+        // Update active button
+        document.querySelectorAll('#analyticsTimeFilter button').forEach((btn) => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-gray-700', 'text-gray-300');
+        });
+        event.target.classList.remove('bg-gray-700', 'text-gray-300');
+        event.target.classList.add('bg-blue-600', 'text-white');
+
+        // Filter and update analytics
+        const filteredData = filterDataByRange(dashboardData.trends, range);
+        updateAnalyticsSection(filteredData);
+      }
+
+      // Filter history by count
+      function filterHistory(count) {
+        if (!dashboardData) return;
+        currentFilters.history = count;
+
+        // Update active button
+        document.querySelectorAll('#historyTimeFilter button').forEach((btn) => {
+          btn.classList.remove('bg-blue-600', 'text-white');
+          btn.classList.add('bg-gray-700', 'text-gray-300');
+        });
+        event.target.classList.remove('bg-gray-700', 'text-gray-300');
+        event.target.classList.add('bg-blue-600', 'text-white');
+
+        // Update period label
+        const labelMap = {
+          10: 'Last 10 runs',
+          30: 'Last 30 runs',
+          50: 'Last 50 runs',
+          all: 'All runs',
+        };
+        const periodLabel = document.getElementById('historyPeriodLabel');
+        if (periodLabel) periodLabel.textContent = `(${labelMap[count] || count + ' runs'})`;
+
+        // Update history table
+        updateHistoryTable(count === 'all' ? dashboardData.trends.length : count);
+      }
+
+      // Helper: Filter data by time range
+      function filterDataByRange(trends, range) {
+        if (!trends || trends.length === 0) return [];
+        if (range === 'all') return trends;
+
+        const now = new Date();
+        const rangeMs = {
+          '7d': 7 * 24 * 60 * 60 * 1000,
+          '30d': 30 * 24 * 60 * 60 * 1000,
+          '90d': 90 * 24 * 60 * 60 * 1000,
+          '1y': 365 * 24 * 60 * 60 * 1000,
+        };
+
+        const cutoff = new Date(now.getTime() - (rangeMs[range] || rangeMs['30d']));
+        return trends.filter((t) => new Date(t.timestamp) >= cutoff);
+      }
+
+      // Update trend chart with filtered data
+      function updateTrendChart(filteredTrends) {
+        if (charts.trend) {
+          charts.trend.data.labels = filteredTrends.map((t) =>
+            new Date(t.timestamp).toLocaleDateString()
+          );
+          charts.trend.data.datasets[0].data = filteredTrends.map((t) => t.coverage.statements);
+          charts.trend.data.datasets[1].data = filteredTrends.map((t) => t.coverage.branches);
+          charts.trend.data.datasets[2].data = filteredTrends.map((t) => t.coverage.functions);
+          charts.trend.update();
+        }
+      }
+
+      // Update analytics section with filtered data
+      function updateAnalyticsSection(filteredTrends) {
+        if (filteredTrends.length < 2) return;
+
+        const coverageValues = filteredTrends.map((t) => t.coverage.lines);
+        const avg = (coverageValues.reduce((a, b) => a + b, 0) / coverageValues.length).toFixed(1);
+        const max = Math.max(...coverageValues).toFixed(1);
+        const min = Math.min(...coverageValues).toFixed(1);
+        const latest = coverageValues[coverageValues.length - 1];
+        const oldest = coverageValues[0];
+        const change = (latest - oldest).toFixed(1);
+
+        // Update stats in the UI
+        const avgEl = document.querySelector('[data-stat="avg-coverage"]');
+        const maxEl = document.querySelector('[data-stat="max-coverage"]');
+        const minEl = document.querySelector('[data-stat="min-coverage"]');
+        const changeEl = document.querySelector('[data-stat="coverage-change"]');
+
+        if (avgEl) avgEl.textContent = avg + '%';
+        if (maxEl) maxEl.textContent = max + '%';
+        if (minEl) minEl.textContent = min + '%';
+        if (changeEl) {
+          changeEl.textContent = (change >= 0 ? '+' : '') + change + '%';
+          changeEl.className =
+            change >= 0 ? 'text-2xl font-bold text-green-400' : 'text-2xl font-bold text-red-400';
+        }
+      }
+
+      // Update history table with count
+      function updateHistoryTable(count) {
+        const historyGrid = document.getElementById('historyGrid');
+        if (!historyGrid || !dashboardData) return;
+
+        const trends = dashboardData.trends.slice(-count).reverse();
+        historyGrid.innerHTML = trends
+          .map(
+            (entry, idx) => `
+          <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-gray-400 text-sm">${new Date(entry.timestamp).toLocaleDateString()}</span>
+              <span class="text-xs px-2 py-1 rounded ${entry.coverage.lines >= 80 ? 'bg-green-500/20 text-green-400' : entry.coverage.lines >= 60 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">
+                Run #${dashboardData.trends.length - idx}
+              </span>
+            </div>
+            <div class="text-2xl font-bold ${entry.coverage.lines >= 80 ? 'text-green-400' : entry.coverage.lines >= 60 ? 'text-yellow-400' : 'text-red-400'}">
+              ${entry.coverage.lines.toFixed(1)}%
+            </div>
+            <div class="grid grid-cols-3 gap-2 mt-3 text-xs">
+              <div><span class="text-gray-500">Stmts:</span> <span class="text-gray-300">${entry.coverage.statements.toFixed(1)}%</span></div>
+              <div><span class="text-gray-500">Branch:</span> <span class="text-gray-300">${entry.coverage.branches.toFixed(1)}%</span></div>
+              <div><span class="text-gray-500">Funcs:</span> <span class="text-gray-300">${entry.coverage.functions.toFixed(1)}%</span></div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      }
 
       // Utility: Get color based on coverage percentage
       function getCoverageColor(percentage) {
@@ -1125,9 +1530,60 @@
       // Create module chart
       function createModuleChart(data) {
         const ctx = document.getElementById('moduleChart').getContext('2d');
+        const moduleDetailsGrid = document.getElementById('moduleDetailsGrid');
 
         if (charts.module) {
           charts.module.destroy();
+        }
+
+        // Helper to get coverage value (handles both number and object formats)
+        const getCoverage = (m) => {
+          if (typeof m.coverage === 'number') return m.coverage;
+          if (m.coverage && typeof m.coverage === 'object')
+            return m.coverage.lines || m.coverage.statements || 0;
+          return 0;
+        };
+
+        // Populate module details grid as fallback/additional info
+        if (moduleDetailsGrid && data.modules && data.modules.length > 0) {
+          moduleDetailsGrid.innerHTML = data.modules
+            .map((m) => {
+              const cov = getCoverage(m);
+              const covObj =
+                typeof m.coverage === 'object'
+                  ? m.coverage
+                  : { lines: cov, statements: cov, branches: 0, functions: 0 };
+              const colorClass =
+                cov >= 80
+                  ? 'text-green-400 bg-green-500/10 border-green-500/30'
+                  : cov >= 60
+                    ? 'text-yellow-400 bg-yellow-500/10 border-yellow-500/30'
+                    : 'text-red-400 bg-red-500/10 border-red-500/30';
+
+              return `
+              <div class="rounded-lg p-4 border ${colorClass}">
+                <div class="flex justify-between items-start mb-3">
+                  <h4 class="font-semibold capitalize">${m.name}</h4>
+                  <span class="text-2xl font-bold">${cov.toFixed(1)}%</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="text-gray-400">Statements: <span class="text-gray-200">${(covObj.statements || 0).toFixed(1)}%</span></div>
+                  <div class="text-gray-400">Branches: <span class="text-gray-200">${(covObj.branches || 0).toFixed(1)}%</span></div>
+                  <div class="text-gray-400">Functions: <span class="text-gray-200">${(covObj.functions || 0).toFixed(1)}%</span></div>
+                  <div class="text-gray-400">Lines: <span class="text-gray-200">${(covObj.lines || 0).toFixed(1)}%</span></div>
+                </div>
+                ${
+                  m.files
+                    ? `<div class="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
+                  <span class="mr-3">📁 ${m.files} files</span>
+                  ${m.metrics ? `<span>📊 ${m.metrics.coveredLines || 0}/${m.metrics.totalLines || 0} lines</span>` : ''}
+                </div>`
+                    : ''
+                }
+              </div>
+            `;
+            })
+            .join('');
         }
 
         charts.module = new Chart(ctx, {
@@ -1137,8 +1593,8 @@
             datasets: [
               {
                 label: 'Coverage %',
-                data: data.modules.map((m) => m.coverage),
-                backgroundColor: data.modules.map((m) => getCoverageColor(m.coverage).bg),
+                data: data.modules.map((m) => getCoverage(m)),
+                backgroundColor: data.modules.map((m) => getCoverageColor(getCoverage(m)).bg),
               },
             ],
           },
@@ -1152,10 +1608,15 @@
                 callbacks: {
                   label: function (context) {
                     const module = data.modules[context.dataIndex];
+                    const cov = getCoverage(module);
+                    const covObj =
+                      typeof module.coverage === 'object' ? module.coverage : { lines: cov };
                     return [
-                      `Coverage: ${module.coverage}%`,
-                      `Files: ${module.files}`,
-                      `Tests: ${module.tests}`,
+                      `Lines: ${cov.toFixed(1)}%`,
+                      `Statements: ${(covObj.statements || cov).toFixed(1)}%`,
+                      `Branches: ${(covObj.branches || 0).toFixed(1)}%`,
+                      `Functions: ${(covObj.functions || 0).toFixed(1)}%`,
+                      `Files: ${module.files || 0}`,
                     ];
                   },
                 },
@@ -1344,7 +1805,7 @@
       // Initialize filter system with data
       function initializeFilters(data) {
         allGapsData = data.gaps || [];
-        currentDashboardData = data;
+        dashboardData = data; // Store globally for filter functions
 
         // V2.5: Initialize performance state
         performanceState.allGaps = allGapsData;
@@ -1361,6 +1822,65 @@
 
         // Apply initial filters (shows all by default)
         applyFilters();
+
+        // Initialize history grid with default count (30 runs)
+        if (data.trends && data.trends.length > 0) {
+          updateHistoryTable(30);
+        }
+
+        // Populate Coverage by Stack detailed metrics
+        populateStackMetrics(data);
+      }
+
+      // Populate detailed metrics for Coverage by Stack cards
+      function populateStackMetrics(data) {
+        if (!data || !data.current || !data.current.coverage) return;
+
+        const cov = data.current.coverage;
+
+        // Frontend metrics (using combined data for now)
+        const frontendStatements = document.getElementById('frontendStatements');
+        const frontendBranches = document.getElementById('frontendBranches');
+        const frontendFunctions = document.getElementById('frontendFunctions');
+        const frontendLines = document.getElementById('frontendLines');
+
+        if (frontendStatements) frontendStatements.textContent = `${cov.statements.toFixed(1)}%`;
+        if (frontendBranches) frontendBranches.textContent = `${cov.branches.toFixed(1)}%`;
+        if (frontendFunctions) frontendFunctions.textContent = `${cov.functions.toFixed(1)}%`;
+        if (frontendLines) frontendLines.textContent = `${cov.lines.toFixed(1)}%`;
+
+        // Calculate 7-day trend if trends available
+        if (data.trends && data.trends.length > 1) {
+          const now = new Date();
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          const recentTrends = data.trends.filter((t) => new Date(t.timestamp) >= weekAgo);
+
+          if (recentTrends.length > 1) {
+            const oldest = recentTrends[0].coverage.lines;
+            const latest = recentTrends[recentTrends.length - 1].coverage.lines;
+            const change = (latest - oldest).toFixed(2);
+            const arrow = change >= 0 ? '↗' : '↘';
+            const color = change >= 0 ? 'text-green-400' : 'text-red-400';
+
+            const frontendTrend = document.getElementById('frontendTrend');
+            const backendTrend = document.getElementById('backendTrend');
+            const overallTrend = document.getElementById('overallTrend');
+
+            const trendText = `${arrow} ${change >= 0 ? '+' : ''}${change}%`;
+            if (frontendTrend) {
+              frontendTrend.textContent = trendText;
+              frontendTrend.className = color;
+            }
+            if (backendTrend) {
+              backendTrend.textContent = trendText;
+              backendTrend.className = color;
+            }
+            if (overallTrend) {
+              overallTrend.textContent = trendText;
+              overallTrend.className = color;
+            }
+          }
+        }
       }
 
       // ==================== V2.5 PERFORMANCE OPTIMIZATION ====================
@@ -2433,6 +2953,50 @@
           if (linesDelta?.color) {
             document.getElementById('linesDelta').className =
               `text-sm text-${linesDelta.color}-400`;
+          }
+
+          // Populate Coverage Overview totals
+          const totals = current.totals;
+          if (totals) {
+            // Statements
+            const stmtsCovered = document.getElementById('statementsCovered');
+            const stmtsTotal = document.getElementById('statementsTotal');
+            if (stmtsCovered && totals.statements) {
+              stmtsCovered.textContent = (totals.statements.covered || 0).toLocaleString();
+            }
+            if (stmtsTotal && totals.statements) {
+              stmtsTotal.textContent = (totals.statements.total || 0).toLocaleString();
+            }
+
+            // Branches
+            const branchesCov = document.getElementById('branchesCovered');
+            const branchesTot = document.getElementById('branchesTotal');
+            if (branchesCov && totals.branches) {
+              branchesCov.textContent = (totals.branches.covered || 0).toLocaleString();
+            }
+            if (branchesTot && totals.branches) {
+              branchesTot.textContent = (totals.branches.total || 0).toLocaleString();
+            }
+
+            // Functions
+            const funcsCovered = document.getElementById('functionsCovered');
+            const funcsTotal = document.getElementById('functionsTotal');
+            if (funcsCovered && totals.functions) {
+              funcsCovered.textContent = (totals.functions.covered || 0).toLocaleString();
+            }
+            if (funcsTotal && totals.functions) {
+              funcsTotal.textContent = (totals.functions.total || 0).toLocaleString();
+            }
+
+            // Lines
+            const linesCov = document.getElementById('linesCovered');
+            const linesTot = document.getElementById('linesTotal');
+            if (linesCov && totals.lines) {
+              linesCov.textContent = (totals.lines.covered || 0).toLocaleString();
+            }
+            if (linesTot && totals.lines) {
+              linesTot.textContent = (totals.lines.total || 0).toLocaleString();
+            }
           }
 
           // Create charts
