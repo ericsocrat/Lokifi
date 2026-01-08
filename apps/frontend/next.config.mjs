@@ -27,7 +27,8 @@ const nextConfig = {
   },
 
   // Force ESM handling for lightweight-charts v5 (ESM-only package)
-  transpilePackages: ['lightweight-charts'],
+  // Also transpile lucide-react to ensure SVG icons bundle correctly
+  transpilePackages: ['lightweight-charts', 'lucide-react'],
 
   experimental: {
     forceSwcTransforms: false,

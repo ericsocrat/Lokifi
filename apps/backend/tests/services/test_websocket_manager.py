@@ -362,3 +362,432 @@ class TestMessageBroadcasting:
         mock_ws2.send_text.assert_called_once()
         # Redis publish should be called
         mock_redis_client.publish.assert_called_once()
+
+    async def test_broadcast_read_receipt(
+        self,
+        connection_manager,
+        sample_user_id,
+        sample_conversation_id,
+        mock_redis_client,
+    ):
+        """Test broadcasting read receipt to participants"""
+        user2_id = uuid.uuid4()
+        message_id = uuid.uuid4()
+        mock_ws2 = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[user2_id] = {mock_ws2}
+
+        participant_ids = {sample_user_id, user2_id}
+
+        with patch.object(connection_manager, "redis_client", mock_redis_client):
+            await connection_manager.broadcast_read_receipt(
+                sample_conversation_id, sample_user_id, message_id, participant_ids
+            )
+
+        # Reading user excluded, only user2 receives
+        mock_ws2.send_text.assert_called_once()
+        # Redis publish should be called
+        mock_redis_client.publish.assert_called_once()
+
+    async def test_broadcast_read_receipt_error_handling(
+        self,
+        connection_manager,
+        sample_user_id,
+        sample_conversation_id,
+        mock_redis_client,
+    ):
+        """Test broadcast read receipt error handling"""
+        user2_id = uuid.uuid4()
+        message_id = uuid.uuid4()
+        mock_ws2 = AsyncMock(spec=WebSocket)
+        mock_ws2.send_text = AsyncMock(side_effect=Exception("Send failed"))
+        connection_manager.active_connections[user2_id] = {mock_ws2}
+
+        participant_ids = {sample_user_id, user2_id}
+
+        with patch.object(connection_manager, "redis_client", mock_redis_client):
+            # Should not raise exception
+            await connection_manager.broadcast_read_receipt(
+                sample_conversation_id, sample_user_id, message_id, participant_ids
+            )
+
+
+# ============================================================================
+# REDIS PUBSUB HANDLER TESTS
+# ============================================================================
+
+
+@pytest.mark.asyncio
+class TestRedisPubSubHandlers:
+    """Test suite for Redis pub/sub message handlers"""
+
+    async def test_handle_redis_message_success(
+        self, connection_manager, sample_user_id
+    ):
+        """Test handling Redis message"""
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[sample_user_id] = {mock_ws}
+
+        import json
+
+        message_data = json.dumps({"user_id": str(sample_user_id), "content": "test"})
+
+        await connection_manager._handle_redis_message("dm_messages", message_data)
+
+        mock_ws.send_text.assert_called_once_with(message_data)
+
+    async def test_handle_redis_message_error(self, connection_manager):
+        """Test handling Redis message with invalid data"""
+        # Should not raise exception with invalid data
+        await connection_manager._handle_redis_message("dm_messages", "invalid json")
+
+    async def test_handle_redis_typing_success(
+        self, connection_manager, sample_user_id
+    ):
+        """Test handling Redis typing indicator"""
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[sample_user_id] = {mock_ws}
+
+        import json
+
+        message_data = json.dumps({"user_id": str(sample_user_id), "is_typing": True})
+
+        await connection_manager._handle_redis_typing("dm_typing", message_data)
+
+        mock_ws.send_text.assert_called_once()
+
+    async def test_handle_redis_typing_error(self, connection_manager):
+        """Test handling Redis typing with invalid data"""
+        await connection_manager._handle_redis_typing("dm_typing", "invalid")
+
+    async def test_handle_redis_read_receipt_success(
+        self, connection_manager, sample_user_id
+    ):
+        """Test handling Redis read receipt"""
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[sample_user_id] = {mock_ws}
+
+        import json
+
+        message_data = json.dumps(
+            {"user_id": str(sample_user_id), "message_id": str(uuid.uuid4())}
+        )
+
+        await connection_manager._handle_redis_read_receipt(
+            "dm_read_receipts", message_data
+        )
+
+        mock_ws.send_text.assert_called_once()
+
+    async def test_handle_redis_read_receipt_error(self, connection_manager):
+        """Test handling Redis read receipt with invalid data"""
+        await connection_manager._handle_redis_read_receipt(
+            "dm_read_receipts", "invalid"
+        )
+
+
+# ============================================================================
+# BACKFILL AND UTILITY TESTS
+# ============================================================================
+
+
+@pytest.mark.asyncio
+class TestBackfillAndUtilities:
+    """Test suite for backfill and utility functions"""
+
+    async def test_send_backfill_success(
+        self, connection_manager, mock_websocket, sample_user_id
+    ):
+        """Test sending backfill to newly connected user"""
+        await connection_manager._send_backfill(mock_websocket, sample_user_id)
+
+        mock_websocket.send_text.assert_called_once()
+        # Verify the message contains expected fields
+        import json
+
+        call_args = mock_websocket.send_text.call_args[0][0]
+        message = json.loads(call_args)
+        assert message["type"] == "connection_established"
+        assert message["user_id"] == str(sample_user_id)
+        assert "timestamp" in message
+
+    async def test_send_backfill_error(
+        self, connection_manager, mock_websocket, sample_user_id
+    ):
+        """Test backfill error handling"""
+        mock_websocket.send_text = AsyncMock(side_effect=Exception("Send failed"))
+
+        # Should not raise exception
+        await connection_manager._send_backfill(mock_websocket, sample_user_id)
+
+
+class TestBackfillAndUtilitiesSync:
+    """Sync utility tests"""
+
+    def test_get_online_users_empty(self, connection_manager):
+        """Test getting online users when none connected"""
+        online = connection_manager.get_online_users()
+        assert online == set()
+
+    def test_get_online_users_with_connections(self, connection_manager):
+        """Test getting online users with active connections"""
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        mock_ws1 = AsyncMock(spec=WebSocket)
+        mock_ws2 = AsyncMock(spec=WebSocket)
+
+        connection_manager.active_connections[user1_id] = {mock_ws1}
+        connection_manager.active_connections[user2_id] = {mock_ws2}
+
+        online = connection_manager.get_online_users()
+
+        assert user1_id in online
+        assert user2_id in online
+        assert len(online) == 2
+
+
+@pytest.mark.asyncio
+class TestCloseMethod:
+    """Async close method tests"""
+
+    async def test_close_with_redis_client(self, connection_manager, mock_redis_client):
+        """Test closing connections with Redis client"""
+        mock_redis_client.close = AsyncMock()
+        connection_manager.redis_client = mock_redis_client
+
+        await connection_manager.close()
+
+        mock_redis_client.close.assert_called_once()
+
+    async def test_close_without_redis_client(self, connection_manager):
+        """Test closing connections without Redis client"""
+        connection_manager.redis_client = None
+
+        # Should not raise exception
+        await connection_manager.close()
+
+    async def test_close_with_error(self, connection_manager, mock_redis_client):
+        """Test closing connections with error"""
+        mock_redis_client.close = AsyncMock(side_effect=Exception("Close failed"))
+        connection_manager.redis_client = mock_redis_client
+
+        # Should not raise exception
+        await connection_manager.close()
+
+
+# ============================================================================
+# REDIS MESSAGE PROCESSING TESTS
+# ============================================================================
+
+
+@pytest.mark.asyncio
+class TestRedisMessageProcessing:
+    """Test suite for Redis message processing"""
+
+    async def test_handle_redis_messages_no_pubsub(self, connection_manager):
+        """Test handle_redis_messages when pubsub is None"""
+        connection_manager.pubsub = None
+
+        # Should return immediately without error
+        await connection_manager.handle_redis_messages()
+
+    async def test_process_redis_message_new_message(
+        self, connection_manager, sample_conversation_id
+    ):
+        """Test processing new message from Redis"""
+        import json
+
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[user2_id] = {mock_ws}
+
+        from datetime import datetime, timezone
+
+        redis_message = {
+            "channel": "dm_messages",
+            "data": json.dumps(
+                {
+                    "type": "new_message",
+                    "participant_ids": [str(user1_id), str(user2_id)],
+                    "data": {
+                        "id": str(uuid.uuid4()),
+                        "conversation_id": str(sample_conversation_id),
+                        "sender_id": str(user1_id),
+                        "content": "Test",
+                        "content_type": "text",
+                        "is_edited": False,
+                        "is_deleted": False,
+                        "created_at": datetime.now(timezone.utc).isoformat(),
+                        "updated_at": datetime.now(timezone.utc).isoformat(),
+                        "read_by": [],
+                    },
+                }
+            ),
+        }
+
+        await connection_manager._process_redis_message(redis_message)
+
+        # user2 should receive the message (sender excluded)
+        mock_ws.send_text.assert_called_once()
+
+    async def test_process_redis_message_typing(
+        self, connection_manager, sample_conversation_id
+    ):
+        """Test processing typing indicator from Redis"""
+        import json
+
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[user2_id] = {mock_ws}
+
+        redis_message = {
+            "channel": "dm_typing",
+            "data": json.dumps(
+                {
+                    "type": "typing",
+                    "conversation_id": str(sample_conversation_id),
+                    "user_id": str(user1_id),
+                    "is_typing": True,
+                    "participant_ids": [str(user1_id), str(user2_id)],
+                }
+            ),
+        }
+
+        await connection_manager._process_redis_message(redis_message)
+
+        mock_ws.send_text.assert_called_once()
+
+    async def test_process_redis_message_read_receipt(
+        self, connection_manager, sample_conversation_id
+    ):
+        """Test processing read receipt from Redis"""
+        import json
+
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        message_id = uuid.uuid4()
+        mock_ws = AsyncMock(spec=WebSocket)
+        connection_manager.active_connections[user2_id] = {mock_ws}
+
+        from datetime import datetime, timezone
+
+        redis_message = {
+            "channel": "dm_read_receipts",
+            "data": json.dumps(
+                {
+                    "type": "message_read",
+                    "conversation_id": str(sample_conversation_id),
+                    "user_id": str(user1_id),
+                    "message_id": str(message_id),
+                    "read_at": datetime.now(timezone.utc).isoformat(),
+                    "participant_ids": [str(user1_id), str(user2_id)],
+                }
+            ),
+        }
+
+        await connection_manager._process_redis_message(redis_message)
+
+        mock_ws.send_text.assert_called_once()
+
+    async def test_process_redis_message_invalid_json(self, connection_manager):
+        """Test processing invalid JSON from Redis"""
+        redis_message = {"channel": "dm_messages", "data": "invalid json"}
+
+        # Should not raise exception
+        await connection_manager._process_redis_message(redis_message)
+
+    async def test_process_redis_message_unknown_channel(self, connection_manager):
+        """Test processing message from unknown channel"""
+        import json
+
+        redis_message = {
+            "channel": "unknown_channel",
+            "data": json.dumps({"type": "unknown"}),
+        }
+
+        # Should not raise exception
+        await connection_manager._process_redis_message(redis_message)
+
+
+# ============================================================================
+# AUTHENTICATION TESTS
+# ============================================================================
+
+
+@pytest.mark.asyncio
+class TestWebSocketAuthentication:
+    """Test suite for WebSocket authentication"""
+
+    async def test_authenticate_websocket_with_query_token(self, mock_websocket):
+        """Test authentication with query parameter token"""
+        from app.services.websocket_manager import authenticate_websocket
+
+        user_id = uuid.uuid4()
+        mock_websocket.query_params = {"token": "valid_token"}
+        mock_websocket.headers = {}
+
+        with patch("app.services.websocket_manager.verify_jwt_token") as mock_verify:
+            mock_verify.return_value = {"sub": str(user_id)}
+
+            result = await authenticate_websocket(mock_websocket)
+
+            assert result == user_id
+            mock_verify.assert_called_once_with("valid_token")
+
+    async def test_authenticate_websocket_with_header_token(self, mock_websocket):
+        """Test authentication with Authorization header"""
+        from app.services.websocket_manager import authenticate_websocket
+
+        user_id = uuid.uuid4()
+        mock_websocket.query_params = {}
+        mock_websocket.headers = {"authorization": "Bearer valid_token"}
+
+        with patch("app.services.websocket_manager.verify_jwt_token") as mock_verify:
+            mock_verify.return_value = {"sub": str(user_id)}
+
+            result = await authenticate_websocket(mock_websocket)
+
+            assert result == user_id
+
+    async def test_authenticate_websocket_no_token(self, mock_websocket):
+        """Test authentication without any token"""
+        from app.services.websocket_manager import authenticate_websocket
+
+        mock_websocket.query_params = {}
+        mock_websocket.headers = {}
+
+        result = await authenticate_websocket(mock_websocket)
+
+        assert result is None
+        mock_websocket.close.assert_called_once()
+
+    async def test_authenticate_websocket_invalid_token(self, mock_websocket):
+        """Test authentication with invalid token"""
+        from app.services.websocket_manager import authenticate_websocket
+
+        mock_websocket.query_params = {"token": "invalid_token"}
+        mock_websocket.headers = {}
+
+        with patch("app.services.websocket_manager.verify_jwt_token") as mock_verify:
+            mock_verify.side_effect = Exception("Invalid token")
+
+            result = await authenticate_websocket(mock_websocket)
+
+            assert result is None
+            mock_websocket.close.assert_called_once()
+
+    async def test_authenticate_websocket_missing_sub_claim(self, mock_websocket):
+        """Test authentication with token missing sub claim"""
+        from app.services.websocket_manager import authenticate_websocket
+
+        mock_websocket.query_params = {"token": "valid_token"}
+        mock_websocket.headers = {}
+
+        with patch("app.services.websocket_manager.verify_jwt_token") as mock_verify:
+            mock_verify.return_value = {}  # No 'sub' claim
+
+            result = await authenticate_websocket(mock_websocket)
+
+            assert result is None
+            mock_websocket.close.assert_called_once()
