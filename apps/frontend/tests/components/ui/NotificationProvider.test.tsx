@@ -15,7 +15,7 @@ import {
   useNotifications,
   useNotify,
 } from '@/src/components/ui/NotificationProvider';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Test component to access hooks
@@ -259,7 +259,9 @@ describe('NotificationProvider', () => {
       fireEvent.click(screen.getByTestId('add-no-dismiss'));
 
       // Should not find dismissible button with specific aria-label in notifications
-      expect(screen.queryByRole('button', { name: 'Dismiss notification' })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: 'Dismiss notification' })
+      ).not.toBeInTheDocument();
     });
 
     it('should clear all notifications', () => {

@@ -1,13 +1,13 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
 import {
   Skeleton,
-  SkeletonText,
-  SkeletonCircle,
-  SkeletonCard,
   SkeletonAvatarGroup,
+  SkeletonCard,
+  SkeletonCircle,
   SkeletonTable,
+  SkeletonText,
 } from '@/components/ui/Skeleton';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 describe('Skeleton', () => {
   describe('Basic Rendering', () => {
@@ -226,9 +226,7 @@ describe('SkeletonCard', () => {
   });
 
   it('hides image when showImage is false', () => {
-    const { container } = render(
-      <SkeletonCard showImage={false} data-testid="skeleton-card" />
-    );
+    const { container } = render(<SkeletonCard showImage={false} data-testid="skeleton-card" />);
     // Count rounded-lg elements (image placeholder)
     const imageSkeletons = container.querySelectorAll('[style*="height: 150px"]');
     expect(imageSkeletons.length).toBe(0);
@@ -242,9 +240,7 @@ describe('SkeletonCard', () => {
   });
 
   it('renders custom number of lines', () => {
-    const { container } = render(
-      <SkeletonCard lines={5} data-testid="skeleton-card" />
-    );
+    const { container } = render(<SkeletonCard lines={5} data-testid="skeleton-card" />);
     const lines = container.querySelectorAll('[style*="height: 1em"]');
     expect(lines.length).toBe(5);
   });

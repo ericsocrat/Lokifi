@@ -148,10 +148,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
           {description && (
             <span
               id={descriptionId}
-              className={cn(
-                sizeConfig.description,
-                disabled ? 'text-gray-600' : 'text-gray-400'
-              )}
+              className={cn(sizeConfig.description, disabled ? 'text-gray-600' : 'text-gray-400')}
             >
               {description}
             </span>
@@ -185,13 +182,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
         )}
       >
         {/* Hidden input for form submission */}
-        {name && (
-          <input
-            type="hidden"
-            name={name}
-            value={isChecked ? value || 'on' : ''}
-          />
-        )}
+        {name && <input type="hidden" name={name} value={isChecked ? value || 'on' : ''} />}
         {/* Thumb */}
         <span
           aria-hidden="true"
@@ -208,7 +199,10 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
     // If no label, just return the toggle
     if (!label) {
       return (
-        <div className={cn('inline-flex', className)} data-testid={testId ? `${testId}-container` : undefined}>
+        <div
+          className={cn('inline-flex', className)}
+          data-testid={testId ? `${testId}-container` : undefined}
+        >
           {toggle}
         </div>
       );

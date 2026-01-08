@@ -1,15 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { ChevronDown, Check, X } from 'lucide-react';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react';
+import { Check, ChevronDown, X } from 'lucide-react';
+import { forwardRef, useCallback, useEffect, useId, useRef, useState } from 'react';
 
 export interface SelectOption {
   /** Unique value for the option */
@@ -166,13 +159,14 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
     const value = isControlled ? controlledValue : internalValue;
 
     // Filter options based on search
-    const filteredOptions = searchable && search
-      ? options.filter(
-          (opt) =>
-            opt.label.toLowerCase().includes(search.toLowerCase()) ||
-            opt.description?.toLowerCase().includes(search.toLowerCase())
-        )
-      : options;
+    const filteredOptions =
+      searchable && search
+        ? options.filter(
+            (opt) =>
+              opt.label.toLowerCase().includes(search.toLowerCase()) ||
+              opt.description?.toLowerCase().includes(search.toLowerCase())
+          )
+        : options;
 
     // Group options if they have group property
     const groupedOptions = filteredOptions.reduce(
@@ -189,9 +183,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     // Get selected option(s)
     const selectedOptions = options.filter((opt) =>
-      multiple
-        ? (value as string[]).includes(opt.value)
-        : opt.value === value
+      multiple ? (value as string[]).includes(opt.value) : opt.value === value
     );
 
     // Handle selection
@@ -248,18 +240,14 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               setIsOpen(true);
             } else {
               const flatOptions = filteredOptions.filter((o) => !o.disabled);
-              setHighlightedIndex((prev) =>
-                prev < flatOptions.length - 1 ? prev + 1 : 0
-              );
+              setHighlightedIndex((prev) => (prev < flatOptions.length - 1 ? prev + 1 : 0));
             }
             break;
           case 'ArrowUp':
             e.preventDefault();
             if (isOpen) {
               const flatOptions = filteredOptions.filter((o) => !o.disabled);
-              setHighlightedIndex((prev) =>
-                prev > 0 ? prev - 1 : flatOptions.length - 1
-              );
+              setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : flatOptions.length - 1));
             }
             break;
           case 'Escape':
@@ -358,9 +346,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             'w-full flex items-center justify-between',
             sizeConfig.option,
             'transition-colors',
-            option.disabled
-              ? 'opacity-50 cursor-not-allowed'
-              : 'cursor-pointer',
+            option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
             isHighlighted && !option.disabled && 'bg-surface-200',
             isSelected && 'text-blue-400'
           )}
@@ -371,9 +357,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             <div className="flex flex-col items-start min-w-0">
               <span className="truncate">{option.label}</span>
               {option.description && (
-                <span className="text-xs text-gray-500 truncate">
-                  {option.description}
-                </span>
+                <span className="text-xs text-gray-500 truncate">{option.description}</span>
               )}
             </div>
           </div>
@@ -427,9 +411,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           aria-controls={listboxId}
           aria-labelledby={label ? labelId : undefined}
           aria-label={ariaLabel}
-          aria-describedby={
-            [errorId, helperId].filter(Boolean).join(' ') || undefined
-          }
+          aria-describedby={[errorId, helperId].filter(Boolean).join(' ') || undefined}
           aria-invalid={error}
           aria-required={required}
           disabled={disabled}
@@ -449,9 +431,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             className
           )}
         >
-          <span className="flex-1 text-left truncate text-white">
-            {renderValue()}
-          </span>
+          <span className="flex-1 text-left truncate text-white">{renderValue()}</span>
           <div className="flex items-center gap-1 flex-shrink-0">
             {clearable && selectedOptions.length > 0 && !disabled && (
               <button
@@ -561,15 +541,11 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
                         {group}
                       </div>
                     )}
-                    {groupOptions.map((option, index) =>
-                      renderOption(option, index)
-                    )}
+                    {groupOptions.map((option, index) => renderOption(option, index))}
                   </div>
                 ))
               ) : (
-                filteredOptions.map((option, index) =>
-                  renderOption(option, index)
-                )
+                filteredOptions.map((option, index) => renderOption(option, index))
               )}
             </div>
           </div>

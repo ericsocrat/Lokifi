@@ -138,8 +138,16 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
         className={baseClass}
         style={{
           ...style,
-          width: circularSize ? (typeof circularSize === 'number' ? `${circularSize}px` : circularSize) : style.width,
-          height: circularSize ? (typeof circularSize === 'number' ? `${circularSize}px` : circularSize) : style.height || defaultHeight,
+          width: circularSize
+            ? typeof circularSize === 'number'
+              ? `${circularSize}px`
+              : circularSize
+            : style.width,
+          height: circularSize
+            ? typeof circularSize === 'number'
+              ? `${circularSize}px`
+              : circularSize
+            : style.height || defaultHeight,
         }}
         data-testid={testId}
         role="status"
@@ -157,9 +165,9 @@ Skeleton.displayName = 'Skeleton';
 // Preset skeleton components for common use cases
 export type SkeletonTextProps = Omit<SkeletonProps, 'variant'>;
 
-export const SkeletonText = forwardRef<HTMLDivElement, SkeletonTextProps>(
-  (props, ref) => <Skeleton ref={ref} variant="text" {...props} />
-);
+export const SkeletonText = forwardRef<HTMLDivElement, SkeletonTextProps>((props, ref) => (
+  <Skeleton ref={ref} variant="text" {...props} />
+));
 SkeletonText.displayName = 'SkeletonText';
 
 export interface SkeletonCircleProps extends Omit<SkeletonProps, 'variant'> {
@@ -260,10 +268,7 @@ export interface SkeletonTableProps {
  * Pre-built table skeleton for loading states
  */
 export const SkeletonTable = forwardRef<HTMLDivElement, SkeletonTableProps>(
-  (
-    { rows = 5, columns = 4, showHeader = true, className, 'data-testid': testId },
-    ref
-  ) => (
+  ({ rows = 5, columns = 4, showHeader = true, className, 'data-testid': testId }, ref) => (
     <div
       ref={ref}
       className={cn('space-y-2', className)}

@@ -1,6 +1,6 @@
+import { Toggle } from '@/components/ui/Toggle';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Toggle } from '@/components/ui/Toggle';
 
 describe('Toggle', () => {
   describe('Basic Rendering', () => {
@@ -27,28 +27,21 @@ describe('Toggle', () => {
     });
 
     it('renders label on the left when labelPosition is left', () => {
-      render(
-        <Toggle
-          label="Test Label"
-          labelPosition="left"
-          data-testid="toggle"
-        />
-      );
+      render(<Toggle label="Test Label" labelPosition="left" data-testid="toggle" />);
       const container = screen.getByTestId('toggle-container');
       const label = screen.getByText('Test Label');
       // toggle element exists but we only need to verify label position
       screen.getByRole('switch');
-      
+
       // Check that both exist and label comes before toggle in DOM
       expect(container.firstChild).toContainElement(label);
     });
 
     it('renders label on the right by default', () => {
       render(<Toggle label="Test Label" data-testid="toggle" />);
-      // toggle element exists but we only need to verify label
-      screen.getByRole('switch');
+      const toggle = screen.getByRole('switch');
       const label = screen.getByText('Test Label');
-      
+
       // Toggle should come before label in the DOM when label is on the right
       expect(toggle.compareDocumentPosition(label)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     });
@@ -68,7 +61,7 @@ describe('Toggle', () => {
     it('calls onChange with new value when clicked', () => {
       const handleChange = vi.fn();
       render(<Toggle checked={false} onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.click(screen.getByRole('switch'));
       expect(handleChange).toHaveBeenCalledWith(true);
     });
@@ -76,7 +69,7 @@ describe('Toggle', () => {
     it('calls onChange with false when unchecking', () => {
       const handleChange = vi.fn();
       render(<Toggle checked={true} onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.click(screen.getByRole('switch'));
       expect(handleChange).toHaveBeenCalledWith(false);
     });
@@ -96,7 +89,7 @@ describe('Toggle', () => {
     it('calls onChange when toggled in uncontrolled mode', () => {
       const handleChange = vi.fn();
       render(<Toggle onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.click(screen.getByRole('switch'));
       expect(handleChange).toHaveBeenCalledWith(true);
     });
@@ -111,7 +104,7 @@ describe('Toggle', () => {
     it('does not call onChange when disabled', () => {
       const handleChange = vi.fn();
       render(<Toggle disabled onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.click(screen.getByRole('switch'));
       expect(handleChange).not.toHaveBeenCalled();
     });
@@ -122,14 +115,7 @@ describe('Toggle', () => {
     });
 
     it('shows disabled description styling', () => {
-      render(
-        <Toggle
-          disabled
-          label="Toggle"
-          description="Description"
-          data-testid="toggle"
-        />
-      );
+      render(<Toggle disabled label="Toggle" description="Description" data-testid="toggle" />);
       expect(screen.getByText('Description')).toHaveClass('text-gray-600');
     });
 
@@ -197,7 +183,7 @@ describe('Toggle', () => {
     it('toggles on Enter key', () => {
       const handleChange = vi.fn();
       render(<Toggle onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.keyDown(screen.getByRole('switch'), { key: 'Enter' });
       expect(handleChange).toHaveBeenCalledWith(true);
     });
@@ -205,7 +191,7 @@ describe('Toggle', () => {
     it('toggles on Space key', () => {
       const handleChange = vi.fn();
       render(<Toggle onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.keyDown(screen.getByRole('switch'), { key: ' ' });
       expect(handleChange).toHaveBeenCalledWith(true);
     });
@@ -213,7 +199,7 @@ describe('Toggle', () => {
     it('does not toggle on other keys', () => {
       const handleChange = vi.fn();
       render(<Toggle onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.keyDown(screen.getByRole('switch'), { key: 'a' });
       expect(handleChange).not.toHaveBeenCalled();
     });
@@ -221,7 +207,7 @@ describe('Toggle', () => {
     it('does not toggle via keyboard when disabled', () => {
       const handleChange = vi.fn();
       render(<Toggle disabled onChange={handleChange} data-testid="toggle" />);
-      
+
       fireEvent.keyDown(screen.getByRole('switch'), { key: 'Enter' });
       expect(handleChange).not.toHaveBeenCalled();
     });
@@ -260,13 +246,7 @@ describe('Toggle', () => {
     });
 
     it('links description via aria-describedby', () => {
-      render(
-        <Toggle
-          label="Toggle"
-          description="This is a description"
-          data-testid="toggle"
-        />
-      );
+      render(<Toggle label="Toggle" description="This is a description" data-testid="toggle" />);
       const toggle = screen.getByRole('switch');
       expect(toggle).toHaveAttribute('aria-describedby');
     });
@@ -296,9 +276,7 @@ describe('Toggle', () => {
 
   describe('Form Integration', () => {
     it('renders hidden input with name when provided', () => {
-      const { container } = render(
-        <Toggle name="notifications" checked data-testid="toggle" />
-      );
+      const { container } = render(<Toggle name="notifications" checked data-testid="toggle" />);
       const hiddenInput = container.querySelector('input[type="hidden"]');
       expect(hiddenInput).toHaveAttribute('name', 'notifications');
       expect(hiddenInput).toHaveAttribute('value', 'on');
@@ -324,25 +302,16 @@ describe('Toggle', () => {
   describe('Container Click', () => {
     it('toggles when clicking on the container with label', () => {
       const handleChange = vi.fn();
-      render(
-        <Toggle label="Click me" onChange={handleChange} data-testid="toggle" />
-      );
-      
+      render(<Toggle label="Click me" onChange={handleChange} data-testid="toggle" />);
+
       fireEvent.click(screen.getByTestId('toggle-container'));
       expect(handleChange).toHaveBeenCalledWith(true);
     });
 
     it('does not toggle container click when disabled', () => {
       const handleChange = vi.fn();
-      render(
-        <Toggle
-          label="Click me"
-          disabled
-          onChange={handleChange}
-          data-testid="toggle"
-        />
-      );
-      
+      render(<Toggle label="Click me" disabled onChange={handleChange} data-testid="toggle" />);
+
       fireEvent.click(screen.getByTestId('toggle-container'));
       expect(handleChange).not.toHaveBeenCalled();
     });
@@ -350,9 +319,7 @@ describe('Toggle', () => {
 
   describe('Custom ClassName', () => {
     it('applies custom className to container', () => {
-      render(
-        <Toggle label="Test" className="custom-class" data-testid="toggle" />
-      );
+      render(<Toggle label="Test" className="custom-class" data-testid="toggle" />);
       expect(screen.getByTestId('toggle-container')).toHaveClass('custom-class');
     });
 

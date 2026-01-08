@@ -1,6 +1,6 @@
+import { Select, type SelectOption } from '@/components/ui/Select';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { Select, type SelectOption } from '@/components/ui/Select';
 
 const basicOptions: SelectOption[] = [
   { value: 'apple', label: 'Apple' },
@@ -49,7 +49,9 @@ describe('Select', () => {
     });
 
     it('renders helper text', () => {
-      render(<Select options={basicOptions} helperText="Choose your favorite" data-testid="select" />);
+      render(
+        <Select options={basicOptions} helperText="Choose your favorite" data-testid="select" />
+      );
       expect(screen.getByText('Choose your favorite')).toBeInTheDocument();
     });
 
@@ -77,7 +79,7 @@ describe('Select', () => {
     it('shows all options in dropdown', () => {
       render(<Select options={basicOptions} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
       expect(screen.getByText('Banana')).toBeInTheDocument();
       expect(screen.getByText('Cherry')).toBeInTheDocument();
@@ -95,10 +97,10 @@ describe('Select', () => {
     it('selects an option on click', () => {
       const handleChange = vi.fn();
       render(<Select options={basicOptions} onChange={handleChange} data-testid="select" />);
-      
+
       fireEvent.click(screen.getByRole('combobox'));
       fireEvent.click(screen.getByText('Apple'));
-      
+
       expect(handleChange).toHaveBeenCalledWith('apple');
     });
 
@@ -117,7 +119,7 @@ describe('Select', () => {
     it('shows check icon for selected option', () => {
       render(<Select options={basicOptions} value="apple" data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const appleOption = screen.getByTestId('select-option-apple');
       expect(appleOption).toHaveAttribute('aria-selected', 'true');
     });
@@ -135,51 +137,33 @@ describe('Select', () => {
           data-testid="select"
         />
       );
-      
+
       fireEvent.click(screen.getByRole('combobox'));
       fireEvent.click(screen.getByTestId('select-option-apple'));
-      
+
       expect(handleChange).toHaveBeenCalledWith(['apple']);
     });
 
     it('does not close dropdown after selection in multiple mode', () => {
-      render(
-        <Select
-          options={basicOptions}
-          multiple
-          data-testid="select"
-        />
-      );
-      
+      render(<Select options={basicOptions} multiple data-testid="select" />);
+
       fireEvent.click(screen.getByRole('combobox'));
       fireEvent.click(screen.getByTestId('select-option-apple'));
-      
+
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
 
     it('shows count when multiple selected', () => {
       render(
-        <Select
-          options={basicOptions}
-          multiple
-          value={['apple', 'banana']}
-          data-testid="select"
-        />
+        <Select options={basicOptions} multiple value={['apple', 'banana']} data-testid="select" />
       );
-      
+
       expect(screen.getByText('2 selected')).toBeInTheDocument();
     });
 
     it('shows single label when only one selected', () => {
-      render(
-        <Select
-          options={basicOptions}
-          multiple
-          value={['apple']}
-          data-testid="select"
-        />
-      );
-      
+      render(<Select options={basicOptions} multiple value={['apple']} data-testid="select" />);
+
       // Will show "Apple" in the trigger
       expect(screen.getByRole('combobox')).toHaveTextContent('Apple');
     });
@@ -195,11 +179,11 @@ describe('Select', () => {
           data-testid="select"
         />
       );
-      
+
       fireEvent.click(screen.getByRole('combobox'));
       // Use testid since "Apple" appears in both trigger and dropdown
       fireEvent.click(screen.getByTestId('select-option-apple'));
-      
+
       expect(handleChange).toHaveBeenCalledWith([]);
     });
 
@@ -220,10 +204,10 @@ describe('Select', () => {
     it('filters options based on search', () => {
       render(<Select options={basicOptions} searchable data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const searchInput = screen.getByTestId('select-search');
       fireEvent.change(searchInput, { target: { value: 'app' } });
-      
+
       expect(screen.getByText('Apple')).toBeInTheDocument();
       expect(screen.queryByText('Banana')).not.toBeInTheDocument();
     });
@@ -231,10 +215,10 @@ describe('Select', () => {
     it('shows "No options found" when no matches', () => {
       render(<Select options={basicOptions} searchable data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const searchInput = screen.getByTestId('select-search');
       fireEvent.change(searchInput, { target: { value: 'xyz' } });
-      
+
       expect(screen.getByText('No options found')).toBeInTheDocument();
     });
 
@@ -254,11 +238,11 @@ describe('Select', () => {
     it('clears search on selection', () => {
       render(<Select options={basicOptions} searchable data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const searchInput = screen.getByTestId('select-search');
       fireEvent.change(searchInput, { target: { value: 'app' } });
       fireEvent.click(screen.getByText('Apple'));
-      
+
       // Re-open to check search is cleared
       fireEvent.click(screen.getByRole('combobox'));
       expect(screen.getByTestId('select-search')).toHaveValue('');
@@ -269,7 +253,7 @@ describe('Select', () => {
     it('renders group headers', () => {
       render(<Select options={optionsWithGroups} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       expect(screen.getByText('Fruits')).toBeInTheDocument();
       expect(screen.getByText('Vegetables')).toBeInTheDocument();
     });
@@ -277,7 +261,7 @@ describe('Select', () => {
     it('renders options under correct groups', () => {
       render(<Select options={optionsWithGroups} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       // All options should be visible
       expect(screen.getByText('Apple')).toBeInTheDocument();
       expect(screen.getByText('Carrot')).toBeInTheDocument();
@@ -304,33 +288,24 @@ describe('Select', () => {
     it('disables specific options', () => {
       render(<Select options={optionsWithDisabled} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const disabledOption = screen.getByTestId('select-option-disabled');
       expect(disabledOption).toBeDisabled();
     });
 
     it('cannot select disabled option', () => {
       const handleChange = vi.fn();
-      render(
-        <Select options={optionsWithDisabled} onChange={handleChange} data-testid="select" />
-      );
+      render(<Select options={optionsWithDisabled} onChange={handleChange} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
       fireEvent.click(screen.getByTestId('select-option-disabled'));
-      
+
       expect(handleChange).not.toHaveBeenCalled();
     });
   });
 
   describe('Clearable', () => {
     it('shows clear button when value selected and clearable', () => {
-      render(
-        <Select
-          options={basicOptions}
-          value="apple"
-          clearable
-          data-testid="select"
-        />
-      );
+      render(<Select options={basicOptions} value="apple" clearable data-testid="select" />);
       expect(screen.getByTestId('select-clear')).toBeInTheDocument();
     });
 
@@ -350,7 +325,7 @@ describe('Select', () => {
           data-testid="select"
         />
       );
-      
+
       fireEvent.click(screen.getByTestId('select-clear'));
       expect(handleChange).toHaveBeenCalledWith('');
     });
@@ -367,21 +342,14 @@ describe('Select', () => {
           data-testid="select"
         />
       );
-      
+
       fireEvent.click(screen.getByTestId('select-clear'));
       expect(handleChange).toHaveBeenCalledWith([]);
     });
 
     it('does not open dropdown when clicking clear', () => {
-      render(
-        <Select
-          options={basicOptions}
-          value="apple"
-          clearable
-          data-testid="select"
-        />
-      );
-      
+      render(<Select options={basicOptions} value="apple" clearable data-testid="select" />);
+
       fireEvent.click(screen.getByTestId('select-clear'));
       expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
     });
@@ -450,14 +418,14 @@ describe('Select', () => {
     it('navigates options with ArrowDown and selects with Enter', () => {
       const handleChange = vi.fn();
       render(<Select options={basicOptions} onChange={handleChange} data-testid="select" />);
-      
+
       const combobox = screen.getByRole('combobox');
       // Open and navigate
       fireEvent.keyDown(combobox, { key: 'ArrowDown' });
       // Navigate to first option and select
       fireEvent.keyDown(combobox, { key: 'ArrowDown' });
       fireEvent.keyDown(combobox, { key: 'Enter' });
-      
+
       // Should have selected second option (banana) since we moved down twice
       // Or first option if starting from -1 and first ArrowDown goes to 0
       expect(handleChange).toHaveBeenCalled();
@@ -466,13 +434,13 @@ describe('Select', () => {
     it('supports ArrowUp navigation', () => {
       render(<Select options={basicOptions} data-testid="select" />);
       const combobox = screen.getByRole('combobox');
-      
+
       // Open dropdown
       fireEvent.click(combobox);
-      
+
       // Navigate with ArrowUp (should wrap to last option)
       fireEvent.keyDown(combobox, { key: 'ArrowUp' });
-      
+
       // Dropdown should still be open
       expect(screen.getByRole('listbox')).toBeInTheDocument();
     });
@@ -480,18 +448,18 @@ describe('Select', () => {
     it('selects option with Enter key', () => {
       const handleChange = vi.fn();
       render(<Select options={basicOptions} onChange={handleChange} data-testid="select" />);
-      
+
       const combobox = screen.getByRole('combobox');
       // Open with Space
       fireEvent.keyDown(combobox, { key: ' ' });
       expect(screen.getByRole('listbox')).toBeInTheDocument();
-      
+
       // Hover over an option to highlight it
       fireEvent.mouseEnter(screen.getByTestId('select-option-banana'));
-      
+
       // Select with Enter
       fireEvent.keyDown(combobox, { key: 'Enter' });
-      
+
       expect(handleChange).toHaveBeenCalledWith('banana');
     });
 
@@ -534,10 +502,10 @@ describe('Select', () => {
       ];
       render(<Select options={options} searchable data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const searchInput = screen.getByTestId('select-search');
       fireEvent.change(searchInput, { target: { value: 'unique' } });
-      
+
       expect(screen.getByText('Option 1')).toBeInTheDocument();
       expect(screen.queryByText('Option 2')).not.toBeInTheDocument();
     });
@@ -547,7 +515,7 @@ describe('Select', () => {
     it('has aria-expanded attribute', () => {
       render(<Select options={basicOptions} data-testid="select" />);
       const trigger = screen.getByRole('combobox');
-      
+
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
       fireEvent.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
@@ -561,7 +529,7 @@ describe('Select', () => {
     it('has aria-controls pointing to listbox', () => {
       render(<Select options={basicOptions} data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const trigger = screen.getByRole('combobox');
       const listbox = screen.getByRole('listbox');
       expect(trigger).toHaveAttribute('aria-controls', listbox.id);
@@ -586,7 +554,7 @@ describe('Select', () => {
     it('selected option has aria-selected="true"', () => {
       render(<Select options={basicOptions} value="apple" data-testid="select" />);
       fireEvent.click(screen.getByRole('combobox'));
-      
+
       const selectedOption = screen.getByTestId('select-option-apple');
       expect(selectedOption).toHaveAttribute('aria-selected', 'true');
     });
@@ -625,11 +593,7 @@ describe('Select', () => {
 
     it('applies dropdownClassName to dropdown', () => {
       render(
-        <Select
-          options={basicOptions}
-          dropdownClassName="custom-dropdown"
-          data-testid="select"
-        />
+        <Select options={basicOptions} dropdownClassName="custom-dropdown" data-testid="select" />
       );
       fireEvent.click(screen.getByRole('combobox'));
       expect(screen.getByTestId('select-dropdown')).toHaveClass('custom-dropdown');
@@ -658,10 +622,10 @@ describe('Select', () => {
 
     it('updates internal state when selecting', () => {
       render(<Select options={basicOptions} data-testid="select" />);
-      
+
       fireEvent.click(screen.getByRole('combobox'));
       fireEvent.click(screen.getByText('Apple'));
-      
+
       // Should now display Apple
       expect(screen.getByText('Apple')).toBeInTheDocument();
     });
@@ -683,11 +647,11 @@ describe('Select', () => {
     it('rotates chevron when open', () => {
       render(<Select options={basicOptions} data-testid="select" />);
       const trigger = screen.getByRole('combobox');
-      
+
       // Get chevron by class
       const chevron = trigger.querySelector('[class*="rotate-180"]');
       expect(chevron).not.toBeInTheDocument();
-      
+
       fireEvent.click(trigger);
       const rotatedChevron = trigger.querySelector('[class*="rotate-180"]');
       expect(rotatedChevron).toBeInTheDocument();
