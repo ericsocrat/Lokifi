@@ -2,9 +2,29 @@
   // ============================================
   // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
   // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
-  // Last Updated: December 30, 2025
+  // Last Updated: January 8, 2026
   // Optimization Level: Production-Ready ⭐
   // ============================================
+
+  // ===== PERFORMANCE - CRITICAL OPTIMIZATIONS =====
+  // Gives Copilot its own process (MAJOR lag reduction)
+  "extensions.experimental.affinity": {
+    "GitHub.copilot": 1,
+    "GitHub.copilot-chat": 1
+  },
+  // Increase Node.js memory for extension host (default ~1.5GB → 4GB)
+  "extensions.experimental.extensionHostMaxHeapSizeInMb": 4096,
+  // Reduce Git overhead
+  "git.autorefresh": false,
+  "git.decorations.enabled": true,
+  "git.enableStatusBarSync": false,
+  // Disable expensive features
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.highlightModifiedTabs": true,
+  // Reduce file watcher overhead
+  "files.watcherExcludeWorkspaceFolder": true,
+  // Disable telemetry (reduces background network/processing)
+  "telemetry.telemetryLevel": "off",
 
   // ===== EDITOR - PERFORMANCE & UX =====
   "editor.formatOnSave": true,
@@ -24,15 +44,15 @@
   "editor.acceptSuggestionOnCommitCharacter": false,
   "editor.snippetSuggestions": "top",
   "editor.wordWrap": "off",
-  "editor.minimap.enabled": true,
+  "editor.minimap.enabled": false,
   "editor.minimap.renderCharacters": false,
   "editor.minimap.maxColumn": 120,
-  "editor.cursorBlinking": "smooth",
-  "editor.cursorSmoothCaretAnimation": "on",
-  "editor.smoothScrolling": true,
+  "editor.cursorBlinking": "phase",
+  "editor.cursorSmoothCaretAnimation": "off",
+  "editor.smoothScrolling": false,
   "editor.mouseWheelZoom": true,
   "editor.linkedEditing": true,
-  "editor.stickyScroll.enabled": true,
+  "editor.stickyScroll.enabled": false,
   "editor.unicodeHighlight.ambiguousCharacters": false,
   "editor.quickSuggestionsDelay": 0,
   "editor.parameterHints.enabled": true,
@@ -174,7 +194,7 @@
   "javascript.suggest.autoImports": true,
   "typescript.suggest.autoImports": true,
   "typescript.suggest.paths": true,
-  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.maxTsServerMemory": 8192,
   "typescript.tsserver.watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",
