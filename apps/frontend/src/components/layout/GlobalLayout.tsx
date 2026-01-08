@@ -217,7 +217,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
               >
                 {currencies.map((curr: string) => (
                   <option key={curr} value={curr}>
-                    {curr} €
+                    {curr}
                   </option>
                 ))}
               </select>
