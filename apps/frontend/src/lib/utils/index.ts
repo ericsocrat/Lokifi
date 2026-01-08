@@ -1,4 +1,5 @@
 // Utility barrel exports
+export * from './cn';
 export * from './featureFlags';
 export * from './measure';
 export * from './migrations';

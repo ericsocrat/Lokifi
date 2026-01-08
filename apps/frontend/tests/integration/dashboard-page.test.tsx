@@ -11,8 +11,8 @@
  * These tests focus on reusable dashboard components.
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -57,7 +57,12 @@ describe('Dashboard Integration', () => {
       const periods = ['1D', '7D', '30D', '1Y', 'ALL'];
       const [selected, setSelected] = vi.hoisted(() => {
         let state = '1D';
-        return [() => state, (v: string) => { state = v; }];
+        return [
+          () => state,
+          (v: string) => {
+            state = v;
+          },
+        ];
       });
 
       return (
@@ -113,7 +118,9 @@ describe('Dashboard Integration', () => {
     }) => (
       <div className="rounded-2xl bg-surface-1 p-4">
         <p className="text-sm text-surface-11">{label}</p>
-        <p className={`text-xl font-bold ${isNegative ? 'text-rose-400' : 'text-white'}`}>{value}</p>
+        <p className={`text-xl font-bold ${isNegative ? 'text-rose-400' : 'text-white'}`}>
+          {value}
+        </p>
       </div>
     );
 

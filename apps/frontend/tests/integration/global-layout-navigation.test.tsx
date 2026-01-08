@@ -10,8 +10,8 @@
  * Note: GlobalLayout uses lucide-react icons which need to be mocked.
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock lucide-react icons FIRST (before any component imports)
 vi.mock('lucide-react', () => ({
@@ -233,7 +233,12 @@ describe('GlobalLayout Navigation', () => {
     const SidebarToggle = () => {
       const [collapsed, setCollapsed] = vi.hoisted(() => {
         let state = false;
-        return [() => state, (v: boolean) => { state = v; }];
+        return [
+          () => state,
+          (v: boolean) => {
+            state = v;
+          },
+        ];
       });
 
       return (
@@ -349,7 +354,12 @@ describe('GlobalLayout Navigation', () => {
 
     it('should show user name when authenticated', () => {
       render(
-        <UserMenu isAuthenticated={true} userName="Test User" onLogin={vi.fn()} onLogout={vi.fn()} />
+        <UserMenu
+          isAuthenticated={true}
+          userName="Test User"
+          onLogin={vi.fn()}
+          onLogout={vi.fn()}
+        />
       );
 
       expect(screen.getByText('Test User')).toBeInTheDocument();
@@ -357,7 +367,12 @@ describe('GlobalLayout Navigation', () => {
 
     it('should show logout button when authenticated', () => {
       render(
-        <UserMenu isAuthenticated={true} userName="Test User" onLogin={vi.fn()} onLogout={vi.fn()} />
+        <UserMenu
+          isAuthenticated={true}
+          userName="Test User"
+          onLogin={vi.fn()}
+          onLogout={vi.fn()}
+        />
       );
 
       expect(screen.getByRole('button', { name: /logout/i })).toBeInTheDocument();
