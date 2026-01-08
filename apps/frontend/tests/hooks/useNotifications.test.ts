@@ -279,17 +279,36 @@ describe('useNotifications', () => {
 
   describe('loadMore', () => {
     it('appends more notifications when hasMore is true', async () => {
-      // Clear default mock and set test-specific mock
+      // Clear default mock and set up a call counter for stable responses
       mockFetch.mockReset();
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            notifications: [createNotification({ id: '1' })],
-            unread_count: 2,
-            total_count: 2,
-            has_more: true,
-          }),
+      let callCount = 0;
+      mockFetch.mockImplementation(() => {
+        callCount++;
+        if (callCount === 1) {
+          // First call - initial load with hasMore=true
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                notifications: [createNotification({ id: '1' })],
+                unread_count: 2,
+                total_count: 2,
+                has_more: true,
+              }),
+          });
+        } else {
+          // Subsequent calls - loadMore response
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({
+                notifications: [createNotification({ id: '2' })],
+                unread_count: 2,
+                total_count: 2,
+                has_more: false,
+              }),
+          });
+        }
       });
 
       const { result } = renderHook(() =>
@@ -302,17 +321,6 @@ describe('useNotifications', () => {
         },
         { timeout: 3000 }
       );
-
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            notifications: [createNotification({ id: '2' })],
-            unread_count: 2,
-            total_count: 2,
-            has_more: false,
-          }),
-      });
 
       await act(async () => {
         await result.current.loadMore();
