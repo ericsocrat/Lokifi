@@ -1371,16 +1371,41 @@
         return trends.filter((t) => new Date(t.timestamp) >= cutoff);
       }
 
+      // Helper: Aggregate trends by day (keeps latest entry per day)
+      function aggregateTrendsByDay(trends) {
+        if (!trends || trends.length === 0) return [];
+
+        const byDay = new Map();
+
+        for (const trend of trends) {
+          const date = new Date(trend.timestamp);
+          const dayKey = date.toLocaleDateString();
+
+          // Keep the latest entry for each day
+          if (!byDay.has(dayKey) || new Date(byDay.get(dayKey).timestamp) < date) {
+            byDay.set(dayKey, trend);
+          }
+        }
+
+        // Convert back to array and sort by date
+        return Array.from(byDay.values()).sort(
+          (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+        );
+      }
+
       // Update trend chart with filtered data
       function updateTrendChart(filteredTrends) {
         if (!charts.trend || !filteredTrends || filteredTrends.length === 0) return;
 
-        charts.trend.data.labels = filteredTrends.map((t) =>
+        // Aggregate by day to avoid duplicate x-axis labels
+        const dailyTrends = aggregateTrendsByDay(filteredTrends);
+
+        charts.trend.data.labels = dailyTrends.map((t) =>
           new Date(t.timestamp).toLocaleDateString()
         );
-        charts.trend.data.datasets[0].data = filteredTrends.map((t) => t.coverage.statements);
-        charts.trend.data.datasets[1].data = filteredTrends.map((t) => t.coverage.branches);
-        charts.trend.data.datasets[2].data = filteredTrends.map((t) => t.coverage.functions);
+        charts.trend.data.datasets[0].data = dailyTrends.map((t) => t.coverage.statements);
+        charts.trend.data.datasets[1].data = dailyTrends.map((t) => t.coverage.branches);
+        charts.trend.data.datasets[2].data = dailyTrends.map((t) => t.coverage.functions);
         charts.trend.update('none'); // 'none' for faster update without animation
       }
 
@@ -1388,13 +1413,17 @@
       function updateVelocityChart(filteredTrends) {
         if (!charts.velocity || !filteredTrends || filteredTrends.length < 2) return;
 
-        // Calculate velocity (change between consecutive runs)
+        // Aggregate by day first
+        const dailyTrends = aggregateTrendsByDay(filteredTrends);
+        if (dailyTrends.length < 2) return;
+
+        // Calculate velocity (change between consecutive days)
         const velocityData = [];
         const labels = [];
-        for (let i = 1; i < filteredTrends.length; i++) {
-          const change = filteredTrends[i].coverage.lines - filteredTrends[i - 1].coverage.lines;
+        for (let i = 1; i < dailyTrends.length; i++) {
+          const change = dailyTrends[i].coverage.lines - dailyTrends[i - 1].coverage.lines;
           velocityData.push(change);
-          labels.push(new Date(filteredTrends[i].timestamp).toLocaleDateString());
+          labels.push(new Date(dailyTrends[i].timestamp).toLocaleDateString());
         }
 
         charts.velocity.data.labels = labels;
@@ -1424,13 +1453,18 @@
       function updateDetailedHistoryChart(trends) {
         if (!charts.detailedHistory || !trends || trends.length === 0) return;
 
-        charts.detailedHistory.data.labels = trends.map((t) =>
+        // Aggregate by day
+        const dailyTrends = aggregateTrendsByDay(trends);
+
+        charts.detailedHistory.data.labels = dailyTrends.map((t) =>
           new Date(t.timestamp).toLocaleDateString()
         );
-        charts.detailedHistory.data.datasets[0].data = trends.map((t) => t.coverage.statements);
-        charts.detailedHistory.data.datasets[1].data = trends.map((t) => t.coverage.branches);
-        charts.detailedHistory.data.datasets[2].data = trends.map((t) => t.coverage.functions);
-        charts.detailedHistory.data.datasets[3].data = trends.map((t) => t.coverage.lines);
+        charts.detailedHistory.data.datasets[0].data = dailyTrends.map(
+          (t) => t.coverage.statements
+        );
+        charts.detailedHistory.data.datasets[1].data = dailyTrends.map((t) => t.coverage.branches);
+        charts.detailedHistory.data.datasets[2].data = dailyTrends.map((t) => t.coverage.functions);
+        charts.detailedHistory.data.datasets[3].data = dailyTrends.map((t) => t.coverage.lines);
         charts.detailedHistory.update('none');
       }
 
@@ -1536,14 +1570,17 @@
           charts.trend.destroy();
         }
 
+        // Aggregate by day to avoid duplicate labels
+        const dailyTrends = aggregateTrendsByDay(data.trends);
+
         charts.trend = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: data.trends.map((t) => new Date(t.timestamp).toLocaleDateString()),
+            labels: dailyTrends.map((t) => new Date(t.timestamp).toLocaleDateString()),
             datasets: [
               {
                 label: 'Statements %',
-                data: data.trends.map((t) => t.coverage.statements),
+                data: dailyTrends.map((t) => t.coverage.statements),
                 borderColor: 'rgb(59, 130, 246)',
                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                 tension: 0.4,
@@ -1551,7 +1588,7 @@
               },
               {
                 label: 'Branches %',
-                data: data.trends.map((t) => t.coverage.branches),
+                data: dailyTrends.map((t) => t.coverage.branches),
                 borderColor: 'rgb(16, 185, 129)',
                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
                 tension: 0.4,
@@ -1559,7 +1596,7 @@
               },
               {
                 label: 'Functions %',
-                data: data.trends.map((t) => t.coverage.functions),
+                data: dailyTrends.map((t) => t.coverage.functions),
                 borderColor: 'rgb(251, 191, 36)',
                 backgroundColor: 'rgba(251, 191, 36, 0.1)',
                 tension: 0.4,
@@ -2351,16 +2388,20 @@
         const ctx = document.getElementById('velocityChart');
         if (!ctx) return;
 
-        // Calculate velocity (change between consecutive runs)
+        // Aggregate by day to avoid duplicate labels
+        const dailyTrends = aggregateTrendsByDay(trends);
+        if (dailyTrends.length < 2) return;
+
+        // Calculate velocity (change between consecutive days)
         const velocities = [];
         const labels = [];
 
-        for (let i = 1; i < trends.length; i++) {
-          const current = trends[i].coverage.lines;
-          const previous = trends[i - 1].coverage.lines;
+        for (let i = 1; i < dailyTrends.length; i++) {
+          const current = dailyTrends[i].coverage.lines;
+          const previous = dailyTrends[i - 1].coverage.lines;
           const change = current - previous;
           velocities.push(change);
-          labels.push(new Date(trends[i].timestamp).toLocaleDateString());
+          labels.push(new Date(dailyTrends[i].timestamp).toLocaleDateString());
         }
 
         // Calculate stats
@@ -2500,7 +2541,9 @@
         const ctx = document.getElementById('detailedHistoryChart');
         if (!ctx) return;
 
-        const last30 = trends.slice(-30);
+        // Aggregate by day to avoid duplicate labels
+        const dailyTrends = aggregateTrendsByDay(trends);
+        const last30 = dailyTrends.slice(-30);
 
         if (charts.detailedHistory) {
           charts.detailedHistory.destroy();

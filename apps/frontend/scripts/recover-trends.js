@@ -30,12 +30,13 @@ const allTrends = new Map();
 
 for (const commit of commits) {
   try {
-    const trendsJson = execSync(
-      `git show ${commit}:apps/frontend/coverage-dashboard/trends.json`,
-      { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], cwd: gitRoot }
-    );
+    const trendsJson = execSync(`git show ${commit}:apps/frontend/coverage-dashboard/trends.json`, {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      cwd: gitRoot,
+    });
     const trends = JSON.parse(trendsJson);
-    
+
     for (const trend of trends) {
       const key = trend.timestamp;
       if (!allTrends.has(key)) {
