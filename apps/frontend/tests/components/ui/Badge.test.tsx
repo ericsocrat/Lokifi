@@ -1,17 +1,17 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
 import {
   Badge,
   BadgeGroup,
-  StatusBadge,
   CountBadge,
   PriorityBadge,
-  type BadgeVariant,
+  StatusBadge,
   type BadgeSize,
-  type StatusType,
+  type BadgeVariant,
   type PriorityLevel,
+  type StatusType,
 } from '@/components/ui/Badge';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
 // ============================================================================
 // Badge Tests
@@ -180,17 +180,29 @@ describe('Badge', () => {
     });
 
     it('applies correct color for green dot', () => {
-      render(<Badge dot dotColor="green">Green Dot</Badge>);
+      render(
+        <Badge dot dotColor="green">
+          Green Dot
+        </Badge>
+      );
       expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-green-500');
     });
 
     it('applies correct color for red dot', () => {
-      render(<Badge dot dotColor="red">Red Dot</Badge>);
+      render(
+        <Badge dot dotColor="red">
+          Red Dot
+        </Badge>
+      );
       expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-red-500');
     });
 
     it('applies correct color for yellow dot', () => {
-      render(<Badge dot dotColor="yellow">Yellow Dot</Badge>);
+      render(
+        <Badge dot dotColor="yellow">
+          Yellow Dot
+        </Badge>
+      );
       expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-yellow-500');
     });
 
@@ -246,9 +258,7 @@ describe('Badge', () => {
 
     it('remove button has data-badge-remove attribute', () => {
       render(<Badge removable>Removable</Badge>);
-      expect(screen.getByRole('button', { name: /remove/i })).toHaveAttribute(
-        'data-badge-remove'
-      );
+      expect(screen.getByRole('button', { name: /remove/i })).toHaveAttribute('data-badge-remove');
     });
   });
 
@@ -366,10 +376,7 @@ describe('BadgeGroup', () => {
           <Badge>Two</Badge>
         </BadgeGroup>
       );
-      expect(screen.getByRole('group')).toHaveAttribute(
-        'aria-label',
-        'Group of 2 badges'
-      );
+      expect(screen.getByRole('group')).toHaveAttribute('aria-label', 'Group of 2 badges');
     });
   });
 
@@ -539,12 +546,23 @@ describe('BadgeGroup', () => {
 
 describe('StatusBadge', () => {
   describe('Status Types', () => {
-    const statuses: StatusType[] = ['online', 'offline', 'busy', 'away', 'pending', 'active', 'inactive'];
+    const statuses: StatusType[] = [
+      'online',
+      'offline',
+      'busy',
+      'away',
+      'pending',
+      'active',
+      'inactive',
+    ];
 
     statuses.forEach((status) => {
       it(`renders ${status} status`, () => {
         render(<StatusBadge status={status} />);
-        expect(document.querySelector('[data-status-badge]')).toHaveAttribute('data-status', status);
+        expect(document.querySelector('[data-status-badge]')).toHaveAttribute(
+          'data-status',
+          status
+        );
       });
     });
   });
@@ -592,22 +610,34 @@ describe('StatusBadge', () => {
   describe('Status Variants', () => {
     it('applies success variant for online', () => {
       render(<StatusBadge status="online" />);
-      expect(document.querySelector('[data-status-badge]')).toHaveAttribute('data-variant', 'success');
+      expect(document.querySelector('[data-status-badge]')).toHaveAttribute(
+        'data-variant',
+        'success'
+      );
     });
 
     it('applies danger variant for busy', () => {
       render(<StatusBadge status="busy" />);
-      expect(document.querySelector('[data-status-badge]')).toHaveAttribute('data-variant', 'danger');
+      expect(document.querySelector('[data-status-badge]')).toHaveAttribute(
+        'data-variant',
+        'danger'
+      );
     });
 
     it('applies warning variant for away', () => {
       render(<StatusBadge status="away" />);
-      expect(document.querySelector('[data-status-badge]')).toHaveAttribute('data-variant', 'warning');
+      expect(document.querySelector('[data-status-badge]')).toHaveAttribute(
+        'data-variant',
+        'warning'
+      );
     });
 
     it('applies default variant for offline', () => {
       render(<StatusBadge status="offline" />);
-      expect(document.querySelector('[data-status-badge]')).toHaveAttribute('data-variant', 'default');
+      expect(document.querySelector('[data-status-badge]')).toHaveAttribute(
+        'data-variant',
+        'default'
+      );
     });
   });
 
@@ -743,27 +773,42 @@ describe('PriorityBadge', () => {
   describe('Priority Variants', () => {
     it('applies danger variant for critical', () => {
       render(<PriorityBadge priority="critical" />);
-      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute('data-variant', 'danger');
+      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute(
+        'data-variant',
+        'danger'
+      );
     });
 
     it('applies warning variant for high', () => {
       render(<PriorityBadge priority="high" />);
-      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute('data-variant', 'warning');
+      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute(
+        'data-variant',
+        'warning'
+      );
     });
 
     it('applies info variant for medium', () => {
       render(<PriorityBadge priority="medium" />);
-      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute('data-variant', 'info');
+      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute(
+        'data-variant',
+        'info'
+      );
     });
 
     it('applies success variant for low', () => {
       render(<PriorityBadge priority="low" />);
-      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute('data-variant', 'success');
+      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute(
+        'data-variant',
+        'success'
+      );
     });
 
     it('applies default variant for none', () => {
       render(<PriorityBadge priority="none" />);
-      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute('data-variant', 'default');
+      expect(document.querySelector('[data-priority-badge]')).toHaveAttribute(
+        'data-variant',
+        'default'
+      );
     });
   });
 

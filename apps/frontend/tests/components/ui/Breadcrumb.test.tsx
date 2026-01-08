@@ -1,16 +1,16 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
 import {
   Breadcrumb,
+  BreadcrumbEllipsis,
+  BreadcrumbHome,
   BreadcrumbItem,
   BreadcrumbLink,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
   BreadcrumbPage,
-  BreadcrumbHome,
-  type BreadcrumbVariant,
+  BreadcrumbSeparator,
   type BreadcrumbSize,
+  type BreadcrumbVariant,
 } from '@/components/ui/Breadcrumb';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 // ============================================================================
 // Breadcrumb (Root) Tests

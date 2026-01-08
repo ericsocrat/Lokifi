@@ -1,21 +1,21 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
 import {
   Alert,
-  AlertTitle,
-  AlertDescription,
   AlertActions,
+  AlertBanner,
+  AlertDescription,
   AlertLink,
+  AlertTitle,
+  ErrorAlert,
+  FinancialAlert,
   InfoAlert,
   SuccessAlert,
   WarningAlert,
-  ErrorAlert,
-  AlertBanner,
-  FinancialAlert,
-  type AlertVariant,
   type AlertSize,
+  type AlertVariant,
   type FinancialAlertType,
 } from '@/components/ui/Alert';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 // ============================================================================
 // Alert (Root) Tests
@@ -55,7 +55,14 @@ describe('Alert', () => {
   });
 
   describe('Variants', () => {
-    const variants: AlertVariant[] = ['default', 'info', 'success', 'warning', 'error', 'destructive'];
+    const variants: AlertVariant[] = [
+      'default',
+      'info',
+      'success',
+      'warning',
+      'error',
+      'destructive',
+    ];
 
     variants.forEach((variant) => {
       it(`renders ${variant} variant`, () => {
@@ -169,9 +176,7 @@ describe('Alert', () => {
     });
 
     it('shows custom icon when provided', () => {
-      render(
-        <Alert customIcon={<span data-testid="custom-icon">★</span>}>Content</Alert>
-      );
+      render(<Alert customIcon={<span data-testid="custom-icon">★</span>}>Content</Alert>);
       expect(screen.getByTestId('custom-icon')).toBeInTheDocument();
     });
 

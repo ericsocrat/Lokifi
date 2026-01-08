@@ -1,8 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { forwardRef, createContext, useContext } from 'react';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
+import { createContext, forwardRef, useContext } from 'react';
 
 // ============================================================================
 // Types
@@ -32,11 +32,15 @@ const useAlertContext = () => {
 // ============================================================================
 
 const variantStyles: Record<AlertVariant, string> = {
-  default: 'bg-gray-50 border-gray-200 text-gray-900 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100',
+  default:
+    'bg-gray-50 border-gray-200 text-gray-900 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100',
   info: 'bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-100',
-  success: 'bg-green-50 border-green-200 text-green-900 dark:bg-green-950 dark:border-green-800 dark:text-green-100',
-  warning: 'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-100',
-  error: 'bg-red-50 border-red-200 text-red-900 dark:bg-red-950 dark:border-red-800 dark:text-red-100',
+  success:
+    'bg-green-50 border-green-200 text-green-900 dark:bg-green-950 dark:border-green-800 dark:text-green-100',
+  warning:
+    'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-100',
+  error:
+    'bg-red-50 border-red-200 text-red-900 dark:bg-red-950 dark:border-red-800 dark:text-red-100',
   destructive: 'bg-red-600 border-red-600 text-white dark:bg-red-600 dark:border-red-600',
 };
 
@@ -66,21 +70,39 @@ const iconSizes: Record<AlertSize, string> = {
 // ============================================================================
 
 const InfoIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="12" r="10" strokeWidth="2" />
     <path strokeLinecap="round" strokeWidth="2" d="M12 16v-4M12 8h.01" />
   </svg>
 );
 
 const SuccessIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="12" r="10" strokeWidth="2" />
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4" />
   </svg>
 );
 
 const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
     <path
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -91,7 +113,13 @@ const WarningIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 const ErrorIcon: React.FC<{ className?: string }> = ({ className }) => (
-  <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <svg
+    className={className}
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
     <circle cx="12" cy="12" r="10" strokeWidth="2" />
     <path strokeLinecap="round" strokeWidth="2" d="M15 9l-6 6M9 9l6 6" />
   </svg>
@@ -179,8 +207,19 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
               aria-label="Dismiss"
               data-alert-dismiss=""
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
@@ -372,7 +411,10 @@ export interface AlertBannerProps extends Omit<AlertProps, 'size'> {
 }
 
 export const AlertBanner = forwardRef<HTMLDivElement, AlertBannerProps>(
-  ({ className, children, position = 'inline', centered = false, variant = 'info', ...props }, ref) => {
+  (
+    { className, children, position = 'inline', centered = false, variant = 'info', ...props },
+    ref
+  ) => {
     return (
       <Alert
         ref={ref}
@@ -400,7 +442,12 @@ AlertBanner.displayName = 'AlertBanner';
 // FinancialAlert - Pre-configured for financial notifications
 // ============================================================================
 
-export type FinancialAlertType = 'price-up' | 'price-down' | 'trade-executed' | 'portfolio-update' | 'risk-warning';
+export type FinancialAlertType =
+  | 'price-up'
+  | 'price-down'
+  | 'trade-executed'
+  | 'portfolio-update'
+  | 'risk-warning';
 
 const financialAlertConfig: Record<
   FinancialAlertType,
@@ -409,8 +456,19 @@ const financialAlertConfig: Record<
   'price-up': {
     variant: 'success',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+        />
       </svg>
     ),
     defaultTitle: 'Price Increase',
@@ -418,8 +476,19 @@ const financialAlertConfig: Record<
   'price-down': {
     variant: 'error',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+        />
       </svg>
     ),
     defaultTitle: 'Price Decrease',
@@ -427,7 +496,13 @@ const financialAlertConfig: Record<
   'trade-executed': {
     variant: 'info',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -441,7 +516,13 @@ const financialAlertConfig: Record<
   'portfolio-update': {
     variant: 'default',
     icon: ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg
+        className={className}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"

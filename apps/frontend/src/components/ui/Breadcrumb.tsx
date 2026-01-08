@@ -1,8 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { forwardRef, createContext, useContext } from 'react';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
+import { createContext, forwardRef, useContext } from 'react';
 
 // ============================================================================
 // Types
@@ -36,19 +36,40 @@ function useBreadcrumbContext() {
 
 const separatorIcons: Record<BreadcrumbVariant, React.ReactNode> = {
   default: (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
   ),
   chevron: (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
     </svg>
   ),
   slash: <span aria-hidden="true">/</span>,
   dot: <span className="h-1 w-1 rounded-full bg-current" aria-hidden="true" />,
   arrow: (
-    <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
     </svg>
   ),
@@ -110,30 +131,23 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
       const beforeItems = childArray.slice(0, itemsBeforeCollapse);
       const afterItems = childArray.slice(-itemsAfterCollapse);
 
-      displayedChildren = [
-        ...beforeItems,
-        <BreadcrumbEllipsis key="ellipsis" />,
-        ...afterItems,
-      ];
+      displayedChildren = [...beforeItems, <BreadcrumbEllipsis key="ellipsis" />, ...afterItems];
     } else {
       displayedChildren = childArray;
     }
 
     // Add separators between items
-    const itemsWithSeparators = displayedChildren.reduce<React.ReactNode[]>(
-      (acc, child, index) => {
-        if (index > 0) {
-          acc.push(
-            <BreadcrumbSeparator key={`sep-${index}`} size={size}>
-              {resolvedSeparator}
-            </BreadcrumbSeparator>
-          );
-        }
-        acc.push(child);
-        return acc;
-      },
-      []
-    );
+    const itemsWithSeparators = displayedChildren.reduce<React.ReactNode[]>((acc, child, index) => {
+      if (index > 0) {
+        acc.push(
+          <BreadcrumbSeparator key={`sep-${index}`} size={size}>
+            {resolvedSeparator}
+          </BreadcrumbSeparator>
+        );
+      }
+      acc.push(child);
+      return acc;
+    }, []);
 
     const contextValue: BreadcrumbContextValue = {
       separator: resolvedSeparator,
@@ -294,12 +308,7 @@ export const BreadcrumbEllipsis = forwardRef<HTMLLIElement, BreadcrumbEllipsisPr
         {...props}
       >
         <span className="sr-only">{label}</span>
-        <svg
-          className="h-4 w-4"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
+        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="6" cy="12" r="2" />
           <circle cx="12" cy="12" r="2" />
           <circle cx="18" cy="12" r="2" />

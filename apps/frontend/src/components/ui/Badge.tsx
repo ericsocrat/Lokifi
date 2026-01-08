@@ -1,8 +1,8 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { forwardRef } from 'react';
-import { cn } from '@/lib/utils';
 
 // ============================================================================
 // Types
@@ -330,13 +330,7 @@ export const CountBadge = forwardRef<HTMLSpanElement, CountBadgeProps>(
     const displayCount = count > max ? `${max}+` : count.toString();
 
     return (
-      <Badge
-        ref={ref}
-        pill={pill}
-        size={size}
-        data-count-badge=""
-        {...props}
-      >
+      <Badge ref={ref} pill={pill} size={size} data-count-badge="" {...props}>
         {displayCount}
       </Badge>
     );
@@ -358,12 +352,19 @@ export interface PriorityBadgeProps extends Omit<BadgeProps, 'variant'> {
   showText?: boolean;
 }
 
-const priorityConfig: Record<PriorityLevel, { variant: BadgeVariant; icon: React.ReactNode; text: string }> = {
+const priorityConfig: Record<
+  PriorityLevel,
+  { variant: BadgeVariant; icon: React.ReactNode; text: string }
+> = {
   critical: {
     variant: 'danger',
     icon: (
       <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
     text: 'Critical',
@@ -372,7 +373,11 @@ const priorityConfig: Record<PriorityLevel, { variant: BadgeVariant; icon: React
     variant: 'warning',
     icon: (
       <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
     text: 'High',
@@ -381,7 +386,11 @@ const priorityConfig: Record<PriorityLevel, { variant: BadgeVariant; icon: React
     variant: 'info',
     icon: (
       <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+          clipRule="evenodd"
+        />
       </svg>
     ),
     text: 'Medium',
@@ -390,7 +399,12 @@ const priorityConfig: Record<PriorityLevel, { variant: BadgeVariant; icon: React
     variant: 'success',
     icon: (
       <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" transform="rotate(180 10 10)" />
+        <path
+          fillRule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z"
+          clipRule="evenodd"
+          transform="rotate(180 10 10)"
+        />
       </svg>
     ),
     text: 'Low',
