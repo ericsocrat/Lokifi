@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 /**
  * Test setup and configuration
  *
@@ -6,14 +7,11 @@
  * Updated: Added jest-axe for accessibility testing
  */
 
-import * as matchers from '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { toHaveNoViolations } from 'jest-axe';
 import { afterAll, afterEach, beforeAll, expect } from 'vitest';
 import { server } from '../../tests/mocks/server';
-
-// Extend Vitest's expect with Testing Library matchers
-expect.extend(matchers);
 
 // Extend Vitest's expect with jest-axe matchers
 expect.extend(toHaveNoViolations);
@@ -60,4 +58,3 @@ global.IntersectionObserver = class IntersectionObserver {
   observe() {}
   unobserve() {}
 };
-

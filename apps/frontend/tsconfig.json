@@ -81,7 +81,8 @@
     },
     "types": [
       "vitest",
-      "node"
+      "node",
+      "@testing-library/jest-dom"
     ],
     "plugins": [
       {
