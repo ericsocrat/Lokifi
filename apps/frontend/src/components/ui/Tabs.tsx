@@ -202,7 +202,7 @@ export interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
 
 export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
   ({ fullWidth = false, className, children, ...props }, ref) => {
-    const { variant, size, orientation, baseId, disabled } = useTabsContext();
+    const { variant, size, orientation, disabled } = useTabsContext();
 
     // Get all tab triggers for keyboard navigation
     const handleKeyDown = useCallback(
