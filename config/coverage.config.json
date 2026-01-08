@@ -3,8 +3,8 @@
   "title": "Lokifi Coverage Configuration",
   "description": "Master coverage configuration - single source of truth for all coverage thresholds and current metrics",
   "version": "1.0.0",
-  "lastUpdated": "2026-01-07T00:00:00Z",
-  "updatedBy": "session-130-update",
+  "lastUpdated": "2026-01-08T00:00:00Z",
+  "updatedBy": "session-138-update",
 
   "thresholds": {
     "frontend": {
@@ -32,46 +32,46 @@
 
   "current": {
     "frontend": {
-      "lines": 11.61,
-      "branches": 88.7,
-      "functions": 84.69,
-      "statements": 11.61,
-      "totalTests": 7770,
-      "passingTests": 7704,
+      "lines": 89.48,
+      "branches": 83.62,
+      "functions": 87.61,
+      "statements": 89.48,
+      "totalTests": 7846,
+      "passingTests": 7846,
       "skippedTests": 66,
-      "testFiles": 248,
-      "executionTimeSeconds": 146,
-      "lastMeasured": "2025-06-19",
+      "testFiles": 253,
+      "executionTimeSeconds": 162,
+      "lastMeasured": "2026-01-08",
       "status": "passing",
-      "notes": "Frontend exceeds threshold (11.61% > 10%) - 7704 tests passing after security test implementation"
+      "notes": "Frontend 89.48% coverage with 7,846 tests passing after Session 137-138 improvements"
     },
     "backend": {
-      "lines": 79,
+      "lines": 81.06,
       "branches": null,
       "functions": null,
-      "statements": 79,
+      "statements": 81.06,
       "totalTests": 4267,
-      "passingTests": 4267,
+      "passingTests": 4163,
       "failingTests": 0,
-      "skippedTests": 101,
+      "skippedTests": 104,
       "testFiles": 150,
-      "executionTimeSeconds": 256,
-      "lastMeasured": "2025-06-19",
+      "executionTimeSeconds": 119,
+      "lastMeasured": "2026-01-08",
       "status": "passing",
-      "notes": "Backend coverage 79%, exceeds 20% threshold"
+      "notes": "Backend coverage 81.06%, exceeds 20% threshold"
     },
     "overall": {
-      "lines": 45,
-      "branches": 88.7,
-      "functions": 84.69,
-      "statements": 45,
-      "totalTests": 11570,
-      "passingTests": 11570,
+      "lines": 85,
+      "branches": 83.62,
+      "functions": 87.61,
+      "statements": 85,
+      "totalTests": 12113,
+      "passingTests": 12009,
       "failingTests": 0,
-      "skippedTests": 167,
-      "lastMeasured": "2026-01-07",
+      "skippedTests": 170,
+      "lastMeasured": "2026-01-08",
       "status": "passing",
-      "notes": "Overall project coverage passing with 11,570 tests (79% backend, 11.61% frontend)"
+      "notes": "Overall project coverage passing with 12,113 tests (81% backend, 89.48% frontend)"
     }
   },
 
