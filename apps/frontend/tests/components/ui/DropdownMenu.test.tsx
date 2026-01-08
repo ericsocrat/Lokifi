@@ -1,23 +1,23 @@
-import React from 'react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuGroup,
-  DropdownMenuCheckboxItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from '@/components/ui/DropdownMenu';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // ============================================================================
 // Tests
@@ -38,7 +38,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByText('Open Menu')).toBeInTheDocument();
     });
 
@@ -51,7 +51,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     });
 
@@ -64,7 +64,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Open Menu'));
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
@@ -79,7 +79,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
     });
@@ -93,7 +93,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
   });
@@ -108,7 +108,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Open Menu'));
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
@@ -122,11 +122,11 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       fireEvent.click(trigger);
       expect(screen.getByRole('menu')).toBeInTheDocument();
-      
+
       fireEvent.click(trigger);
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     });
@@ -140,9 +140,9 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
-      
+
       fireEvent.keyDown(document, { key: 'Escape' });
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -159,7 +159,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Open Menu'));
       expect(onOpenChange).toHaveBeenCalledWith(true);
     });
@@ -174,7 +174,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Open Menu'));
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });
@@ -191,10 +191,10 @@ describe('DropdownMenu', () => {
           </DropdownMenu>
         );
       };
-      
+
       render(<Controlled />);
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-      
+
       fireEvent.click(screen.getByText('Open Menu'));
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
@@ -211,7 +211,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Item 1'));
       expect(onClick).toHaveBeenCalled();
     });
@@ -225,7 +225,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Item 1'));
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -241,7 +241,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Item 1'));
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
@@ -257,7 +257,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('icon')).toBeInTheDocument();
     });
 
@@ -270,7 +270,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByText('⌘K')).toBeInTheDocument();
     });
 
@@ -283,7 +283,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       // The text is inside a span, we need to get the button (parent)
       const itemButton = screen.getByText('Delete').closest('button');
       expect(itemButton).toHaveClass('text-destructive');
@@ -298,7 +298,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const item = screen.getByText('Disabled Item');
       expect(item.closest('button')).toBeDisabled();
     });
@@ -314,7 +314,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -329,7 +329,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
@@ -343,7 +343,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       fireEvent.keyDown(trigger, { key: 'Enter' });
       expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -358,7 +358,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       fireEvent.keyDown(trigger, { key: ' ' });
       expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -373,7 +373,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       fireEvent.keyDown(trigger, { key: 'ArrowDown' });
       expect(screen.getByRole('menu')).toBeInTheDocument();
@@ -388,7 +388,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       expect(trigger).toBeDisabled();
     });
@@ -404,7 +404,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
@@ -420,9 +420,9 @@ describe('DropdownMenu', () => {
           </DropdownMenu>
         </div>
       );
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
-      
+
       fireEvent.pointerDown(screen.getByText('Outside'));
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
@@ -438,7 +438,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const content = screen.getByRole('menu');
       expect(content).toHaveAttribute('data-align', 'end');
     });
@@ -452,7 +452,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const content = screen.getByRole('menu');
       expect(content).toHaveAttribute('data-side', 'top');
     });
@@ -469,7 +469,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-label')).toHaveTextContent('My Account');
     });
 
@@ -483,7 +483,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const label = screen.getByTestId('dropdown-menu-label');
       expect(label).toHaveClass('pl-8');
     });
@@ -501,7 +501,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-separator')).toBeInTheDocument();
     });
 
@@ -516,7 +516,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('separator')).toBeInTheDocument();
     });
   });
@@ -534,7 +534,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-group')).toBeInTheDocument();
     });
 
@@ -549,7 +549,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('group')).toBeInTheDocument();
     });
   });
@@ -560,13 +560,11 @@ describe('DropdownMenu', () => {
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuCheckboxItem checked={false}>
-              Show Status Bar
-            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={false}>Show Status Bar</DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-checkbox-item')).toBeInTheDocument();
     });
 
@@ -575,13 +573,11 @@ describe('DropdownMenu', () => {
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuCheckboxItem checked={false}>
-              Show Status Bar
-            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={false}>Show Status Bar</DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menuitemcheckbox')).toBeInTheDocument();
     });
 
@@ -590,13 +586,11 @@ describe('DropdownMenu', () => {
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuCheckboxItem checked={true}>
-              Show Status Bar
-            </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem checked={true}>Show Status Bar</DropdownMenuCheckboxItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const item = screen.getByRole('menuitemcheckbox');
       expect(item).toHaveAttribute('aria-checked', 'true');
       expect(item).toHaveAttribute('data-state', 'checked');
@@ -614,7 +608,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Show Status Bar'));
       expect(onCheckedChange).toHaveBeenCalledWith(true);
     });
@@ -633,12 +627,12 @@ describe('DropdownMenu', () => {
           </DropdownMenu>
         );
       };
-      
+
       render(<Controlled />);
-      
+
       const item = screen.getByRole('menuitemcheckbox');
       expect(item).toHaveAttribute('data-state', 'unchecked');
-      
+
       fireEvent.click(screen.getByText('Toggle Me'));
       expect(item).toHaveAttribute('data-state', 'checked');
     });
@@ -657,7 +651,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-radio-group')).toBeInTheDocument();
     });
 
@@ -673,7 +667,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getAllByRole('menuitemradio')).toHaveLength(2);
     });
 
@@ -689,7 +683,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const items = screen.getAllByRole('menuitemradio');
       expect(items[0]).toHaveAttribute('aria-checked', 'false');
       expect(items[1]).toHaveAttribute('aria-checked', 'true');
@@ -708,7 +702,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.click(screen.getByText('Option 2'));
       expect(onValueChange).toHaveBeenCalledWith('option2');
     });
@@ -727,7 +721,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-shortcut')).toHaveTextContent('⌘S');
     });
   });
@@ -745,15 +739,15 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       // Wait for initial focus (requestAnimationFrame used in component)
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 1');
       });
-      
+
       // Use userEvent for better keyboard simulation
       await user.keyboard('{ArrowDown}');
-      
+
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 2');
       });
@@ -770,10 +764,10 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const menu = screen.getByRole('menu');
       fireEvent.keyDown(menu, { key: 'ArrowUp' });
-      
+
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 3');
       });
@@ -789,14 +783,14 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const menu = screen.getByRole('menu');
-      
+
       // Move to second item
       fireEvent.keyDown(menu, { key: 'ArrowDown' });
       // Move to first (wrap)
       fireEvent.keyDown(menu, { key: 'ArrowDown' });
-      
+
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 1');
       });
@@ -813,10 +807,10 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const menu = screen.getByRole('menu');
       fireEvent.keyDown(menu, { key: 'Home' });
-      
+
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 1');
       });
@@ -833,10 +827,10 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const menu = screen.getByRole('menu');
       fireEvent.keyDown(menu, { key: 'End' });
-      
+
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 3');
       });
@@ -851,10 +845,10 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const menu = screen.getByRole('menu');
       fireEvent.keyDown(menu, { key: 'Tab' });
-      
+
       await waitFor(() => {
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
@@ -874,13 +868,13 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       // When menu opens, it should focus the first ENABLED item (Item 2),
       // not the first item overall (disabled Item 1)
       await waitFor(() => {
         expect(document.activeElement).toHaveTextContent('Item 2');
       });
-      
+
       // Verify disabled item is marked correctly
       const disabledItem = screen.getByText('Item 1 (Disabled)').closest('button');
       expect(disabledItem).toHaveAttribute('data-disabled', 'true');
@@ -903,7 +897,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByTestId('dropdown-menu-sub-trigger')).toBeInTheDocument();
     });
 
@@ -921,9 +915,9 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       fireEvent.mouseEnter(screen.getByTestId('dropdown-menu-sub-trigger'));
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('dropdown-menu-sub-content')).toBeInTheDocument();
       });
@@ -943,10 +937,10 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const subTrigger = screen.getByTestId('dropdown-menu-sub-trigger');
       fireEvent.keyDown(subTrigger, { key: 'ArrowRight' });
-      
+
       await waitFor(() => {
         expect(screen.getByTestId('dropdown-menu-sub-content')).toBeInTheDocument();
       });
@@ -963,7 +957,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByText('Open Menu')).toHaveAttribute('aria-haspopup', 'menu');
     });
 
@@ -976,7 +970,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menuitem')).toBeInTheDocument();
     });
 
@@ -989,7 +983,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menu')).toHaveAttribute('aria-orientation', 'vertical');
     });
 
@@ -1002,7 +996,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       const content = screen.getByRole('menu');
       expect(trigger).toHaveAttribute('aria-controls', content.id);
@@ -1017,7 +1011,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
       const content = screen.getByRole('menu');
       expect(content).toHaveAttribute('aria-labelledby', trigger.id);
@@ -1034,13 +1028,13 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       const trigger = screen.getByText('Open Menu');
-      
+
       for (let i = 0; i < 10; i++) {
         fireEvent.click(trigger);
       }
-      
+
       // Should be closed after even number of clicks
       expect(screen.queryByRole('menu')).not.toBeInTheDocument();
     });
@@ -1052,13 +1046,13 @@ describe('DropdownMenu', () => {
           <DropdownMenuContent />
         </DropdownMenu>
       );
-      
+
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
     it('handles many items', () => {
       const items = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
-      
+
       render(
         <DropdownMenu defaultOpen>
           <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
@@ -1069,7 +1063,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getAllByRole('menuitem')).toHaveLength(50);
     });
 
@@ -1082,7 +1076,7 @@ describe('DropdownMenu', () => {
           </DropdownMenuContent>
         </DropdownMenu>
       );
-      
+
       expect(screen.getByText("<script>alert('XSS')</script>")).toBeInTheDocument();
     });
   });
