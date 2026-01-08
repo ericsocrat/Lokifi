@@ -605,8 +605,22 @@ describe('useChartStore', () => {
       });
 
       it('should align selected drawings to the left', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 50, y: 20 },
+            { x: 70, y: 40 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
@@ -623,8 +637,22 @@ describe('useChartStore', () => {
       });
 
       it('should align selected drawings to the right', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 50, y: 20 },
+            { x: 70, y: 40 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
@@ -640,8 +668,22 @@ describe('useChartStore', () => {
       });
 
       it('should align selected drawings to the top', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 10, y: 60 },
+            { x: 30, y: 80 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
@@ -657,8 +699,22 @@ describe('useChartStore', () => {
       });
 
       it('should align selected drawings to the bottom', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 10, y: 60 },
+            { x: 30, y: 80 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
@@ -695,9 +751,30 @@ describe('useChartStore', () => {
       });
 
       it('should distribute horizontally with 3+ drawings', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
-        const drawing3 = { ...createMockDrawing(), id: 'draw-3', points: [{ x: 100, y: 20 }, { x: 120, y: 40 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 50, y: 20 },
+            { x: 70, y: 40 },
+          ],
+        };
+        const drawing3 = {
+          ...createMockDrawing(),
+          id: 'draw-3',
+          points: [
+            { x: 100, y: 20 },
+            { x: 120, y: 40 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
@@ -714,9 +791,30 @@ describe('useChartStore', () => {
       });
 
       it('should distribute vertically with 3+ drawings', () => {
-        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
-        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
-        const drawing3 = { ...createMockDrawing(), id: 'draw-3', points: [{ x: 10, y: 100 }, { x: 30, y: 120 }] };
+        const drawing1 = {
+          ...createMockDrawing(),
+          id: 'draw-1',
+          points: [
+            { x: 10, y: 20 },
+            { x: 30, y: 40 },
+          ],
+        };
+        const drawing2 = {
+          ...createMockDrawing(),
+          id: 'draw-2',
+          points: [
+            { x: 10, y: 60 },
+            { x: 30, y: 80 },
+          ],
+        };
+        const drawing3 = {
+          ...createMockDrawing(),
+          id: 'draw-3',
+          points: [
+            { x: 10, y: 100 },
+            { x: 30, y: 120 },
+          ],
+        };
 
         act(() => {
           useChartStore.getState().addDrawing(drawing1);
