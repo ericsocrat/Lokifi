@@ -1849,3 +1849,4 @@ export const useMonitoringStore = create<MonitoringStore>()(
 if (typeof window !== 'undefined' && FLAGS.monitoring) {
   useMonitoringStore.getState().initialize();
 }
+

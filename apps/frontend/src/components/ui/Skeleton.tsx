@@ -89,7 +89,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
     const shimmerOverlay =
       animate && animation === 'shimmer' ? (
         <div
-          className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/10 to-transparent animate-[shimmer_2s_infinite]"
+          className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/10 to-transparent animate-[shimmer_2s_infinite]"
           aria-hidden="true"
         />
       ) : null;
@@ -313,3 +313,4 @@ export const SkeletonTable = forwardRef<HTMLDivElement, SkeletonTableProps>(
 SkeletonTable.displayName = 'SkeletonTable';
 
 export default Skeleton;
+

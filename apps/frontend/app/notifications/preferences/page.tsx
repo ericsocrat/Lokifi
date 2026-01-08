@@ -470,3 +470,4 @@ export default function NotificationPreferencesPage() {
     </div>
   );
 }
+

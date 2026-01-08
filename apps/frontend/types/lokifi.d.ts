@@ -84,3 +84,4 @@ declare global {
     __lokifi_lastSnapshotPng?: string;
   }
 }
+

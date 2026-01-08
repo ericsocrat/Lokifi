@@ -551,3 +551,4 @@ if (typeof window !== 'undefined' && FLAGS.corpActions) {
     store.loadHolidays(market, new Date().getFullYear());
   });
 }
+

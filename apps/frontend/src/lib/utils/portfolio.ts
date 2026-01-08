@@ -80,3 +80,4 @@ export async function getPortfolioSummary(): Promise<PortfolioSummary> {
   const res = await apiFetch(`/portfolio/summary`, { method: 'GET' });
   return res.json();
 }
+

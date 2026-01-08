@@ -312,7 +312,7 @@ describe('Tabs', () => {
     it('applies full width styles', () => {
       render(<Tabs items={basicItems} fullWidth />);
       const tabsList = screen.getByTestId('tabs-list');
-      expect(tabsList).toHaveClass('[&>*]:flex-1');
+      expect(tabsList).toHaveClass('*:flex-1');
     });
   });
 

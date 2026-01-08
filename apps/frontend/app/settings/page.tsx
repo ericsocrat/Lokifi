@@ -73,7 +73,7 @@ export default function SettingsPage() {
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex gap-8">
           {/* Sidebar Navigation */}
-          <nav className="w-64 flex-shrink-0">
+          <nav className="w-64 shrink-0">
             <div className="space-y-1">
               {tabs.map((tab) => (
                 <button
@@ -81,7 +81,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
+                      ? 'bg-linear-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
                       : 'text-gray-400 hover:bg-surface-200 hover:text-white'
                   }`}
                 >
@@ -315,3 +315,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

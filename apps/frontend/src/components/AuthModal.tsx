@@ -594,3 +594,4 @@ export function AuthModal({
     </div>
   );
 }
+

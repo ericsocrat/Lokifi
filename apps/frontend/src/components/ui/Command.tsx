@@ -766,7 +766,7 @@ export function CommandShortcut({ keys, className, ...props }: CommandShortcutPr
   ].join(' ');
 
   const keyClasses = [
-    'inline-flex h-5 min-w-[20px] items-center justify-center',
+    'inline-flex h-5 min-w-5 items-center justify-center',
     'rounded border border-gray-200 dark:border-gray-600',
     'bg-gray-50 dark:bg-gray-800',
     'px-1 font-mono text-[10px] font-medium',
@@ -866,3 +866,5 @@ export function useCommandState() {
 // ============================================================================
 
 export { CommandContext, useCommandContext };
+
+

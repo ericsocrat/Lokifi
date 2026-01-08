@@ -325,3 +325,4 @@ function mockNext(prev: Candle[]): Candle[] {
     return copy;
   }
 }
+

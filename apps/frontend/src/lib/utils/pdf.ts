@@ -47,3 +47,4 @@ export async function exportReportPDF(title = 'Lokifi Chart Report') {
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
+

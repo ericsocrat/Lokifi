@@ -204,3 +204,4 @@ export const drawStore = {
     listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
 };
+

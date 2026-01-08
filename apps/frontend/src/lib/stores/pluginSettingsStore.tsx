@@ -48,3 +48,4 @@ export const pluginSymbolSettings = {
   clear(symbol: string, timeframe: string){ const map = readOverrides(); delete map[`${symbol}.${timeframe}`]; writeOverrides(map); listeners.forEach((l) =>l(_s)); },
   listKeys(): string[]{ return Object.keys(readOverrides()); }
 };
+

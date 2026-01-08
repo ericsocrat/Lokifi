@@ -284,7 +284,7 @@ function PortfolioPageContent() {
         <div className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {/* Total Portfolio Value Card */}
-            <div className="md:col-span-2 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+            <div className="md:col-span-2 bg-linear-to-br from-blue-600 via-blue-700 to-purple-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div
@@ -471,7 +471,7 @@ function PortfolioPageContent() {
               <div className="text-xs text-gray-500 dark:text-gray-400">Sections</div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-5 border border-green-200 dark:border-green-800 hover:shadow-lg transition-all group cursor-pointer">
+            <div className="bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-5 border border-green-200 dark:border-green-800 hover:shadow-lg transition-all group cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -810,7 +810,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 flex items-center justify-between hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all group">
       <div className="flex items-center gap-4 flex-1">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-base shadow-lg">
+        <div className="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 to-purple-600 text-white flex items-center justify-center font-bold text-base shadow-lg">
           {bank.name.substring(0, 2).toUpperCase()}
         </div>
         <div className="flex-1">
@@ -868,13 +868,13 @@ function AssetItem({
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 flex items-center justify-between hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group relative overflow-hidden">
       {/* Gradient background on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/5 dark:to-purple-900/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/5 dark:to-purple-900/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
       <div className="flex items-center gap-4 flex-1 relative z-10">
         {/* Asset Icon and Symbol */}
-        <div className="flex flex-col items-center min-w-[80px]">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-1.5 shadow-sm group-hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700">
-            <span className="text-base font-bold bg-gradient-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <div className="flex flex-col items-center min-w-20">
+          <div className="w-14 h-14 rounded-xl bg-linear-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 flex items-center justify-center mb-1.5 shadow-sm group-hover:shadow-md transition-shadow border border-gray-200 dark:border-gray-700">
+            <span className="text-base font-bold bg-linear-to-br from-blue-600 to-purple-600 bg-clip-text text-transparent">
               {asset.symbol.substring(0, 3)}
             </span>
           </div>
@@ -996,3 +996,4 @@ export default function PortfolioPage() {
     </ProtectedRoute>
   );
 }
+

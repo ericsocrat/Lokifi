@@ -117,3 +117,4 @@ export function sliceByTimeWindow(data: Candle[], fromSec: number, toSec: number
   if (end < start) return [];
   return data.slice(start, end + 1);
 }
+

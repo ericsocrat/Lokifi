@@ -60,3 +60,4 @@ export const queryKeys = {
   assetHistory: (symbol: string, period: string) => 
     ['asset', symbol.toUpperCase(), 'history', period] as const,
 };
+

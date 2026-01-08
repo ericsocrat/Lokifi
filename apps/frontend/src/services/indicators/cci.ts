@@ -271,3 +271,4 @@ export function getLatestCCI(cciData: CCIData[]): CCIData | null {
   }
   return cciData[cciData.length - 1];
 }
+

@@ -198,7 +198,7 @@ export function GoalCard({
             </button>
             {showMenu && (
               <div
-                className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-[120px] z-10"
+                className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-30 z-10"
                 role="menu"
                 aria-label="Goal actions menu"
               >
@@ -287,3 +287,4 @@ export function GoalCard({
 // Named exports for types
 export type { GoalCardProps };
 export default GoalCard;
+

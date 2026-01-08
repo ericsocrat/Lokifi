@@ -238,3 +238,4 @@ export function getLatestStochastic(
   }
   return stochasticData[stochasticData.length - 1];
 }
+

@@ -279,7 +279,7 @@ export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
         className={cn(
           'flex',
           orientation === 'vertical' ? 'flex-col' : 'flex-row',
-          fullWidth && orientation === 'horizontal' && '[&>*]:flex-1',
+          fullWidth && orientation === 'horizontal' && '*:flex-1',
           sizeStyles[size],
           variantStyles[variant],
           className
@@ -408,7 +408,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
         {badge !== undefined && badge !== null && (
           <span
             className={cn(
-              'inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 text-xs font-medium rounded-full',
+              'inline-flex items-center justify-center min-w-5 h-5 px-1.5 text-xs font-medium rounded-full',
               isActive
                 ? variant === 'pills'
                   ? 'bg-white/20 text-white'
@@ -477,3 +477,4 @@ TabsContent.displayName = 'TabsContent';
 // ============================================================================
 
 export default Tabs;
+

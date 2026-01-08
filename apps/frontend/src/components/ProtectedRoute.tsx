@@ -83,3 +83,4 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
   // User is authenticated or auth is not required, render children
   return <>{children}</>;
 }
+

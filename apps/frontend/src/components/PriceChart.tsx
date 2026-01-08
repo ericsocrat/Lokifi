@@ -764,3 +764,4 @@ export default function PriceChart() {
     </div>
   );
 }
+

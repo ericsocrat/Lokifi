@@ -40,3 +40,4 @@ function downloadURL(url: string, filename: string) {
   a.download = filename;
   a.click();
 }
+

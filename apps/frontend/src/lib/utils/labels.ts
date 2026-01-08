@@ -160,3 +160,4 @@ function rulerLabel(d: Drawing, cfg: LabelConfig): LabelResult | null {
 
   return parts.length > 0 ? { text: parts.join(' '), anchor: b } : null;
 }
+

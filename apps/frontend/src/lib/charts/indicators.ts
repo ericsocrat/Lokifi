@@ -220,3 +220,4 @@ export function stddevChannels(
 
 export { sma };
 export const stdDevChannels = stddevChannels;
+

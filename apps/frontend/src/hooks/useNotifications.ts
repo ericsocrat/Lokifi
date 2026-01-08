@@ -487,3 +487,4 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 };
 
 export default useNotifications;
+

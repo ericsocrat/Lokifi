@@ -579,7 +579,7 @@ export function SimpleSlider({
 
       <div className="flex items-center gap-3">
         {showMinMax && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 min-w-[2rem] text-right">
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 min-w-8 text-right">
             {minLabel ?? formatValue(min)}
           </span>
         )}
@@ -596,7 +596,7 @@ export function SimpleSlider({
         />
 
         {showMinMax && (
-          <span className="text-xs text-zinc-500 dark:text-zinc-400 min-w-[2rem]">
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 min-w-8">
             {maxLabel ?? formatValue(max)}
           </span>
         )}
@@ -610,3 +610,4 @@ export function SimpleSlider({
 // ============================================================================
 
 export { clamp, getPercentage, roundToStep };
+

@@ -29,7 +29,7 @@ function MarketsOverviewContent() {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
+      <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Markets</h3>
@@ -54,7 +54,7 @@ function MarketsOverviewContent() {
   const _forex = data?.data.forex || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
+    <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950">
       <div className="border-b border-neutral-800 bg-[#17171A]/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -244,3 +244,4 @@ export default function MarketsOverviewPage() {
     </ProtectedRoute>
   );
 }
+

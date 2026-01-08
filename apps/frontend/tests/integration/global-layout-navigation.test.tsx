@@ -283,7 +283,7 @@ describe('GlobalLayout Navigation', () => {
   describe('Logo Component', () => {
     const Logo = ({ onClick }: { onClick: () => void }) => (
       <button onClick={onClick} className="flex items-center gap-2">
-        <span className="text-xl font-bold bg-gradient-to-r from-lokifi-400 to-electric-400 bg-clip-text text-transparent">
+        <span className="text-xl font-bold bg-linear-to-r from-lokifi-400 to-electric-400 bg-clip-text text-transparent">
           Lokifi
         </span>
       </button>
@@ -306,7 +306,7 @@ describe('GlobalLayout Navigation', () => {
       render(<Logo onClick={vi.fn()} />);
 
       const logo = screen.getByText('Lokifi');
-      expect(logo).toHaveClass('bg-gradient-to-r', 'from-lokifi-400', 'to-electric-400');
+      expect(logo).toHaveClass('bg-linear-to-r', 'from-lokifi-400', 'to-electric-400');
     });
   });
 

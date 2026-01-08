@@ -581,3 +581,4 @@ const ChartPanel = dynamic(
 );
 
 export default ChartPanel;
+

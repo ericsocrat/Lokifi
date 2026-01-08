@@ -253,3 +253,4 @@ export function useWebSocketData(symbol: string, enabled: boolean = true) {
 
   return { data, isConnected };
 }
+

@@ -88,3 +88,4 @@ export function fnv1a(str: string): string {
   }
   return ('0000000' + h.toString(16)).slice(-8);
 }
+

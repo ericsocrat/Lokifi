@@ -8,3 +8,5 @@ import type { LokifiPlugin } from './types';
 Object.values(plugins).forEach((plugin: LokifiPlugin) => pluginManager.register(plugin));
 
 export { pluginManager };
+
+

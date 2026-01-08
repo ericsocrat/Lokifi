@@ -432,3 +432,4 @@ export const DrawingChart: React.FC = () => {
     </ChartErrorBoundary>
   );
 };
+

@@ -10,3 +10,4 @@ export default function ReportPortal() {
   }, [])
   return open ? <ReportComposer open={open} onClose={()=>setOpen(false)} /> : null
 }
+

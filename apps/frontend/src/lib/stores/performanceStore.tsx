@@ -1883,3 +1883,4 @@ if (typeof window !== 'undefined' && FLAGS.performance) {
   const store = usePerformanceStore.getState();
   store.initialize();
 }
+

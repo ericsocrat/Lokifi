@@ -334,3 +334,4 @@ export function getLatestADX(adxData: ADXData[]): ADXData | undefined {
 
   return adxData[adxData.length - 1];
 }
+

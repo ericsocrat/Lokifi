@@ -15,3 +15,5 @@ export function getPluginMetadata(plugin: LokifiPlugin): PluginMetadata {
     defaults: {},
   };
 }
+
+

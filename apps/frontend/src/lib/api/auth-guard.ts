@@ -11,3 +11,4 @@ export async function requireAuth(): Promise<{handle: string; avatar_url?: strin
   }
   return profile;
 }
+

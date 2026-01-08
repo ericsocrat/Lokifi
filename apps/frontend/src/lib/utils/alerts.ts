@@ -113,3 +113,4 @@ export function subscribeAlerts(_cb: (ev: AlertEvent) => void, _withPast?: boole
     stopped = true;
   };
 }
+

@@ -86,3 +86,4 @@ export function magnetXToBars(x: number, tolerancePx: number): number {
   }
   return dBest <= tolerancePx ? best : x;
 }
+

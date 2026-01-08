@@ -988,3 +988,4 @@ if (typeof window !== 'undefined' && FLAGS.backtester) {
   const store = useBacktesterStore.getState();
   store.loadPublicStrategies();
 }
+

@@ -28,3 +28,5 @@ export function PageContent({ children, title, description, className = '' }: Pa
     </div>
   );
 }
+
+

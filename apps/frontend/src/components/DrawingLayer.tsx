@@ -607,3 +607,4 @@ function extendRayToBounds(a: Point, b: Point, W: number, H: number) {
   end.y = Math.max(0, Math.min(H, end.y));
   return { start: a, end };
 }
+

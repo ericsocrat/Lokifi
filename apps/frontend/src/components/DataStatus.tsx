@@ -10,3 +10,4 @@ export default function DataStatus(props: { provider: string; symbol: string; ti
     </div>
   )
 }
+

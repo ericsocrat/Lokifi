@@ -82,3 +82,4 @@ export function totalValue(): number {
     return total + section.assets.reduce((sum: number, asset: Asset) => sum + asset.value, 0);
   }, 0);
 }
+

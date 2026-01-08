@@ -826,3 +826,4 @@ if (typeof window !== 'undefined' && FLAGS.templates) {
   store.loadUserTemplates();
   store.loadFeaturedTemplates();
 }
+

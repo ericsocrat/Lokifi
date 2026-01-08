@@ -191,7 +191,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <IconComponent className="w-5 h-5 text-blue-400" />
                   </div>
                   <div className="flex-1">
@@ -229,3 +229,4 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
     </div>
   );
 };
+

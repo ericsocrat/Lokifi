@@ -1933,3 +1933,4 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
 if (typeof window !== 'undefined' && FLAGS.environmentManagement) {
   useEnvironmentManagementStore.getState().initialize();
 }
+

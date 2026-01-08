@@ -88,7 +88,7 @@ export const TradingWorkspace: React.FC = () => {
   return (
     <div className="h-screen bg-[#131722] flex flex-col overflow-hidden">
       {/* Chart Header - Clean TradingView style */}
-      <div className="bg-[#1e222d] border-b border-[#2a2e39] flex-shrink-0">
+      <div className="bg-[#1e222d] border-b border-[#2a2e39] shrink-0">
         <ChartHeader />
 
         {/* Minimal toolbar */}
@@ -106,7 +106,7 @@ export const TradingWorkspace: React.FC = () => {
       {/* Main Workspace Area */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Drawing Tools Sidebar - Always narrow TradingView style */}
-        <div className="flex-shrink-0 w-12">
+        <div className="shrink-0 w-12">
           <DrawingToolbar />
         </div>
 
@@ -129,7 +129,7 @@ export const TradingWorkspace: React.FC = () => {
 
         {/* Right: Object Tree Sidebar */}
         <div
-          className={`flex-shrink-0 transition-all duration-300 ${
+          className={`shrink-0 transition-all duration-300 ${
             isObjectTreeCollapsed ? 'w-12' : 'w-64'
           }`}
         >
@@ -152,3 +152,4 @@ export const TradingWorkspace: React.FC = () => {
     </div>
   );
 };
+

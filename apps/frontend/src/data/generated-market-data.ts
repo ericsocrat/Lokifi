@@ -12003,3 +12003,4 @@ export function searchAssets(query: string): Asset[] {
   ).slice(0, 50);
 }
 export const ASSET_COUNT = 775;
+

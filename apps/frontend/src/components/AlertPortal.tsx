@@ -12,3 +12,4 @@ export default function AlertPortal() {
 
   return open ? <AlertModal open={open} onClose={()=>setOpen(false)} /> : null
 }
+

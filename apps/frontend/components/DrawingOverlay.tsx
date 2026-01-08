@@ -829,3 +829,4 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
     </>
   );
 };
+

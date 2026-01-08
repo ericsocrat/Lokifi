@@ -41,3 +41,4 @@ export function useGlobalHotkeys() {
     return () => window.removeEventListener('keydown', handler)
   }, [bindings])
 }
+

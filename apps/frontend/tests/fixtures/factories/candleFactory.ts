@@ -86,3 +86,4 @@ export const createTrendingCandles = (
 
   return candles;
 };
+

@@ -88,7 +88,7 @@ export default function AIResearchPage() {
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-to-br from-lokifi to-electric rounded-xl">
+            <div className="p-2.5 bg-linear-to-br from-lokifi to-electric rounded-xl">
               <Bot className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -109,7 +109,7 @@ export default function AIResearchPage() {
             <div className="space-y-8">
               {/* Welcome Message */}
               <div className="text-center py-12">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center shadow-2xl shadow-lokifi/30 animate-float">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-linear-to-br from-lokifi to-electric flex items-center justify-center shadow-2xl shadow-lokifi/30 animate-float">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-3">How can I help you today?</h2>
@@ -149,21 +149,21 @@ export default function AIResearchPage() {
                   className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lokifi to-electric flex items-center justify-center shrink-0">
                       <Bot className="w-5 h-5 text-white" />
                     </div>
                   )}
                   <div
                     className={`max-w-[80%] rounded-2xl p-4 ${
                       msg.role === 'user'
-                        ? 'bg-gradient-to-r from-lokifi to-electric text-white'
+                        ? 'bg-linear-to-r from-lokifi to-electric text-white'
                         : 'bg-surface-100 border border-surface-300/50 text-gray-200'
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   </div>
                   {msg.role === 'user' && (
-                    <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center shrink-0">
                       <MessageSquare className="w-5 h-5 text-gray-400" />
                     </div>
                   )}
@@ -171,7 +171,7 @@ export default function AIResearchPage() {
               ))}
               {isLoading && (
                 <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lokifi to-electric flex items-center justify-center">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
                   <div className="bg-surface-100 border border-surface-300/50 rounded-2xl p-4">
@@ -207,7 +207,7 @@ export default function AIResearchPage() {
             <button
               type="submit"
               disabled={!query.trim() || isLoading}
-              className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center gap-2"
+              className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center gap-2"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -228,3 +228,4 @@ export default function AIResearchPage() {
     </div>
   );
 }
+

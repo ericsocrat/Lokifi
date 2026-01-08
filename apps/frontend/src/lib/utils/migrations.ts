@@ -222,3 +222,4 @@ export function getMigrationPath(stateType: string, fromVersion: number): number
 
   return path;
 }
+

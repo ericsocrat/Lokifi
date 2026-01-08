@@ -1331,3 +1331,4 @@ if (typeof window !== 'undefined' && FLAGS.paperTrading) {
     store.createAccount('Demo Account', defaultSettings);
   }
 }
+

@@ -43,3 +43,5 @@ export function EmptyState({ type, title, description, action }: EmptyStateProps
     </div>
   );
 }
+
+

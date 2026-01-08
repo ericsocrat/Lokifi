@@ -190,3 +190,4 @@ export default function AlertModal({ open, onClose }: Props) {
     </div>
   );
 }
+

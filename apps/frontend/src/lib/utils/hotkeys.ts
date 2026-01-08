@@ -20,3 +20,4 @@ export default function useHotkeys() {
     return () => window.removeEventListener('keydown', onKey)
   }, [setTool])
 }
+

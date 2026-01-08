@@ -2438,3 +2438,4 @@ export const marketData = new MarketDataService();
 
 // Export for use in components
 export default marketData;
+

@@ -174,7 +174,7 @@ const CheckIcon = () => (
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="flex-shrink-0"
+    className="shrink-0"
   >
     <polyline points="20 6 9 17 4 12" />
   </svg>
@@ -187,7 +187,7 @@ const DotIcon = () => (
     height="14"
     viewBox="0 0 24 24"
     fill="currentColor"
-    className="flex-shrink-0"
+    className="shrink-0"
   >
     <circle cx="12" cy="12" r="4" />
   </svg>
@@ -504,7 +504,7 @@ export const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenu
         data-side={side}
         data-align={align}
         className={cn(
-          'absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
+          'absolute z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
           'animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
           'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
           'data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
@@ -591,7 +591,7 @@ export const DropdownMenuItem = React.forwardRef<HTMLButtonElement, DropdownMenu
         onKeyDown={handleKeyDown}
         {...props}
       >
-        {icon && <span className="mr-2 flex-shrink-0">{icon}</span>}
+        {icon && <span className="mr-2 shrink-0">{icon}</span>}
         <span className="flex-1">{children}</span>
         {shortcut && (
           <span className="ml-auto pl-2 text-xs tracking-widest text-muted-foreground">
@@ -1007,7 +1007,7 @@ export const DropdownMenuSubContent = React.forwardRef<HTMLDivElement, DropdownM
         data-state={subContext.open ? 'open' : 'closed'}
         data-testid="dropdown-menu-sub-content"
         className={cn(
-          'absolute left-full top-0 z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
+          'absolute left-full top-0 z-50 min-w-32 overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md',
           'animate-in fade-in-0 zoom-in-95 slide-in-from-left-2',
           className
         )}
@@ -1028,3 +1028,5 @@ DropdownMenuSubContent.displayName = 'DropdownMenuSubContent';
 
 DropdownMenu.displayName = 'DropdownMenu';
 DropdownMenuSub.displayName = 'DropdownMenuSub';
+
+

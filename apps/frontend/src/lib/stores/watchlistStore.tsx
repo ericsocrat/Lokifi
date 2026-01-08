@@ -525,3 +525,4 @@ if (typeof window !== 'undefined' && FLAGS.watchlist) {
     store.createWatchlist('My Watchlist');
   }
 }
+

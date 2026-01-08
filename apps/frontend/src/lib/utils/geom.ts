@@ -37,3 +37,4 @@ export function normalize(vx: number, vy: number) {
 export function perpendicular(vx: number, vy: number) {
   return [-vy, vx] as const
 }
+

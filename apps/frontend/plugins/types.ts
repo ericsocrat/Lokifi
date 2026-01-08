@@ -37,3 +37,5 @@ export interface ToolPlugin {
 }
 
 export type LokifiPlugin = ToolPlugin; // extend later
+
+

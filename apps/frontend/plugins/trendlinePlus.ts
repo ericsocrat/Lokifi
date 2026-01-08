@@ -51,3 +51,5 @@ export const trendlinePlus: ToolPlugin = {
     return !!(trendlinePlus as any)._state?.a;
   },
 };
+
+

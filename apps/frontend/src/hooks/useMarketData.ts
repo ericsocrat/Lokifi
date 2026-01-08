@@ -274,3 +274,4 @@ export function useAssetFormatter(symbol: string) {
     formatVolume,
   };
 }
+

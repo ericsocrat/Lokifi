@@ -10,3 +10,4 @@ export async function chat(messages: ChatMessage[]) {
   });
   return res.json() as Promise<{ mode: string; answer: string; result?: unknown }>;
 }
+

@@ -240,7 +240,7 @@ function GoalCard({
             <MoreHorizontal className="w-4 h-4 text-surface-11" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-[120px] z-10">
+            <div className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-30 z-10">
               <button
                 onClick={() => {
                   onEdit(goal.id);
@@ -381,7 +381,7 @@ export default function GoalsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-0 via-surface-0 to-lokifi-950/20 p-6">
+    <div className="min-h-screen bg-linear-to-br from-surface-0 via-surface-0 to-lokifi-950/20 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -394,7 +394,7 @@ export default function GoalsPage() {
             </h1>
             <p className="text-surface-11 mt-2">Track your progress towards financial freedom</p>
           </div>
-          <button className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-lokifi-500 to-electric-500 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-lokifi-500/20">
+          <button className="flex items-center gap-2 px-5 py-3 bg-linear-to-r from-lokifi-500 to-electric-500 rounded-xl text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-lokifi-500/20">
             <Plus className="w-5 h-5" />
             Add New Goal
           </button>
@@ -453,7 +453,7 @@ export default function GoalsPage() {
           </div>
           <div className="h-4 bg-surface-3 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-lokifi-500 to-electric-500 rounded-full transition-all duration-500"
+              className="h-full bg-linear-to-r from-lokifi-500 to-electric-500 rounded-full transition-all duration-500"
               style={{ width: `${Math.min(overallProgress, 100)}%` }}
             />
           </div>
@@ -528,7 +528,7 @@ export default function GoalsPage() {
         )}
 
         {/* Tips Section */}
-        <div className="bg-gradient-to-r from-lokifi-500/10 to-electric-500/10 rounded-2xl p-6 border border-lokifi-500/20">
+        <div className="bg-linear-to-r from-lokifi-500/10 to-electric-500/10 rounded-2xl p-6 border border-lokifi-500/20">
           <div className="flex items-start gap-4">
             <div className="p-3 bg-lokifi-500/20 rounded-xl">
               <Sparkles className="w-6 h-6 text-lokifi-400" />
@@ -560,3 +560,4 @@ export default function GoalsPage() {
     </div>
   );
 }
+

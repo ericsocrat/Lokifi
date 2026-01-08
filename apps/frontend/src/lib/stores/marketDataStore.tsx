@@ -231,3 +231,4 @@ export function useAutoRefresh() {
     return () => clearInterval(interval);
   }, [autoRefresh, refreshInterval]);
 }
+

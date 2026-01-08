@@ -308,7 +308,7 @@ export function ToastItem({
       )}
     >
       {displayIcon && (
-        <div className="flex-shrink-0 mt-0.5" data-testid="toast-icon">
+        <div className="shrink-0 mt-0.5" data-testid="toast-icon">
           {displayIcon}
         </div>
       )}
@@ -343,7 +343,7 @@ export function ToastItem({
           type="button"
           onClick={() => onDismiss(id)}
           className={cn(
-            'flex-shrink-0 rounded-sm opacity-70 hover:opacity-100',
+            'shrink-0 rounded-sm opacity-70 hover:opacity-100',
             'focus:outline-none focus:ring-2 focus:ring-offset-2'
           )}
           aria-label="Dismiss toast"
@@ -587,3 +587,4 @@ export function useToastHelpers() {
 ToastProvider.displayName = 'ToastProvider';
 ToastItem.displayName = 'ToastItem';
 Toaster.displayName = 'Toaster';
+

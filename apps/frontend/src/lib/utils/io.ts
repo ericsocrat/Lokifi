@@ -43,3 +43,4 @@ export async function exportPngFromRoot(root: HTMLElement, outName = 'lokifi.png
     if (blob) downloadBlob(outName, blob)
   }, 'image/png')
 }
+

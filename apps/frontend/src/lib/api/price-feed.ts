@@ -35,3 +35,4 @@ export function startPriceFeed(getLastPrice: () => number | null, intervalMs = 5
     } catch {}
   };
 }
+

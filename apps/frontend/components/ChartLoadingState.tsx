@@ -21,3 +21,4 @@ export function ChartLoadingState({ symbol, timeframe, message }: LoadingStatePr
     </div>
   );
 }
+

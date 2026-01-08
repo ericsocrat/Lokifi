@@ -118,3 +118,4 @@ export function getLatestRSI(prices: number[], period: number = 14): number | nu
   const rsiValues = calculateRSI(prices, period);
   return rsiValues.length > 0 ? rsiValues[rsiValues.length - 1] : null;
 }
+

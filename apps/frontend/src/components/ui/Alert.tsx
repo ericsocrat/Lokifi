@@ -188,7 +188,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
           {...props}
         >
           {(icon || customIcon) && (
-            <div className={cn('flex-shrink-0', iconColors[variant])} data-alert-icon="">
+            <div className={cn('shrink-0', iconColors[variant])} data-alert-icon="">
               {customIcon ?? <IconComponent className={iconSizes[size]} />}
             </div>
           )}
@@ -598,3 +598,5 @@ export const FinancialAlert = forwardRef<HTMLDivElement, FinancialAlertProps>(
 );
 
 FinancialAlert.displayName = 'FinancialAlert';
+
+

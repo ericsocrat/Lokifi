@@ -179,7 +179,7 @@ function NotificationToast({
       aria-live="polite"
     >
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">{style.icon}</div>
+        <div className="shrink-0">{style.icon}</div>
         <div className="flex-1 min-w-0">
           <h4 className="font-semibold text-white text-sm">{notification.title}</h4>
           {notification.message && (
@@ -197,7 +197,7 @@ function NotificationToast({
         {notification.dismissible && (
           <button
             onClick={handleDismiss}
-            className="flex-shrink-0 p-1 rounded-lg hover:bg-surface-3 transition-colors"
+            className="shrink-0 p-1 rounded-lg hover:bg-surface-3 transition-colors"
             aria-label="Dismiss notification"
           >
             <X className="w-4 h-4 text-surface-11" />
@@ -237,3 +237,4 @@ export function useNotify() {
 // Named exports
 export { NotificationContext };
 export type { NotificationContextType };
+

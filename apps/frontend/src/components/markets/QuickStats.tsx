@@ -115,3 +115,5 @@ export function QuickStats({ data, showMarketCap = false }: QuickStatsProps) {
     </div>
   );
 }
+
+

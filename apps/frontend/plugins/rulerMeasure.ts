@@ -51,3 +51,5 @@ export const rulerMeasure: ToolPlugin = {
     return !!(rulerMeasure as any)._state?.a;
   },
 };
+
+

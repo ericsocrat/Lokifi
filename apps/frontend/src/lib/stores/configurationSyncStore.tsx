@@ -1880,3 +1880,4 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 if (typeof window !== 'undefined' && FLAGS.configurationSync) {
   useConfigurationSyncStore.getState().initialize();
 }
+

@@ -24,3 +24,4 @@ export function mockWindowLocation(url: string) {
     },
   };
 }
+

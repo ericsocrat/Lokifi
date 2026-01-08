@@ -8,13 +8,8 @@
  * - useSwitchGroup: Hook for managing group state
  */
 
-import {
-  Switch,
-  SwitchCard,
-  SwitchGroup,
-  useSwitchGroup,
-} from '@/src/components/ui/Switch';
-import { fireEvent, render, renderHook, screen, act } from '@testing-library/react';
+import { Switch, SwitchCard, SwitchGroup, useSwitchGroup } from '@/src/components/ui/Switch';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -41,9 +36,7 @@ describe('Switch', () => {
     });
 
     it('renders with custom className', () => {
-      const { container } = render(
-        <Switch label="Test" className="custom-class" />
-      );
+      const { container } = render(<Switch label="Test" className="custom-class" />);
       expect(container.firstChild).toHaveClass('custom-class');
     });
 
@@ -173,9 +166,7 @@ describe('Switch', () => {
     });
 
     it('error overrides track color to red', () => {
-      const { container } = render(
-        <Switch color="success" error="Error" aria-label="test" />
-      );
+      const { container } = render(<Switch color="success" error="Error" aria-label="test" />);
       const track = container.querySelector('span[aria-hidden="true"]');
       expect(track).toHaveClass('peer-checked:bg-red-500');
     });
@@ -465,12 +456,7 @@ describe('SwitchCard', () => {
     });
 
     it('renders badge', () => {
-      render(
-        <SwitchCard
-          title="Premium"
-          badge={<span data-testid="badge">PRO</span>}
-        />
-      );
+      render(<SwitchCard title="Premium" badge={<span data-testid="badge">PRO</span>} />);
       expect(screen.getByTestId('badge')).toBeInTheDocument();
     });
   });
@@ -527,16 +513,12 @@ describe('useSwitchGroup', () => {
     });
 
     it('uses defaultValue', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email', 'sms'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email', 'sms'] }));
       expect(result.current.value).toEqual(['email', 'sms']);
     });
 
     it('uses controlled value', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ value: ['controlled'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ value: ['controlled'] }));
       expect(result.current.value).toEqual(['controlled']);
     });
   });
@@ -563,9 +545,7 @@ describe('useSwitchGroup', () => {
     });
 
     it('disable removes item', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email', 'sms'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email', 'sms'] }));
 
       act(() => {
         result.current.disable('email');
@@ -585,9 +565,7 @@ describe('useSwitchGroup', () => {
     });
 
     it('toggle removes if enabled', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email'] }));
 
       act(() => {
         result.current.toggle('email');
@@ -621,9 +599,7 @@ describe('useSwitchGroup', () => {
 
   describe('isEnabled', () => {
     it('returns true for enabled items', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email'] }));
 
       expect(result.current.isEnabled('email')).toBe(true);
     });
@@ -637,9 +613,7 @@ describe('useSwitchGroup', () => {
 
   describe('getSwitchProps', () => {
     it('returns checked: true for enabled items', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email'] }));
 
       const props = result.current.getSwitchProps('email');
       expect(props.checked).toBe(true);
@@ -665,9 +639,7 @@ describe('useSwitchGroup', () => {
     });
 
     it('onChange handler disables on uncheck', () => {
-      const { result } = renderHook(() =>
-        useSwitchGroup({ defaultValue: ['email'] })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ defaultValue: ['email'] }));
 
       const props = result.current.getSwitchProps('email');
 
@@ -682,9 +654,7 @@ describe('useSwitchGroup', () => {
   describe('onChange Callback', () => {
     it('calls onChange when value changes', () => {
       const handleChange = vi.fn();
-      const { result } = renderHook(() =>
-        useSwitchGroup({ onChange: handleChange })
-      );
+      const { result } = renderHook(() => useSwitchGroup({ onChange: handleChange }));
 
       act(() => {
         result.current.enable('email');
@@ -769,11 +739,7 @@ describe('Integration Tests', () => {
       return (
         <div>
           {items.map((item) => (
-            <Switch
-              key={item}
-              label={item.toUpperCase()}
-              {...getSwitchProps(item)}
-            />
+            <Switch key={item} label={item.toUpperCase()} {...getSwitchProps(item)} />
           ))}
           <div data-testid="enabled">{value.join(',')}</div>
         </div>
@@ -852,21 +818,15 @@ describe('Integration Tests', () => {
             title="Dark Mode"
             description="Use dark theme"
             checked={settings.darkMode}
-            onChange={(e) =>
-              setSettings((s) => ({ ...s, darkMode: e.target.checked }))
-            }
+            onChange={(e) => setSettings((s) => ({ ...s, darkMode: e.target.checked }))}
           />
           <SwitchCard
             title="Notifications"
             description="Receive alerts"
             checked={settings.notifications}
-            onChange={(e) =>
-              setSettings((s) => ({ ...s, notifications: e.target.checked }))
-            }
+            onChange={(e) => setSettings((s) => ({ ...s, notifications: e.target.checked }))}
           />
-          <div data-testid="settings">
-            {JSON.stringify(settings)}
-          </div>
+          <div data-testid="settings">{JSON.stringify(settings)}</div>
         </div>
       );
     }

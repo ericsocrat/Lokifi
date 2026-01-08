@@ -273,3 +273,4 @@ export function AssetIcon({ symbol, type, size = 32, className = '' }: AssetIcon
     />
   );
 }
+

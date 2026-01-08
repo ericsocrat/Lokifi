@@ -76,3 +76,4 @@ export const mockPortfolioCSV = `symbol,qty,cost_basis,tags
 BTC,0.5,40000,"hodl,long-term"
 ETH,5.0,2000,trading
 SOL,50.0,80,`;
+

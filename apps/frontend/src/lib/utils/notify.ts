@@ -22,3 +22,4 @@ export async function notify(title: string, body?: string, sound: 'ping' | 'none
     }
   } catch {}
 }
+

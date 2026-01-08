@@ -286,3 +286,4 @@ export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
     return index;
   }
 }
+

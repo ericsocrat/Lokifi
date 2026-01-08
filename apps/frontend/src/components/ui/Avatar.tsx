@@ -504,7 +504,7 @@ export const AvatarBadge = forwardRef<HTMLSpanElement, AvatarBadgeProps>(
       'absolute',
       positionClasses[position],
       'flex items-center justify-center',
-      'min-w-[1.25rem] h-5 px-1',
+      'min-w-5 h-5 px-1',
       'text-xs font-medium',
       'bg-lokifi-600 text-white',
       'rounded-full',
@@ -537,3 +537,5 @@ AvatarBadge.displayName = 'AvatarBadge';
 // ============================================================================
 
 export default Avatar;
+
+

@@ -30,7 +30,7 @@ function IndicesPageContent() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
+      <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Indices</h3>
@@ -50,7 +50,7 @@ function IndicesPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
+    <div className="min-h-screen bg-linear-to-br from-neutral-950 via-neutral-900 to-neutral-950">
       {/* Header */}
       <div className="border-b border-neutral-800 bg-[#17171A]/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -79,7 +79,7 @@ function IndicesPageContent() {
 
           {/* Mock Data Warning */}
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-yellow-500 font-medium text-sm">Mock Data Notice</p>
               <p className="text-neutral-400 text-xs mt-1">
@@ -216,3 +216,4 @@ export default function IndicesPage() {
     </ProtectedRoute>
   );
 }
+

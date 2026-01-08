@@ -151,7 +151,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = () => {
 
         {/* Dropdown Menu */}
         {showMoreTools && (
-          <div className="absolute left-full ml-2 top-0 z-50 bg-[#1e222d] border border-[#2a2e39] rounded-lg shadow-xl py-1 min-w-[160px]">
+          <div className="absolute left-full ml-2 top-0 z-50 bg-[#1e222d] border border-[#2a2e39] rounded-lg shadow-xl py-1 min-w-40">
             <MoreToolItem
               label="Vertical Line"
               shortcut="Shift+H"
@@ -250,3 +250,4 @@ const MoreToolItem: React.FC<{
     <span className="text-xs text-[#787b86]">{shortcut}</span>
   </button>
 );
+

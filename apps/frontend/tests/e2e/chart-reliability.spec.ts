@@ -128,3 +128,4 @@ test.describe('Chart Reliability - Part A', () => {
     expect(newBox!.width).not.toBe(initialBox!.width);
   });
 });
+

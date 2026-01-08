@@ -519,3 +519,4 @@ const backendPriceService = {
 };
 
 export default backendPriceService;
+

@@ -52,3 +52,4 @@ export function getHooks(): PluginHooks[] {
     .filter((r) => r.enabled)
     .map((r) => r.hooks);
 }
+

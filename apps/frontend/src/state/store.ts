@@ -758,3 +758,4 @@ interface StoreWithHelpers {
 // The store already has these methods from Zustand's create function
 // This explicit cast ensures TypeScript knows about them
 export const chartStoreHelpers = useChartStore as typeof useChartStore & StoreWithHelpers;
+

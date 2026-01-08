@@ -105,3 +105,4 @@ export function distribute(drawings: Drawing[], ids: Set<string>, axis: 'h' | 'v
     return drawings.map((d) => (out.has(d.id) ? transformDrawing(d, 0, out.get(d.id) || 0) : d));
   }
 }
+

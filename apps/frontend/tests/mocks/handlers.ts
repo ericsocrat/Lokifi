@@ -359,3 +359,4 @@ export const handlers = [
     return HttpResponse.json({ detail: 'Not Found' }, { status: 404 });
   }),
 ];
+

@@ -407,3 +407,4 @@ export function useAssetData(symbol: string, period: HistoricalPeriod = '1m') {
     refetchHistorical: historical.refetch,
   };
 }
+

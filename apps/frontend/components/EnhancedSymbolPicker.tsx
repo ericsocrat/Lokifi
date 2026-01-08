@@ -190,7 +190,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex-shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type as keyof typeof ASSET_TYPE_COLORS]}`}
+                  className={`shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type as keyof typeof ASSET_TYPE_COLORS]}`}
                 >
                   {ASSET_TYPE_ICONS[symbol.asset_type as keyof typeof ASSET_TYPE_ICONS]}
                 </div>
@@ -226,7 +226,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
       {/* Trigger Button */}
       <button
         onClick={handleOpen}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition-colors min-w-[200px]"
+        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition-colors min-w-50"
       >
         <div className="flex items-center gap-2 flex-1">
           <div className="w-4 h-4 text-blue-400">
@@ -302,3 +302,4 @@ export const EnhancedSymbolPicker: React.FC = () => {
     </div>
   );
 };
+

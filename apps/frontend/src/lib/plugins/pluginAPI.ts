@@ -37,3 +37,4 @@ globalAny.Lokifi.plugins = {
   getDrawings: (): Drawing[] => useChartStore.getState().drawings,
   getSelection: (): string[] => Array.from(useChartStore.getState().selection || []),
 };
+

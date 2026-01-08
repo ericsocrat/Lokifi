@@ -8,3 +8,4 @@ export function fmtPct(n: number, dec = 2) {
   return (n >= 0 ? '+' : '') + (n*100).toFixed(dec) + '%'
 }
 export function clamp(v:number, a:number, b:number){ return Math.min(b, Math.max(a, v)) }
+

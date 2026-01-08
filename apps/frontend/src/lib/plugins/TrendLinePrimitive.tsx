@@ -266,3 +266,4 @@ export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
     return index;
   }
 }
+

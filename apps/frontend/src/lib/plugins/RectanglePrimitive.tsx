@@ -220,3 +220,4 @@ export class RectanglePrimitive implements ISeriesPrimitive<Time> {
     return index;
   }
 }
+

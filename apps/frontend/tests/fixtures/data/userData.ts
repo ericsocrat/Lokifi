@@ -44,3 +44,4 @@ export const mockSession = {
   token: mockAuthToken,
   expiresAt: '2024-12-31T23:59:59Z',
 };
+

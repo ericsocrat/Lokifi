@@ -127,7 +127,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
               onClick={() => router.push('/dashboard')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-lokifi to-electric rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-lokifi/30 group-hover:scale-105 transition-all duration-200">
+              <div className="w-10 h-10 bg-linear-to-br from-lokifi to-electric rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-lokifi/30 group-hover:scale-105 transition-all duration-200">
                 <span className="text-white font-bold text-xl">L</span>
               </div>
               {sidebarOpen && <span className="font-bold text-xl text-gradient">Lokifi</span>}
@@ -157,11 +157,11 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                   onClick={() => router.push(item.href)}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                     active
-                      ? 'bg-gradient-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
+                      ? 'bg-linear-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
                       : 'text-gray-400 hover:bg-surface-200 hover:text-white'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-lokifi-light' : ''}`} />
+                  <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-lokifi-light' : ''}`} />
                   {sidebarOpen && (
                     <div className="flex-1 text-left">
                       <div className={`font-medium ${active ? 'text-lokifi-light' : ''}`}>
@@ -181,7 +181,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
               onClick={() => router.push('/settings')}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-surface-200 hover:text-white transition-all duration-200`}
             >
-              <Settings className="w-5 h-5 flex-shrink-0" />
+              <Settings className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span className="font-medium">Settings</span>}
             </button>
           </div>
@@ -253,7 +253,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                       className="flex items-center gap-2 px-3 py-2 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-lokifi/10"
                       aria-label="User profile"
                     >
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-lokifi to-electric flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-full bg-linear-to-br from-lokifi to-electric flex items-center justify-center">
                         <User size={16} className="text-white" />
                       </div>
                       <span className="text-sm font-medium text-white hidden sm:inline">
@@ -275,7 +275,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                     {/* Log In / Sign Up Button */}
                     <button
                       onClick={handleOpenLogin}
-                      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-lokifi/30"
+                      className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-lokifi/30"
                       aria-label="Log in or sign up"
                     >
                       <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center">
@@ -299,3 +299,5 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
     </div>
   );
 }
+
+

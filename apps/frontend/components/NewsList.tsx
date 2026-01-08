@@ -31,3 +31,4 @@ export default function NewsList({ symbol = 'BTC' }: { symbol?: string }) {
     </div>
   );
 }
+

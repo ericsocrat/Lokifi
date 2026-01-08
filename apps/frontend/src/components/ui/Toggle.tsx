@@ -173,7 +173,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
         data-testid={testId}
         data-state={isChecked ? 'checked' : 'unchecked'}
         className={cn(
-          'relative inline-flex flex-shrink-0 items-center rounded-full',
+          'relative inline-flex shrink-0 items-center rounded-full',
           'transition-colors duration-200 ease-in-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0',
           sizeConfig.track,
@@ -230,3 +230,4 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
 Toggle.displayName = 'Toggle';
 
 export default Toggle;
+

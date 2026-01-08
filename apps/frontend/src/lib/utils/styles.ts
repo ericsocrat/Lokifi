@@ -45,3 +45,4 @@ export function applyCtxStyle(ctx: CanvasRenderingContext2D, style: DrawingStyle
   ctx.lineWidth = Math.max(0.5, style.width ?? 1)
   ctx.setLineDash(lineDashFromStyle(style.lineStyle ?? 'solid'))
 }
+

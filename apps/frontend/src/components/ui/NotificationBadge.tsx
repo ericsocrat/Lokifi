@@ -63,9 +63,9 @@ export function NotificationBadge({
   const displayCount = count > max ? `${max}+` : count.toString();
 
   const sizeClasses = {
-    sm: dot ? 'w-2 h-2' : 'min-w-[16px] h-4 text-[10px] px-1',
-    md: dot ? 'w-2.5 h-2.5' : 'min-w-[20px] h-5 text-xs px-1.5',
-    lg: dot ? 'w-3 h-3' : 'min-w-[24px] h-6 text-sm px-2',
+    sm: dot ? 'w-2 h-2' : 'min-w-4 h-4 text-[10px] px-1',
+    md: dot ? 'w-2.5 h-2.5' : 'min-w-5 h-5 text-xs px-1.5',
+    lg: dot ? 'w-3 h-3' : 'min-w-6 h-6 text-sm px-2',
   };
 
   const variantClasses = {
@@ -151,3 +151,4 @@ export function Badge({
 }
 
 export default NotificationBadge;
+

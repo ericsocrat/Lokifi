@@ -253,3 +253,4 @@ export function getLatestMACD(
     histogram: result.histogram[lastIndex],
   };
 }
+

@@ -314,3 +314,4 @@ export const BUILTIN_DRAWING_TOOLS = {
     ctx.stroke();
   },
 };
+

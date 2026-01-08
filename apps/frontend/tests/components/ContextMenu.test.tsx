@@ -45,7 +45,7 @@ describe('ContextMenu', () => {
       expect(menu).toHaveClass('rounded-lg');
       expect(menu).toHaveClass('shadow-lg');
       expect(menu).toHaveClass('py-1');
-      expect(menu).toHaveClass('min-w-[120px]');
+      expect(menu).toHaveClass('min-w-30');
     });
   });
 

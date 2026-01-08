@@ -61,3 +61,4 @@ export function wireLightweightChartsMappings(
   ts.subscribeVisibleLogicalRangeChange?.(feedVisible);
   feedVisible();
 }
+

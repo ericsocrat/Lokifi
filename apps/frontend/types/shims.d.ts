@@ -101,3 +101,4 @@ declare module '@/plugins' {
 }
 
 export {};
+

@@ -54,3 +54,4 @@ export const mockOHLCData = [
     volume: 1200000,
   },
 ];
+

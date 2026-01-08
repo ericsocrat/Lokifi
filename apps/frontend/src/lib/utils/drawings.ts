@@ -290,3 +290,4 @@ export function drawPitchfork(
   ctx.lineTo(PC2.x, PC2.y);
   ctx.stroke();
 }
+

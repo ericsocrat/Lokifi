@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useAuth } from "@/src/components/AuthProvider";
 import { useRouter } from "next/navigation";
@@ -22,3 +22,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

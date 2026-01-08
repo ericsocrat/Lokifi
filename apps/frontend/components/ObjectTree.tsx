@@ -282,7 +282,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed bg-[#1e222d] border border-[#2a2e39] rounded-lg shadow-xl py-1 z-50 min-w-[160px]"
+          className="fixed bg-[#1e222d] border border-[#2a2e39] rounded-lg shadow-xl py-1 z-50 min-w-40"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -324,3 +324,4 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     </div>
   );
 };
+

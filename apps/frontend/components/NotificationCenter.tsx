@@ -396,7 +396,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <div className="p-4">
               <div className="flex gap-3">
                 {/* Selection checkbox */}
-                <div className="flex-shrink-0 pt-1">
+                <div className="shrink-0 pt-1">
                   <input
                     type="checkbox"
                     checked={selectedNotifications.has(notification.id)}
@@ -414,7 +414,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 </div>
 
                 {/* Icon */}
-                <div className="flex-shrink-0 text-xl">
+                <div className="shrink-0 text-xl">
                   {getNotificationIcon(notification.type)}
                 </div>
 
@@ -605,3 +605,4 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 };
 
 export default NotificationCenter;
+

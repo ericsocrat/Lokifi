@@ -109,7 +109,7 @@ export default function DebtsPage() {
               </h1>
               <p className="text-sm text-gray-400 mt-1">Track and manage your outstanding debts</p>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30">
+            <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30">
               <Plus className="w-4 h-4" />
               Add Debt
             </button>
@@ -121,7 +121,7 @@ export default function DebtsPage() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Total Debt */}
-          <div className="border border-rose-500/20 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm">
+          <div className="border border-rose-500/20 rounded-2xl bg-linear-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2.5 bg-rose-500/10 rounded-xl">
                 <TrendingDown className="w-5 h-5 text-rose-400" />
@@ -143,7 +143,7 @@ export default function DebtsPage() {
           </div>
 
           {/* Highest Interest */}
-          <div className="border border-amber-500/20 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 p-6 backdrop-blur-sm">
+          <div className="border border-amber-500/20 rounded-2xl bg-linear-to-br from-amber-500/10 to-amber-500/5 p-6 backdrop-blur-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="p-2.5 bg-amber-500/10 rounded-xl">
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
@@ -168,7 +168,7 @@ export default function DebtsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${debtTypeColors[debt.type]} flex items-center justify-center text-white shadow-lg`}
+                      className={`w-12 h-12 rounded-xl bg-linear-to-br ${debtTypeColors[debt.type]} flex items-center justify-center text-white shadow-lg`}
                     >
                       {debtTypeIcons[debt.type]}
                     </div>
@@ -202,7 +202,7 @@ export default function DebtsPage() {
             <p className="text-gray-400 mb-6">
               Great job! You don&apos;t have any debts tracked yet.
             </p>
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium">
+            <button className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-lokifi to-electric rounded-xl text-white font-medium">
               <Plus className="w-4 h-4" />
               Add Your First Debt
             </button>
@@ -212,3 +212,4 @@ export default function DebtsPage() {
     </div>
   );
 }
+

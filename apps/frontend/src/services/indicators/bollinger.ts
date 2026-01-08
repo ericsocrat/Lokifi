@@ -268,3 +268,4 @@ export function getLatestBollingerBands(
     interpretation: interpretBollingerBands(currentPrice, latest),
   };
 }
+

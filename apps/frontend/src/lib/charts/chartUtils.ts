@@ -20,3 +20,4 @@ export function barsFromTimes(aSec: number, bSec: number, tf: string): number {
   const spb = tfToSeconds(tf) || 60;
   return dt / spb;
 }
+

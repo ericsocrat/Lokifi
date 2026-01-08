@@ -363,7 +363,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           </div>
           {isSelected && (
             <Check
-              className={cn(sizeConfig.icon, 'flex-shrink-0 text-blue-400')}
+              className={cn(sizeConfig.icon, 'shrink-0 text-blue-400')}
               aria-hidden="true"
             />
           )}
@@ -432,7 +432,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           )}
         >
           <span className="flex-1 text-left truncate text-white">{renderValue()}</span>
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {clearable && selectedOptions.length > 0 && !disabled && (
               <button
                 type="button"
@@ -558,3 +558,4 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 Select.displayName = 'Select';
 
 export default Select;
+

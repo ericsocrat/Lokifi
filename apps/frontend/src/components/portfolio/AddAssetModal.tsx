@@ -245,7 +245,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                             symbol={asset.symbol}
                             type={asset.type}
                             size={40}
-                            className="flex-shrink-0"
+                            className="shrink-0"
                           />
                           <div className="flex-1 min-w-0">
                             <div className="font-semibold text-gray-900 dark:text-gray-100">
@@ -256,7 +256,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                             </div>
                           </div>
                         </div>
-                        <div className="text-right ml-3 flex-shrink-0">
+                        <div className="text-right ml-3 shrink-0">
                           <div className="font-semibold text-gray-900 dark:text-gray-100">
                             $
                             {asset.price.toLocaleString(undefined, {
@@ -311,7 +311,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                           symbol={asset.symbol}
                           type={fullAsset?.type || 'stock'}
                           size={36}
-                          className="flex-shrink-0"
+                          className="shrink-0"
                         />
                         <div className="flex-1">
                           <div className="font-semibold text-gray-900 dark:text-gray-100">
@@ -392,3 +392,5 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
     </div>
   );
 }
+
+

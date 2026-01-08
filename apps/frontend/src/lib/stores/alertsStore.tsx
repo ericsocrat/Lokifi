@@ -971,3 +971,4 @@ if (typeof window !== 'undefined' && FLAGS.alertsV2) {
     Notification.requestPermission();
   }
 }
+

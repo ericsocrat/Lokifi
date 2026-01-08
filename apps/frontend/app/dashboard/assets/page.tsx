@@ -536,3 +536,4 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
     </div>
   );
 }
+

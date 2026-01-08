@@ -254,3 +254,4 @@ test.describe('Performance - Core Web Vitals', () => {
     }
   });
 });
+
