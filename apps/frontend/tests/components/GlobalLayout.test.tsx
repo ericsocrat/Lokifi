@@ -116,7 +116,8 @@ describe('GlobalLayout', () => {
         </GlobalLayout>
       );
       expect(screen.getByRole('combobox')).toBeInTheDocument();
-      expect(screen.getByText('USD €')).toBeInTheDocument();
+      // Bug fix: currency codes should NOT have redundant € symbol
+      expect(screen.getByText('USD')).toBeInTheDocument();
     });
 
     it('should render dark mode toggle', () => {
@@ -296,10 +297,11 @@ describe('GlobalLayout', () => {
 
       const currencySelect = screen.getByRole('combobox');
       expect(currencySelect.querySelectorAll('option')).toHaveLength(6);
-      expect(screen.getByText('USD €')).toBeInTheDocument();
-      expect(screen.getByText('EUR €')).toBeInTheDocument();
-      expect(screen.getByText('GBP €')).toBeInTheDocument();
-      expect(screen.getByText('JPY €')).toBeInTheDocument();
+      // Bug fix: currency codes should NOT have redundant € symbol
+      expect(screen.getByText('USD')).toBeInTheDocument();
+      expect(screen.getByText('EUR')).toBeInTheDocument();
+      expect(screen.getByText('GBP')).toBeInTheDocument();
+      expect(screen.getByText('JPY')).toBeInTheDocument();
     });
 
     it('should call setCurrency when selecting new currency', async () => {
