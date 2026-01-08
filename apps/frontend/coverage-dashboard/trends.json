@@ -1,35 +1,5 @@
 [
   {
-    "timestamp": "2026-01-01T15:05:09.277Z",
-    "coverage": {
-      "statements": 20.061598457822782,
-      "branches": 86.48736228127025,
-      "functions": 83.75870069605568,
-      "lines": 20.061598457822782
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "238b18de"
-    }
-  },
-  {
-    "timestamp": "2026-01-01T15:08:33.887Z",
-    "coverage": {
-      "statements": 20.074893089007556,
-      "branches": 86.4856126737795,
-      "functions": 83.9907192575406,
-      "lines": 20.074893089007556
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "238b18de"
-    }
-  },
-  {
     "timestamp": "2026-01-01T15:09:50.413Z",
     "coverage": {
       "statements": 20.074893089007556,
@@ -447,6 +417,36 @@
     "git": {
       "branch": "main",
       "commit": "377a274b"
+    }
+  },
+  {
+    "timestamp": "2026-01-08T00:58:54.491Z",
+    "coverage": {
+      "statements": 89.00665462077477,
+      "branches": 83.5075026795284,
+      "functions": 87.41333333333333,
+      "lines": 89.00665462077477
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "f89e48ab"
+    }
+  },
+  {
+    "timestamp": "2026-01-08T01:26:18.527Z",
+    "coverage": {
+      "statements": 89.43193336565159,
+      "branches": 83.72030958099813,
+      "functions": 87.58620689655172,
+      "lines": 89.43193336565159
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "f89e48ab"
     }
   }
 ]

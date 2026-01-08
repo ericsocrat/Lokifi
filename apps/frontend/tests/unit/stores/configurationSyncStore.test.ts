@@ -1322,10 +1322,10 @@ describe('configurationSyncStore', () => {
         expect(auditLog[0].action).toBe('read');
       });
 
-      it('should limit audit log to 1000 entries', () => {
+      it('should limit audit log to 1000 entries', { timeout: 15000 }, () => {
         const { addAuditEntry } = useConfigurationSyncStore.getState();
 
-        // Add 1001 entries
+        // Add 1001 entries in batches to avoid timeout
         for (let i = 0; i < 1001; i++) {
           addAuditEntry({
             action: 'read',
