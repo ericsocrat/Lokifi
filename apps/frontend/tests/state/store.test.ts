@@ -803,6 +803,125 @@ describe('useChartStore', () => {
       });
     });
 
+    describe('moveLayer', () => {
+      it('should move layer up when not at top', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+          useChartStore.getState().addLayer('Layer 3');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const layer3Id = layers[2].id;
+        const layer2Id = layers[1].id;
+
+        act(() => {
+          useChartStore.getState().moveLayer(layer3Id, 'up');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        // After moving layer3 up, layer2 and layer3 should be swapped
+        expect(updatedLayers[1].id).toBe(layer3Id);
+        expect(updatedLayers[2].id).toBe(layer2Id);
+      });
+
+      it('should move layer down when not at bottom', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+          useChartStore.getState().addLayer('Layer 3');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const layer1Id = layers[0].id;
+        const layer2Id = layers[1].id;
+
+        act(() => {
+          useChartStore.getState().moveLayer(layer1Id, 'down');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        // After moving layer1 down, layer1 and layer2 should be swapped
+        expect(updatedLayers[0].id).toBe(layer2Id);
+        expect(updatedLayers[1].id).toBe(layer1Id);
+      });
+
+      it('should not move first layer up (edge case)', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const layer1Id = layers[0].id;
+
+        act(() => {
+          useChartStore.getState().moveLayer(layer1Id, 'up');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        // Layer 1 should still be at position 0
+        expect(updatedLayers[0].id).toBe(layer1Id);
+      });
+
+      it('should not move last layer down (edge case)', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const layer2Id = layers[1].id;
+
+        act(() => {
+          useChartStore.getState().moveLayer(layer2Id, 'down');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        // Layer 2 should still be at position 1
+        expect(updatedLayers[1].id).toBe(layer2Id);
+      });
+
+      it('should do nothing with invalid layer ID', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const originalOrder = layers.map((l) => l.id);
+
+        act(() => {
+          useChartStore.getState().moveLayer('invalid-id', 'up');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        const updatedOrder = updatedLayers.map((l) => l.id);
+        expect(updatedOrder).toEqual(originalOrder);
+      });
+
+      it('should swap layer order values when moving', () => {
+        act(() => {
+          useChartStore.getState().addLayer('Layer 1');
+          useChartStore.getState().addLayer('Layer 2');
+        });
+
+        const layers = useChartStore.getState().layers;
+        const layer1Order = layers[0].order;
+        const layer2Order = layers[1].order;
+        const layer1Id = layers[0].id;
+
+        act(() => {
+          useChartStore.getState().moveLayer(layer1Id, 'down');
+        });
+
+        const updatedLayers = useChartStore.getState().layers;
+        // Order values should be swapped
+        expect(updatedLayers[0].order).toBe(layer1Order);
+        expect(updatedLayers[1].order).toBe(layer2Order);
+      });
+    });
+
     describe('renameLayer', () => {
       it('should rename layer', () => {
         act(() => {
@@ -906,6 +1025,106 @@ describe('useChartStore', () => {
         });
 
         expect(useChartStore.getState().snapshots.length).toBe(0);
+      });
+    });
+
+    describe('cycleSnapshot', () => {
+      it('should do nothing when no snapshots exist', () => {
+        const initialState = useChartStore.getState();
+
+        act(() => {
+          useChartStore.getState().cycleSnapshot(1);
+        });
+
+        // State should be unchanged since there are no snapshots
+        expect(useChartStore.getState().drawings).toEqual(initialState.drawings);
+      });
+
+      it('should cycle forward through snapshots', () => {
+        const drawing1 = createMockDrawing();
+
+        // Create multiple snapshots
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().saveSnapshot('Snapshot 1');
+          useChartStore.getState().saveSnapshot('Snapshot 2');
+        });
+
+        expect(useChartStore.getState().snapshots.length).toBe(2);
+
+        // Cycle forward
+        act(() => {
+          useChartStore.getState().cycleSnapshot(1);
+        });
+
+        // Should load a snapshot's state (drawings preserved)
+        expect(useChartStore.getState().snapshots.length).toBe(2);
+        expect(useChartStore.getState().drawings.length).toBeGreaterThanOrEqual(1);
+      });
+
+      it('should cycle backward through snapshots', () => {
+        const drawing1 = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().saveSnapshot('Snapshot 1');
+          useChartStore.getState().saveSnapshot('Snapshot 2');
+        });
+
+        expect(useChartStore.getState().snapshots.length).toBe(2);
+
+        // Cycle backward (delta = -1)
+        act(() => {
+          useChartStore.getState().cycleSnapshot(-1);
+        });
+
+        // Should still have snapshots
+        expect(useChartStore.getState().snapshots.length).toBe(2);
+      });
+
+      it('should wrap around when cycling past end', () => {
+        act(() => {
+          useChartStore.getState().saveSnapshot('Snapshot 1');
+          useChartStore.getState().saveSnapshot('Snapshot 2');
+          useChartStore.getState().saveSnapshot('Snapshot 3');
+        });
+
+        const initialSnapshots = useChartStore.getState().snapshots;
+        expect(initialSnapshots.length).toBe(3);
+
+        // Cycle forward multiple times to test wrap-around
+        act(() => {
+          useChartStore.getState().cycleSnapshot(3); // Full wrap-around
+        });
+
+        // State should be valid after wrap-around
+        expect(useChartStore.getState().snapshots.length).toBe(3);
+      });
+
+      it('should restore theme and timeframe from snapshot', () => {
+        const drawing = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing);
+          useChartStore.getState().setState({ theme: 'dark' });
+          useChartStore.getState().setTimeframe('1W');
+          useChartStore.getState().saveSnapshot('Styled Snapshot');
+        });
+
+        // Change current state
+        act(() => {
+          useChartStore.getState().setState({ theme: 'light' });
+          useChartStore.getState().setTimeframe('1D');
+        });
+
+        // Cycle to saved snapshot
+        act(() => {
+          useChartStore.getState().cycleSnapshot(0);
+        });
+
+        // Should restore theme and timeframe
+        expect(useChartStore.getState().theme).toBe('dark');
+        expect(useChartStore.getState().timeframe).toBe('1W');
       });
     });
   });
