@@ -1,12 +1,12 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
 import {
   Accordion,
+  AccordionContent,
   AccordionItem,
   AccordionTrigger,
-  AccordionContent,
   SimpleAccordion,
 } from '@/components/ui/Accordion';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('Accordion', () => {
   // ============================================================================
@@ -498,7 +498,7 @@ describe('Accordion', () => {
 
       const trigger = screen.getByTestId('accordion-trigger');
       fireEvent.keyDown(trigger, { key: 'Enter' });
-      
+
       expect(screen.getByText('Content 1')).toBeInTheDocument();
     });
 
@@ -514,7 +514,7 @@ describe('Accordion', () => {
 
       const trigger = screen.getByTestId('accordion-trigger');
       fireEvent.keyDown(trigger, { key: ' ' });
-      
+
       expect(screen.getByText('Content 1')).toBeInTheDocument();
     });
 
@@ -530,7 +530,7 @@ describe('Accordion', () => {
 
       const trigger = screen.getByTestId('accordion-trigger');
       fireEvent.keyDown(trigger, { key: 'a' });
-      
+
       expect(screen.queryByText('Content 1')).not.toBeInTheDocument();
     });
   });
@@ -601,12 +601,12 @@ describe('Accordion', () => {
       );
 
       const trigger = screen.getByTestId('accordion-trigger');
-      
+
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
-      
+
       fireEvent.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
-      
+
       fireEvent.click(trigger);
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
     });
@@ -782,7 +782,7 @@ describe('Accordion', () => {
 
   describe('Edge Cases', () => {
     it('handles empty accordion', () => {
-      render(<Accordion></Accordion>);
+      render(<Accordion />);
       expect(screen.getByTestId('accordion')).toBeInTheDocument();
     });
 

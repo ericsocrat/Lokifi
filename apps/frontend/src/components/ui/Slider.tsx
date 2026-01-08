@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 // ============================================================================
 // Types
@@ -11,7 +11,10 @@ export type SliderSize = 'sm' | 'md' | 'lg';
 export type SliderVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger';
 export type SliderOrientation = 'horizontal' | 'vertical';
 
-export interface SliderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
+export interface SliderProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'onChange' | 'defaultValue'
+> {
   /** Current value(s) - single number or array for range */
   value?: number | number[];
   /** Default value(s) for uncontrolled mode */
@@ -345,16 +348,16 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         <div className="absolute inset-0" data-testid="slider-marks">
           {markValues.map((mark) => {
             const percentage = getPercentage(mark.value, min, max);
-            const style = isHorizontal
-              ? { left: `${percentage}%` }
-              : { bottom: `${percentage}%` };
+            const style = isHorizontal ? { left: `${percentage}%` } : { bottom: `${percentage}%` };
 
             return (
               <div
                 key={mark.value}
                 className={cn(
                   'absolute transform',
-                  isHorizontal ? '-translate-x-1/2 top-1/2 -translate-y-1/2' : '-translate-y-1/2 left-1/2 -translate-x-1/2',
+                  isHorizontal
+                    ? '-translate-x-1/2 top-1/2 -translate-y-1/2'
+                    : '-translate-y-1/2 left-1/2 -translate-x-1/2',
                   'rounded-full bg-zinc-400 dark:bg-zinc-500',
                   sizeStyles[size].mark
                 )}
@@ -373,9 +376,7 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
       const isActive = activeThumb === thumbIndex;
       const isHovered = hoveredThumb === thumbIndex;
 
-      const style = isHorizontal
-        ? { left: `${percentage}%` }
-        : { bottom: `${percentage}%` };
+      const style = isHorizontal ? { left: `${percentage}%` } : { bottom: `${percentage}%` };
 
       return (
         <div
@@ -394,7 +395,9 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
           data-disabled={disabled ? '' : undefined}
           className={cn(
             'absolute transform',
-            isHorizontal ? '-translate-x-1/2 -translate-y-1/2 top-1/2' : '-translate-x-1/2 -translate-y-1/2 left-1/2',
+            isHorizontal
+              ? '-translate-x-1/2 -translate-y-1/2 top-1/2'
+              : '-translate-x-1/2 -translate-y-1/2 left-1/2',
             'rounded-full bg-white border-2 shadow-md',
             'transition-transform duration-75',
             'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500',
@@ -414,7 +417,9 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
                 'absolute whitespace-nowrap text-xs font-medium',
                 'bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900',
                 'px-2 py-1 rounded shadow-lg',
-                isHorizontal ? '-top-8 left-1/2 -translate-x-1/2' : 'left-full ml-2 top-1/2 -translate-y-1/2'
+                isHorizontal
+                  ? '-top-8 left-1/2 -translate-x-1/2'
+                  : 'left-full ml-2 top-1/2 -translate-y-1/2'
               )}
               data-testid="slider-value"
             >
@@ -457,14 +462,10 @@ export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
         {...props}
       >
         {/* Hidden inputs for form submission */}
-        {name && value.map((v, i) => (
-          <input
-            key={i}
-            type="hidden"
-            name={isRange ? `${name}[${i}]` : name}
-            value={v}
-          />
-        ))}
+        {name &&
+          value.map((v, i) => (
+            <input key={i} type="hidden" name={isRange ? `${name}[${i}]` : name} value={v} />
+          ))}
 
         {/* Track */}
         <div
@@ -566,10 +567,11 @@ export function SimpleSlider({
     <div className={cn('w-full space-y-2', className)} data-testid="simple-slider">
       {label && (
         <div className="flex items-center justify-between">
-          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            {label}
-          </label>
-          <span className="text-sm text-zinc-500 dark:text-zinc-400" data-testid="simple-slider-value">
+          <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</label>
+          <span
+            className="text-sm text-zinc-500 dark:text-zinc-400"
+            data-testid="simple-slider-value"
+          >
             {displayValue}
           </span>
         </div>
@@ -607,4 +609,4 @@ export function SimpleSlider({
 // Exports
 // ============================================================================
 
-export { getPercentage, clamp, roundToStep };
+export { clamp, getPercentage, roundToStep };

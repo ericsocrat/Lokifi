@@ -1,8 +1,8 @@
 'use client';
 
+import { cn } from '@/lib/utils';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
-import { cn } from '@/lib/utils';
 
 // ============================================================================
 // Types
@@ -212,16 +212,8 @@ export function Popover({
 export const PopoverTrigger = React.forwardRef<HTMLElement, PopoverTriggerProps>(
   ({ children, className, as: Component = 'button', ...props }, forwardedRef) => {
     const context = usePopoverContext();
-    const {
-      open,
-      setOpen,
-      triggerRef,
-      triggerId,
-      contentId,
-      triggerType,
-      hoverDelay,
-      disabled,
-    } = context;
+    const { open, setOpen, triggerRef, triggerId, contentId, triggerType, hoverDelay, disabled } =
+      context;
 
     const hoverTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 

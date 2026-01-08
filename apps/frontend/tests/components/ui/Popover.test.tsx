@@ -1,12 +1,12 @@
-import { fireEvent, render, screen, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   Popover,
-  PopoverTrigger,
-  PopoverContent,
   PopoverClose,
+  PopoverContent,
+  PopoverTrigger,
   SimplePopover,
 } from '@/components/ui/Popover';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('Popover', () => {
   beforeEach(() => {
@@ -202,7 +202,7 @@ describe('Popover', () => {
         );
 
         fireEvent.mouseEnter(screen.getByText('Open'));
-        
+
         act(() => {
           vi.advanceTimersByTime(100);
         });
@@ -677,12 +677,7 @@ describe('Popover', () => {
 
   describe('SimplePopover', () => {
     it('renders trigger and content', () => {
-      render(
-        <SimplePopover
-          trigger={<span>Trigger</span>}
-          content={<span>Content</span>}
-        />
-      );
+      render(<SimplePopover trigger={<span>Trigger</span>} content={<span>Content</span>} />);
 
       expect(screen.getByText('Trigger')).toBeInTheDocument();
 
@@ -691,13 +686,7 @@ describe('Popover', () => {
     });
 
     it('passes props to underlying Popover', () => {
-      render(
-        <SimplePopover
-          trigger="Open"
-          content="Content"
-          defaultOpen
-        />
-      );
+      render(<SimplePopover trigger="Open" content="Content" defaultOpen />);
 
       expect(screen.getByText('Content')).toBeInTheDocument();
     });
@@ -718,14 +707,7 @@ describe('Popover', () => {
     });
 
     it('shows arrow when configured', () => {
-      render(
-        <SimplePopover
-          trigger="Open"
-          content="Content"
-          showArrow
-          defaultOpen
-        />
-      );
+      render(<SimplePopover trigger="Open" content="Content" showArrow defaultOpen />);
 
       expect(screen.getByTestId('popover-arrow')).toBeInTheDocument();
     });

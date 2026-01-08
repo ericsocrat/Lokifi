@@ -1,7 +1,7 @@
 'use client';
 
-import * as React from 'react';
 import { cn } from '@/lib/utils';
+import * as React from 'react';
 
 // ============================================================================
 // Types
@@ -150,87 +150,93 @@ export function Dialog({
   const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : uncontrolledOpen;
-  
+
   const contentRef = React.useRef<HTMLDivElement | null>(null);
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
-  
+
   const idPrefix = React.useRef(`dialog-${++dialogIdCounter}`);
   const contentId = `${idPrefix.current}-content`;
   const titleId = `${idPrefix.current}-title`;
   const descriptionId = `${idPrefix.current}-description`;
-  
-  const handleOpenChange = React.useCallback((newOpen: boolean) => {
-    if (!isControlled) {
-      setUncontrolledOpen(newOpen);
-    }
-    onOpenChange?.(newOpen);
-  }, [isControlled, onOpenChange]);
-  
+
+  const handleOpenChange = React.useCallback(
+    (newOpen: boolean) => {
+      if (!isControlled) {
+        setUncontrolledOpen(newOpen);
+      }
+      onOpenChange?.(newOpen);
+    },
+    [isControlled, onOpenChange]
+  );
+
   // Handle escape key
   React.useEffect(() => {
     if (!open || !closeOnEscape) return;
-    
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         handleOpenChange(false);
       }
     };
-    
+
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [open, closeOnEscape, handleOpenChange]);
-  
+
   // Handle outside click
   React.useEffect(() => {
     if (!open || !closeOnOutsideClick) return;
-    
+
     const handleClick = (e: MouseEvent) => {
       if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
         handleOpenChange(false);
       }
     };
-    
+
     // Delay to prevent immediate close when opening
     const timeoutId = setTimeout(() => {
       document.addEventListener('click', handleClick);
     }, 0);
-    
+
     return () => {
       clearTimeout(timeoutId);
       document.removeEventListener('click', handleClick);
     };
   }, [open, closeOnOutsideClick, handleOpenChange]);
-  
+
   // Return focus to trigger when closed
   React.useEffect(() => {
     if (!open && triggerRef.current) {
       triggerRef.current.focus();
     }
   }, [open]);
-  
+
   // Trap focus and prevent body scroll when open
   React.useEffect(() => {
     if (!open) return;
-    
+
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    
+
     return () => {
       document.body.style.overflow = originalOverflow;
     };
   }, [open]);
-  
-  const contextValue = React.useMemo<DialogContextValue>(() => ({
-    open,
-    onOpenChange: handleOpenChange,
-    contentRef,
-    triggerRef,
-    contentId,
-    titleId,
-    descriptionId,
-  }), [open, handleOpenChange, contentId, titleId, descriptionId]);
-  
+
+  const contextValue = React.useMemo<DialogContextValue>(
+    () => ({
+      open,
+      onOpenChange: handleOpenChange,
+      contentRef,
+      triggerRef,
+      contentId,
+      titleId,
+      descriptionId,
+    }),
+    [open, handleOpenChange, contentId, titleId, descriptionId]
+  );
+
   return (
     <DialogContext.Provider value={contextValue}>
       <div aria-label={ariaLabel} data-state={open ? 'open' : 'closed'}>
@@ -247,21 +253,24 @@ export function Dialog({
 export const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerProps>(
   function DialogTrigger({ children, asChild, onClick, className, ...props }, ref) {
     const { open, onOpenChange, triggerRef, contentId } = useDialogContext();
-    
-    const combinedRef = React.useCallback((node: HTMLButtonElement | null) => {
-      (triggerRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    }, [ref, triggerRef]);
-    
+
+    const combinedRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        (triggerRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref, triggerRef]
+    );
+
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
       onOpenChange(!open);
     };
-    
+
     if (asChild && React.isValidElement(children)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return React.cloneElement(children as React.ReactElement<any>, {
@@ -273,7 +282,7 @@ export const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerPr
         'data-state': open ? 'open' : 'closed',
       });
     }
-    
+
     return (
       <button
         ref={combinedRef}
@@ -303,9 +312,9 @@ export const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerPr
 export const DialogOverlay = React.forwardRef<HTMLDivElement, DialogOverlayProps>(
   function DialogOverlay({ className, forceMount, ...props }, ref) {
     const { open } = useDialogContext();
-    
+
     if (!open && !forceMount) return null;
-    
+
     return (
       <div
         ref={ref}
@@ -336,26 +345,25 @@ const sizeClasses: Record<DialogSize, string> = {
 };
 
 export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
-  function DialogContent({
-    children,
-    className,
-    size = 'md',
-    showCloseButton = true,
-    forceMount,
-    closeButton,
-    ...props
-  }, ref) {
-    const { open, onOpenChange, contentRef, contentId, titleId, descriptionId } = useDialogContext();
-    
-    const combinedRef = React.useCallback((node: HTMLDivElement | null) => {
-      (contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    }, [ref, contentRef]);
-    
+  function DialogContent(
+    { children, className, size = 'md', showCloseButton = true, forceMount, closeButton, ...props },
+    ref
+  ) {
+    const { open, onOpenChange, contentRef, contentId, titleId, descriptionId } =
+      useDialogContext();
+
+    const combinedRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        (contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref, contentRef]
+    );
+
     // Focus the content when opened
     React.useEffect(() => {
       if (open && contentRef.current) {
@@ -370,9 +378,9 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
         }
       }
     }, [open, contentRef]);
-    
+
     if (!open && !forceMount) return null;
-    
+
     const defaultCloseButton = (
       <button
         type="button"
@@ -401,7 +409,7 @@ export const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps
         </svg>
       </button>
     );
-    
+
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <DialogOverlay />
@@ -455,7 +463,7 @@ export const DialogHeader = React.forwardRef<HTMLDivElement, DialogHeaderProps>(
 export const DialogTitle = React.forwardRef<HTMLHeadingElement, DialogTitleProps>(
   function DialogTitle({ className, ...props }, ref) {
     const { titleId } = useDialogContext();
-    
+
     return (
       <h2
         ref={ref}
@@ -474,7 +482,7 @@ export const DialogTitle = React.forwardRef<HTMLHeadingElement, DialogTitleProps
 export const DialogDescription = React.forwardRef<HTMLParagraphElement, DialogDescriptionProps>(
   function DialogDescription({ className, ...props }, ref) {
     const { descriptionId } = useDialogContext();
-    
+
     return (
       <p
         ref={ref}
@@ -495,10 +503,7 @@ export const DialogFooter = React.forwardRef<HTMLDivElement, DialogFooterProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
-          className
-        )}
+        className={cn('flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2', className)}
         {...props}
       />
     );
@@ -512,12 +517,12 @@ export const DialogFooter = React.forwardRef<HTMLDivElement, DialogFooterProps>(
 export const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
   function DialogClose({ children, asChild, onClick, className, ...props }, ref) {
     const { onOpenChange } = useDialogContext();
-    
+
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(e);
       onOpenChange(false);
     };
-    
+
     if (asChild && React.isValidElement(children)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return React.cloneElement(children as React.ReactElement<any>, {
@@ -525,7 +530,7 @@ export const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>
         onClick: handleClick,
       });
     }
-    
+
     return (
       <button
         ref={ref}
@@ -602,12 +607,12 @@ export function ConfirmDialog({
     onCancel?.();
     onOpenChange(false);
   };
-  
+
   const handleConfirm = () => {
     onConfirm();
     onOpenChange(false);
   };
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="sm" showCloseButton={false}>

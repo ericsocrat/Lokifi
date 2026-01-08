@@ -305,9 +305,7 @@ export const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerPr
     );
 
     const iconElement = !hideIcon && (
-      <span className="flex items-center">
-        {icon || defaultIcon}
-      </span>
+      <span className="flex items-center">{icon || defaultIcon}</span>
     );
 
     const variantStyles = {
@@ -386,9 +384,7 @@ export const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps
         data-testid="accordion-content"
         {...props}
       >
-        <div className="px-4 pb-4 pt-0">
-          {children}
-        </div>
+        <div className="px-4 pb-4 pt-0">{children}</div>
       </div>
     );
   }

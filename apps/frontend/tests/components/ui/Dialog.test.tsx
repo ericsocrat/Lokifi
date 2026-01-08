@@ -1,20 +1,20 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import * as React from 'react';
 import {
+  ConfirmDialog,
   Dialog,
-  DialogTrigger,
+  DialogClose,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
-  DialogClose,
+  DialogHeader,
   DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
   SimpleDialog,
-  ConfirmDialog,
   useDialogContext,
 } from '@/components/ui/Dialog';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import * as React from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ============================================================================
 // Test Utilities
@@ -62,20 +62,20 @@ describe('Dialog', () => {
   describe('Basic Rendering', () => {
     it('renders trigger button', () => {
       render(<TestDialog />);
-      
+
       expect(screen.getByRole('button', { name: /open dialog/i })).toBeInTheDocument();
     });
 
     it('does not render content when closed', () => {
       render(<TestDialog />);
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
       expect(screen.queryByText('Test Title')).not.toBeInTheDocument();
     });
 
     it('renders content when defaultOpen is true', () => {
       render(<TestDialog defaultOpen />);
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByText('Test Description')).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('Dialog', () => {
 
     it('renders all dialog parts correctly', () => {
       render(<TestDialog defaultOpen />);
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByText('Test Description')).toBeInTheDocument();
@@ -97,7 +97,7 @@ describe('Dialog', () => {
           <DialogContent className="custom-class">Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByRole('dialog')).toHaveClass('custom-class');
     });
   });
@@ -109,43 +109,43 @@ describe('Dialog', () => {
   describe('Open/Close Behavior', () => {
     it('opens dialog when trigger is clicked', () => {
       render(<TestDialog />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /open dialog/i }));
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
     it('closes dialog when cancel button is clicked', () => {
       render(<TestDialog defaultOpen />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('closes dialog when X button is clicked', () => {
       render(<TestDialog defaultOpen />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /close dialog/i }));
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('calls onOpenChange when opened', () => {
       const handleOpenChange = vi.fn();
       render(<TestDialog onOpenChange={handleOpenChange} />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /open dialog/i }));
-      
+
       expect(handleOpenChange).toHaveBeenCalledWith(true);
     });
 
     it('calls onOpenChange when closed', () => {
       const handleOpenChange = vi.fn();
       render(<TestDialog defaultOpen onOpenChange={handleOpenChange} />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
-      
+
       expect(handleOpenChange).toHaveBeenCalledWith(false);
     });
 
@@ -156,16 +156,16 @@ describe('Dialog', () => {
           <DialogContent>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-      
+
       rerender(
         <Dialog open={true}>
           <DialogTrigger>Open</DialogTrigger>
           <DialogContent>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
@@ -177,26 +177,26 @@ describe('Dialog', () => {
   describe('Escape Key', () => {
     it('closes dialog on escape key by default', async () => {
       render(<TestDialog defaultOpen />);
-      
+
       fireEvent.keyDown(document, { key: 'Escape' });
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('does not close on escape when closeOnEscape is false', async () => {
       render(<TestDialog defaultOpen closeOnEscape={false} />);
-      
+
       fireEvent.keyDown(document, { key: 'Escape' });
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
     it('calls onOpenChange when escape is pressed', async () => {
       const handleOpenChange = vi.fn();
       render(<TestDialog defaultOpen onOpenChange={handleOpenChange} />);
-      
+
       fireEvent.keyDown(document, { key: 'Escape' });
-      
+
       expect(handleOpenChange).toHaveBeenCalledWith(false);
     });
   });
@@ -208,39 +208,39 @@ describe('Dialog', () => {
   describe('Outside Click', () => {
     it('closes dialog when clicking outside by default', async () => {
       render(<TestDialog defaultOpen />);
-      
+
       // Allow the click handler to be attached
       act(() => {
         vi.advanceTimersByTime(10);
       });
-      
+
       // Click on the overlay (outside the dialog)
       fireEvent.click(document.body);
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
 
     it('does not close when closeOnOutsideClick is false', async () => {
       render(<TestDialog defaultOpen closeOnOutsideClick={false} />);
-      
+
       act(() => {
         vi.advanceTimersByTime(10);
       });
-      
+
       fireEvent.click(document.body);
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
     it('does not close when clicking inside dialog', async () => {
       render(<TestDialog defaultOpen />);
-      
+
       act(() => {
         vi.advanceTimersByTime(10);
       });
-      
+
       fireEvent.click(screen.getByText('Dialog Content'));
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });
@@ -256,7 +256,7 @@ describe('Dialog', () => {
           <DialogContent size={size}>Content</DialogContent>
         </Dialog>
       );
-      
+
       const dialog = screen.getByRole('dialog');
       const sizeClass = size === 'full' ? 'max-w-[calc(100vw-2rem)]' : `max-w-${size}`;
       expect(dialog.className).toContain(sizeClass);
@@ -268,7 +268,7 @@ describe('Dialog', () => {
           <DialogContent>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByRole('dialog')).toHaveClass('max-w-md');
     });
   });
@@ -280,7 +280,7 @@ describe('Dialog', () => {
   describe('Close Button', () => {
     it('shows close button by default', () => {
       render(<TestDialog defaultOpen />);
-      
+
       expect(screen.getByRole('button', { name: /close dialog/i })).toBeInTheDocument();
     });
 
@@ -290,7 +290,7 @@ describe('Dialog', () => {
           <DialogContent showCloseButton={false}>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.queryByRole('button', { name: /close dialog/i })).not.toBeInTheDocument();
     });
 
@@ -302,7 +302,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByRole('button', { name: /custom close/i })).toBeInTheDocument();
     });
   });
@@ -314,7 +314,7 @@ describe('Dialog', () => {
   describe('Accessibility', () => {
     it('has correct ARIA attributes on trigger', () => {
       render(<TestDialog />);
-      
+
       const trigger = screen.getByRole('button', { name: /open dialog/i });
       expect(trigger).toHaveAttribute('aria-haspopup', 'dialog');
       expect(trigger).toHaveAttribute('aria-expanded', 'false');
@@ -322,16 +322,16 @@ describe('Dialog', () => {
 
     it('updates trigger aria-expanded when open', () => {
       render(<TestDialog />);
-      
+
       const trigger = screen.getByRole('button', { name: /open dialog/i });
       fireEvent.click(trigger);
-      
+
       expect(trigger).toHaveAttribute('aria-expanded', 'true');
     });
 
     it('has correct ARIA attributes on dialog', () => {
       render(<TestDialog defaultOpen />);
-      
+
       const dialog = screen.getByRole('dialog');
       expect(dialog).toHaveAttribute('aria-modal', 'true');
       expect(dialog).toHaveAttribute('aria-labelledby');
@@ -340,20 +340,20 @@ describe('Dialog', () => {
 
     it('links title and description via ARIA', () => {
       render(<TestDialog defaultOpen />);
-      
+
       const dialog = screen.getByRole('dialog');
       const labelId = dialog.getAttribute('aria-labelledby');
       const descId = dialog.getAttribute('aria-describedby');
-      
+
       expect(screen.getByText('Test Title')).toHaveAttribute('id', labelId);
       expect(screen.getByText('Test Description')).toHaveAttribute('id', descId);
     });
 
     it('focuses first focusable element when opened', () => {
       render(<TestDialog />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /open dialog/i }));
-      
+
       // The cancel button should be focused (first focusable in content)
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
       expect(document.activeElement).toBe(cancelButton);
@@ -361,15 +361,15 @@ describe('Dialog', () => {
 
     it('prevents body scroll when open', () => {
       render(<TestDialog defaultOpen />);
-      
+
       expect(document.body.style.overflow).toBe('hidden');
     });
 
     it('restores body scroll when closed', () => {
       render(<TestDialog defaultOpen />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
-      
+
       expect(document.body.style.overflow).toBe('');
     });
   });
@@ -381,27 +381,30 @@ describe('Dialog', () => {
   describe('Data Attributes', () => {
     it('has data-state on root element', () => {
       const { container } = render(<TestDialog />);
-      
+
       expect(container.querySelector('[data-state="closed"]')).toBeInTheDocument();
     });
 
     it('updates data-state when opened', () => {
       const { container } = render(<TestDialog />);
-      
+
       fireEvent.click(screen.getByRole('button', { name: /open dialog/i }));
-      
+
       expect(container.querySelector('[data-state="open"]')).toBeInTheDocument();
     });
 
     it('has data-state on trigger', () => {
       render(<TestDialog />);
-      
-      expect(screen.getByRole('button', { name: /open dialog/i })).toHaveAttribute('data-state', 'closed');
+
+      expect(screen.getByRole('button', { name: /open dialog/i })).toHaveAttribute(
+        'data-state',
+        'closed'
+      );
     });
 
     it('has data-state on content', () => {
       render(<TestDialog defaultOpen />);
-      
+
       expect(screen.getByRole('dialog')).toHaveAttribute('data-state', 'open');
     });
   });
@@ -417,7 +420,7 @@ describe('Dialog', () => {
           <DialogContent forceMount>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
@@ -428,7 +431,7 @@ describe('Dialog', () => {
           <DialogContent forceMount>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByTestId('overlay')).toBeInTheDocument();
     });
   });
@@ -442,16 +445,18 @@ describe('Dialog', () => {
       render(
         <Dialog>
           <DialogTrigger asChild>
-            <span role="button" tabIndex={0}>Custom Trigger</span>
+            <span role="button" tabIndex={0}>
+              Custom Trigger
+            </span>
           </DialogTrigger>
           <DialogContent>Content</DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Custom Trigger').tagName).toBe('SPAN');
-      
+
       fireEvent.click(screen.getByText('Custom Trigger'));
-      
+
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
@@ -460,16 +465,18 @@ describe('Dialog', () => {
         <Dialog defaultOpen>
           <DialogContent showCloseButton={false}>
             <DialogClose asChild>
-              <span role="button" tabIndex={0}>Custom Close</span>
+              <span role="button" tabIndex={0}>
+                Custom Close
+              </span>
             </DialogClose>
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Custom Close').tagName).toBe('SPAN');
-      
+
       fireEvent.click(screen.getByText('Custom Close'));
-      
+
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
@@ -481,27 +488,27 @@ describe('Dialog', () => {
   describe('Context Hook', () => {
     it('throws error when used outside Dialog', () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
+
       function TestComponent() {
         useDialogContext();
         return null;
       }
-      
+
       expect(() => render(<TestComponent />)).toThrow(
         'Dialog components must be used within a Dialog provider'
       );
-      
+
       consoleError.mockRestore();
     });
 
     it('provides context values', () => {
       let contextValue: ReturnType<typeof useDialogContext> | undefined;
-      
+
       function TestConsumer() {
         contextValue = useDialogContext();
         return null;
       }
-      
+
       render(
         <Dialog defaultOpen>
           <DialogContent>
@@ -509,7 +516,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(contextValue).toBeDefined();
       expect(contextValue?.open).toBe(true);
       expect(typeof contextValue?.onOpenChange).toBe('function');
@@ -523,7 +530,7 @@ describe('Dialog', () => {
   describe('Overlay', () => {
     it('renders overlay when dialog is open', () => {
       render(<TestDialog defaultOpen />);
-      
+
       const overlay = document.querySelector('[aria-hidden="true"]');
       expect(overlay).toBeInTheDocument();
       expect(overlay).toHaveClass('bg-black/50');
@@ -531,7 +538,7 @@ describe('Dialog', () => {
 
     it('has correct data-state on overlay', () => {
       render(<TestDialog defaultOpen />);
-      
+
       const overlay = document.querySelector('[aria-hidden="true"]');
       expect(overlay).toHaveAttribute('data-state', 'open');
     });
@@ -543,7 +550,7 @@ describe('Dialog', () => {
           <DialogContent>Content</DialogContent>
         </Dialog>
       );
-      
+
       const overlay = document.querySelector('.custom-overlay');
       expect(overlay).toBeInTheDocument();
     });
@@ -562,7 +569,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByTestId('header')).toHaveClass('flex', 'flex-col');
     });
 
@@ -574,7 +581,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByTestId('footer')).toHaveClass('flex', 'sm:flex-row');
     });
 
@@ -586,7 +593,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Header').closest('div')).toHaveClass('custom-header');
     });
 
@@ -598,7 +605,7 @@ describe('Dialog', () => {
           </DialogContent>
         </Dialog>
       );
-      
+
       expect(screen.getByText('Footer').closest('div')).toHaveClass('custom-footer');
     });
   });
@@ -628,7 +635,7 @@ describe('SimpleDialog', () => {
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.getByText('Simple Title')).toBeInTheDocument();
     expect(screen.getByText('Simple Description')).toBeInTheDocument();
   });
@@ -639,7 +646,7 @@ describe('SimpleDialog', () => {
         <span>Child Content</span>
       </SimpleDialog>
     );
-    
+
     expect(screen.getByText('Child Content')).toBeInTheDocument();
   });
 
@@ -654,7 +661,7 @@ describe('SimpleDialog', () => {
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
   });
 
@@ -664,22 +671,17 @@ describe('SimpleDialog', () => {
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.getByRole('dialog')).toHaveClass('max-w-lg');
   });
 
   it('hides close button when showCloseButton is false', () => {
     render(
-      <SimpleDialog
-        open={true}
-        onOpenChange={() => {}}
-        title="Title"
-        showCloseButton={false}
-      >
+      <SimpleDialog open={true} onOpenChange={() => {}} title="Title" showCloseButton={false}>
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.queryByRole('button', { name: /close dialog/i })).not.toBeInTheDocument();
   });
 
@@ -690,24 +692,19 @@ describe('SimpleDialog', () => {
         Content
       </SimpleDialog>
     );
-    
+
     fireEvent.keyDown(document, { key: 'Escape' });
-    
+
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
 
   it('applies custom className', () => {
     render(
-      <SimpleDialog
-        open={true}
-        onOpenChange={() => {}}
-        title="Title"
-        className="custom-class"
-      >
+      <SimpleDialog open={true} onOpenChange={() => {}} title="Title" className="custom-class">
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.getByRole('dialog')).toHaveClass('custom-class');
   });
 
@@ -717,7 +714,7 @@ describe('SimpleDialog', () => {
         Content
       </SimpleDialog>
     );
-    
+
     expect(screen.getByText('Title')).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).toBeInTheDocument();
   });
@@ -746,7 +743,7 @@ describe('ConfirmDialog', () => {
         onConfirm={() => {}}
       />
     );
-    
+
     expect(screen.getByText('Confirm Action')).toBeInTheDocument();
     expect(screen.getByText('Are you sure you want to proceed?')).toBeInTheDocument();
   });
@@ -761,7 +758,7 @@ describe('ConfirmDialog', () => {
         onConfirm={() => {}}
       />
     );
-    
+
     expect(screen.getByRole('button', { name: /confirm/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
   });
@@ -778,7 +775,7 @@ describe('ConfirmDialog', () => {
         cancelText="Keep"
       />
     );
-    
+
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /keep/i })).toBeInTheDocument();
   });
@@ -786,7 +783,7 @@ describe('ConfirmDialog', () => {
   it('calls onConfirm and closes when confirm is clicked', () => {
     const handleConfirm = vi.fn();
     const handleOpenChange = vi.fn();
-    
+
     render(
       <ConfirmDialog
         open={true}
@@ -796,9 +793,9 @@ describe('ConfirmDialog', () => {
         onConfirm={handleConfirm}
       />
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /confirm/i }));
-    
+
     expect(handleConfirm).toHaveBeenCalled();
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
@@ -806,7 +803,7 @@ describe('ConfirmDialog', () => {
   it('calls onCancel and closes when cancel is clicked', () => {
     const handleCancel = vi.fn();
     const handleOpenChange = vi.fn();
-    
+
     render(
       <ConfirmDialog
         open={true}
@@ -817,9 +814,9 @@ describe('ConfirmDialog', () => {
         onCancel={handleCancel}
       />
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }));
-    
+
     expect(handleCancel).toHaveBeenCalled();
     expect(handleOpenChange).toHaveBeenCalledWith(false);
   });
@@ -835,7 +832,7 @@ describe('ConfirmDialog', () => {
         variant="danger"
       />
     );
-    
+
     const confirmButton = screen.getByRole('button', { name: /confirm/i });
     expect(confirmButton).toHaveAttribute('data-variant', 'danger');
     expect(confirmButton).toHaveClass('bg-destructive');
@@ -852,7 +849,7 @@ describe('ConfirmDialog', () => {
         loading={true}
       />
     );
-    
+
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
@@ -867,7 +864,7 @@ describe('ConfirmDialog', () => {
         loading={true}
       />
     );
-    
+
     expect(screen.getByRole('button', { name: /cancel/i })).toBeDisabled();
     expect(screen.getByText('Loading...').closest('button')).toBeDisabled();
   });
@@ -882,7 +879,7 @@ describe('ConfirmDialog', () => {
         onConfirm={() => {}}
       />
     );
-    
+
     expect(screen.queryByRole('button', { name: /close dialog/i })).not.toBeInTheDocument();
   });
 
@@ -896,7 +893,7 @@ describe('ConfirmDialog', () => {
         onConfirm={() => {}}
       />
     );
-    
+
     expect(screen.getByRole('dialog')).toHaveClass('max-w-sm');
   });
 });
@@ -916,25 +913,25 @@ describe('Edge Cases', () => {
 
   it('handles rapid open/close', () => {
     render(<TestDialog />);
-    
+
     const trigger = screen.getByRole('button', { name: /open dialog/i });
-    
+
     // Rapidly click - odd clicks from closed = open
     fireEvent.click(trigger);
     fireEvent.click(trigger);
     fireEvent.click(trigger);
-    
+
     // Should end in open state (3 clicks from closed = open)
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
   it('handles unmount while open', () => {
     const { unmount } = render(<TestDialog defaultOpen />);
-    
+
     expect(document.body.style.overflow).toBe('hidden');
-    
+
     unmount();
-    
+
     expect(document.body.style.overflow).toBe('');
   });
 
@@ -942,7 +939,7 @@ describe('Edge Cases', () => {
     function MultiDialog() {
       const [open1, setOpen1] = React.useState(false);
       const [open2, setOpen2] = React.useState(false);
-      
+
       return (
         <>
           <Dialog open={open1} onOpenChange={setOpen1}>
@@ -959,28 +956,28 @@ describe('Edge Cases', () => {
         </>
       );
     }
-    
+
     render(<MultiDialog />);
-    
+
     fireEvent.click(screen.getByRole('button', { name: /open first/i }));
     expect(screen.getAllByRole('dialog')).toHaveLength(1);
-    
+
     fireEvent.click(screen.getByRole('button', { name: /open second/i }));
     expect(screen.getAllByRole('dialog')).toHaveLength(2);
   });
 
   it('handles trigger click event propagation', () => {
     const handleClick = vi.fn();
-    
+
     render(
       <Dialog>
         <DialogTrigger onClick={handleClick}>Open</DialogTrigger>
         <DialogContent>Content</DialogContent>
       </Dialog>
     );
-    
+
     fireEvent.click(screen.getByRole('button', { name: /open/i }));
-    
+
     expect(handleClick).toHaveBeenCalled();
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
@@ -994,7 +991,7 @@ describe('Edge Cases', () => {
         <DialogContent>Content</DialogContent>
       </Dialog>
     );
-    
+
     const trigger = screen.getByRole('button', { name: /open/i });
     expect(trigger).toHaveAttribute('data-custom', 'value');
     expect(trigger).toHaveAttribute('id', 'custom-trigger');
@@ -1006,7 +1003,7 @@ describe('Edge Cases', () => {
         <DialogContent data-custom="value">Content</DialogContent>
       </Dialog>
     );
-    
+
     expect(screen.getByRole('dialog')).toHaveAttribute('data-custom', 'value');
   });
 
@@ -1017,7 +1014,7 @@ describe('Edge Cases', () => {
         <DialogContent>Content</DialogContent>
       </Dialog>
     );
-    
+
     expect(container.querySelector('[aria-label="Custom Dialog Label"]')).toBeInTheDocument();
   });
 });

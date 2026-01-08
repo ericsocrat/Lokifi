@@ -34,7 +34,14 @@ export type TooltipPlacement =
   | 'right-start'
   | 'right-end';
 
-export type TooltipVariant = 'dark' | 'light' | 'primary' | 'info' | 'success' | 'warning' | 'danger';
+export type TooltipVariant =
+  | 'dark'
+  | 'light'
+  | 'primary'
+  | 'info'
+  | 'success'
+  | 'warning'
+  | 'danger';
 
 export interface TooltipContextValue {
   isOpen: boolean;
@@ -113,9 +120,7 @@ export function TooltipProvider({
   );
 
   return (
-    <TooltipProviderContext.Provider value={value}>
-      {children}
-    </TooltipProviderContext.Provider>
+    <TooltipProviderContext.Provider value={value}>{children}</TooltipProviderContext.Provider>
   );
 }
 
@@ -203,11 +208,7 @@ export function Tooltip({
     ]
   );
 
-  return (
-    <TooltipContext.Provider value={contextValue}>
-      {children}
-    </TooltipContext.Provider>
-  );
+  return <TooltipContext.Provider value={contextValue}>{children}</TooltipContext.Provider>;
 }
 
 // ============================================================================
@@ -222,11 +223,8 @@ export interface TooltipTriggerProps extends HTMLAttributes<HTMLElement> {
 
 export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
   ({ asChild = false, children, className, ...props }, ref) => {
-    const { setIsOpen, triggerRef, tooltipId, delay, delayHide, interactive } =
-      useTooltipContext();
-    const { skipDelayDuration, lastHideTime, setLastHideTime } = useContext(
-      TooltipProviderContext
-    );
+    const { setIsOpen, triggerRef, tooltipId, delay, delayHide, interactive } = useTooltipContext();
+    const { skipDelayDuration, lastHideTime, setLastHideTime } = useContext(TooltipProviderContext);
 
     const showTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -247,8 +245,7 @@ export const TooltipTrigger = forwardRef<HTMLElement, TooltipTriggerProps>(
 
       // Skip delay if recently hid another tooltip
       const timeSinceLastHide = Date.now() - lastHideTime;
-      const effectiveDelay =
-        timeSinceLastHide < skipDelayDuration ? 0 : delay;
+      const effectiveDelay = timeSinceLastHide < skipDelayDuration ? 0 : delay;
 
       showTimeoutRef.current = setTimeout(() => {
         setIsOpen(true);
@@ -352,17 +349,7 @@ export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
-  (
-    {
-      arrow = true,
-      maxWidth = 300,
-      forceMount = false,
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ arrow = true, maxWidth = 300, forceMount = false, className, children, ...props }, ref) => {
     const {
       isOpen,
       setIsOpen,
@@ -567,11 +554,7 @@ export const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
         {children}
         {arrow && (
           <span
-            className={cn(
-              'absolute w-0 h-0 border-4',
-              getArrowPosition(),
-              arrowStyles[variant]
-            )}
+            className={cn('absolute w-0 h-0 border-4', getArrowPosition(), arrowStyles[variant])}
             data-testid="tooltip-arrow"
           />
         )}
@@ -614,14 +597,8 @@ export function SimpleTooltip({
 }: SimpleTooltipProps) {
   return (
     <Tooltip {...tooltipProps}>
-      <TooltipTrigger className={triggerClassName}>
-        {children}
-      </TooltipTrigger>
-      <TooltipContent
-        arrow={arrow}
-        maxWidth={maxWidth}
-        className={contentClassName}
-      >
+      <TooltipTrigger className={triggerClassName}>{children}</TooltipTrigger>
+      <TooltipContent arrow={arrow} maxWidth={maxWidth} className={contentClassName}>
         {content}
       </TooltipContent>
     </Tooltip>

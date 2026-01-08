@@ -1,6 +1,6 @@
+import { SimpleSlider, Slider, clamp, getPercentage, roundToStep } from '@/components/ui/Slider';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
-import { Slider, SimpleSlider, getPercentage, clamp, roundToStep } from '@/components/ui/Slider';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('Slider', () => {
   // ============================================================================
@@ -408,13 +408,7 @@ describe('Slider', () => {
     });
 
     it('uses formatValue for display', () => {
-      render(
-        <Slider
-          showValue
-          defaultValue={50}
-          formatValue={(v) => `${v}%`}
-        />
-      );
+      render(<Slider showValue defaultValue={50} formatValue={(v) => `${v}%`} />);
 
       const thumb = screen.getByRole('slider');
       fireEvent.mouseEnter(thumb);
@@ -571,40 +565,20 @@ describe('Slider', () => {
     });
 
     it('uses custom min/max labels', () => {
-      render(
-        <SimpleSlider
-          showMinMax
-          min={0}
-          max={100}
-          minLabel="Low"
-          maxLabel="High"
-        />
-      );
+      render(<SimpleSlider showMinMax min={0} max={100} minLabel="Low" maxLabel="High" />);
 
       expect(screen.getByText('Low')).toBeInTheDocument();
       expect(screen.getByText('High')).toBeInTheDocument();
     });
 
     it('uses formatValue for display', () => {
-      render(
-        <SimpleSlider
-          label="Volume"
-          value={50}
-          formatValue={(v) => `${v}%`}
-        />
-      );
+      render(<SimpleSlider label="Volume" value={50} formatValue={(v) => `${v}%`} />);
 
       expect(screen.getByTestId('simple-slider-value')).toHaveTextContent('50%');
     });
 
     it('displays range values correctly', () => {
-      render(
-        <SimpleSlider
-          label="Price Range"
-          value={[20, 80]}
-          formatValue={(v) => `$${v}`}
-        />
-      );
+      render(<SimpleSlider label="Price Range" value={[20, 80]} formatValue={(v) => `$${v}`} />);
 
       expect(screen.getByTestId('simple-slider-value')).toHaveTextContent('$20 - $80');
     });

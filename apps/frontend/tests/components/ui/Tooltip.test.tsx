@@ -1,12 +1,12 @@
-import { fireEvent, render, screen, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
+  SimpleTooltip,
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  SimpleTooltip,
+  TooltipTrigger,
 } from '@/components/ui/Tooltip';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock createPortal for testing
 vi.mock('react-dom', async () => {
@@ -152,15 +152,7 @@ describe('Tooltip', () => {
   // ============================================================================
 
   describe('Variants', () => {
-    const variants = [
-      'dark',
-      'light',
-      'primary',
-      'info',
-      'success',
-      'warning',
-      'danger',
-    ] as const;
+    const variants = ['dark', 'light', 'primary', 'info', 'success', 'warning', 'danger'] as const;
 
     variants.forEach((variant) => {
       it(`renders ${variant} variant`, () => {
@@ -899,7 +891,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip open={true}>
           <TooltipTrigger>Hover me</TooltipTrigger>
-          <TooltipContent></TooltipContent>
+          <TooltipContent />
         </Tooltip>
       );
 
@@ -949,9 +941,7 @@ describe('Tooltip', () => {
     it('applies custom className to trigger', () => {
       render(
         <Tooltip>
-          <TooltipTrigger className="custom-trigger-class">
-            Hover me
-          </TooltipTrigger>
+          <TooltipTrigger className="custom-trigger-class">Hover me</TooltipTrigger>
           <TooltipContent>Tooltip content</TooltipContent>
         </Tooltip>
       );
@@ -964,9 +954,7 @@ describe('Tooltip', () => {
       render(
         <Tooltip open={true}>
           <TooltipTrigger>Hover me</TooltipTrigger>
-          <TooltipContent className="custom-content-class">
-            Tooltip content
-          </TooltipContent>
+          <TooltipContent className="custom-content-class">Tooltip content</TooltipContent>
         </Tooltip>
       );
 
