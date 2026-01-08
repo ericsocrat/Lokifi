@@ -1,47 +1,174 @@
 @import 'tailwindcss';
 
-/* Tailwind CSS v4: CSS-first configuration using @theme */
+/* Tailwind CSS v4: Enhanced CSS-first configuration */
 @theme {
-  /* Custom colors */
+  /* ═══════════════════════════════════════════════════════════════
+     LOKIFI DESIGN SYSTEM - Tailwind CSS v4
+     A modern, glassmorphism-inspired financial dashboard theme
+     ═══════════════════════════════════════════════════════════════ */
+
+  /* Brand Colors */
   --color-electric: #3b82f6;
   --color-ember: #f97316;
-  --color-success: #22c55e;
-  --color-warning: #eab308;
-  --color-danger: #ef4444;
+  --color-lokifi: #8b5cf6;
+  --color-lokifi-light: #a78bfa;
+  --color-lokifi-dark: #7c3aed;
 
-  /* Custom border radius */
+  /* Semantic Colors */
+  --color-success: #22c55e;
+  --color-success-light: #4ade80;
+  --color-success-dark: #16a34a;
+  --color-warning: #eab308;
+  --color-warning-light: #facc15;
+  --color-warning-dark: #ca8a04;
+  --color-danger: #ef4444;
+  --color-danger-light: #f87171;
+  --color-danger-dark: #dc2626;
+
+  /* Surface Colors (Dark Theme) */
+  --color-surface-0: #0b0b0f;
+  --color-surface-50: #111118;
+  --color-surface-100: #18181f;
+  --color-surface-200: #1f1f28;
+  --color-surface-300: #2a2a35;
+  --color-surface-400: #3a3a48;
+
+  /* Glass Effect Colors */
+  --color-glass: rgba(255, 255, 255, 0.03);
+  --color-glass-hover: rgba(255, 255, 255, 0.06);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --color-glass-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Accent Gradients (as single color stops for use in gradients) */
+  --color-gradient-purple-start: #8b5cf6;
+  --color-gradient-purple-end: #6366f1;
+  --color-gradient-blue-start: #3b82f6;
+  --color-gradient-blue-end: #06b6d4;
+  --color-gradient-green-start: #22c55e;
+  --color-gradient-green-end: #10b981;
+
+  /* Custom Border Radius */
   --radius-2xl: 1rem;
   --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 
-  /* Custom animations */
-  --animate-fade-in: fadeIn 0.2s ease-in-out;
+  /* Custom Shadows */
+  --shadow-glow-sm: 0 0 15px -3px;
+  --shadow-glow-md: 0 0 25px -5px;
+  --shadow-glow-lg: 0 0 40px -10px;
+
+  /* Custom Animations */
+  --animate-fade-in: fadeIn 0.2s ease-out;
+  --animate-fade-in-up: fadeInUp 0.3s ease-out;
   --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-slide-down: slideDown 0.2s ease-out;
+  --animate-scale-in: scaleIn 0.2s ease-out;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-glow: pulseGlow 2s ease-in-out infinite;
+  --animate-float: float 3s ease-in-out infinite;
+
+  /* Timing Functions */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
 @keyframes fadeIn {
-  0% {
+  from {
     opacity: 0;
   }
-  100% {
+  to {
     opacity: 1;
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @keyframes slideUp {
-  0% {
+  from {
     transform: translateY(10px);
     opacity: 0;
   }
-  100% {
+  to {
     transform: translateY(0);
     opacity: 1;
   }
 }
 
-/* Source detection for content scanning */
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SOURCE DETECTION
+   ═══════════════════════════════════════════════════════════════ */
+
 @source "../app/**/*.{ts,tsx}";
 @source "../components/**/*.{ts,tsx}";
 @source "../src/**/*.{ts,tsx}";
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
 
 html,
 body {
@@ -49,6 +176,349 @@ body {
 }
 
 body {
-  background: #0b0b0f;
+  background: var(--color-surface-0);
   color: #e5e7eb;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Improved focus states for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-lokifi);
+  outline-offset: 2px;
+}
+
+/* Better text selection */
+::selection {
+  background: var(--color-lokifi);
+  color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY CLASSES - Glassmorphism & Effects
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+}
+
+@utility glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+@utility glass-interactive {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+  transition: all 0.2s ease;
+}
+
+.glass-interactive:hover {
+  background: var(--color-glass-hover);
+  border-color: var(--color-glass-border-hover);
+  transform: translateY(-1px);
+}
+
+@utility gradient-border {
+  position: relative;
+  background: var(--color-surface-100);
+  border-radius: 0.75rem;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--color-lokifi), var(--color-electric));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@utility glow-success {
+  box-shadow: 0 0 20px -5px var(--color-success);
+}
+
+@utility glow-danger {
+  box-shadow: 0 0 20px -5px var(--color-danger);
+}
+
+@utility glow-lokifi {
+  box-shadow: 0 0 20px -5px var(--color-lokifi);
+}
+
+@utility glow-electric {
+  box-shadow: 0 0 20px -5px var(--color-electric);
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, var(--color-lokifi-light), var(--color-electric));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-200) 0%,
+    var(--color-surface-300) 50%,
+    var(--color-surface-200) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Scrollbar
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-100);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-400);
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-lokifi);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-400) var(--color-surface-100);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Cards & Containers
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility card-interactive {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+@utility stat-card-success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+@utility stat-card-danger {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+@utility stat-card-info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+@utility stat-card-purple {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Buttons
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility btn-primary {
+  background: linear-gradient(135deg, var(--color-lokifi) 0%, var(--color-electric) 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+@utility btn-glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+  color: white;
+  font-weight: 500;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.btn-glass:hover {
+  background: var(--color-glass-hover);
+  border-color: var(--color-glass-border-hover);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Input Fields
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility input-glass {
+  background: var(--color-surface-100);
+  border: 1px solid var(--color-surface-300);
+  border-radius: 0.5rem;
+  padding: 0.625rem 1rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.input-glass:focus {
+  outline: none;
+  border-color: var(--color-lokifi);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.input-glass::placeholder {
+  color: var(--color-surface-400);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Badges & Tags
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+@utility badge-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--color-success-light);
+}
+
+@utility badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger-light);
+}
+
+@utility badge-warning {
+  background: rgba(234, 179, 8, 0.15);
+  color: var(--color-warning-light);
+}
+
+@utility badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+@utility badge-purple {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--color-lokifi-light);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Data Display
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility value-positive {
+  color: var(--color-success);
+}
+
+@utility value-negative {
+  color: var(--color-danger);
+}
+
+@utility value-neutral {
+  color: #9ca3af;
+}
+
+@utility money-display {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.025em;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT STYLES - Navigation
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.5rem;
+  color: #9ca3af;
+  transition: all 0.15s ease;
+}
+
+.nav-item:hover {
+  background: var(--color-surface-200);
+  color: white;
+}
+
+@utility nav-item-active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+  color: var(--color-lokifi-light);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE UTILITIES
+   ═══════════════════════════════════════════════════════════════ */
+
+@utility container-padding {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }

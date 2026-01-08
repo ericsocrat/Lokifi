@@ -484,7 +484,8 @@ describe('GlobalLayout', () => {
       );
 
       const netWorthButton = screen.getByText('Net Worth').closest('button');
-      expect(netWorthButton).toHaveClass('bg-blue-50');
+      // Updated to check for new Tailwind v4 gradient styling
+      expect(netWorthButton).toHaveClass('bg-gradient-to-r', 'from-lokifi/15');
     });
   });
 

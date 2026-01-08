@@ -109,14 +109,14 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       {/* Bell Icon with Badge */}
       <button
         onClick={handleBellClick}
-        className="relative p-2 text-neutral-300 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors"
+        className="relative p-2.5 text-gray-400 hover:text-white bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl transition-all duration-200"
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
       >
         <Bell className="w-5 h-5" />
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
+          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium shadow-lg shadow-red-500/30">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -124,15 +124,15 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
       {/* Notification Dropdown */}
       {showDropdown && isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-50">
+        <div className="absolute right-0 mt-2 w-80 bg-surface-100/95 backdrop-blur-xl border border-surface-300 rounded-xl shadow-2xl shadow-black/50 z-50 animate-fadeIn">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-neutral-700">
+          <div className="flex items-center justify-between p-4 border-b border-surface-300">
             <h3 className="font-semibold text-white">Notifications</h3>
             <div className="flex gap-2">
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                  className="text-xs text-lokifi-light hover:text-lokifi flex items-center gap-1 transition-colors"
                   title="Mark all as read"
                 >
                   <CheckCheck className="w-3 h-3" />
@@ -141,7 +141,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-neutral-400 hover:text-white"
+                className="text-gray-500 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -151,8 +151,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
             {isLoading && (
-              <div className="p-4 text-center text-neutral-400">
-                <div className="animate-spin w-5 h-5 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-2" />
+              <div className="p-4 text-center text-gray-400">
+                <div className="animate-spin w-5 h-5 border-2 border-surface-300 border-t-lokifi rounded-full mx-auto mb-2" />
                 Loading notifications...
               </div>
             )}
@@ -162,7 +162,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 <p>Failed to load notifications</p>
                 <button
                   onClick={refreshNotifications}
-                  className="text-xs text-blue-400 hover:text-blue-300 mt-1"
+                  className="text-xs text-lokifi-light hover:text-lokifi mt-1 transition-colors"
                 >
                   Try again
                 </button>
@@ -170,7 +170,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
 
             {!isLoading && !error && recentNotifications.length === 0 && (
-              <div className="p-8 text-center text-neutral-400">
+              <div className="p-8 text-center text-gray-500">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p>No notifications yet</p>
               </div>
@@ -181,7 +181,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 border-l-2 hover:bg-neutral-800 cursor-pointer transition-colors ${getNotificationColor(
+                  className={`p-4 border-l-2 hover:bg-surface-200 cursor-pointer transition-all duration-200 ${getNotificationColor(
                     notification.type,
                     notification.priority
                   )} ${notification.is_read ? 'opacity-75' : ''}`}
@@ -198,7 +198,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       <div className="flex items-start justify-between gap-2">
                         <h4
                           className={`font-medium text-sm ${
-                            notification.is_read ? 'text-neutral-300' : 'text-white'
+                            notification.is_read ? 'text-gray-400' : 'text-white'
                           }`}
                         >
                           {notification.title}
@@ -212,7 +212,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                                 e.stopPropagation();
                                 markAsRead(notification.id);
                               }}
-                              className="text-neutral-400 hover:text-white"
+                              className="text-gray-500 hover:text-white transition-colors"
                               title="Mark as read"
                             >
                               <Check className="w-3 h-3" />
@@ -223,7 +223,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                               e.stopPropagation();
                               dismissNotification(notification.id);
                             }}
-                            className="text-neutral-400 hover:text-red-400"
+                            className="text-gray-500 hover:text-red-400 transition-colors"
                             title="Dismiss"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -234,7 +234,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       {notification.message && (
                         <p
                           className={`text-sm mt-1 ${
-                            notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
+                            notification.is_read ? 'text-gray-500' : 'text-gray-300'
                           }`}
                         >
                           {notification.message}
@@ -242,7 +242,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       )}
 
                       {/* Timestamp */}
-                      <p className="text-xs text-neutral-500 mt-2">
+                      <p className="text-xs text-gray-600 mt-2">
                         {formatDistanceToNow(new Date(notification.created_at), {
                           addSuffix: true,
                         })}
@@ -250,7 +250,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
                       {/* Unread indicator */}
                       {!notification.is_read && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4" />
+                        <div className="w-2 h-2 bg-lokifi rounded-full absolute top-4 right-4 shadow-sm shadow-lokifi/50" />
                       )}
                     </div>
                   </div>
@@ -260,7 +260,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
           {/* Footer */}
           {recentNotifications.length > 0 && (
-            <div className="p-3 border-t border-neutral-700">
+            <div className="p-3 border-t border-surface-300">
               <button
                 onClick={() => {
                   // Open full notification center
@@ -268,7 +268,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   // TODO: Navigate to full notification center
                   window.location.href = '/notifications';
                 }}
-                className="w-full text-center text-sm text-blue-400 hover:text-blue-300"
+                className="w-full text-center text-sm text-lokifi-light hover:text-lokifi transition-colors"
               >
                 View all notifications
               </button>
