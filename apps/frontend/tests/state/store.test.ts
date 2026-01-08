@@ -518,6 +518,220 @@ describe('useChartStore', () => {
         expect(drawings[0].id).toBe(drawing3.id);
       });
     });
+
+    describe('duplicateSelected', () => {
+      it('should duplicate selected drawings', () => {
+        const drawing = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing);
+          useChartStore.getState().setSelection(new Set([drawing.id]));
+        });
+
+        act(() => {
+          useChartStore.getState().duplicateSelected();
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(2);
+      });
+
+      it('should append (copy) to duplicated drawing names', () => {
+        const drawing = { ...createMockDrawing(), name: 'Original' };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing);
+          useChartStore.getState().setSelection(new Set([drawing.id]));
+        });
+
+        act(() => {
+          useChartStore.getState().duplicateSelected();
+        });
+
+        const drawings = useChartStore.getState().drawings;
+        expect(drawings[1].name).toBe('Original (copy)');
+      });
+
+      it('should create new IDs for duplicated drawings', () => {
+        const drawing = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing);
+          useChartStore.getState().setSelection(new Set([drawing.id]));
+        });
+
+        act(() => {
+          useChartStore.getState().duplicateSelected();
+        });
+
+        const drawings = useChartStore.getState().drawings;
+        expect(drawings[0].id).not.toBe(drawings[1].id);
+      });
+
+      it('should duplicate multiple selected drawings', () => {
+        const drawing1 = createMockDrawing();
+        const drawing2 = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set([drawing1.id, drawing2.id]));
+        });
+
+        act(() => {
+          useChartStore.getState().duplicateSelected();
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(4);
+      });
+    });
+
+    describe('alignSelected', () => {
+      it('should not align when fewer than 2 drawings selected', () => {
+        const drawing = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing);
+          useChartStore.getState().setSelection(new Set([drawing.id]));
+        });
+
+        const initialX = useChartStore.getState().drawings[0].points[0].x;
+
+        act(() => {
+          useChartStore.getState().alignSelected('left');
+        });
+
+        // Should be unchanged
+        expect(useChartStore.getState().drawings[0].points[0].x).toBe(initialX);
+      });
+
+      it('should align selected drawings to the left', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2']));
+        });
+
+        act(() => {
+          useChartStore.getState().alignSelected('left');
+        });
+
+        // Both drawings should be aligned (function operates on x position)
+        expect(useChartStore.getState().drawings.length).toBe(2);
+      });
+
+      it('should align selected drawings to the right', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2']));
+        });
+
+        act(() => {
+          useChartStore.getState().alignSelected('right');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(2);
+      });
+
+      it('should align selected drawings to the top', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2']));
+        });
+
+        act(() => {
+          useChartStore.getState().alignSelected('top');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(2);
+      });
+
+      it('should align selected drawings to the bottom', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2']));
+        });
+
+        act(() => {
+          useChartStore.getState().alignSelected('bottom');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(2);
+      });
+    });
+
+    describe('distributeSelected', () => {
+      it('should not distribute when fewer than 3 drawings selected', () => {
+        const drawing1 = createMockDrawing();
+        const drawing2 = createMockDrawing();
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().setSelection(new Set([drawing1.id, drawing2.id]));
+        });
+
+        const initialCount = useChartStore.getState().drawings.length;
+
+        act(() => {
+          useChartStore.getState().distributeSelected('h');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(initialCount);
+      });
+
+      it('should distribute horizontally with 3+ drawings', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 50, y: 20 }, { x: 70, y: 40 }] };
+        const drawing3 = { ...createMockDrawing(), id: 'draw-3', points: [{ x: 100, y: 20 }, { x: 120, y: 40 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().addDrawing(drawing3);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2', 'draw-3']));
+        });
+
+        act(() => {
+          useChartStore.getState().distributeSelected('h');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(3);
+      });
+
+      it('should distribute vertically with 3+ drawings', () => {
+        const drawing1 = { ...createMockDrawing(), id: 'draw-1', points: [{ x: 10, y: 20 }, { x: 30, y: 40 }] };
+        const drawing2 = { ...createMockDrawing(), id: 'draw-2', points: [{ x: 10, y: 60 }, { x: 30, y: 80 }] };
+        const drawing3 = { ...createMockDrawing(), id: 'draw-3', points: [{ x: 10, y: 100 }, { x: 30, y: 120 }] };
+
+        act(() => {
+          useChartStore.getState().addDrawing(drawing1);
+          useChartStore.getState().addDrawing(drawing2);
+          useChartStore.getState().addDrawing(drawing3);
+          useChartStore.getState().setSelection(new Set(['draw-1', 'draw-2', 'draw-3']));
+        });
+
+        act(() => {
+          useChartStore.getState().distributeSelected('v');
+        });
+
+        expect(useChartStore.getState().drawings.length).toBe(3);
+      });
+    });
   });
 
   // ==========================================================================
