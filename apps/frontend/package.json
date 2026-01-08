@@ -95,6 +95,7 @@
     "postcss": "^8.5.1",
     "prettier": "^3.7.4",
     "rimraf": "^6.1.2",
+    "serve": "^14.2.5",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.9.3",
