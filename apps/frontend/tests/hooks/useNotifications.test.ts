@@ -327,6 +327,8 @@ describe('useNotifications', () => {
     });
 
     it('does nothing when hasMore is false', async () => {
+      // Clear default mock and set test-specific mock
+      mockFetch.mockReset();
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: () =>

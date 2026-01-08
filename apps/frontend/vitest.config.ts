@@ -223,6 +223,20 @@ export default defineConfig({
         find: '@/components/WebSocketConnection',
         replacement: path.resolve(__dirname, './components/WebSocketConnection'),
       },
+      // UI components in root components/ui/ (button, card)
+      {
+        find: '@/components/ui/button',
+        replacement: path.resolve(__dirname, './components/ui/button'),
+      },
+      {
+        find: '@/components/ui/card',
+        replacement: path.resolve(__dirname, './components/ui/card'),
+      },
+      // UI components in src/components/ui/ (ConfirmationDialog and others)
+      {
+        find: '@/components/ui',
+        replacement: path.resolve(__dirname, './src/components/ui'),
+      },
       // Default components alias for src/components/ (must come after specific overrides)
       { find: '@/components', replacement: path.resolve(__dirname, './src/components') },
       { find: '@/hooks', replacement: path.resolve(__dirname, './src/hooks') },
