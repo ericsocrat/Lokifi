@@ -37,8 +37,18 @@ vi.mock('../../components/NotificationBell', () => ({
 }));
 
 vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
-    <a href={href}>{children}</a>
+  default: ({
+    children,
+    href,
+    onClick,
+  }: {
+    children: React.ReactNode;
+    href: string;
+    onClick?: () => void;
+  }) => (
+    <a href={href} onClick={onClick}>
+      {children}
+    </a>
   ),
 }));
 
@@ -234,6 +244,201 @@ describe('GlobalHeader', () => {
     it('should have navigation landmark', () => {
       render(<GlobalHeader />);
       expect(screen.getByRole('navigation')).toBeInTheDocument();
+    });
+  });
+
+  describe('Search Results', () => {
+    it('should show loading state when searching', () => {
+      mockCryptoSearch.loading = true;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'BTC' } });
+
+      expect(screen.getByText(/searching/i)).toBeInTheDocument();
+    });
+
+    it('should show no results message when search returns empty', () => {
+      mockCryptoSearch.results = [];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'xyz123' } });
+
+      expect(screen.getByText(/no results found for/i)).toBeInTheDocument();
+    });
+
+    it('should display search results with crypto info', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'bitcoin',
+          symbol: 'BTC',
+          name: 'Bitcoin',
+          image: 'https://example.com/btc.png',
+          current_price: 45000.5,
+          price_change_percentage_24h: 2.5,
+          market_cap_rank: 1,
+        },
+      ];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'bit' } });
+
+      expect(screen.getByText('Bitcoin')).toBeInTheDocument();
+      expect(screen.getByText('BTC')).toBeInTheDocument();
+      expect(screen.getByText('Rank #1')).toBeInTheDocument();
+      expect(screen.getByText('$45,000.50')).toBeInTheDocument();
+      expect(screen.getByText('+2.50%')).toBeInTheDocument();
+    });
+
+    it('should display negative price change correctly', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'ethereum',
+          symbol: 'ETH',
+          name: 'Ethereum',
+          image: '',
+          current_price: 3200,
+          price_change_percentage_24h: -1.25,
+          market_cap_rank: 2,
+        },
+      ];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'eth' } });
+
+      expect(screen.getByText('-1.25%')).toBeInTheDocument();
+    });
+
+    it('should show symbol fallback when no image', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'solana',
+          symbol: 'SOL',
+          name: 'Solana',
+          image: null,
+          current_price: 100,
+          price_change_percentage_24h: 0,
+          market_cap_rank: null,
+        },
+      ];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'sol' } });
+
+      expect(screen.getByText('SO')).toBeInTheDocument(); // First 2 letters of symbol
+    });
+
+    it('should clear search and close dropdown when clicking a result', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'bitcoin',
+          symbol: 'BTC',
+          name: 'Bitcoin',
+          image: 'https://example.com/btc.png',
+          current_price: 45000,
+          price_change_percentage_24h: 2.5,
+          market_cap_rank: 1,
+        },
+      ];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'bit' } });
+
+      // Verify result is shown
+      expect(screen.getByText('Bitcoin')).toBeInTheDocument();
+
+      const resultLink = screen.getByRole('link', { name: /bitcoin/i });
+      fireEvent.click(resultLink);
+
+      // After clicking, search should be cleared and dropdown hidden
+      expect(searchInput).toHaveValue('');
+    });
+
+    it('should format prices with appropriate decimal places for low values', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'shiba',
+          symbol: 'SHIB',
+          name: 'Shiba Inu',
+          image: 'https://example.com/shib.png',
+          current_price: 0.00001234,
+          price_change_percentage_24h: 5,
+          market_cap_rank: 15,
+        },
+      ];
+      mockCryptoSearch.loading = false;
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'shib' } });
+
+      // Low price should show more decimal places (toLocaleString rounds to 6 decimals)
+      expect(screen.getByText(/\$0\.000012/)).toBeInTheDocument();
+    });
+
+    it('should close search results when clicking outside', () => {
+      mockCryptoSearch.results = [
+        {
+          id: 'bitcoin',
+          symbol: 'BTC',
+          name: 'Bitcoin',
+          image: 'https://example.com/btc.png',
+          current_price: 45000,
+          price_change_percentage_24h: 2.5,
+          market_cap_rank: 1,
+        },
+      ];
+
+      render(<GlobalHeader />);
+      const searchInput = screen.getByPlaceholderText(/search cryptocurrencies/i);
+
+      fireEvent.focus(searchInput);
+      fireEvent.change(searchInput, { target: { value: 'bit' } });
+
+      expect(screen.getByText('Bitcoin')).toBeInTheDocument();
+
+      // Click outside the search area
+      fireEvent.mouseDown(document.body);
+
+      // Dropdown should be closed
+      expect(screen.queryByText('Bitcoin')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Loading State', () => {
+    it('should show loading skeleton when auth is loading', () => {
+      mockAuth.loading = true;
+      mockAuth.user = null;
+
+      render(<GlobalHeader />);
+
+      // Should have loading skeleton (animate-pulse class)
+      const skeletons = document.querySelectorAll('.animate-pulse');
+      expect(skeletons.length).toBeGreaterThan(0);
     });
   });
 });
