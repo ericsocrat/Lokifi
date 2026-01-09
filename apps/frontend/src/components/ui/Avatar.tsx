@@ -118,7 +118,7 @@ const variantClasses: Record<AvatarVariant, string> = {
 
 const statusColors: Record<Exclude<AvatarStatus, 'none'>, string> = {
   online: 'bg-green-500',
-  offline: 'bg-gray-400',
+  offline: 'bg-surface-300',
   away: 'bg-yellow-500',
   busy: 'bg-red-500',
 };
@@ -190,7 +190,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 
     const baseClasses = [
       'relative inline-flex items-center justify-center',
-      'bg-gray-200 dark:bg-gray-700',
+      'bg-surface-200',
       'overflow-hidden',
       'shrink-0',
       sizeConfig.container,
@@ -215,7 +215,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
                 statusPositionClasses[statusPosition],
                 sizeConfig.status,
                 'rounded-full',
-                'border-white dark:border-gray-900',
+                'border-surface-0',
                 statusColors[status],
               ].join(' ')}
               data-avatar-status={status}
@@ -359,8 +359,8 @@ export const AvatarFallback = forwardRef<HTMLSpanElement, AvatarFallbackProps>(
     const baseClasses = [
       'flex h-full w-full items-center justify-center',
       'font-medium',
-      'text-gray-600 dark:text-gray-300',
-      !bgColor && 'bg-gray-200 dark:bg-gray-700',
+      'text-surface-300',
+      !bgColor && 'bg-surface-200',
     ]
       .filter(Boolean)
       .join(' ');
@@ -380,7 +380,7 @@ export const AvatarFallback = forwardRef<HTMLSpanElement, AvatarFallbackProps>(
       >
         {children ?? displayText ?? (
           <svg
-            className="h-1/2 w-1/2 text-gray-400"
+            className="h-1/2 w-1/2 text-surface-300"
             fill="currentColor"
             viewBox="0 0 24 24"
             aria-hidden="true"
@@ -429,7 +429,7 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
             marginLeft: index === 0 ? 0 : spacing,
             zIndex: visibleChildren.length - index,
           },
-          className: [child.props.className, 'ring-2 ring-white dark:ring-gray-900']
+          className: [child.props.className, 'ring-2 ring-surface-0']
             .filter(Boolean)
             .join(' '),
         });
@@ -453,10 +453,10 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
           <span
             className={[
               'relative inline-flex items-center justify-center',
-              'bg-gray-200 dark:bg-gray-700',
-              'text-gray-600 dark:text-gray-300',
+              'bg-surface-200',
+              'text-surface-300',
               'rounded-full',
-              'ring-2 ring-white dark:ring-gray-900',
+              'ring-2 ring-surface-0',
               'font-medium',
               sizeConfig.container,
               sizeConfig.text,
@@ -509,7 +509,7 @@ export const AvatarBadge = forwardRef<HTMLSpanElement, AvatarBadgeProps>(
       'text-xs font-medium',
       'bg-lokifi-600 text-white',
       'rounded-full',
-      'ring-2 ring-white dark:ring-gray-900',
+      'ring-2 ring-surface-0',
     ].join(' ');
 
     const combinedStyle: React.CSSProperties = {
