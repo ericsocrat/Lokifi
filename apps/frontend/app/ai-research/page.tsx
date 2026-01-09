@@ -93,7 +93,7 @@ export default function AIResearchPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">AI Research Assistant</h1>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-surface-300">
                 Get intelligent insights about your investments
               </p>
             </div>
@@ -113,7 +113,7 @@ export default function AIResearchPage() {
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-3">How can I help you today?</h2>
-                <p className="text-gray-400 max-w-md mx-auto">
+                <p className="text-surface-300 max-w-md mx-auto">
                   Ask me anything about your portfolio, market trends, or investment strategies.
                 </p>
               </div>
@@ -132,9 +132,9 @@ export default function AIResearchPage() {
                       </div>
                       <div className="flex-1">
                         <h3 className="font-semibold text-white mb-1">{item.title}</h3>
-                        <p className="text-sm text-gray-400">{item.description}</p>
+                        <p className="text-sm text-surface-300">{item.description}</p>
                       </div>
-                      <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-lokifi-light group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="w-5 h-5 text-surface-300 group-hover:text-lokifi-light group-hover:translate-x-1 transition-all" />
                     </div>
                   </button>
                 ))}
@@ -157,14 +157,14 @@ export default function AIResearchPage() {
                     className={`max-w-[80%] rounded-2xl p-4 ${
                       msg.role === 'user'
                         ? 'bg-linear-to-r from-lokifi to-electric text-white'
-                        : 'bg-surface-100 border border-surface-300/50 text-gray-200'
+                        : 'bg-surface-100 border border-surface-300/50 text-surface-200'
                     }`}
                   >
                     <p className="whitespace-pre-wrap">{msg.content}</p>
                   </div>
                   {msg.role === 'user' && (
                     <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center shrink-0">
-                      <MessageSquare className="w-5 h-5 text-gray-400" />
+                      <MessageSquare className="w-5 h-5 text-surface-300" />
                     </div>
                   )}
                 </div>
@@ -200,14 +200,14 @@ export default function AIResearchPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Ask about markets, stocks, or your portfolio..."
-                className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all"
+                className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300 focus:outline-none transition-all"
                 disabled={isLoading}
               />
             </div>
             <button
               type="submit"
               disabled={!query.trim() || isLoading}
-              className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center gap-2"
+              className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 disabled:from-surface-200 disabled:to-surface-300 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center gap-2"
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -219,7 +219,7 @@ export default function AIResearchPage() {
               )}
             </button>
           </form>
-          <p className="text-xs text-gray-500 mt-3 text-center">
+          <p className="text-xs text-surface-300 mt-3 text-center">
             AI responses are for informational purposes only. Always do your own research before
             making investment decisions.
           </p>
