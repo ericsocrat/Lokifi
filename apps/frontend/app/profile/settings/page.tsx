@@ -171,7 +171,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-surface-0">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
@@ -184,30 +184,30 @@ export default function SettingsPage() {
 
   const renderGeneralTab = () => (
     <div className="space-y-6">
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-surface-100 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Full Name</label>
             <input
               type="text"
               value={userSettings?.full_name || ''}
               onChange={(e) =>
                 setUserSettings((prev) => (prev ? { ...prev, full_name: e.target.value } : null))
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
               placeholder="Your full name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Email Address</label>
             <div className="flex items-center space-x-2">
               <input
                 type="email"
                 value={userSettings?.email || ''}
-                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
                 disabled
               />
               {userSettings?.is_verified && (
@@ -219,13 +219,13 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Timezone</label>
             <select
               value={userSettings?.timezone || ''}
               onChange={(e) =>
                 setUserSettings((prev) => (prev ? { ...prev, timezone: e.target.value } : null))
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lokifi"
             >
               <option value="">Select timezone</option>
               <option value="America/New_York">Eastern Time (ET)</option>
@@ -240,13 +240,13 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Language</label>
+            <label className="block text-sm font-medium text-surface-300 mb-2">Language</label>
             <select
               value={userSettings?.language || 'en'}
               onChange={(e) =>
                 setUserSettings((prev) => (prev ? { ...prev, language: e.target.value } : null))
               }
-              className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-lokifi"
             >
               <option value="en">English</option>
               <option value="es">Español</option>
@@ -274,14 +274,14 @@ export default function SettingsPage() {
 
   const renderNotificationsTab = () => (
     <div className="space-y-6">
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-surface-100 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-4">Email Notifications</h3>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-white font-medium">Enable Email Notifications</h4>
-              <p className="text-gray-400 text-sm">Receive notifications via email</p>
+              <p className="text-surface-300 text-sm">Receive notifications via email</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -294,14 +294,14 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+              <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-white font-medium">New Followers</h4>
-              <p className="text-gray-400 text-sm">When someone follows you</p>
+              <p className="text-surface-300 text-sm">When someone follows you</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -314,14 +314,14 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+              <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-white font-medium">Messages</h4>
-              <p className="text-gray-400 text-sm">When you receive a message</p>
+              <p className="text-surface-300 text-sm">When you receive a message</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -334,20 +334,20 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+              <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
           </div>
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-surface-100 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-4">Push Notifications</h3>
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-white font-medium">Enable Push Notifications</h4>
-              <p className="text-gray-400 text-sm">Receive notifications on your device</p>
+              <p className="text-surface-300 text-sm">Receive notifications on your device</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -360,14 +360,14 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+              <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-white font-medium">Messages</h4>
-              <p className="text-gray-400 text-sm">Push notifications for messages</p>
+              <p className="text-surface-300 text-sm">Push notifications for messages</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -380,7 +380,7 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+              <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
           </div>
         </div>
@@ -401,16 +401,16 @@ export default function SettingsPage() {
 
   const renderPrivacyTab = () => (
     <div className="space-y-6">
-      <div className="bg-gray-800 rounded-lg p-6">
+      <div className="bg-surface-100 rounded-lg p-6">
         <h3 className="text-lg font-semibold text-white mb-4">Data & Privacy</h3>
 
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+          <div className="flex items-center justify-between p-4 bg-surface-200 rounded-lg">
             <div className="flex items-center space-x-3">
-              <Download className="w-5 h-5 text-blue-500" />
+              <Download className="w-5 h-5 text-lokifi" />
               <div>
                 <h4 className="text-white font-medium">Export Your Data</h4>
-                <p className="text-gray-400 text-sm">
+                <p className="text-surface-300 text-sm">
                   Download all your profile data (GDPR compliant)
                 </p>
               </div>
@@ -436,9 +436,9 @@ export default function SettingsPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="p-4 bg-gray-800 rounded-lg">
+          <div className="p-4 bg-surface-100 rounded-lg">
             <h4 className="text-white font-medium mb-2">Delete Account</h4>
-            <p className="text-gray-400 text-sm mb-4">
+            <p className="text-surface-300 text-sm mb-4">
               Permanently delete your account and all associated data. This action cannot be undone.
             </p>
             <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center space-x-2">
@@ -452,7 +452,7 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-surface-0">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -461,7 +461,7 @@ export default function SettingsPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/profile"
-              className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+              className="p-2 bg-surface-100 rounded-lg hover:bg-surface-200 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
@@ -497,8 +497,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(id)}
                   className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
                     activeTab === id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      ? 'bg-lokifi text-white'
+                      : 'bg-surface-100 text-surface-300 hover:bg-surface-200'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
