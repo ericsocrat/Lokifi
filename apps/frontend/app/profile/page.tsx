@@ -104,7 +104,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-surface-300">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading profile...</span>
         </div>
@@ -120,7 +120,7 @@ export default function ProfilePage() {
             <Shield className="w-7 h-7 text-red-400" />
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Error Loading Profile</h2>
-          <p className="text-gray-400 mb-6">{error}</p>
+          <p className="text-surface-300 mb-6">{error}</p>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
@@ -170,8 +170,8 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-bold text-white mb-1">
                   {profile?.display_name || 'User'}
                 </h1>
-                <p className="text-gray-400 text-lg">@{profile?.username}</p>
-                {profile?.bio && <p className="text-gray-300 mt-2 max-w-xl">{profile.bio}</p>}
+                <p className="text-surface-300 text-lg">@{profile?.username}</p>
+                {profile?.bio && <p className="text-surface-300 mt-2 max-w-xl">{profile.bio}</p>}
               </div>
             </div>
 
@@ -196,17 +196,17 @@ export default function ProfilePage() {
 
           {/* Stats Row */}
           <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-surface-300/50">
-            <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 text-surface-300 hover:text-white transition-colors cursor-pointer">
               <Users className="w-4 h-4" />
               <span className="font-semibold text-white">{profile?.follower_count || 0}</span>
               <span>followers</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
+            <div className="flex items-center gap-2 text-surface-300 hover:text-white transition-colors cursor-pointer">
               <Users className="w-4 h-4" />
               <span className="font-semibold text-white">{profile?.following_count || 0}</span>
               <span>following</span>
             </div>
-            <div className="flex items-center gap-2 text-gray-400">
+            <div className="flex items-center gap-2 text-surface-300">
               <Calendar className="w-4 h-4" />
               <span>Joined {new Date(profile?.created_at || '').toLocaleDateString()}</span>
             </div>
@@ -214,7 +214,7 @@ export default function ProfilePage() {
               <div
                 className={`w-2 h-2 rounded-full ${profile?.is_public ? 'bg-green-500' : 'bg-amber-500'}`}
               />
-              <span className="text-gray-400">
+              <span className="text-surface-300">
                 {profile?.is_public ? 'Public profile' : 'Private profile'}
               </span>
             </div>
@@ -232,7 +232,7 @@ export default function ProfilePage() {
               </div>
               <Sparkles className="w-4 h-4 text-lokifi-light animate-pulse" />
             </div>
-            <p className="text-sm text-gray-400 mb-1">Profile Completeness</p>
+            <p className="text-sm text-surface-300 mb-1">Profile Completeness</p>
             <p className="text-2xl font-bold text-white">{stats.profile_completeness}%</p>
             <div className="mt-3 bg-surface-300 rounded-full h-2 overflow-hidden">
               <div
@@ -248,7 +248,7 @@ export default function ProfilePage() {
                 <Activity className="w-5 h-5 text-green-400" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Activity Score</p>
+            <p className="text-sm text-surface-300 mb-1">Activity Score</p>
             <p className="text-2xl font-bold text-white">{stats.activity_score}</p>
           </div>
 
@@ -258,7 +258,7 @@ export default function ProfilePage() {
                 <Calendar className="w-5 h-5 text-purple-400" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Account Age</p>
+            <p className="text-sm text-surface-300 mb-1">Account Age</p>
             <p className="text-2xl font-bold text-white">{stats.account_age_days} days</p>
           </div>
 
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                 <Star className="w-5 h-5 text-amber-400" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Total Logins</p>
+            <p className="text-sm text-surface-300 mb-1">Total Logins</p>
             <p className="text-2xl font-bold text-white">{stats.total_logins}</p>
           </div>
         </div>
@@ -282,7 +282,7 @@ export default function ProfilePage() {
           </div>
           <div>
             <h3 className="font-semibold text-white">Recent Activity</h3>
-            <p className="text-xs text-gray-500">Your latest profile updates</p>
+            <p className="text-xs text-surface-300">Your latest profile updates</p>
           </div>
         </div>
         <div className="p-6 space-y-4">
@@ -292,7 +292,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <p className="text-white text-sm">Updated profile information</p>
-              <p className="text-xs text-gray-500">2 hours ago</p>
+              <p className="text-xs text-surface-300">2 hours ago</p>
             </div>
           </div>
           <div className="flex items-center gap-4 p-3 bg-surface-200/50 rounded-xl">
@@ -301,7 +301,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <p className="text-white text-sm">Changed notification preferences</p>
-              <p className="text-xs text-gray-500">1 day ago</p>
+              <p className="text-xs text-surface-300">1 day ago</p>
             </div>
           </div>
           <div className="flex items-center gap-4 p-3 bg-surface-200/50 rounded-xl">
@@ -310,7 +310,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex-1">
               <p className="text-white text-sm">Profile created</p>
-              <p className="text-xs text-gray-500">{stats?.account_age_days} days ago</p>
+              <p className="text-xs text-surface-300">{stats?.account_age_days} days ago</p>
             </div>
           </div>
         </div>
@@ -326,7 +326,7 @@ export default function ProfilePage() {
         </div>
         <div>
           <h3 className="font-semibold text-white">Quick Settings</h3>
-          <p className="text-xs text-gray-500">Manage your account preferences</p>
+          <p className="text-xs text-surface-300">Manage your account preferences</p>
         </div>
       </div>
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -341,7 +341,7 @@ export default function ProfilePage() {
             <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
               Account Settings
             </h4>
-            <p className="text-gray-500 text-sm">Manage your account information</p>
+            <p className="text-surface-300 text-sm">Manage your account information</p>
           </div>
         </Link>
 
@@ -356,7 +356,7 @@ export default function ProfilePage() {
             <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
               Notifications
             </h4>
-            <p className="text-gray-500 text-sm">Control notification preferences</p>
+            <p className="text-surface-300 text-sm">Control notification preferences</p>
           </div>
         </Link>
 
@@ -371,7 +371,7 @@ export default function ProfilePage() {
             <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
               Privacy & Security
             </h4>
-            <p className="text-gray-500 text-sm">Manage privacy settings</p>
+            <p className="text-surface-300 text-sm">Manage privacy settings</p>
           </div>
         </Link>
 
@@ -386,7 +386,7 @@ export default function ProfilePage() {
             <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
               Preferences
             </h4>
-            <p className="text-gray-500 text-sm">Language, timezone, and more</p>
+            <p className="text-surface-300 text-sm">Language, timezone, and more</p>
           </div>
         </Link>
       </div>
@@ -401,7 +401,7 @@ export default function ProfilePage() {
         </div>
         <div>
           <h3 className="font-semibold text-white">Privacy Overview</h3>
-          <p className="text-xs text-gray-500">Control your data and visibility</p>
+          <p className="text-xs text-surface-300">Control your data and visibility</p>
         </div>
       </div>
       <div className="p-6 space-y-4">
@@ -418,7 +418,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h4 className="text-white font-medium">Profile Visibility</h4>
-              <p className="text-gray-500 text-sm">
+              <p className="text-surface-300 text-sm">
                 Your profile is{' '}
                 {profile?.is_public
                   ? 'public and visible to everyone'
@@ -441,7 +441,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h4 className="text-white font-medium">Data Export</h4>
-              <p className="text-gray-500 text-sm">Download all your data (GDPR compliant)</p>
+              <p className="text-surface-300 text-sm">Download all your data (GDPR compliant)</p>
             </div>
           </div>
           <button className="px-4 py-2 bg-surface-300 hover:bg-surface-400 text-white rounded-xl text-sm font-medium transition-colors">
@@ -463,7 +463,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">Profile</h1>
-              <p className="text-sm text-gray-400">Manage your account and preferences</p>
+              <p className="text-sm text-surface-300">Manage your account and preferences</p>
             </div>
           </div>
         </div>
@@ -484,7 +484,7 @@ export default function ProfilePage() {
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
                   activeTab === id
                     ? 'bg-lokifi text-white shadow-lg shadow-lokifi/30'
-                    : 'text-gray-400 hover:text-white hover:bg-surface-200'
+                    : 'text-surface-300 hover:text-white hover:bg-surface-200'
                 }`}
               >
                 <Icon className="w-4 h-4" />
