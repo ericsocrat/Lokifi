@@ -77,7 +77,7 @@ const debtTypeColors: Record<Debt['type'], string> = {
   student: 'from-purple-500 to-purple-600',
   'credit-card': 'from-rose-500 to-rose-600',
   personal: 'from-amber-500 to-amber-600',
-  other: 'from-gray-500 to-gray-600',
+  other: 'from-surface-200 to-surface-300',
 };
 
 export default function DebtsPage() {
@@ -107,7 +107,7 @@ export default function DebtsPage() {
                 <CreditCard className="w-6 h-6 text-rose-400" />
                 Debts & Liabilities
               </h1>
-              <p className="text-sm text-gray-400 mt-1">Track and manage your outstanding debts</p>
+              <p className="text-sm text-surface-300 mt-1">Track and manage your outstanding debts</p>
             </div>
             <button className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30">
               <Plus className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function DebtsPage() {
                 <TrendingDown className="w-5 h-5 text-rose-400" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Total Debt</p>
+            <p className="text-sm text-surface-300 mb-1">Total Debt</p>
             <p className="text-3xl font-bold text-white">{formatCurrency(totalDebt)}</p>
           </div>
 
@@ -138,7 +138,7 @@ export default function DebtsPage() {
                 <Wallet className="w-5 h-5 text-lokifi-light" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Monthly Payments</p>
+            <p className="text-sm text-surface-300 mb-1">Monthly Payments</p>
             <p className="text-3xl font-bold text-white">{formatCurrency(totalMonthlyPayments)}</p>
           </div>
 
@@ -149,7 +149,7 @@ export default function DebtsPage() {
                 <AlertTriangle className="w-5 h-5 text-amber-400" />
               </div>
             </div>
-            <p className="text-sm text-gray-400 mb-1">Highest Interest Rate</p>
+            <p className="text-sm text-surface-300 mb-1">Highest Interest Rate</p>
             <p className="text-3xl font-bold text-white">{highestInterest.toFixed(2)}%</p>
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function DebtsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{debt.name}</h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-surface-300">
                         {debt.interestRate}% APR · Due on {debt.dueDate}
                         {['st', 'nd', 'rd'][debt.dueDate - 1] || 'th'}
                       </p>
@@ -182,7 +182,7 @@ export default function DebtsPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-xl font-bold text-white">{formatCurrency(debt.balance)}</p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Min: {formatCurrency(debt.minimumPayment)}/mo
                     </p>
                   </div>
@@ -199,7 +199,7 @@ export default function DebtsPage() {
               <CreditCard className="w-8 h-8 text-emerald-400" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No Debts Recorded</h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-surface-300 mb-6">
               Great job! You don&apos;t have any debts tracked yet.
             </p>
             <button className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-lokifi to-electric rounded-xl text-white font-medium">
