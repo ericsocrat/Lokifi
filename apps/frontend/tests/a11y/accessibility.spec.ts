@@ -6,13 +6,12 @@ import type { Result } from 'axe-core';
 
 test.describe('Accessibility Tests', () => {
   test.beforeEach(async ({ page }) => {
+    // Go to landing page (for unauthenticated users)
     await page.goto('/');
-    // Wait for automatic redirect from home to markets page
-    await page.waitForURL('**/markets', { timeout: 5000 });
     await page.waitForLoadState('networkidle');
   });
 
-  test('Homepage meets WCAG 2.1 AA standards', async ({ page }) => {
+  test('Landing page meets WCAG 2.1 AA standards', async ({ page }) => {
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
       .analyze();
