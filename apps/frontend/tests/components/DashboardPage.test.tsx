@@ -283,9 +283,7 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /add your first asset/i })
-        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /add your first asset/i })).toBeInTheDocument();
       });
     });
 
@@ -657,7 +655,9 @@ describe('DashboardPage', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' })
+          screen.getByRole('button', {
+            name: 'View your complete portfolio with detailed asset breakdown',
+          })
         ).toBeInTheDocument();
       });
     });
@@ -666,11 +666,15 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' });
+        const button = screen.getByRole('button', {
+          name: 'View your complete portfolio with detailed asset breakdown',
+        });
         expect(button).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' });
+      const button = screen.getByRole('button', {
+        name: 'View your complete portfolio with detailed asset breakdown',
+      });
       await userEvent.click(button);
 
       expect(mockPush).toHaveBeenCalledWith('/portfolio');
@@ -680,9 +684,7 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /add more assets/i })
-        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /add more assets/i })).toBeInTheDocument();
       });
     });
 
@@ -705,7 +707,9 @@ describe('DashboardPage', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' })
+          screen.getByRole('button', {
+            name: 'Browse live cryptocurrency, stock, forex, and indices markets',
+          })
         ).toBeInTheDocument();
       });
     });
@@ -714,11 +718,15 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' });
+        const button = screen.getByRole('button', {
+          name: 'Browse live cryptocurrency, stock, forex, and indices markets',
+        });
         expect(button).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' });
+      const button = screen.getByRole('button', {
+        name: 'Browse live cryptocurrency, stock, forex, and indices markets',
+      });
       await userEvent.click(button);
 
       expect(mockPush).toHaveBeenCalledWith('/markets');

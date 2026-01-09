@@ -43,6 +43,10 @@ export default function AlertsPage() {
   const [needAuthModal, setNeedAuthModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -91,12 +95,23 @@ export default function AlertsPage() {
   }, []);
 
   async function refresh() {
-    const ls = await listAlerts();
-    setAlerts(ls);
+    setIsRefreshing(true);
+    setError(null);
+    try {
+      const ls = await listAlerts();
+      setAlerts(ls);
+      setStatusMessage(`Loaded ${ls.length} alert${ls.length === 1 ? '' : 's'}`);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to load alerts';
+      setError(message);
+    } finally {
+      setIsRefreshing(false);
+    }
   }
 
   async function create() {
     setIsCreating(true);
+    setError(null);
     const { kind, symbol, direction, number } = form;
     try {
       if (kind === 'price_threshold') {
@@ -122,8 +137,42 @@ export default function AlertsPage() {
       }
       await refresh();
       setShowCreateForm(false);
+      setStatusMessage('Alert created');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unable to create alert';
+      setError(message);
     } finally {
       setIsCreating(false);
+    }
+  }
+
+  async function handleToggle(id: string, nextEnabled: boolean) {
+    setPendingId(id);
+    setError(null);
+    try {
+      await toggleAlert(id, nextEnabled);
+      await refresh();
+      setStatusMessage(`Alert ${nextEnabled ? 'enabled' : 'paused'}`);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unable to update alert';
+      setError(message);
+    } finally {
+      setPendingId(null);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setPendingId(id);
+    setError(null);
+    try {
+      await deleteAlert(id);
+      await refresh();
+      setStatusMessage('Alert deleted');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Unable to delete alert';
+      setError(message);
+    } finally {
+      setPendingId(null);
     }
   }
 
@@ -161,13 +210,26 @@ export default function AlertsPage() {
             <div className="flex items-center gap-3">
               <button
                 onClick={refresh}
-                className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl text-white transition-all duration-200"
+                disabled={isRefreshing}
+                aria-busy={isRefreshing}
+                aria-label={isRefreshing ? 'Refreshing alerts' : 'Refresh alerts'}
+                className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <RefreshCw className="w-4 h-4" />
-                Refresh
+                {isRefreshing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Refreshing...
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    Refresh
+                  </>
+                )}
               </button>
               <button
                 onClick={() => setShowCreateForm(!showCreateForm)}
+                aria-expanded={showCreateForm}
                 className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
               >
                 <Plus className="w-4 h-4" />
@@ -179,6 +241,29 @@ export default function AlertsPage() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
+        {(error || statusMessage) && (
+          <div className="space-y-2" aria-live="polite">
+            {error && (
+              <div
+                role="alert"
+                className="flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-100"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                <span>{error}</span>
+              </div>
+            )}
+            {statusMessage && !error && (
+              <div
+                role="status"
+                className="flex items-center gap-2 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-100"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{statusMessage}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Create Alert Form */}
         {showCreateForm && (
           <div className="border border-lokifi/30 rounded-2xl bg-gradient-to-br from-lokifi/10 via-electric/5 to-transparent p-6 backdrop-blur-sm animate-fade-in">
@@ -188,16 +273,21 @@ export default function AlertsPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-white">Create New Alert</h3>
-                <p className="text-sm text-surface-300">Set up a price or percentage change alert</p>
+                <p className="text-sm text-surface-300">
+                  Set up a price or percentage change alert
+                </p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               {/* Alert Type */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-300">Alert Type</label>
+                <label className="text-sm font-medium text-surface-300" htmlFor="alert-kind">
+                  Alert Type
+                </label>
                 <div className="relative">
                   <select
+                    id="alert-kind"
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
                     value={form.kind}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -213,8 +303,11 @@ export default function AlertsPage() {
 
               {/* Symbol */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-300">Symbol</label>
+                <label className="text-sm font-medium text-surface-300" htmlFor="alert-symbol">
+                  Symbol
+                </label>
                 <input
+                  id="alert-symbol"
                   className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                   placeholder="e.g., BTCUSD"
                   value={form.symbol}
@@ -226,9 +319,12 @@ export default function AlertsPage() {
 
               {/* Timeframe */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-300">Timeframe</label>
+                <label className="text-sm font-medium text-surface-300" htmlFor="alert-timeframe">
+                  Timeframe
+                </label>
                 <div className="relative">
                   <select
+                    id="alert-timeframe"
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
                     value={form.timeframe}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -248,9 +344,12 @@ export default function AlertsPage() {
 
               {/* Direction */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-300">Direction</label>
+                <label className="text-sm font-medium text-surface-300" htmlFor="alert-direction">
+                  Direction
+                </label>
                 <div className="relative">
                   <select
+                    id="alert-direction"
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
                     value={form.direction}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
@@ -267,11 +366,12 @@ export default function AlertsPage() {
 
               {/* Threshold */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-surface-300">
+                <label className="text-sm font-medium text-surface-300" htmlFor="alert-number">
                   {form.kind === 'price_threshold' ? 'Target Price' : 'Percentage'}
                 </label>
                 <div className="relative">
                   <input
+                    id="alert-number"
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                     placeholder={form.kind === 'price_threshold' ? '45000' : '5'}
                     value={form.number}
@@ -288,8 +388,11 @@ export default function AlertsPage() {
               {/* Window (for % change only) */}
               {form.kind === 'pct_change' && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-surface-300">Window (minutes)</label>
+                  <label className="text-sm font-medium text-surface-300" htmlFor="alert-window">
+                    Window (minutes)
+                  </label>
                   <input
+                    id="alert-window"
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                     placeholder="60"
                     value={form.window}
@@ -444,15 +547,15 @@ export default function AlertsPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={async () => {
-                          await toggleAlert(a.id, !a.enabled);
-                          await refresh();
-                        }}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                        onClick={() => handleToggle(a.id, !a.enabled)}
+                        disabled={pendingId === a.id || isRefreshing}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
                           a.enabled
                             ? 'bg-surface-200 hover:bg-surface-300 text-surface-300'
                             : 'bg-green-500/10 hover:bg-green-500/20 text-green-400'
                         }`}
+                        aria-label={a.enabled ? 'Pause alert' : 'Enable alert'}
+                        aria-busy={pendingId === a.id}
                       >
                         {a.enabled ? (
                           <>
@@ -467,11 +570,11 @@ export default function AlertsPage() {
                         )}
                       </button>
                       <button
-                        onClick={async () => {
-                          await deleteAlert(a.id);
-                          await refresh();
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all"
+                        onClick={() => handleDelete(a.id)}
+                        disabled={pendingId === a.id || isRefreshing}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                        aria-label="Delete alert"
+                        aria-busy={pendingId === a.id}
                       >
                         <Trash2 className="w-4 h-4" />
                         Delete
@@ -501,7 +604,12 @@ export default function AlertsPage() {
               </div>
             )}
           </div>
-          <div className="p-5 max-h-64 overflow-auto">
+          <div
+            className="p-5 max-h-64 overflow-auto"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions"
+          >
             {log.length === 0 ? (
               <p className="text-sm text-surface-300 text-center py-8">
                 No triggers yet. Alerts will appear here in real-time.

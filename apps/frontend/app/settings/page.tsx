@@ -66,15 +66,17 @@ export default function SettingsPage() {
             <Settings className="w-6 h-6 text-lokifi-light" />
             Settings
           </h1>
-          <p className="text-sm text-surface-300 mt-1">Manage your preferences and account settings</p>
+          <p className="text-sm text-surface-300 mt-1">
+            Manage your preferences and account settings
+          </p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         <div className="flex gap-8">
           {/* Sidebar Navigation */}
-          <nav className="w-64 shrink-0">
-            <div className="space-y-1">
+          <nav className="w-64 shrink-0" aria-label="Settings tabs">
+            <div className="space-y-1" role="tablist">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -84,6 +86,9 @@ export default function SettingsPage() {
                       ? 'bg-gradient-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
                       : 'text-surface-300 hover:bg-surface-200 hover:text-white'
                   }`}
+                  role="tab"
+                  aria-selected={activeTab === tab.id}
+                  aria-pressed={activeTab === tab.id}
                 >
                   {tab.icon}
                   <span className="font-medium">{tab.label}</span>
@@ -119,6 +124,8 @@ export default function SettingsPage() {
                             ? 'border-lokifi bg-lokifi/10 text-lokifi-light'
                             : 'border-surface-300 hover:border-surface-200 text-surface-300'
                         }`}
+                        aria-pressed={currency === curr.code}
+                        aria-label={`Select ${curr.name} currency`}
                       >
                         <span className="text-lg font-bold">{curr.symbol}</span>
                         <span className="text-sm ml-2">{curr.code}</span>
@@ -145,6 +152,7 @@ export default function SettingsPage() {
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
                     className="w-full px-4 py-3 bg-surface-200 border border-surface-300 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lokifi/20 focus:border-lokifi/50"
+                    aria-label="Select language"
                   >
                     {languages.map((lang) => (
                       <option key={lang.code} value={lang.code}>
@@ -237,6 +245,8 @@ export default function SettingsPage() {
                         className={`w-12 h-6 rounded-full transition-colors duration-200 ${
                           value ? 'bg-lokifi' : 'bg-surface-300'
                         }`}
+                        aria-pressed={value}
+                        aria-label={`Toggle ${key.replace(/([A-Z])/g, ' $1').trim()}`}
                       >
                         <div
                           className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform duration-200 ${
@@ -315,5 +325,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-

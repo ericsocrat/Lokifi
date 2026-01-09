@@ -165,8 +165,9 @@ export default function EditProfilePage() {
       <div className="min-h-screen bg-surface-0">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center justify-center min-h-[400px]" aria-live="polite">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+            <span className="sr-only">Loading profile editor</span>
           </div>
         </div>
       </div>
@@ -184,6 +185,7 @@ export default function EditProfilePage() {
             <Link
               href="/profile"
               className="p-2 bg-surface-100 rounded-lg hover:bg-surface-200 transition-colors"
+              aria-label="Back to profile"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
@@ -231,6 +233,7 @@ export default function EditProfilePage() {
                     type="button"
                     onClick={removeAvatar}
                     className="absolute -top-2 -right-2 bg-red-600 p-1 rounded-full hover:bg-red-700 transition-colors"
+                    aria-label="Remove current avatar"
                   >
                     <X className="w-4 h-4 text-white" />
                   </button>
@@ -261,7 +264,9 @@ export default function EditProfilePage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">Display Name</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">
+                  Display Name
+                </label>
                 <input
                   type="text"
                   name="display_name"
@@ -301,7 +306,9 @@ export default function EditProfilePage() {
                   placeholder="Tell us about yourself..."
                   maxLength={500}
                 />
-                <p className="text-surface-300 text-sm mt-1">{formData.bio.length}/500 characters</p>
+                <p className="text-surface-300 text-sm mt-1">
+                  {formData.bio.length}/500 characters
+                </p>
               </div>
             </div>
           </div>
@@ -320,7 +327,9 @@ export default function EditProfilePage() {
                   )}
                   <div>
                     <h4 className="text-white font-medium">Public Profile</h4>
-                    <p className="text-surface-300 text-sm">Make your profile visible to everyone</p>
+                    <p className="text-surface-300 text-sm">
+                      Make your profile visible to everyone
+                    </p>
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -359,4 +368,3 @@ export default function EditProfilePage() {
     </div>
   );
 }
-

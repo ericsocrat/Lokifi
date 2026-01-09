@@ -174,8 +174,9 @@ export default function SettingsPage() {
       <div className="min-h-screen bg-surface-0">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center justify-center min-h-[400px]" aria-live="polite">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
+            <span className="sr-only">Loading settings</span>
           </div>
         </div>
       </div>
@@ -263,6 +264,7 @@ export default function SettingsPage() {
             onClick={() => userSettings && updateUserSettings(userSettings)}
             disabled={saving}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+            aria-label="Save account information"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving...' : 'Save Changes'}</span>
@@ -390,6 +392,7 @@ export default function SettingsPage() {
             onClick={() => notificationPrefs && updateNotificationPreferences(notificationPrefs)}
             disabled={saving}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+            aria-label="Save notification preferences"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving...' : 'Save Preferences'}</span>
@@ -520,4 +523,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

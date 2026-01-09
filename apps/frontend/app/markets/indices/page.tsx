@@ -93,11 +93,15 @@ function IndicesPageContent() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12" aria-live="polite">
             <div className="flex items-center gap-3 text-neutral-400">
               <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
               <span>Loading indices...</span>
             </div>
+          </div>
+        ) : allIndices.length === 0 ? (
+          <div className="flex items-center justify-center py-12" aria-live="polite">
+            <div className="text-neutral-400 text-sm">No indices available right now.</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -216,5 +220,3 @@ export default function IndicesPage() {
     </ProtectedRoute>
   );
 }
-
-

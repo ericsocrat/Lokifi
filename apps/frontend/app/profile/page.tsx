@@ -104,9 +104,10 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-surface-300">
+        <div className="flex items-center gap-3 text-surface-300" aria-live="polite">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading profile...</span>
+          <span className="sr-only">Loading your profile details</span>
         </div>
       </div>
     );
@@ -161,6 +162,7 @@ export default function ProfilePage() {
                 <Link
                   href="/profile/edit"
                   className="absolute -bottom-2 -right-2 bg-lokifi p-2.5 rounded-xl hover:bg-lokifi-dark transition-colors shadow-lg"
+                  aria-label="Update profile picture"
                 >
                   <Camera className="w-4 h-4 text-white" />
                 </Link>
@@ -444,7 +446,10 @@ export default function ProfilePage() {
               <p className="text-surface-300 text-sm">Download all your data (GDPR compliant)</p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-surface-300 hover:bg-surface-400 text-white rounded-xl text-sm font-medium transition-colors">
+          <button
+            className="px-4 py-2 bg-surface-300 hover:bg-surface-400 text-white rounded-xl text-sm font-medium transition-colors"
+            aria-label="Export your data"
+          >
             Export
           </button>
         </div>
@@ -472,7 +477,11 @@ export default function ProfilePage() {
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Tab Navigation */}
         <div className="mb-8">
-          <div className="inline-flex bg-surface-100 border border-surface-300/50 rounded-xl p-1">
+          <div
+            className="inline-flex bg-surface-100 border border-surface-300/50 rounded-xl p-1"
+            role="tablist"
+            aria-label="Profile tabs"
+          >
             {[
               { id: 'overview', label: 'Overview', icon: User },
               { id: 'settings', label: 'Settings', icon: Settings },
@@ -486,6 +495,9 @@ export default function ProfilePage() {
                     ? 'bg-lokifi text-white shadow-lg shadow-lokifi/30'
                     : 'text-surface-300 hover:text-white hover:bg-surface-200'
                 }`}
+                role="tab"
+                aria-selected={activeTab === id}
+                aria-pressed={activeTab === id}
               >
                 <Icon className="w-4 h-4" />
                 <span>{label}</span>

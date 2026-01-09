@@ -399,15 +399,22 @@ function PortfolioPageContent() {
                 <button
                   onClick={openAddAssetModal}
                   className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-lokifi hover:bg-lokifi/90 text-white rounded-xl font-medium transition-all hover:shadow-lg hover:scale-[1.02]"
+                  aria-label="Add new asset to portfolio"
                 >
                   <Plus className="w-4 h-4" />
                   Add Asset
                 </button>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-surface-200 hover:bg-surface-300 text-white rounded-xl font-medium transition-all">
+                <button
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-surface-200 hover:bg-surface-300 text-white rounded-xl font-medium transition-all"
+                  aria-label="Export portfolio as PDF"
+                >
                   <Download className="w-4 h-4" />
                   Export PDF
                 </button>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-surface-300 hover:border-lokifi text-surface-300 rounded-xl font-medium transition-all">
+                <button
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-surface-300 hover:border-lokifi text-surface-300 rounded-xl font-medium transition-all"
+                  aria-label="View portfolio analytics"
+                >
                   <BarChart3 className="w-4 h-4" />
                   Analytics
                 </button>
@@ -637,10 +644,16 @@ function PortfolioPageContent() {
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between">
-              <button className="text-sm text-surface-300 hover:text-white">
+              <button
+                className="text-sm text-surface-300 hover:text-white"
+                aria-label="Clear all portfolio filters"
+              >
                 Clear all filters
               </button>
-              <button className="px-4 py-2 bg-lokifi hover:bg-lokifi/90 text-white text-sm font-medium rounded-lg transition-colors">
+              <button
+                className="px-4 py-2 bg-lokifi hover:bg-lokifi/90 text-white text-sm font-medium rounded-lg transition-colors"
+                aria-label="Apply selected filters to portfolio"
+              >
                 Apply Filters
               </button>
             </div>
@@ -648,20 +661,39 @@ function PortfolioPageContent() {
         )}
 
         {/* Category Tabs */}
-        <div className="flex items-center gap-2 mb-6 bg-surface-100 rounded-xl p-1.5 border border-surface-200/50 w-fit">
-          <button className="px-4 py-2 bg-lokifi text-white rounded-lg text-sm font-medium transition-colors">
+        <div
+          className="flex items-center gap-2 mb-6 bg-surface-100 rounded-xl p-1.5 border border-surface-200/50 w-fit"
+          role="tablist"
+          aria-label="Portfolio categories"
+        >
+          <button
+            className="px-4 py-2 bg-lokifi text-white rounded-lg text-sm font-medium transition-colors"
+            role="tab"
+            aria-selected="true"
+            aria-label="View investments portfolio"
+          >
             <div className="flex items-center gap-2">
               <Briefcase className="w-4 h-4" />
               Investments
             </div>
           </button>
-          <button className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
+          <button
+            className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors"
+            role="tab"
+            aria-selected="false"
+            aria-label="View real estate portfolio"
+          >
             <div className="flex items-center gap-2">
               <Home className="w-4 h-4" />
               Real Estate
             </div>
           </button>
-          <button className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
+          <button
+            className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors"
+            role="tab"
+            aria-selected="false"
+            aria-label="View other assets portfolio"
+          >
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Others
@@ -683,12 +715,16 @@ function PortfolioPageContent() {
               <div
                 className="flex items-center justify-between mb-3 cursor-pointer group"
                 onClick={() => toggleSection(section.title)}
+                role="button"
+                aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${section.title} section`}
+                aria-expanded={!isCollapsed}
               >
                 <div className="flex items-center gap-3">
                   <ChevronDown
                     className={`w-5 h-5 text-surface-300 transition-transform ${
                       isCollapsed ? '-rotate-90' : ''
                     }`}
+                    aria-hidden="true"
                   />
                   <h2 className="text-lg font-semibold text-white">{section.title}</h2>
                   <span className="px-2.5 py-0.5 bg-surface-200 text-surface-300 text-xs font-medium rounded-full">
@@ -720,6 +756,7 @@ function PortfolioPageContent() {
                       openAddAssetModal();
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-surface-100 hover:bg-surface-200 text-surface-300 rounded-xl font-medium transition-colors border-2 border-dashed border-surface-300"
+                    aria-label={`Add new asset to ${section.title} section`}
                   >
                     <Plus className="w-5 h-5" />
                     Add Asset to {section.title}
@@ -754,6 +791,7 @@ function PortfolioPageContent() {
             <button
               onClick={addNewSection}
               className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors"
+              aria-label="Create new portfolio section"
             >
               <Plus className="w-4 h-4" />
               New Section
@@ -761,6 +799,7 @@ function PortfolioPageContent() {
             <button
               onClick={openAddAssetModal}
               className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors"
+              aria-label="Add new asset to portfolio"
             >
               <Plus className="w-4 h-4" />
               Add Asset
@@ -876,6 +915,10 @@ function AssetItem({
             <button
               onClick={() => setIsStarred(!isStarred)}
               className="opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label={
+                isStarred ? `Remove ${asset.name} from favorites` : `Add ${asset.name} to favorites`
+              }
+              aria-pressed={isStarred}
             >
               <Star
                 className={`w-4 h-4 ${isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-surface-300'}`}
@@ -936,12 +979,23 @@ function AssetItem({
             <MoreHorizontal className="w-5 h-5 text-surface-300" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-12 w-48 bg-surface-100 border border-surface-200/50 rounded-xl shadow-xl py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2">
+            <div
+              className="absolute right-0 top-12 w-48 bg-surface-100 border border-surface-200/50 rounded-xl shadow-xl py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200"
+              role="menu"
+            >
+              <button
+                className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2"
+                role="menuitem"
+                aria-label={`View details for ${asset.name}`}
+              >
                 <Eye className="w-4 h-4" />
                 View Details
               </button>
-              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2">
+              <button
+                className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2"
+                role="menuitem"
+                aria-label={`Edit ${asset.name} asset`}
+              >
                 <Edit2 className="w-4 h-4" />
                 Edit Asset
               </button>
@@ -953,6 +1007,8 @@ function AssetItem({
                     setShowMenu(false);
                   }}
                   className="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 text-sm font-medium transition-colors flex items-center gap-2"
+                  role="menuitem"
+                  aria-label={`Delete ${asset.name} from portfolio`}
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete Asset

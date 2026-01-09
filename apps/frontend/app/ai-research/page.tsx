@@ -142,7 +142,7 @@ export default function AIResearchPage() {
             </div>
           ) : (
             /* Conversation */
-            <div className="space-y-6">
+            <div className="space-y-6" role="log" aria-live="polite" aria-relevant="additions">
               {conversation.map((msg, index) => (
                 <div
                   key={index}
@@ -174,7 +174,10 @@ export default function AIResearchPage() {
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center">
                     <Bot className="w-5 h-5 text-white" />
                   </div>
-                  <div className="bg-surface-100 border border-surface-300/50 rounded-2xl p-4">
+                  <div
+                    className="bg-surface-100 border border-surface-300/50 rounded-2xl p-4"
+                    aria-live="assertive"
+                  >
                     <Loader2 className="w-5 h-5 text-lokifi-light animate-spin" />
                   </div>
                 </div>
@@ -193,6 +196,7 @@ export default function AIResearchPage() {
               handleSubmit(query);
             }}
             className="flex gap-3"
+            aria-busy={isLoading}
           >
             <div className="flex-1 relative">
               <input
@@ -202,12 +206,14 @@ export default function AIResearchPage() {
                 placeholder="Ask about markets, stocks, or your portfolio..."
                 className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300 focus:outline-none transition-all"
                 disabled={isLoading}
+                aria-label="AI research question"
               />
             </div>
             <button
               type="submit"
               disabled={!query.trim() || isLoading}
               className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 disabled:from-surface-200 disabled:to-surface-300 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-200 flex items-center gap-2"
+              aria-label={isLoading ? 'Submitting your question' : 'Ask AI'}
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -223,10 +229,11 @@ export default function AIResearchPage() {
             AI responses are for informational purposes only. Always do your own research before
             making investment decisions.
           </p>
+          <div className="sr-only" aria-live="polite">
+            {isLoading ? 'Analyzing your question' : 'Ready for a new question'}
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-

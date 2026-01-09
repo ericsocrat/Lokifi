@@ -236,17 +236,24 @@ function GoalCard({
           <button
             onClick={() => setShowMenu(!showMenu)}
             className="p-2 rounded-lg hover:bg-surface-2 transition-colors opacity-0 group-hover:opacity-100"
+            aria-expanded={showMenu}
+            aria-label="Goal options menu"
+            aria-haspopup="menu"
           >
             <MoreHorizontal className="w-4 h-4 text-surface-11" />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-30 z-10">
+            <div
+              className="absolute right-0 top-full mt-1 bg-surface-2 border border-surface-3 rounded-lg shadow-xl py-1 min-w-30 z-10"
+              role="menu"
+            >
               <button
                 onClick={() => {
                   onEdit(goal.id);
                   setShowMenu(false);
                 }}
                 className="w-full px-3 py-2 text-left text-sm text-surface-11 hover:bg-surface-3 flex items-center gap-2"
+                role="menuitem"
               >
                 <Edit2 className="w-4 h-4" />
                 Edit
@@ -257,6 +264,7 @@ function GoalCard({
                   setShowMenu(false);
                 }}
                 className="w-full px-3 py-2 text-left text-sm text-rose-400 hover:bg-surface-3 flex items-center gap-2"
+                role="menuitem"
               >
                 <Trash2 className="w-4 h-4" />
                 Delete
@@ -466,9 +474,13 @@ export default function GoalsPage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div
+          className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
+          role="group"
+          aria-label="Filter and sort goals"
+        >
           {/* Category Filter */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
             {categories.map((cat) => (
               <button
                 key={cat.value}
@@ -478,6 +490,8 @@ export default function GoalsPage() {
                     ? 'bg-lokifi-500 text-white'
                     : 'bg-surface-2 text-surface-11 hover:bg-surface-3'
                 }`}
+                aria-pressed={filter === cat.value}
+                aria-label={`Filter by ${cat.label}`}
               >
                 {cat.label}
               </button>
@@ -485,10 +499,15 @@ export default function GoalsPage() {
           </div>
 
           {/* Sort */}
+          <label htmlFor="sort-goals" className="sr-only">
+            Sort goals by
+          </label>
           <select
+            id="sort-goals"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="px-4 py-2 bg-surface-2 border border-surface-3 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-lokifi-500"
+            aria-label="Sort goals by"
           >
             <option value="deadline">Sort by Deadline</option>
             <option value="progress">Sort by Progress</option>
@@ -498,19 +517,24 @@ export default function GoalsPage() {
 
         {/* Goals Grid */}
         {filteredGoals.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" role="list">
             {filteredGoals.map((goal) => (
-              <GoalCard
-                key={goal.id}
-                goal={goal}
-                formatCurrency={formatCurrency}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
+              <div key={goal.id} role="listitem">
+                <GoalCard
+                  goal={goal}
+                  formatCurrency={formatCurrency}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="bg-surface-1 rounded-2xl p-12 border border-surface-3 text-center">
+          <div
+            className="bg-surface-1 rounded-2xl p-12 border border-surface-3 text-center"
+            role="status"
+            aria-live="polite"
+          >
             <div className="w-16 h-16 mx-auto mb-4 bg-surface-2 rounded-full flex items-center justify-center">
               <Target className="w-8 h-8 text-surface-11" />
             </div>
@@ -520,7 +544,10 @@ export default function GoalsPage() {
                 ? "You haven't set any financial goals yet"
                 : `No goals in the ${filter} category`}
             </p>
-            <button className="px-4 py-2 bg-lokifi-500 text-white rounded-lg hover:bg-lokifi-600 transition-colors">
+            <button
+              className="px-4 py-2 bg-lokifi-500 text-white rounded-lg hover:bg-lokifi-600 transition-colors"
+              aria-label="Create your first financial goal"
+            >
               Create Your First Goal
             </button>
           </div>
@@ -559,4 +586,3 @@ export default function GoalsPage() {
     </div>
   );
 }
-

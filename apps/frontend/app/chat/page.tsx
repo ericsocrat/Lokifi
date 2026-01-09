@@ -41,7 +41,13 @@ export default function ChatPage() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">AI Chat</h1>
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900">
-        <div ref={boxRef} className="max-h-[60vh] overflow-auto p-4 space-y-3">
+        <div
+          ref={boxRef}
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+          className="max-h-[60vh] overflow-auto p-4 space-y-3"
+        >
           {messages
             .filter((m: ChatMessage) => m.role !== 'system')
             .map((m: ChatMessage, i: number) => (
@@ -54,7 +60,11 @@ export default function ChatPage() {
               </div>
             ))}
         </div>
-        <div className="border-t border-neutral-800 p-3 flex gap-2">
+        <div
+          className="border-t border-neutral-800 p-3 flex gap-2"
+          aria-busy={busy}
+          aria-live="polite"
+        >
           <input
             className="flex-1 px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Ask: /price BTCUSD 1h | /alert BTCUSD above 45000 | /portfolio"
@@ -63,14 +73,19 @@ export default function ChatPage() {
             onKeyDown={(e) => {
               if (e.key === 'Enter') send();
             }}
+            aria-label="Chat prompt"
           />
           <button
             onClick={send}
             disabled={busy}
             className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60"
+            aria-label={busy ? 'Sending message' : 'Send message'}
           >
             {busy ? '...' : 'Send'}
           </button>
+        </div>
+        <div className="sr-only" aria-live="polite">
+          {busy ? 'Sending message' : 'Ready for input'}
         </div>
       </div>
       <p className="text-sm text-neutral-400">
@@ -92,4 +107,3 @@ export default function ChatPage() {
     </div>
   );
 }
-

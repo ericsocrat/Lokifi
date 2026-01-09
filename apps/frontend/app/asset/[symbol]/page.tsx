@@ -186,9 +186,10 @@ function AssetDetailContent() {
   if (!asset || cryptosLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-0">
-        <div className="text-center">
+        <div className="text-center" aria-live="polite">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi mx-auto mb-4" />
           <p className="text-surface-300 font-medium">Loading asset data from backend...</p>
+          <span className="sr-only">Loading {symbol} asset details...</span>
           {connected && <p className="text-green-400 text-sm mt-2">✅ Live updates connected</p>}
         </div>
       </div>
@@ -218,6 +219,7 @@ function AssetDetailContent() {
         <button
           onClick={() => router.push('/markets')}
           className="mb-6 px-4 py-2 bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-xl hover:bg-surface-200 transition-all flex items-center gap-2 font-bold text-surface-300 shadow-lg"
+          aria-label="Go back to markets page"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Markets
@@ -307,6 +309,12 @@ function AssetDetailContent() {
                     ? 'bg-gradient-to-r from-lokifi to-electric text-white'
                     : 'bg-surface-200 text-surface-300 border border-surface-300'
                 }`}
+                aria-label={
+                  isInWatchlist
+                    ? `Remove ${asset.name} from watchlist`
+                    : `Add ${asset.name} to watchlist`
+                }
+                aria-pressed={isInWatchlist}
               >
                 <Star className={`w-5 h-5 ${isInWatchlist ? 'fill-current' : ''}`} />
                 {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
@@ -328,7 +336,11 @@ function AssetDetailContent() {
                 </div>
 
                 {/* Time Frame Selector */}
-                <div className="flex gap-2 bg-surface-200 p-1.5 rounded-xl">
+                <div
+                  className="flex gap-2 bg-surface-200 p-1.5 rounded-xl"
+                  role="group"
+                  aria-label="Select chart time period"
+                >
                   {timeFrameButtons.map((tf) => (
                     <button
                       key={tf.value}
@@ -338,6 +350,8 @@ function AssetDetailContent() {
                           ? 'bg-gradient-to-r from-lokifi to-electric text-white shadow-lg scale-105'
                           : 'text-surface-300 hover:bg-surface-300'
                       }`}
+                      aria-label={`View ${tf.label} chart period`}
+                      aria-pressed={selectedTimeFrame === tf.value}
                     >
                       {tf.label}
                     </button>
@@ -347,10 +361,11 @@ function AssetDetailContent() {
 
               {/* Chart Area */}
               {historyLoading ? (
-                <div className="h-[400px] flex items-center justify-center">
+                <div className="h-[400px] flex items-center justify-center" aria-live="polite">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lokifi mx-auto mb-2" />
                     <p className="text-surface-300">Loading chart data...</p>
+                    <span className="sr-only">Loading historical price chart...</span>
                   </div>
                 </div>
               ) : historicalData.length === 0 ? (

@@ -123,11 +123,19 @@ export default function RecapPage() {
   const monthName = selectedMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
   const prevMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.setMonth(selectedMonth.getMonth() - 1)));
+    setSelectedMonth((prev) => {
+      const copy = new Date(prev);
+      copy.setMonth(prev.getMonth() - 1);
+      return copy;
+    });
   };
 
   const nextMonth = () => {
-    setSelectedMonth(new Date(selectedMonth.setMonth(selectedMonth.getMonth() + 1)));
+    setSelectedMonth((prev) => {
+      const copy = new Date(prev);
+      copy.setMonth(prev.getMonth() + 1);
+      return copy;
+    });
   };
 
   // Calculate monthly stats
@@ -156,19 +164,27 @@ export default function RecapPage() {
                 Review your portfolio activity and transactions
               </p>
             </div>
-            <div className="flex items-center gap-2 bg-surface-100 border border-surface-300 rounded-xl p-1">
+            <div
+              className="flex items-center gap-2 bg-surface-100 border border-surface-300 rounded-xl p-1"
+              aria-label="Select month"
+            >
               <button
                 onClick={prevMonth}
                 className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+                aria-label="Previous month"
               >
                 <ChevronLeft className="w-5 h-5 text-surface-300" />
               </button>
-              <span className="px-4 py-2 text-white font-medium min-w-40 text-center">
+              <span
+                className="px-4 py-2 text-white font-medium min-w-40 text-center"
+                aria-live="polite"
+              >
                 {monthName}
               </span>
               <button
                 onClick={nextMonth}
                 className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+                aria-label="Next month"
               >
                 <ChevronRight className="w-5 h-5 text-surface-300" />
               </button>
@@ -279,5 +295,3 @@ export default function RecapPage() {
     </div>
   );
 }
-
-

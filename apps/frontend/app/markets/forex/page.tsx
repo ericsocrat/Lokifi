@@ -56,7 +56,7 @@ function ForexPageContent() {
     return sorted;
   }, [allPairs, sortField, sortDirection]);
 
-  const _handleSort = (field: SortField) => {
+  const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -65,7 +65,7 @@ function ForexPageContent() {
     }
   };
 
-  const _getSortIcon = (field: SortField) => {
+  const getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="w-4 h-4 opacity-50" />;
     return sortDirection === 'asc' ? (
       <TrendingUp className="w-4 h-4 text-blue-500" />
@@ -100,7 +100,7 @@ function ForexPageContent() {
       {/* Header */}
       <div className="border-b border-neutral-800 bg-[#17171A]/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-white flex items-center gap-2">
                 <Globe2 className="w-6 h-6 text-purple-500" />
@@ -113,25 +113,56 @@ function ForexPageContent() {
                 {sortedPairs.length} currency pairs • Real-time from ExchangeRate-API
               </p>
             </div>
-            <button
-              onClick={() => refetch()}
-              disabled={isFetching}
-              className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 bg-neutral-900/70 border border-neutral-800 rounded-lg px-3 py-2">
+                <label className="sr-only" htmlFor="forex-sort">
+                  Sort forex pairs
+                </label>
+                <select
+                  id="forex-sort"
+                  aria-label="Sort forex pairs"
+                  value={sortField}
+                  onChange={(event) => handleSort(event.target.value as SortField)}
+                  className="bg-transparent text-white text-sm focus:outline-none"
+                >
+                  <option value="symbol">Symbol</option>
+                  <option value="name">Name</option>
+                  <option value="current_price">Price</option>
+                  <option value="price_change_percentage_24h">24h Change</option>
+                </select>
+                {getSortIcon(sortField)}
+              </div>
+              <button
+                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+                className="px-3 py-2 bg-neutral-900/70 border border-neutral-800 rounded-lg text-sm text-white hover:border-neutral-700 transition-colors"
+                aria-label={`Sort ${sortDirection === 'asc' ? 'descending' : 'ascending'}`}
+              >
+                {sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+              </button>
+              <button
+                onClick={() => refetch()}
+                disabled={isFetching}
+                className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12" aria-live="polite">
             <div className="flex items-center gap-3 text-neutral-400">
               <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
               <span>Loading forex pairs...</span>
             </div>
+          </div>
+        ) : sortedPairs.length === 0 ? (
+          <div className="flex items-center justify-center py-12" aria-live="polite">
+            <div className="text-neutral-400 text-sm">No forex pairs available right now.</div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -219,5 +250,3 @@ export default function ForexPage() {
     </ProtectedRoute>
   );
 }
-
-

@@ -165,8 +165,11 @@ function StocksPageContent() {
             <input
               type="text"
               placeholder="Search stocks by name or symbol..."
+              aria-label="Search stocks by name or symbol"
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+                setSearchQuery(e.target.value)
+              }
               className="w-full pl-10 pr-4 py-3 bg-neutral-900 border border-neutral-800 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -187,11 +190,15 @@ function StocksPageContent() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12" aria-live="polite">
             <div className="flex items-center gap-3 text-neutral-400">
               <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
               <span>Loading stocks...</span>
             </div>
+          </div>
+        ) : filteredAndSortedStocks.length === 0 ? (
+          <div className="flex items-center justify-center py-12" aria-live="polite">
+            <div className="text-neutral-400 text-sm">No stocks available right now.</div>
           </div>
         ) : (
           <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg overflow-hidden">
@@ -263,7 +270,9 @@ function StocksPageContent() {
                   <div className="col-span-2 flex items-center justify-end">
                     <span
                       className={`font-medium ${
-                        (stock.price_change_percentage_24h ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'
+                        (stock.price_change_percentage_24h ?? 0) >= 0
+                          ? 'text-green-500'
+                          : 'text-red-500'
                       }`}
                     >
                       {(stock.price_change_percentage_24h ?? 0) >= 0 ? '+' : ''}
@@ -273,7 +282,9 @@ function StocksPageContent() {
 
                   {/* Market Cap */}
                   <div className="col-span-3 flex items-center justify-end">
-                    <span className="text-neutral-400">{formatCurrency(stock.market_cap ?? 0)}</span>
+                    <span className="text-neutral-400">
+                      {formatCurrency(stock.market_cap ?? 0)}
+                    </span>
                   </div>
 
                   {/* Watchlist */}
@@ -284,6 +295,11 @@ function StocksPageContent() {
                         toggleWatchlist(stock.symbol);
                       }}
                       className="p-2 hover:bg-neutral-700 rounded-lg transition-colors"
+                      aria-label={
+                        watchlist.includes(stock.symbol)
+                          ? `Remove ${stock.symbol} from watchlist`
+                          : `Add ${stock.symbol} to watchlist`
+                      }
                     >
                       <Star
                         className={`w-4 h-4 ${
@@ -321,5 +337,3 @@ export default function StocksPage() {
     </ProtectedRoute>
   );
 }
-
-

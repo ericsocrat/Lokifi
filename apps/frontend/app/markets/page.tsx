@@ -7,8 +7,10 @@ import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useUnifiedAssets } from '@/src/hooks/useUnifiedAssets';
 import {
   ArrowRight,
+  BarChart3,
   Bitcoin,
   DollarSign,
+  Globe2,
   RefreshCw,
   Sparkles,
   TrendingDown,
@@ -36,7 +38,9 @@ function MarketsOverviewContent() {
               <Sparkles className="w-7 h-7 text-red-400" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Error Loading Markets</h3>
-            <p className="text-surface-300 mb-6">{error?.message || 'Failed to load market data'}</p>
+            <p className="text-surface-300 mb-6">
+              {error?.message || 'Failed to load market data'}
+            </p>
             <button
               onClick={() => refetch()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
@@ -52,8 +56,8 @@ function MarketsOverviewContent() {
 
   const cryptos = data?.data.crypto || [];
   const stocks = data?.data.stocks || [];
-  const _indices = data?.data.indices || [];
-  const _forex = data?.data.forex || [];
+  const indices = data?.data.indices || [];
+  const forex = data?.data.forex || [];
 
   return (
     <div className="min-h-screen bg-surface-0">
@@ -82,7 +86,7 @@ function MarketsOverviewContent() {
 
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {isLoading && (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12" aria-live="polite">
             <div className="flex items-center gap-3 text-surface-300">
               <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
               <span>Loading markets...</span>
@@ -91,6 +95,15 @@ function MarketsOverviewContent() {
         )}
 
         {!isLoading && data && <MarketStats data={data.data} />}
+
+        {!isLoading && !cryptos.length && !stocks.length && !indices.length && !forex.length && (
+          <div className="border border-surface-200/60 rounded-2xl p-6 bg-surface-50/40 text-center">
+            <p className="text-surface-200 font-semibold">No market data available right now.</p>
+            <p className="text-surface-400 text-sm mt-2">
+              Try refreshing or check back in a few moments.
+            </p>
+          </div>
+        )}
 
         {/* Cryptocurrencies Section */}
         {!isLoading && cryptos.length > 0 && (
@@ -229,6 +242,146 @@ function MarketsOverviewContent() {
                   )}
                 </Link>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Indices Section */}
+        {!isLoading && indices.length > 0 && (
+          <div className="border border-blue-500/30 rounded-2xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent p-6 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-blue-500/20 rounded-xl">
+                  <BarChart3 className="w-5 h-5 text-blue-300" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    Market Indices
+                    <span className="text-xs px-2 py-0.5 bg-yellow-500/15 text-yellow-400 rounded-lg border border-yellow-500/30">
+                      Mock Data
+                    </span>
+                  </h2>
+                  <p className="text-sm text-surface-300">Snapshot of {indices.length} indices</p>
+                </div>
+              </div>
+              <Link
+                href="/markets/indices"
+                className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-blue-500/30 rounded-xl text-white text-sm transition-all group"
+              >
+                View All
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {indices.slice(0, 8).map((asset: UnifiedAsset) => {
+                const isPositive = (asset.price_change_percentage_24h ?? 0) >= 0;
+
+                return (
+                  <Link
+                    key={asset.id}
+                    href={`/asset/${asset.symbol}`}
+                    className="bg-surface-100/50 hover:bg-surface-100 border border-surface-300/50 hover:border-blue-500/30 rounded-xl p-4 transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+                          <BarChart3 className="w-5 h-5 text-blue-300" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-white truncate text-sm group-hover:text-blue-300 transition-colors">
+                            {asset.symbol}
+                          </div>
+                          <div className="text-xs text-surface-300 truncate">{asset.name}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-lg font-bold text-white mb-1">
+                      {formatCurrency(asset.current_price)}
+                    </div>
+                    <div
+                      className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}
+                    >
+                      {isPositive ? (
+                        <TrendingUp className="w-3.5 h-3.5" />
+                      ) : (
+                        <TrendingDown className="w-3.5 h-3.5" />
+                      )}
+                      {isPositive ? '+' : ''}
+                      {(asset.price_change_percentage_24h ?? 0).toFixed(2)}%
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Forex Section */}
+        {!isLoading && forex.length > 0 && (
+          <div className="border border-purple-500/30 rounded-2xl bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent p-6 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-purple-500/20 rounded-xl">
+                  <Globe2 className="w-5 h-5 text-purple-300" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    Forex
+                    <span className="text-xs px-2 py-0.5 bg-green-500/15 text-green-400 rounded-lg border border-green-500/30">
+                      Live Data
+                    </span>
+                  </h2>
+                  <p className="text-sm text-surface-300">Top {forex.length} currency pairs</p>
+                </div>
+              </div>
+              <Link
+                href="/markets/forex"
+                className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-purple-500/30 rounded-xl text-white text-sm transition-all group"
+              >
+                View All
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {forex.slice(0, 8).map((pair: UnifiedAsset) => {
+                const isPositive = (pair.price_change_percentage_24h ?? 0) >= 0;
+
+                return (
+                  <Link
+                    key={pair.id}
+                    href={`/asset/${pair.symbol}`}
+                    className="bg-surface-100/50 hover:bg-surface-100 border border-surface-300/50 hover:border-purple-500/30 rounded-xl p-4 transition-all group"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
+                          <Globe2 className="w-5 h-5 text-purple-300" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold text-white truncate text-sm group-hover:text-purple-300 transition-colors">
+                            {pair.symbol}
+                          </div>
+                          <div className="text-xs text-surface-300 truncate">{pair.name}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-lg font-bold text-white mb-1">
+                      {pair.current_price.toFixed(4)}
+                    </div>
+                    <div
+                      className={`flex items-center gap-1 text-sm font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}
+                    >
+                      {isPositive ? (
+                        <TrendingUp className="w-3.5 h-3.5" />
+                      ) : (
+                        <TrendingDown className="w-3.5 h-3.5" />
+                      )}
+                      {isPositive ? '+' : ''}
+                      {(pair.price_change_percentage_24h ?? 0).toFixed(2)}%
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         )}

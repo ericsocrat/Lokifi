@@ -159,9 +159,7 @@ function MarketsPageContent() {
                 {connected && (
                   <span className="ml-2 inline-flex items-center gap-1">
                     <Activity className="w-4 h-4 text-green-500 animate-pulse" />
-                    <span className="text-green-400 text-sm font-bold">
-                      LIVE
-                    </span>
+                    <span className="text-green-400 text-sm font-bold">LIVE</span>
                   </span>
                 )}
               </p>
@@ -185,9 +183,7 @@ function MarketsPageContent() {
                   Assets
                 </h3>
               </div>
-              <p className="text-4xl font-black text-white mb-1">
-                {marketStats.activeAssets}
-              </p>
+              <p className="text-4xl font-black text-white mb-1">{marketStats.activeAssets}</p>
               <p className="text-sm text-surface-300 font-medium">Tracked</p>
             </div>
 
@@ -206,9 +202,7 @@ function MarketsPageContent() {
                   <p className="text-sm font-bold text-green-400 mb-1">
                     +{marketStats.topGainer.price_change_percentage_24h.toFixed(2)}%
                   </p>
-                  <p className="text-xs text-surface-300 truncate">
-                    {marketStats.topGainer.name}
-                  </p>
+                  <p className="text-xs text-surface-300 truncate">{marketStats.topGainer.name}</p>
                 </>
               )}
             </div>
@@ -228,9 +222,7 @@ function MarketsPageContent() {
                   <p className="text-sm font-bold text-red-400 mb-1">
                     {marketStats.topLoser.price_change_percentage_24h.toFixed(2)}%
                   </p>
-                  <p className="text-xs text-surface-300 truncate">
-                    {marketStats.topLoser.name}
-                  </p>
+                  <p className="text-xs text-surface-300 truncate">{marketStats.topLoser.name}</p>
                 </>
               )}
             </div>
@@ -255,6 +247,7 @@ function MarketsPageContent() {
             <input
               type="text"
               placeholder="Search cryptocurrencies by name or symbol..."
+              aria-label="Search cryptocurrencies by name or symbol"
               value={searchQuery}
               onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
                 setSearchQuery(e.target.value)
@@ -329,19 +322,15 @@ function MarketsPageContent() {
               <tbody className="divide-y divide-surface-200">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center">
+                    <td colSpan={7} className="px-6 py-12 text-center" aria-live="polite">
                       <RefreshCw className="w-8 h-8 text-lokifi animate-spin mx-auto mb-3" />
-                      <p className="text-surface-300 font-medium">
-                        Loading market data...
-                      </p>
+                      <p className="text-surface-300 font-medium">Loading market data...</p>
                     </td>
                   </tr>
                 ) : sortedAssets.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
-                      <p className="text-surface-300 font-medium">
-                        No assets found
-                      </p>
+                      <p className="text-surface-300 font-medium">No assets found</p>
                     </td>
                   </tr>
                 ) : (
@@ -370,9 +359,7 @@ function MarketsPageContent() {
                               className="rounded-full"
                             />
                             <div>
-                              <div className="font-bold text-white text-lg">
-                                {asset.name}
-                              </div>
+                              <div className="font-bold text-white text-lg">{asset.name}</div>
                               <div className="text-sm text-surface-300 font-medium uppercase">
                                 {asset.symbol}
                               </div>
@@ -444,5 +431,3 @@ export default function MarketsPage() {
     </ProtectedRoute>
   );
 }
-
-

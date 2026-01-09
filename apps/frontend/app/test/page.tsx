@@ -65,10 +65,12 @@ export default function TestPage() {
         minHeight: '100vh',
         color: '#fff',
       }}
+      role="main"
+      aria-label="API connection test"
     >
       <h1 style={{ color: '#4ade80', marginBottom: '30px' }}>API Connection Test</h1>
 
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '20px' }} role="toolbar" aria-label="Test actions">
         <button
           onClick={testFetch}
           style={{
@@ -82,6 +84,7 @@ export default function TestPage() {
             cursor: 'pointer',
             fontWeight: 'bold',
           }}
+          aria-label="Test /api/auth/check endpoint"
         >
           Test /api/auth/check
         </button>
@@ -97,6 +100,7 @@ export default function TestPage() {
             cursor: 'pointer',
             fontWeight: 'bold',
           }}
+          aria-label="Test login endpoint with demo credentials"
         >
           Test Login
         </button>
@@ -112,6 +116,8 @@ export default function TestPage() {
             marginBottom: '15px',
             color: '#fecaca',
           }}
+          role="alert"
+          aria-live="polite"
         >
           <strong style={{ color: '#ff6b6b' }}>Error:</strong> {error}
         </div>
@@ -126,6 +132,8 @@ export default function TestPage() {
             borderRadius: '8px',
             color: '#bbf7d0',
           }}
+          role="status"
+          aria-live="polite"
         >
           <strong style={{ color: '#4ade80' }}>Result:</strong>
           <pre style={{ marginTop: '10px', color: '#d1fae5' }}>{result}</pre>
@@ -140,6 +148,8 @@ export default function TestPage() {
           borderRadius: '8px',
           border: '2px solid #3b82f6',
         }}
+        role="region"
+        aria-label="Test instructions"
       >
         <strong style={{ color: '#93c5fd', fontSize: '18px' }}>Instructions:</strong>
         <ol>
@@ -152,4 +162,3 @@ export default function TestPage() {
     </div>
   );
 }
-

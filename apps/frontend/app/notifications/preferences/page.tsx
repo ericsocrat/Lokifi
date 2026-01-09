@@ -166,6 +166,7 @@ export default function NotificationPreferencesPage() {
             <Link
               href="/notifications"
               className="p-2 text-surface-300 hover:text-white hover:bg-surface-200 rounded-lg transition-colors"
+              aria-label="Back to notifications"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
@@ -190,9 +191,10 @@ export default function NotificationPreferencesPage() {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="text-center py-12">
+          <div className="text-center py-12" aria-live="polite">
             <div className="animate-spin w-8 h-8 border-2 border-surface-300 border-t-lokifi rounded-full mx-auto mb-4" />
             <p className="text-surface-300">Loading preferences...</p>
+            <span className="sr-only">Loading notification preferences</span>
           </div>
         )}
 
@@ -207,7 +209,9 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">In-App Notifications</label>
-                    <p className="text-sm text-surface-300">Show notifications in the application</p>
+                    <p className="text-sm text-surface-300">
+                      Show notifications in the application
+                    </p>
                   </div>
                   <input
                     type="checkbox"
@@ -448,6 +452,7 @@ export default function NotificationPreferencesPage() {
                 onClick={savePreferences}
                 disabled={isSaving}
                 className="flex items-center gap-2 px-6 py-3 bg-lokifi hover:bg-lokifi/90 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-colors"
+                aria-label="Save notification preferences"
               >
                 {isSaving ? (
                   <>

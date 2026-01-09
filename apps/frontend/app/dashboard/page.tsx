@@ -530,7 +530,9 @@ export default function DashboardPage() {
                           <p className="text-sm font-semibold text-white">
                             {formatCurrency(holding.value)}
                           </p>
-                          <p className="text-xs text-surface-400">{holding.percentage.toFixed(1)}%</p>
+                          <p className="text-xs text-surface-400">
+                            {holding.percentage.toFixed(1)}%
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -576,5 +578,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-
