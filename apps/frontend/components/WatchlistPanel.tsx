@@ -36,16 +36,16 @@ export const WatchlistPanel: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-80 flex flex-col">
+    <div className="bg-surface-0 border-r border-surface-300 w-80 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-surface-300">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold text-white">
             {activeWatchlist?.name || 'Watchlist'}
           </h2>
           <button
             onClick={() => refreshSymbolDirectory()}
-            className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="p-1 text-surface-300 hover:text-white"
             title="Refresh data"
           >
             <RefreshIcon className="w-4 h-4" />
@@ -60,8 +60,8 @@ export const WatchlistPanel: React.FC = () => {
               value={newSymbol}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewSymbol(e.target.value)}
               placeholder="Enter symbol..."
-              className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
-                       rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="flex-1 px-3 py-2 text-sm border border-surface-300
+                       rounded-md bg-surface-100 text-white"
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
                 e.key === 'Enter' && handleAddSymbol()
               }
@@ -75,8 +75,8 @@ export const WatchlistPanel: React.FC = () => {
             </button>
             <button
               onClick={() => setIsAddingSymbol(false)}
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
-                       text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-3 py-2 text-sm border border-surface-300
+                       text-surface-200 rounded-md hover:bg-surface-200"
             >
               Cancel
             </button>
@@ -84,9 +84,9 @@ export const WatchlistPanel: React.FC = () => {
         ) : (
           <button
             onClick={() => setIsAddingSymbol(true)}
-            className="w-full px-3 py-2 text-sm border-2 border-dashed border-gray-300 dark:border-gray-600
-                     text-gray-600 dark:text-gray-400 rounded-md hover:border-gray-400 dark:hover:border-gray-500
-                     hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            className="w-full px-3 py-2 text-sm border-2 border-dashed border-surface-300
+                     text-surface-300 rounded-md hover:border-lokifi/50
+                     hover:text-white transition-colors"
           >
             + Add Symbol
           </button>
@@ -96,11 +96,11 @@ export const WatchlistPanel: React.FC = () => {
       {/* Watchlist Items */}
       <div className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+          <div className="p-4 text-center text-surface-300">
             No symbols in watchlist
           </div>
         ) : (
-          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="divide-y divide-surface-300">
             {items.map((item: WatchlistItem) => (
               <WatchlistItem
                 key={item.symbol}
@@ -131,27 +131,27 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
   const [showActions, setShowActions] = useState(false);
 
   const changeColor = useMemo(() => {
-    if (!metrics) return 'text-gray-500';
+    if (!metrics) return 'text-surface-300';
     return metrics.change >= 0 ? 'text-green-600' : 'text-red-600';
   }, [metrics]);
 
   return (
     <div
-      className="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group"
+      className="p-3 hover:bg-surface-200 cursor-pointer group"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-gray-900 dark:text-white">{item.symbol}</span>
+            <span className="font-medium text-white">{item.symbol}</span>
             {showActions && (
               <button
                 onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   onRemove();
                 }}
-                className="text-gray-400 hover:text-red-600 transition-colors"
+                className="text-surface-300 hover:text-red-600 transition-colors"
                 title="Remove from watchlist"
               >
                 <XIcon className="w-4 h-4" />
@@ -162,7 +162,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
           {metrics && (
             <div className="mt-1 space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-900 dark:text-white font-medium">
+                <span className="text-white font-medium">
                   ${metrics.price.toFixed(2)}
                 </span>
                 <span className={`${changeColor} font-medium`}>
@@ -172,7 +172,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
                 </span>
               </div>
 
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-surface-300">
                 Vol: {(metrics.volume / 1000000).toFixed(1)}M
                 {metrics.marketCap && (
                   <span className="ml-2">Cap: {formatMarketCap(metrics.marketCap)}</span>
@@ -182,7 +182,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
           )}
 
           {item.notes && (
-            <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 truncate">
+            <div className="mt-1 text-xs text-surface-300 truncate">
               {item.notes}
             </div>
           )}
@@ -247,13 +247,13 @@ export const ScreenerPanel: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 border rounded-lg shadow-sm">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+    <div className="bg-surface-0 border border-surface-300 rounded-lg shadow-sm">
+      <div className="p-4 border-b border-surface-300">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">Stock Screener</h3>
+          <h3 className="text-lg font-medium text-white">Stock Screener</h3>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="text-surface-300 hover:text-white"
           >
             {isOpen ? (
               <ChevronUpIcon className="w-5 h-5" />
@@ -273,8 +273,8 @@ export const ScreenerPanel: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setNewFilterField(e.target.value as keyof SymbolMetrics)
               }
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-3 py-2 text-sm border border-surface-300 rounded-md
+                       bg-surface-100 text-white"
             >
               {Object.entries(fieldLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -288,8 +288,8 @@ export const ScreenerPanel: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 setNewFilterOperator(e.target.value as 'gt' | 'lt' | 'between')
               }
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-3 py-2 text-sm border border-surface-300 rounded-md
+                       bg-surface-100 text-white"
             >
               <option value="gt">Greater than</option>
               <option value="gte">Greater than or equal</option>
@@ -306,8 +306,8 @@ export const ScreenerPanel: React.FC = () => {
                 setNewFilterValue(e.target.value)
               }
               placeholder={newFilterOperator === 'between' ? '1,100' : '10'}
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-3 py-2 text-sm border border-surface-300 rounded-md
+                       bg-surface-100 text-white"
             />
 
             <button
@@ -321,7 +321,7 @@ export const ScreenerPanel: React.FC = () => {
           {/* Active Filters */}
           {screenerQuery.filters.length > 0 && (
             <div className="space-y-2">
-              <h4 className="text-sm font-medium text-gray-900 dark:text-white">Active Filters:</h4>
+              <h4 className="text-sm font-medium text-white">Active Filters:</h4>
               <div className="flex flex-wrap gap-2">
                 {screenerQuery.filters.map((filter: ScreenerFilter) => (
                   <span
@@ -349,8 +349,8 @@ export const ScreenerPanel: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 updateScreenerQuery({ sortBy: e.target.value as keyof SymbolMetrics })
               }
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-3 py-2 text-sm border border-surface-300 rounded-md
+                       bg-surface-100 text-white"
             >
               {Object.entries(fieldLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -364,8 +364,8 @@ export const ScreenerPanel: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 updateScreenerQuery({ sortOrder: e.target.value as 'asc' | 'desc' })
               }
-              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
-                       bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="px-3 py-2 text-sm border border-surface-300 rounded-md
+                       bg-surface-100 text-white"
             >
               <option value="desc">Highest first</option>
               <option value="asc">Lowest first</option>
@@ -384,23 +384,23 @@ export const ScreenerPanel: React.FC = () => {
 
           {/* Results */}
           {screenerResults.length > 0 && (
-            <div className="mt-4 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
-              <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            <div className="mt-4 max-h-96 overflow-y-auto border border-surface-300 rounded-md">
+              <div className="divide-y divide-surface-300">
                 {screenerResults.map((result: SymbolMetrics) => (
                   <div
                     key={result.symbol}
-                    className="p-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800"
+                    className="p-3 flex items-center justify-between hover:bg-surface-200"
                   >
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white">
+                      <div className="font-medium text-white">
                         {result.symbol}
                       </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                      <div className="text-sm text-surface-300">
                         ${result.price.toFixed(2)} ({result.changePercent >= 0 ? '+' : ''}
                         {result.changePercent.toFixed(2)}%)
                       </div>
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-surface-300">
                       Vol: {(result.volume / 1000000).toFixed(1)}M
                     </div>
                   </div>
