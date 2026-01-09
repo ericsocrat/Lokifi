@@ -188,14 +188,8 @@ function AssetDetailContent() {
       <div className="min-h-screen flex items-center justify-center bg-surface-0">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi mx-auto mb-4" />
-          <p className="text-surface-300 font-medium">
-            Loading asset data from backend...
-          </p>
-          {connected && (
-            <p className="text-green-400 text-sm mt-2">
-              ✅ Live updates connected
-            </p>
-          )}
+          <p className="text-surface-300 font-medium">Loading asset data from backend...</p>
+          {connected && <p className="text-green-400 text-sm mt-2">✅ Live updates connected</p>}
         </div>
       </div>
     );
@@ -251,9 +245,7 @@ function AssetDetailContent() {
 
               <div>
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <h1 className="text-4xl md:text-5xl font-black text-white">
-                    {asset.name}
-                  </h1>
+                  <h1 className="text-4xl md:text-5xl font-black text-white">{asset.name}</h1>
                   <span className="px-3 py-1.5 text-sm font-bold rounded-xl bg-surface-200 text-surface-300">
                     {symbol}
                   </span>
@@ -262,9 +254,7 @@ function AssetDetailContent() {
                   </span>
                 </div>
 
-                <p className="text-surface-300 text-lg font-medium mb-4">
-                  {asset.category}
-                </p>
+                <p className="text-surface-300 text-lg font-medium mb-4">{asset.category}</p>
 
                 {/* Massive Price Display */}
                 <div className="flex items-baseline gap-4 flex-wrap mb-3">
@@ -291,9 +281,7 @@ function AssetDetailContent() {
 
                     <div
                       className={`px-4 py-2.5 rounded-xl text-2xl font-black ${
-                        isPositive
-                          ? 'bg-green-500/20 text-green-400'
-                          : 'bg-red-500/20 text-red-400'
+                        isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                       }`}
                     >
                       {isPositive ? '↑' : '↓'} {Math.abs(asset.changePercent).toFixed(2)}%
@@ -426,9 +414,7 @@ function AssetDetailContent() {
                   {/* Chart Stats */}
                   <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <p className="text-xs font-bold text-surface-300 mb-1">
-                        High
-                      </p>
+                      <p className="text-xs font-bold text-surface-300 mb-1">High</p>
                       <span className="text-lg font-black text-green-400">
                         {formatPrice(Math.max(...historicalData.map((d) => d.price)))}
                       </span>
@@ -440,9 +426,7 @@ function AssetDetailContent() {
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-surface-300 mb-1">
-                        Change
-                      </p>
+                      <p className="text-xs font-bold text-surface-300 mb-1">Change</p>
                       <span
                         className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}
                       >
@@ -451,12 +435,8 @@ function AssetDetailContent() {
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-surface-300 mb-1">
-                        Data Points
-                      </p>
-                      <span className="text-lg font-black text-white">
-                        {historicalData.length}
-                      </span>
+                      <p className="text-xs font-bold text-surface-300 mb-1">Data Points</p>
+                      <span className="text-lg font-black text-white">{historicalData.length}</span>
                     </div>
                   </div>
                 </div>
@@ -472,9 +452,7 @@ function AssetDetailContent() {
                   </div>
                   <h3 className="text-sm font-bold text-surface-300">52W High</h3>
                 </div>
-                <p className="text-2xl font-black text-white">
-                  {formatPrice(asset.high52w)}
-                </p>
+                <p className="text-2xl font-black text-white">{formatPrice(asset.high52w)}</p>
               </div>
 
               <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-2xl border-2 border-orange-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
@@ -484,9 +462,7 @@ function AssetDetailContent() {
                   </div>
                   <h3 className="text-sm font-bold text-surface-300">52W Low</h3>
                 </div>
-                <p className="text-2xl font-black text-white">
-                  {formatPrice(asset.low52w)}
-                </p>
+                <p className="text-2xl font-black text-white">{formatPrice(asset.low52w)}</p>
               </div>
             </div>
           </div>
@@ -501,9 +477,7 @@ function AssetDetailContent() {
                     <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse" />
                     <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping" />
                   </div>
-                  <span className="font-black text-white text-xl">
-                    LIVE MARKET DATA
-                  </span>
+                  <span className="font-black text-white text-xl">LIVE MARKET DATA</span>
                 </div>
                 <p className="text-base text-surface-300 mb-3 font-medium">
                   Real-time updates via WebSocket
@@ -523,41 +497,31 @@ function AssetDetailContent() {
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
-                  <span className="text-sm font-bold text-surface-300">
-                    Market Cap
-                  </span>
+                  <span className="text-sm font-bold text-surface-300">Market Cap</span>
                   <span className="font-black text-white text-base">
                     {formatMarketCap(asset.marketCap)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
-                  <span className="text-sm font-bold text-surface-300">
-                    Volume (24h)
-                  </span>
+                  <span className="text-sm font-bold text-surface-300">Volume (24h)</span>
                   <span className="font-black text-white text-base">
                     {formatVolume(asset.volume)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
-                  <span className="text-sm font-bold text-surface-300">
-                    24h High
-                  </span>
+                  <span className="text-sm font-bold text-surface-300">24h High</span>
                   <span className="font-black text-green-400 text-base">
                     {formatPrice(asset.high24h)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
-                  <span className="text-sm font-bold text-surface-300">
-                    24h Low
-                  </span>
+                  <span className="text-sm font-bold text-surface-300">24h Low</span>
                   <span className="font-black text-red-400 text-base">
                     {formatPrice(asset.low24h)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3">
-                  <span className="text-sm font-bold text-surface-300">
-                    Prev. Close
-                  </span>
+                  <span className="text-sm font-bold text-surface-300">Prev. Close</span>
                   <span className="font-black text-white text-base">
                     {formatPrice(asset.previousClose)}
                   </span>
@@ -574,9 +538,7 @@ function AssetDetailContent() {
               <div className="space-y-5">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-surface-300">
-                      Today&apos;s Change
-                    </span>
+                    <span className="font-bold text-surface-300">Today&apos;s Change</span>
                     <span className={`font-black ${changeColor}`}>
                       {asset.changePercent >= 0 ? '+' : ''}
                       {asset.changePercent.toFixed(2)}%
@@ -591,9 +553,7 @@ function AssetDetailContent() {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-surface-300">
-                      Period Change
-                    </span>
+                    <span className="font-bold text-surface-300">Period Change</span>
                     <span
                       className={`font-black ${periodChangePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}
                     >
@@ -613,9 +573,7 @@ function AssetDetailContent() {
 
             {/* Data Source Info */}
             <div className="bg-lokifi/10 rounded-2xl border-2 border-lokifi/30 p-6">
-              <p className="text-sm font-bold text-surface-300 mb-2">
-                💎 Real Data from Backend
-              </p>
+              <p className="text-sm font-bold text-surface-300 mb-2">💎 Real Data from Backend</p>
               <ul className="text-xs text-surface-300 space-y-1">
                 <li>✅ CoinGecko API integration</li>
                 <li>✅ Historical price data</li>

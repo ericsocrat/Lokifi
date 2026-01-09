@@ -102,7 +102,8 @@ export default function DashboardPage() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/me', {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/auth/me`, {
         credentials: 'include',
       });
 
@@ -162,6 +163,7 @@ export default function DashboardPage() {
             <button
               onClick={() => router.push('/dashboard/add-assets')}
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
+              aria-label="Add assets to your portfolio"
             >
               <Plus className="w-4 h-4" />
               Add Assets
@@ -193,6 +195,7 @@ export default function DashboardPage() {
                   <button
                     onClick={() => router.push('/dashboard/add-assets')}
                     className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-semibold transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
+                    aria-label="Add your first asset to get started with portfolio tracking"
                   >
                     <Plus className="w-5 h-5" />
                     Add Your First Asset
@@ -417,6 +420,7 @@ export default function DashboardPage() {
                           ? 'bg-gradient-to-r from-lokifi to-electric text-white shadow-lg shadow-lokifi/20'
                           : 'text-surface-400 hover:text-white hover:bg-surface-300'
                       }`}
+                      aria-label={`View ${period} performance`}
                     >
                       {period.toUpperCase()}
                     </button>
@@ -500,6 +504,7 @@ export default function DashboardPage() {
                   <button
                     onClick={() => router.push('/portfolio')}
                     className="text-sm text-lokifi-light hover:text-lokifi flex items-center gap-1 transition-colors"
+                    aria-label="View all portfolio holdings"
                   >
                     View All
                     <ChevronRight className="w-4 h-4" />
@@ -543,6 +548,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => router.push('/portfolio')}
                 className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
+                aria-label="View your complete portfolio with detailed asset breakdown"
               >
                 <Wallet className="w-4 h-4" />
                 View Full Portfolio
@@ -550,6 +556,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => router.push('/dashboard/add-assets')}
                 className="flex items-center gap-2 px-6 py-3 bg-surface-100 border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200 rounded-xl text-white font-medium transition-all duration-200"
+                aria-label="Add more assets to expand your portfolio"
               >
                 <Plus className="w-4 h-4" />
                 Add More Assets
@@ -557,6 +564,7 @@ export default function DashboardPage() {
               <button
                 onClick={() => router.push('/markets')}
                 className="flex items-center gap-2 px-6 py-3 bg-surface-100 border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200 rounded-xl text-white font-medium transition-all duration-200"
+                aria-label="Browse live cryptocurrency, stock, forex, and indices markets"
               >
                 <BarChart3 className="w-4 h-4" />
                 Explore Markets
