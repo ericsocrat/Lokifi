@@ -1,5 +1,14 @@
 // frontend/tests/unit/charts/indicators.test.ts
-import { bollinger, ema, macd, rsi, sma, stdDevChannels, vwap, vwma } from '@/lib/charts/indicators';
+import {
+  bollinger,
+  ema,
+  macd,
+  rsi,
+  sma,
+  stdDevChannels,
+  vwap,
+  vwma,
+} from '@/lib/charts/indicators';
 import { describe, expect, it } from 'vitest';
 
 describe('indicators', () => {
@@ -62,7 +71,7 @@ describe('indicators', () => {
 
   describe('rsi', () => {
     it('returns nulls during warmup and first value at period index', () => {
-      const vals = [44, 44.34, 44.09, 43.61, 44.33, 44.83, 45.10, 45.42, 45.84];
+      const vals = [44, 44.34, 44.09, 43.61, 44.33, 44.83, 45.1, 45.42, 45.84];
       const out = rsi(vals, 5);
       // First RSI value should appear at index 5 (period index)
       expect(out.slice(0, 5).every((v) => v === null)).toBe(true);
@@ -105,7 +114,9 @@ describe('indicators', () => {
 
   describe('macd', () => {
     it('returns macd, signalLine, and hist arrays', () => {
-      const vals = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30];
+      const vals = [
+        10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+      ];
       const result = macd(vals);
       expect(result).toHaveProperty('macd');
       expect(result).toHaveProperty('signalLine');

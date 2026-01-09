@@ -1,7 +1,7 @@
 // tests/lib/charts/lw-extras.test.ts
-import { wireLightweightChartsExtras } from '@/lib/charts/lw-extras';
-import * as chartMapModule from '@/lib/charts/chartMap';
 import * as priceFeedModule from '@/api/price-feed';
+import * as chartMapModule from '@/lib/charts/chartMap';
+import { wireLightweightChartsExtras } from '@/lib/charts/lw-extras';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock dependencies
@@ -59,7 +59,12 @@ describe('wireLightweightChartsExtras', () => {
 
   describe('initialization', () => {
     it('returns noop cleanup when chart is null', () => {
-      const cleanup = wireLightweightChartsExtras(null, mockSeries, mockGetSeriesData, mockGetLastPrice);
+      const cleanup = wireLightweightChartsExtras(
+        null,
+        mockSeries,
+        mockGetSeriesData,
+        mockGetLastPrice
+      );
       expect(cleanup).toBeInstanceOf(Function);
       // Should not throw
       cleanup();
@@ -67,7 +72,12 @@ describe('wireLightweightChartsExtras', () => {
     });
 
     it('returns noop cleanup when series is null', () => {
-      const cleanup = wireLightweightChartsExtras(mockChart, null, mockGetSeriesData, mockGetLastPrice);
+      const cleanup = wireLightweightChartsExtras(
+        mockChart,
+        null,
+        mockGetSeriesData,
+        mockGetLastPrice
+      );
       expect(cleanup).toBeInstanceOf(Function);
       cleanup();
       expect(priceFeedModule.startPriceFeed).not.toHaveBeenCalled();
@@ -126,9 +136,7 @@ describe('wireLightweightChartsExtras', () => {
       ];
       mockGetSeriesData.mockReturnValue(mockData);
       mockChart._getVisibleRange.mockReturnValue({ from: 0, to: 1 });
-      mockChart._timeToCoordinate
-        .mockReturnValueOnce(100)
-        .mockReturnValueOnce(NaN);
+      mockChart._timeToCoordinate.mockReturnValueOnce(100).mockReturnValueOnce(NaN);
 
       wireLightweightChartsExtras(mockChart, mockSeries, mockGetSeriesData, mockGetLastPrice);
 
@@ -150,7 +158,8 @@ describe('wireLightweightChartsExtras', () => {
       wireLightweightChartsExtras(mockChart, mockSeries, mockGetSeriesData, mockGetLastPrice);
 
       // Should use last 400 bars: indices 100-499
-      const callArgs = (chartMapModule.setVisibleBarCoords as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      const callArgs = (chartMapModule.setVisibleBarCoords as ReturnType<typeof vi.fn>).mock
+        .calls[0][0];
       expect(callArgs.length).toBe(400);
       expect(callArgs[0]).toBe(1100); // First of last 400
       expect(callArgs[399]).toBe(1499); // Last bar
@@ -170,7 +179,12 @@ describe('wireLightweightChartsExtras', () => {
 
   describe('cleanup', () => {
     it('returns cleanup function that unsubscribes handlers', () => {
-      const cleanup = wireLightweightChartsExtras(mockChart, mockSeries, mockGetSeriesData, mockGetLastPrice);
+      const cleanup = wireLightweightChartsExtras(
+        mockChart,
+        mockSeries,
+        mockGetSeriesData,
+        mockGetLastPrice
+      );
       cleanup();
 
       expect(mockChart._unsubscribeTimeRange).toHaveBeenCalled();
@@ -181,7 +195,12 @@ describe('wireLightweightChartsExtras', () => {
       const mockStopFeed = vi.fn();
       vi.mocked(priceFeedModule.startPriceFeed).mockReturnValue(mockStopFeed);
 
-      const cleanup = wireLightweightChartsExtras(mockChart, mockSeries, mockGetSeriesData, mockGetLastPrice);
+      const cleanup = wireLightweightChartsExtras(
+        mockChart,
+        mockSeries,
+        mockGetSeriesData,
+        mockGetLastPrice
+      );
       cleanup();
 
       expect(mockStopFeed).toHaveBeenCalled();
@@ -192,7 +211,12 @@ describe('wireLightweightChartsExtras', () => {
         throw new Error('Unsubscribe error');
       });
 
-      const cleanup = wireLightweightChartsExtras(mockChart, mockSeries, mockGetSeriesData, mockGetLastPrice);
+      const cleanup = wireLightweightChartsExtras(
+        mockChart,
+        mockSeries,
+        mockGetSeriesData,
+        mockGetLastPrice
+      );
 
       // Should not throw
       expect(() => cleanup()).not.toThrow();
@@ -234,9 +258,7 @@ describe('wireLightweightChartsExtras', () => {
     });
 
     it('handles visible range with non-numeric from/to', () => {
-      const mockData = [
-        { time: 1000, open: 10, high: 11, low: 9, close: 10.5 },
-      ];
+      const mockData = [{ time: 1000, open: 10, high: 11, low: 9, close: 10.5 }];
       mockGetSeriesData.mockReturnValue(mockData);
       mockChart._getVisibleRange.mockReturnValue({ from: 'invalid', to: 'invalid' });
       mockChart._timeToCoordinate.mockReturnValue(100);
