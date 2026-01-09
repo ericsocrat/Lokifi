@@ -32,7 +32,7 @@ export function ProfileDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        className="flex items-center gap-2 p-2 hover:bg-surface-200 rounded-lg transition-colors"
       >
         <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
           {userName.charAt(0).toUpperCase()}
@@ -41,14 +41,14 @@ export function ProfileDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <p className="text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{userEmail}</p>
+        <div className="absolute right-0 mt-2 w-56 bg-surface-100 rounded-lg shadow-lg border border-surface-300 py-1 z-50">
+          <div className="px-4 py-3 border-b border-surface-300">
+            <p className="text-sm font-medium text-white">{userName}</p>
+            <p className="text-xs text-surface-300">{userEmail}</p>
           </div>
           
           <button
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:bg-surface-200"
             onClick={() => {
               setIsOpen(false);
               // Handle profile action
@@ -59,7 +59,7 @@ export function ProfileDropdown({
           </button>
           
           <button
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:bg-surface-200"
             onClick={() => {
               setIsOpen(false);
               // Handle settings action
@@ -69,9 +69,9 @@ export function ProfileDropdown({
             Settings
           </button>
           
-          <div className="border-t border-gray-200 dark:border-gray-700 mt-1 pt-1">
+          <div className="border-t border-surface-300 mt-1 pt-1">
             <button
-              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-surface-200"
               onClick={() => {
                 setIsOpen(false);
                 onLogout?.();
