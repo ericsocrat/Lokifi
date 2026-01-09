@@ -32,24 +32,20 @@ const useAlertContext = () => {
 // ============================================================================
 
 const variantStyles: Record<AlertVariant, string> = {
-  default:
-    'bg-gray-50 border-gray-200 text-gray-900 dark:bg-gray-900 dark:border-gray-800 dark:text-gray-100',
-  info: 'bg-blue-50 border-blue-200 text-blue-900 dark:bg-blue-950 dark:border-blue-800 dark:text-blue-100',
-  success:
-    'bg-green-50 border-green-200 text-green-900 dark:bg-green-950 dark:border-green-800 dark:text-green-100',
-  warning:
-    'bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-950 dark:border-amber-800 dark:text-amber-100',
-  error:
-    'bg-red-50 border-red-200 text-red-900 dark:bg-red-950 dark:border-red-800 dark:text-red-100',
-  destructive: 'bg-red-600 border-red-600 text-white dark:bg-red-600 dark:border-red-600',
+  default: 'bg-surface-100 border-surface-300 text-white',
+  info: 'bg-blue-950 border-blue-800 text-blue-100',
+  success: 'bg-green-950 border-green-800 text-green-100',
+  warning: 'bg-amber-950 border-amber-800 text-amber-100',
+  error: 'bg-red-950 border-red-800 text-red-100',
+  destructive: 'bg-red-600 border-red-600 text-white',
 };
 
 const iconColors: Record<AlertVariant, string> = {
-  default: 'text-gray-500 dark:text-gray-400',
-  info: 'text-blue-500 dark:text-blue-400',
-  success: 'text-green-500 dark:text-green-400',
-  warning: 'text-amber-500 dark:text-amber-400',
-  error: 'text-red-500 dark:text-red-400',
+  default: 'text-surface-300',
+  info: 'text-blue-400',
+  success: 'text-green-400',
+  warning: 'text-amber-400',
+  error: 'text-red-400',
   destructive: 'text-white',
 };
 
@@ -202,7 +198,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
                 'hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
                 variant === 'destructive'
                   ? 'focus:ring-white'
-                  : 'focus:ring-gray-500 dark:focus:ring-gray-400'
+                  : 'focus:ring-surface-300'
               )}
               aria-label="Dismiss"
               data-alert-dismiss=""
@@ -581,8 +577,8 @@ export const FinancialAlert = forwardRef<HTMLDivElement, FinancialAlertProps>(
                 <div
                   className={cn(
                     'font-semibold',
-                    type === 'price-up' && 'text-green-600 dark:text-green-400',
-                    type === 'price-down' && 'text-red-600 dark:text-red-400'
+                    type === 'price-up' && 'text-green-400',
+                    type === 'price-down' && 'text-red-400'
                   )}
                 >
                   {valueChange}
