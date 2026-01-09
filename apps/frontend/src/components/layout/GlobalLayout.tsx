@@ -114,7 +114,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-      <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="flex h-screen bg-surface-0">
         {/* Sidebar */}
         <aside
           className={`${
@@ -138,9 +138,9 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
               aria-label="Toggle sidebar"
             >
               {sidebarOpen ? (
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-5 h-5 text-surface-300" />
               ) : (
-                <Menu className="w-5 h-5 text-gray-400" />
+                <Menu className="w-5 h-5 text-surface-300" />
               )}
             </button>
           </div>
@@ -158,7 +158,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                     active
                       ? 'bg-linear-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
-                      : 'text-gray-400 hover:bg-surface-200 hover:text-white'
+                      : 'text-surface-300 hover:bg-surface-200 hover:text-white'
                   }`}
                 >
                   <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-lokifi-light' : ''}`} />
@@ -167,7 +167,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                       <div className={`font-medium ${active ? 'text-lokifi-light' : ''}`}>
                         {item.name}
                       </div>
-                      <div className="text-xs text-gray-500">{item.description}</div>
+                      <div className="text-xs text-surface-300">{item.description}</div>
                     </div>
                   )}
                 </button>
@@ -179,7 +179,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
           <div className="p-4 border-t border-surface-300/50 space-y-2">
             <button
               onClick={() => router.push('/settings')}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:bg-surface-200 hover:text-white transition-all duration-200`}
+              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-surface-300 hover:bg-surface-200 hover:text-white transition-all duration-200`}
             >
               <Settings className="w-5 h-5 shrink-0" />
               {sidebarOpen && <span className="font-medium">Settings</span>}
@@ -194,7 +194,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
             {/* Search Bar */}
             <div className="flex-1 max-w-xl">
               <div className="relative group">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-lokifi-light transition-colors" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-surface-300 group-focus-within:text-lokifi-light transition-colors" />
                 <input
                   type="text"
                   placeholder="Search cryptocurrencies..."
@@ -202,7 +202,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSearchQuery(e.target.value)
                   }
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all duration-200"
+                  className="w-full pl-10 pr-4 py-2.5 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300 focus:outline-none transition-all duration-200"
                 />
               </div>
             </div>
@@ -213,7 +213,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
               <select
                 value={currency}
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCurrency(e.target.value)}
-                className="px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-gray-300 focus:outline-none focus:ring-2 focus:ring-lokifi/20 focus:border-lokifi/50 transition-all cursor-pointer"
+                className="px-3 py-2 bg-surface-100 border border-surface-300 rounded-xl text-sm font-medium text-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi/20 focus:border-lokifi/50 transition-all cursor-pointer"
               >
                 {currencies.map((curr: string) => (
                   <option key={curr} value={curr}>
@@ -231,7 +231,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                 {darkMode ? (
                   <Sun className="w-5 h-5 text-amber-400" />
                 ) : (
-                  <Moon className="w-5 h-5 text-gray-400" />
+                  <Moon className="w-5 h-5 text-surface-300" />
                 )}
               </button>
 
@@ -266,7 +266,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                     {/* Bell icon (non-functional when logged out) */}
                     <button
                       disabled
-                      className="p-2 text-gray-600 cursor-not-allowed"
+                      className="p-2 text-surface-300 cursor-not-allowed"
                       title="Login to view notifications"
                     >
                       <Bell size={20} />
