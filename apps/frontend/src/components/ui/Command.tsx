@@ -267,8 +267,8 @@ export function Command({
 
   const baseClasses = [
     'flex flex-col overflow-hidden rounded-lg',
-    'bg-white dark:bg-gray-900',
-    'border border-gray-200 dark:border-gray-700',
+    'bg-surface-0',
+    'border border-surface-300',
     dialog ? 'shadow-2xl' : 'shadow-md',
   ].join(' ');
 
@@ -415,7 +415,7 @@ export function CommandInput({
 
   const defaultIcon = (
     <svg
-      className="h-4 w-4 shrink-0 text-gray-400"
+      className="h-4 w-4 shrink-0 text-surface-300"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -432,13 +432,13 @@ export function CommandInput({
 
   const baseClasses = [
     'flex items-center gap-2 px-3 py-3',
-    'border-b border-gray-200 dark:border-gray-700',
+    'border-b border-surface-300',
   ].join(' ');
 
   const inputClasses = [
     'flex-1 bg-transparent text-sm',
-    'text-gray-900 dark:text-gray-100',
-    'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+    'text-white',
+    'placeholder:text-surface-300',
     'outline-none border-none',
     className,
   ]
@@ -515,7 +515,7 @@ export function CommandEmpty({
   // Only show when there's a search and no results
   if (!search || filteredItems.length > 0) return null;
 
-  const baseClasses = ['py-6 text-center text-sm text-gray-500 dark:text-gray-400'].join(' ');
+  const baseClasses = ['py-6 text-center text-sm text-surface-300'].join(' ');
 
   return (
     <div
@@ -566,7 +566,7 @@ export function CommandGroup({
 
   const baseClasses = ['overflow-hidden'].join(' ');
 
-  const headingClasses = ['px-3 py-2 text-xs font-medium', 'text-gray-500 dark:text-gray-400'].join(
+  const headingClasses = ['px-3 py-2 text-xs font-medium', 'text-surface-300'].join(
     ' '
   );
 
@@ -674,18 +674,18 @@ export function CommandItem({
 
   const baseClasses = [
     'relative flex items-center gap-2 px-3 py-2 mx-1 rounded-md',
-    'text-sm text-gray-900 dark:text-gray-100',
+    'text-sm text-white',
     'cursor-pointer select-none outline-none',
     'transition-colors duration-100',
     isSelected && !disabled
-      ? 'bg-gray-100 dark:bg-gray-800'
-      : 'hover:bg-gray-50 dark:hover:bg-gray-800/50',
+      ? 'bg-surface-200'
+      : 'hover:bg-surface-100',
     disabled ? 'opacity-50 cursor-not-allowed' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
-  const shortcutClasses = ['ml-auto text-xs text-gray-400 dark:text-gray-500', 'font-mono'].join(
+  const shortcutClasses = ['ml-auto text-xs text-surface-300', 'font-mono'].join(
     ' '
   );
 
@@ -704,7 +704,7 @@ export function CommandItem({
       {...props}
     >
       {icon && (
-        <span className="shrink-0 text-gray-500 dark:text-gray-400" aria-hidden="true">
+        <span className="shrink-0 text-surface-300" aria-hidden="true">
           {icon}
         </span>
       )}
@@ -737,7 +737,7 @@ export function CommandSeparator({
   // Hide separator when filtering (unless alwaysRender)
   if (!alwaysRender && search) return null;
 
-  const baseClasses = ['h-px my-2 mx-3', 'bg-gray-200 dark:bg-gray-700'].join(' ');
+  const baseClasses = ['h-px my-2 mx-3', 'bg-surface-300'].join(' ');
 
   return (
     <div
@@ -762,15 +762,15 @@ export interface CommandShortcutProps extends React.HTMLAttributes<HTMLSpanEleme
 export function CommandShortcut({ keys, className, ...props }: CommandShortcutProps) {
   const baseClasses = [
     'ml-auto flex items-center gap-1',
-    'text-xs text-gray-400 dark:text-gray-500',
+    'text-xs text-surface-300',
   ].join(' ');
 
   const keyClasses = [
     'inline-flex h-5 min-w-5 items-center justify-center',
-    'rounded border border-gray-200 dark:border-gray-600',
-    'bg-gray-50 dark:bg-gray-800',
+    'rounded border border-surface-300',
+    'bg-surface-100',
     'px-1 font-mono text-[10px] font-medium',
-    'text-gray-500 dark:text-gray-400',
+    'text-surface-300',
   ].join(' ');
 
   return (
@@ -811,13 +811,13 @@ export function CommandLoading({
 
   const baseClasses = [
     'flex items-center justify-center gap-2 py-6',
-    'text-sm text-gray-500 dark:text-gray-400',
+    'text-sm text-surface-300',
   ].join(' ');
 
   const spinnerClasses = [
     'h-4 w-4 animate-spin',
-    'border-2 border-gray-300 dark:border-gray-600',
-    'border-t-gray-600 dark:border-t-gray-300',
+    'border-2 border-surface-300',
+    'border-t-surface-100',
     'rounded-full',
   ].join(' ');
 
