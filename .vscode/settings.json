@@ -2,18 +2,21 @@
   // ============================================
   // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
   // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
-  // Last Updated: January 8, 2026
-  // Optimization Level: Production-Ready ⭐
+  // Last Updated: January 9, 2026
+  // Optimization Level: HIGH PERFORMANCE (32GB RAM) ⭐⭐
   // ============================================
 
-  // ===== PERFORMANCE - CRITICAL OPTIMIZATIONS =====
-  // Gives Copilot its own process (MAJOR lag reduction)
+  // ===== PERFORMANCE - AGGRESSIVE OPTIMIZATIONS (32GB RAM + RTX 3070 Ti) =====
+  // Gives Copilot & heavy extensions their own process (MAJOR lag reduction)
   "extensions.experimental.affinity": {
     "GitHub.copilot": 1,
-    "GitHub.copilot-chat": 1
+    "GitHub.copilot-chat": 1,
+    "ms-python.python": 2,
+    "ms-python.vscode-pylance": 2,
+    "dbaeumer.vscode-eslint": 3
   },
-  // Increase Node.js memory for extension host (default ~1.5GB → 4GB)
-  "extensions.experimental.extensionHostMaxHeapSizeInMb": 4096,
+  // Increase Node.js memory for extension host (default ~1.5GB → 8GB for 32GB system)
+  "extensions.experimental.extensionHostMaxHeapSizeInMb": 8192,
   // Reduce Git overhead
   "git.autorefresh": false,
   "git.decorations.enabled": true,
@@ -25,6 +28,17 @@
   "files.watcherExcludeWorkspaceFolder": true,
   // Disable telemetry (reduces background network/processing)
   "telemetry.telemetryLevel": "off",
+  // Chat-specific optimizations (prevents lag with long conversations)
+  "chat.editor.wordWrap": "off",
+  // Workbench performance
+  "workbench.list.smoothScrolling": false,
+  "workbench.reduceMotion": "on",
+  "window.titleBarStyle": "custom",
+  // GPU Acceleration (RTX 3070 Ti) - offload rendering from CPU
+  "gpu_acceleration": "on",
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.scrollback": 10000,
+  "terminal.integrated.fastScrollSensitivity": 10,
 
   // ===== EDITOR - PERFORMANCE & UX =====
   "editor.formatOnSave": true,
@@ -194,7 +208,7 @@
   "javascript.suggest.autoImports": true,
   "typescript.suggest.autoImports": true,
   "typescript.suggest.paths": true,
-  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsserver.maxTsServerMemory": 12288,
   "typescript.tsserver.watchOptions": {
     "watchFile": "useFsEvents",
     "watchDirectory": "useFsEvents",

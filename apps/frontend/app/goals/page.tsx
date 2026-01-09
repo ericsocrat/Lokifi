@@ -559,4 +559,3 @@ export default function GoalsPage() {
     </div>
   );
 }
-

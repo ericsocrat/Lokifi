@@ -538,5 +538,3 @@ AvatarBadge.displayName = 'AvatarBadge';
 // ============================================================================
 
 export default Avatar;
-
-

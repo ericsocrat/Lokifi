@@ -1,5 +1,4 @@
 /// <reference types="@testing-library/jest-dom" />
-import '@testing-library/jest-dom/vitest';
 import {
   Avatar,
   AvatarBadge,
@@ -7,6 +6,7 @@ import {
   AvatarGroup,
   AvatarImage,
 } from '@/components/ui/Avatar';
+import '@testing-library/jest-dom/vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 

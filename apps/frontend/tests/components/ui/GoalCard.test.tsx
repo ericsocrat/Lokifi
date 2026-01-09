@@ -11,7 +11,7 @@
 
 import { GoalCard, type FinancialGoal } from '@/src/components/ui/GoalCard';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock formatCurrency function
 const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
