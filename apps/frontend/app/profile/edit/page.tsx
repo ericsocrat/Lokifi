@@ -162,7 +162,7 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-surface-0">
         <Navbar />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
@@ -174,7 +174,7 @@ export default function EditProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-surface-0">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -183,7 +183,7 @@ export default function EditProfilePage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/profile"
-              className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
+              className="p-2 bg-surface-100 rounded-lg hover:bg-surface-200 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
@@ -207,7 +207,7 @@ export default function EditProfilePage() {
         {/* Edit Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Avatar Section */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-surface-100 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Profile Picture</h3>
 
             <div className="flex items-center space-x-6">
@@ -221,8 +221,8 @@ export default function EditProfilePage() {
                     className="rounded-full object-cover border-4 border-blue-500"
                   />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">
-                    <User className="w-12 h-12 text-gray-400" />
+                  <div className="w-24 h-24 rounded-full bg-surface-200 flex items-center justify-center border-4 border-surface-300">
+                    <User className="w-12 h-12 text-surface-300" />
                   </div>
                 )}
 
@@ -250,64 +250,64 @@ export default function EditProfilePage() {
                     <span>Upload New Avatar</span>
                   </div>
                 </label>
-                <p className="text-gray-400 text-sm mt-2">JPG, PNG or GIF. Max size 5MB.</p>
+                <p className="text-surface-300 text-sm mt-2">JPG, PNG or GIF. Max size 5MB.</p>
               </div>
             </div>
           </div>
 
           {/* Basic Information */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-surface-100 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">Display Name</label>
                 <input
                   type="text"
                   name="display_name"
                   value={formData.display_name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
                   placeholder="Your display name"
                   maxLength={50}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">Username</label>
                 <input
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
                   placeholder="Your username"
                   pattern="^[a-zA-Z0-9_]{3,20}$"
                   title="Username must be 3-20 characters, letters, numbers and underscores only"
                 />
-                <p className="text-gray-400 text-sm mt-1">
+                <p className="text-surface-300 text-sm mt-1">
                   3-20 characters, letters, numbers and underscores only
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Bio</label>
+                <label className="block text-sm font-medium text-surface-300 mb-2">Bio</label>
                 <textarea
                   name="bio"
                   value={formData.bio}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi resize-none"
                   placeholder="Tell us about yourself..."
                   maxLength={500}
                 />
-                <p className="text-gray-400 text-sm mt-1">{formData.bio.length}/500 characters</p>
+                <p className="text-surface-300 text-sm mt-1">{formData.bio.length}/500 characters</p>
               </div>
             </div>
           </div>
 
           {/* Privacy Settings */}
-          <div className="bg-gray-800 rounded-lg p-6">
+          <div className="bg-surface-100 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Privacy Settings</h3>
 
             <div className="space-y-4">
@@ -320,7 +320,7 @@ export default function EditProfilePage() {
                   )}
                   <div>
                     <h4 className="text-white font-medium">Public Profile</h4>
-                    <p className="text-gray-400 text-sm">Make your profile visible to everyone</p>
+                    <p className="text-surface-300 text-sm">Make your profile visible to everyone</p>
                   </div>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -331,7 +331,7 @@ export default function EditProfilePage() {
                     onChange={handleInputChange}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600" />
+                  <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
                 </label>
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function EditProfilePage() {
           <div className="flex items-center justify-end space-x-4">
             <Link
               href="/profile"
-              className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              className="px-6 py-2 bg-surface-200 text-white rounded-lg hover:bg-surface-300 transition-colors"
             >
               Cancel
             </Link>
