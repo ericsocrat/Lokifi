@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { User, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ProfileDropdownProps {
   userName?: string;
@@ -9,10 +9,10 @@ interface ProfileDropdownProps {
   onLogout?: () => void;
 }
 
-export function ProfileDropdown({ 
-  userName = 'User', 
+export function ProfileDropdown({
+  userName = 'User',
   userEmail = 'user@example.com',
-  onLogout 
+  onLogout,
 }: ProfileDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -46,7 +46,7 @@ export function ProfileDropdown({
             <p className="text-sm font-medium text-white">{userName}</p>
             <p className="text-xs text-surface-300">{userEmail}</p>
           </div>
-          
+
           <button
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:bg-surface-200"
             onClick={() => {
@@ -57,7 +57,7 @@ export function ProfileDropdown({
             <User className="w-4 h-4" />
             Profile
           </button>
-          
+
           <button
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-surface-300 hover:bg-surface-200"
             onClick={() => {
@@ -68,7 +68,7 @@ export function ProfileDropdown({
             <Settings className="w-4 h-4" />
             Settings
           </button>
-          
+
           <div className="border-t border-surface-300 mt-1 pt-1">
             <button
               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:bg-surface-200"
@@ -86,5 +86,3 @@ export function ProfileDropdown({
     </div>
   );
 }
-
-

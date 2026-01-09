@@ -74,4 +74,3 @@ export function useRequireAuth(redirectTo: string = '/') {
 
   return { user, loading, isAuthenticated: !!user };
 }
-

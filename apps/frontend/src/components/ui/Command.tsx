@@ -430,10 +430,9 @@ export function CommandInput({
     </svg>
   );
 
-  const baseClasses = [
-    'flex items-center gap-2 px-3 py-3',
-    'border-b border-surface-300',
-  ].join(' ');
+  const baseClasses = ['flex items-center gap-2 px-3 py-3', 'border-b border-surface-300'].join(
+    ' '
+  );
 
   const inputClasses = [
     'flex-1 bg-transparent text-sm',
@@ -566,9 +565,7 @@ export function CommandGroup({
 
   const baseClasses = ['overflow-hidden'].join(' ');
 
-  const headingClasses = ['px-3 py-2 text-xs font-medium', 'text-surface-300'].join(
-    ' '
-  );
+  const headingClasses = ['px-3 py-2 text-xs font-medium', 'text-surface-300'].join(' ');
 
   return (
     <CommandGroupContext.Provider value={{ groupId }}>
@@ -677,17 +674,13 @@ export function CommandItem({
     'text-sm text-white',
     'cursor-pointer select-none outline-none',
     'transition-colors duration-100',
-    isSelected && !disabled
-      ? 'bg-surface-200'
-      : 'hover:bg-surface-100',
+    isSelected && !disabled ? 'bg-surface-200' : 'hover:bg-surface-100',
     disabled ? 'opacity-50 cursor-not-allowed' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
-  const shortcutClasses = ['ml-auto text-xs text-surface-300', 'font-mono'].join(
-    ' '
-  );
+  const shortcutClasses = ['ml-auto text-xs text-surface-300', 'font-mono'].join(' ');
 
   return (
     <div
@@ -760,10 +753,7 @@ export interface CommandShortcutProps extends React.HTMLAttributes<HTMLSpanEleme
 }
 
 export function CommandShortcut({ keys, className, ...props }: CommandShortcutProps) {
-  const baseClasses = [
-    'ml-auto flex items-center gap-1',
-    'text-xs text-surface-300',
-  ].join(' ');
+  const baseClasses = ['ml-auto flex items-center gap-1', 'text-xs text-surface-300'].join(' ');
 
   const keyClasses = [
     'inline-flex h-5 min-w-5 items-center justify-center',
@@ -866,5 +856,3 @@ export function useCommandState() {
 // ============================================================================
 
 export { CommandContext, useCommandContext };
-
-

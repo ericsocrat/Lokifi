@@ -303,4 +303,3 @@ test.describe('Accessibility Tests', () => {
     }
   });
 });
-

@@ -27,4 +27,3 @@ export default function ContextMenu({ children, x, y, onClose }: ContextMenuProp
     </div>
   );
 }
-

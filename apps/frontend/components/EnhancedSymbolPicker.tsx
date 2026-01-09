@@ -302,4 +302,3 @@ export const EnhancedSymbolPicker: React.FC = () => {
     </div>
   );
 };
-

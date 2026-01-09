@@ -229,4 +229,3 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
     </div>
   );
 };
-

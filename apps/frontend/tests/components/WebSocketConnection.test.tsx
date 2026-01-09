@@ -64,7 +64,9 @@ describe('WebSocketConnection', () => {
       render(<WebSocketConnection enabled={true} symbols={['BTCUSD']} />);
 
       // Find the status indicator - it should have animate-pulse class while connecting
-      const container = screen.getByText('Connecting...').closest('div[class*="border-surface-200"]');
+      const container = screen
+        .getByText('Connecting...')
+        .closest('div[class*="border-surface-200"]');
       const indicator = container?.querySelector('.animate-pulse');
       expect(indicator).toBeInTheDocument();
     });
@@ -102,7 +104,9 @@ describe('WebSocketConnection', () => {
     it('should have yellow pulsing indicator when connecting', () => {
       render(<WebSocketConnection enabled={true} symbols={['BTCUSD']} />);
 
-      const container = screen.getByText('Connecting...').closest('div[class*="border-surface-200"]');
+      const container = screen
+        .getByText('Connecting...')
+        .closest('div[class*="border-surface-200"]');
       const indicator = container?.querySelector('.bg-yellow-400');
       expect(indicator).toBeInTheDocument();
     });

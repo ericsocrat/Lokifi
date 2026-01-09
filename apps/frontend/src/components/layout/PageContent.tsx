@@ -12,21 +12,11 @@ export function PageContent({ children, title, description, className = '' }: Pa
     <div className={`p-6 ${className}`}>
       {(title || description) && (
         <div className="mb-6">
-          {title && (
-            <h1 className="text-2xl font-bold text-white mb-2">
-              {title}
-            </h1>
-          )}
-          {description && (
-            <p className="text-surface-300">
-              {description}
-            </p>
-          )}
+          {title && <h1 className="text-2xl font-bold text-white mb-2">{title}</h1>}
+          {description && <p className="text-surface-300">{description}</p>}
         </div>
       )}
       {children}
     </div>
   );
 }
-
-

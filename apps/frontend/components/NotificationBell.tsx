@@ -189,9 +189,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                 >
                   <div className="flex gap-3">
                     {/* Icon */}
-                    <div className="shrink-0 text-lg">
-                      {getNotificationIcon(notification.type)}
-                    </div>
+                    <div className="shrink-0 text-lg">{getNotificationIcon(notification.type)}</div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
@@ -281,4 +279,3 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 };
 
 export default NotificationBell;
-

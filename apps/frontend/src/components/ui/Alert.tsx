@@ -196,9 +196,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
               className={cn(
                 'absolute right-2 top-2 rounded-sm opacity-70 transition-opacity',
                 'hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
-                variant === 'destructive'
-                  ? 'focus:ring-white'
-                  : 'focus:ring-surface-300'
+                variant === 'destructive' ? 'focus:ring-white' : 'focus:ring-surface-300'
               )}
               aria-label="Dismiss"
               data-alert-dismiss=""
@@ -594,5 +592,3 @@ export const FinancialAlert = forwardRef<HTMLDivElement, FinancialAlertProps>(
 );
 
 FinancialAlert.displayName = 'FinancialAlert';
-
-

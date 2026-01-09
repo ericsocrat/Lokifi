@@ -380,4 +380,3 @@ export const LinkingControls: React.FC = () => {
     </div>
   );
 };
-

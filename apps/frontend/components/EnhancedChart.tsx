@@ -289,4 +289,3 @@ function _createDrawingObject(
       return baseObject;
   }
 }
-

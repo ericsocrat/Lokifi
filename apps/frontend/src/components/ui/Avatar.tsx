@@ -429,9 +429,7 @@ export const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
             marginLeft: index === 0 ? 0 : spacing,
             zIndex: visibleChildren.length - index,
           },
-          className: [child.props.className, 'ring-2 ring-surface-0']
-            .filter(Boolean)
-            .join(' '),
+          className: [child.props.className, 'ring-2 ring-surface-0'].filter(Boolean).join(' '),
         });
       }
       return child;

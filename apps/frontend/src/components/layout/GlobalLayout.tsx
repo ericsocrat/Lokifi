@@ -299,5 +299,3 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
     </div>
   );
 }
-
-

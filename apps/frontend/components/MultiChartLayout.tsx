@@ -71,4 +71,3 @@ export const MultiChartControls: React.FC = () => {
     </div>
   );
 };
-

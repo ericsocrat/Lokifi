@@ -362,10 +362,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             </div>
           </div>
           {isSelected && (
-            <Check
-              className={cn(sizeConfig.icon, 'shrink-0 text-blue-400')}
-              aria-hidden="true"
-            />
+            <Check className={cn(sizeConfig.icon, 'shrink-0 text-blue-400')} aria-hidden="true" />
           )}
         </button>
       );
@@ -558,4 +555,3 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 Select.displayName = 'Select';
 
 export default Select;
-

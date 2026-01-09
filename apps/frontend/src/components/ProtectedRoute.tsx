@@ -62,9 +62,7 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-white">
-                Authentication Required
-              </h2>
+              <h2 className="text-2xl font-bold text-white">Authentication Required</h2>
               <p className="text-surface-300">
                 Please use the &quot;Login / Sign Up&quot; button in the top right to access this
                 page
@@ -83,4 +81,3 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
   // User is authenticated or auth is not required, render children
   return <>{children}</>;
 }
-

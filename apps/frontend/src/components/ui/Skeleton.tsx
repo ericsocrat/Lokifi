@@ -313,4 +313,3 @@ export const SkeletonTable = forwardRef<HTMLDivElement, SkeletonTableProps>(
 SkeletonTable.displayName = 'SkeletonTable';
 
 export default Skeleton;
-

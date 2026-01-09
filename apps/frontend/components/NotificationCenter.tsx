@@ -414,9 +414,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 </div>
 
                 {/* Icon */}
-                <div className="shrink-0 text-xl">
-                  {getNotificationIcon(notification.type)}
-                </div>
+                <div className="shrink-0 text-xl">{getNotificationIcon(notification.type)}</div>
 
                 {/* Content */}
                 <div className="flex-1 min-w-0">
@@ -605,4 +603,3 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 };
 
 export default NotificationCenter;
-

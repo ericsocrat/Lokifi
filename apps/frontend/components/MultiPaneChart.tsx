@@ -288,4 +288,3 @@ export const MultiPaneChart: React.FC = () => {
     </ChartErrorBoundary>
   );
 };
-

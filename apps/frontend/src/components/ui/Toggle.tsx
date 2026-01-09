@@ -148,7 +148,10 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
           {description && (
             <span
               id={descriptionId}
-              className={cn(sizeConfig.description, disabled ? 'text-surface-400' : 'text-surface-300')}
+              className={cn(
+                sizeConfig.description,
+                disabled ? 'text-surface-400' : 'text-surface-300'
+              )}
             >
               {description}
             </span>
@@ -230,4 +233,3 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
 Toggle.displayName = 'Toggle';
 
 export default Toggle;
-
