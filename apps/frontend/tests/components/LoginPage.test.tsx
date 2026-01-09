@@ -123,7 +123,7 @@ describe('LoginPage', () => {
         loading: false,
       });
 
-      const { container } = render(<LoginPage />);
+      render(<LoginPage />);
 
       // After useEffect runs, component should return null
       // The component may render briefly before redirecting
@@ -431,11 +431,7 @@ describe('LoginPage', () => {
       render(<LoginPage />);
 
       const images = document.querySelectorAll('img');
-      images.forEach((img) => {
-        // If there are images, they should have alt text
-        // This page uses Lucide icons instead of images
-      });
-      // No img elements expected - uses Lucide icons
+      // No img elements expected - uses Lucide icons instead
       expect(images.length).toBe(0);
     });
   });
