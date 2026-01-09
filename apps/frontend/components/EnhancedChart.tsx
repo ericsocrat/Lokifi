@@ -210,7 +210,7 @@ export default function EnhancedChart({
             <span className="bg-blue-600 px-2 py-1 rounded text-white">{selectedSymbol}</span>
           )}
           {selectedTimeframe && (
-            <span className="bg-gray-600 px-2 py-1 rounded text-white">{selectedTimeframe}</span>
+            <span className="bg-surface-300 px-2 py-1 rounded text-white">{selectedTimeframe}</span>
           )}
         </div>
       </div>
