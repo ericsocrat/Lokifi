@@ -34,10 +34,10 @@ export function withAuth<P extends object>(
     if (loading) {
       return (
         options?.loadingComponent || (
-          <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
+          <div className="flex items-center justify-center min-h-screen bg-surface-0">
             <div className="text-center space-y-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
-              <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+              <p className="text-surface-300">Loading...</p>
             </div>
           </div>
         )
