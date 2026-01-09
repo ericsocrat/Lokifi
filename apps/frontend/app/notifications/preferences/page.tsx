@@ -207,9 +207,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">In-App Notifications</label>
-                    <p className="text-sm text-gray-400">
-                      Show notifications in the application
-                    </p>
+                    <p className="text-sm text-gray-400">Show notifications in the application</p>
                   </div>
                   <input
                     type="checkbox"
@@ -470,4 +468,3 @@ export default function NotificationPreferencesPage() {
     </div>
   );
 }
-

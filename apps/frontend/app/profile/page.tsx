@@ -171,9 +171,7 @@ export default function ProfilePage() {
                   {profile?.display_name || 'User'}
                 </h1>
                 <p className="text-gray-400 text-lg">@{profile?.username}</p>
-                {profile?.bio && (
-                  <p className="text-gray-300 mt-2 max-w-xl">{profile.bio}</p>
-                )}
+                {profile?.bio && <p className="text-gray-300 mt-2 max-w-xl">{profile.bio}</p>}
               </div>
             </div>
 
@@ -213,8 +211,12 @@ export default function ProfilePage() {
               <span>Joined {new Date(profile?.created_at || '').toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${profile?.is_public ? 'bg-green-500' : 'bg-amber-500'}`} />
-              <span className="text-gray-400">{profile?.is_public ? 'Public profile' : 'Private profile'}</span>
+              <div
+                className={`w-2 h-2 rounded-full ${profile?.is_public ? 'bg-green-500' : 'bg-amber-500'}`}
+              />
+              <span className="text-gray-400">
+                {profile?.is_public ? 'Public profile' : 'Private profile'}
+              </span>
             </div>
           </div>
         </div>
@@ -336,7 +338,9 @@ export default function ProfilePage() {
             <User className="w-5 h-5 text-blue-400" />
           </div>
           <div>
-            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Account Settings</h4>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
+              Account Settings
+            </h4>
             <p className="text-gray-500 text-sm">Manage your account information</p>
           </div>
         </Link>
@@ -349,7 +353,9 @@ export default function ProfilePage() {
             <Bell className="w-5 h-5 text-green-400" />
           </div>
           <div>
-            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Notifications</h4>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
+              Notifications
+            </h4>
             <p className="text-gray-500 text-sm">Control notification preferences</p>
           </div>
         </Link>
@@ -362,7 +368,9 @@ export default function ProfilePage() {
             <Shield className="w-5 h-5 text-red-400" />
           </div>
           <div>
-            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Privacy & Security</h4>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
+              Privacy & Security
+            </h4>
             <p className="text-gray-500 text-sm">Manage privacy settings</p>
           </div>
         </Link>
@@ -375,7 +383,9 @@ export default function ProfilePage() {
             <Globe className="w-5 h-5 text-purple-400" />
           </div>
           <div>
-            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Preferences</h4>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">
+              Preferences
+            </h4>
             <p className="text-gray-500 text-sm">Language, timezone, and more</p>
           </div>
         </Link>
@@ -397,7 +407,9 @@ export default function ProfilePage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between p-4 bg-surface-200/50 border border-surface-300/50 rounded-xl">
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${profile?.is_public ? 'bg-green-500/10' : 'bg-amber-500/10'}`}>
+            <div
+              className={`p-3 rounded-xl ${profile?.is_public ? 'bg-green-500/10' : 'bg-amber-500/10'}`}
+            >
               {profile?.is_public ? (
                 <Globe className="w-5 h-5 text-green-400" />
               ) : (
@@ -407,7 +419,10 @@ export default function ProfilePage() {
             <div>
               <h4 className="text-white font-medium">Profile Visibility</h4>
               <p className="text-gray-500 text-sm">
-                Your profile is {profile?.is_public ? 'public and visible to everyone' : 'private and only visible to you'}
+                Your profile is{' '}
+                {profile?.is_public
+                  ? 'public and visible to everyone'
+                  : 'private and only visible to you'}
               </p>
             </div>
           </div>
@@ -487,4 +502,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

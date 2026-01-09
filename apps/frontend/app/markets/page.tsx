@@ -36,9 +36,7 @@ function MarketsOverviewContent() {
               <Sparkles className="w-7 h-7 text-red-400" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Error Loading Markets</h3>
-            <p className="text-gray-400 mb-6">
-              {error?.message || 'Failed to load market data'}
-            </p>
+            <p className="text-gray-400 mb-6">{error?.message || 'Failed to load market data'}</p>
             <button
               onClick={() => refetch()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
@@ -238,9 +236,7 @@ function MarketsOverviewContent() {
         {/* Cache Status */}
         {data && (
           <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
-            <div
-              className={`w-2 h-2 rounded-full ${data.cached ? 'bg-green-500' : 'bg-lokifi'}`}
-            />
+            <div className={`w-2 h-2 rounded-full ${data.cached ? 'bg-green-500' : 'bg-lokifi'}`} />
             {data.cached ? 'Data from cache' : 'Fresh data from API'}
           </div>
         )}
@@ -256,4 +252,3 @@ export default function MarketsOverviewPage() {
     </ProtectedRoute>
   );
 }
-

@@ -465,9 +465,7 @@ function PortfolioPageContent() {
                   </span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-1">
-                {sections.length}
-              </div>
+              <div className="text-3xl font-bold text-white mb-1">{sections.length}</div>
               <div className="text-xs text-gray-400">Sections</div>
             </div>
 
@@ -500,9 +498,7 @@ function PortfolioPageContent() {
                   </span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-white mb-1 flex items-center gap-1">
-                A+
-              </div>
+              <div className="text-3xl font-bold text-white mb-1 flex items-center gap-1">A+</div>
               <div className="text-xs text-gray-400">Portfolio health</div>
             </div>
           </div>
@@ -511,12 +507,8 @@ function PortfolioPageContent() {
         {/* Header with Advanced Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-white mb-1">
-              Portfolio Overview
-            </h1>
-            <p className="text-sm text-gray-400">
-              Track and manage all your investments
-            </p>
+            <h1 className="text-2xl font-bold text-white mb-1">Portfolio Overview</h1>
+            <p className="text-sm text-gray-400">Track and manage all your investments</p>
           </div>
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
@@ -698,9 +690,7 @@ function PortfolioPageContent() {
                       isCollapsed ? '-rotate-90' : ''
                     }`}
                   />
-                  <h2 className="text-lg font-semibold text-white">
-                    {section.title}
-                  </h2>
+                  <h2 className="text-lg font-semibold text-white">{section.title}</h2>
                   <span className="px-2.5 py-0.5 bg-surface-200 text-gray-400 text-xs font-medium rounded-full">
                     {section.assets.length} {section.assets.length === 1 ? 'asset' : 'assets'}
                   </span>
@@ -748,9 +738,7 @@ function PortfolioPageContent() {
                 <Wallet2 className="w-8 h-8 text-lokifi" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              No assets yet
-            </h3>
+            <h3 className="text-lg font-semibold text-white mb-2">No assets yet</h3>
             <p className="text-gray-400 mb-6">
               Start building your portfolio by adding your first asset
             </p>
@@ -878,17 +866,13 @@ function AssetItem({
               {asset.symbol.substring(0, 3)}
             </span>
           </div>
-          <span className="text-xs font-mono text-gray-400 font-medium">
-            {asset.symbol}
-          </span>
+          <span className="text-xs font-mono text-gray-400 font-medium">{asset.symbol}</span>
         </div>
 
         {/* Asset Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-white text-base truncate">
-              {asset.name}
-            </h3>
+            <h3 className="font-semibold text-white text-base truncate">{asset.name}</h3>
             <button
               onClick={() => setIsStarred(!isStarred)}
               className="opacity-0 group-hover:opacity-100 transition-opacity"
@@ -914,16 +898,12 @@ function AssetItem({
       {/* Value and Performance */}
       <div className="flex items-center gap-8 relative z-10">
         <div className="text-right">
-          <p className="text-2xl font-bold text-white mb-1">
-            {formatCurrency(liveValue)}
-          </p>
+          <p className="text-2xl font-bold text-white mb-1">{formatCurrency(liveValue)}</p>
           {livePrice && priceChangePercent !== 0 && (
             <>
               <div
                 className={`flex items-center justify-end gap-1 text-sm font-bold mb-1 ${
-                  isPositive
-                    ? 'text-emerald-400'
-                    : 'text-red-400'
+                  isPositive ? 'text-emerald-400' : 'text-red-400'
                 }`}
               >
                 {isPositive ? (
@@ -936,9 +916,7 @@ function AssetItem({
               </div>
               <div
                 className={`text-xs font-medium ${
-                  isPositive
-                    ? 'text-emerald-400/70'
-                    : 'text-red-400/70'
+                  isPositive ? 'text-emerald-400/70' : 'text-red-400/70'
                 }`}
               >
                 {isPositive ? '+' : ''}
@@ -996,4 +974,3 @@ export default function PortfolioPage() {
     </ProtectedRoute>
   );
 }
-
