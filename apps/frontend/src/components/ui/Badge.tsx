@@ -25,13 +25,13 @@ export type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 // ============================================================================
 
 const variantClasses: Record<BadgeVariant, string> = {
-  default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
-  primary: 'bg-lokifi-100 text-lokifi-800 dark:bg-lokifi-900 dark:text-lokifi-200',
-  secondary: 'bg-electric-100 text-electric-800 dark:bg-electric-900 dark:text-electric-200',
-  success: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  danger: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  info: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+  default: 'bg-surface-200 text-surface-300',
+  primary: 'bg-lokifi-900 text-lokifi-200',
+  secondary: 'bg-electric-900 text-electric-200',
+  success: 'bg-green-900 text-green-200',
+  warning: 'bg-yellow-900 text-yellow-200',
+  danger: 'bg-red-900 text-red-200',
+  info: 'bg-blue-900 text-blue-200',
   outline: 'border border-current bg-transparent',
 };
 
@@ -74,7 +74,7 @@ const dotColorClasses: Record<string, string> = {
   yellow: 'bg-yellow-500',
   red: 'bg-red-500',
   blue: 'bg-blue-500',
-  gray: 'bg-gray-500',
+  gray: 'bg-surface-300',
 };
 
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
