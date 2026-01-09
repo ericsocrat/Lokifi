@@ -13,7 +13,7 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -178,9 +178,7 @@ describe('LoginPage', () => {
     it('should display marketing description', () => {
       render(<LoginPage />);
 
-      expect(
-        screen.getByText(/Track your investments, monitor markets/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Track your investments, monitor markets/i)).toBeInTheDocument();
     });
 
     it('should display feature list items', () => {
@@ -291,9 +289,7 @@ describe('LoginPage', () => {
     it('should display demo mode description', () => {
       render(<LoginPage />);
 
-      expect(
-        screen.getByText(/Explore the dashboard with demo data/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Explore the dashboard with demo data/i)).toBeInTheDocument();
     });
 
     it('should have Enter Demo Mode link', () => {

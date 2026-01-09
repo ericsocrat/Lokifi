@@ -83,9 +83,7 @@ describe('LandingPage', () => {
     it('displays the subheadline', () => {
       render(<LandingPage />);
 
-      expect(
-        screen.getByText(/The modern way to manage your portfolio/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/The modern way to manage your portfolio/i)).toBeInTheDocument();
     });
 
     it('renders Get Started Free CTA button', () => {
@@ -147,24 +145,12 @@ describe('LandingPage', () => {
     it('displays feature descriptions', () => {
       render(<LandingPage />);
 
-      expect(
-        screen.getByText(/Track all your assets in one place/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Real-time prices and market insights/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Understand your portfolio allocation/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Never miss a price movement/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Professional charting tools/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Your data is encrypted and protected/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Track all your assets in one place/i)).toBeInTheDocument();
+      expect(screen.getByText(/Real-time prices and market insights/i)).toBeInTheDocument();
+      expect(screen.getByText(/Understand your portfolio allocation/i)).toBeInTheDocument();
+      expect(screen.getByText(/Never miss a price movement/i)).toBeInTheDocument();
+      expect(screen.getByText(/Professional charting tools/i)).toBeInTheDocument();
+      expect(screen.getByText(/Your data is encrypted and protected/i)).toBeInTheDocument();
     });
   });
 
@@ -178,9 +164,7 @@ describe('LandingPage', () => {
     it('displays CTA section description', () => {
       render(<LandingPage />);
 
-      expect(
-        screen.getByText(/Join thousands of investors who trust Lokifi/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Join thousands of investors who trust Lokifi/i)).toBeInTheDocument();
     });
 
     it('renders secondary CTA button', () => {
@@ -288,7 +272,9 @@ describe('LandingPage', () => {
       const { container } = render(<LandingPage />);
 
       // Check for responsive grid classes
-      const responsiveGrid = container.querySelectorAll('[class*="md:grid-cols-"], [class*="lg:grid-cols-"]');
+      const responsiveGrid = container.querySelectorAll(
+        '[class*="md:grid-cols-"], [class*="lg:grid-cols-"]'
+      );
       expect(responsiveGrid.length).toBeGreaterThan(0);
     });
 
@@ -296,7 +282,9 @@ describe('LandingPage', () => {
       const { container } = render(<LandingPage />);
 
       // Check for responsive flex classes
-      const responsiveFlex = container.querySelectorAll('[class*="sm:flex-row"], [class*="md:flex-row"]');
+      const responsiveFlex = container.querySelectorAll(
+        '[class*="sm:flex-row"], [class*="md:flex-row"]'
+      );
       expect(responsiveFlex.length).toBeGreaterThan(0);
     });
   });
