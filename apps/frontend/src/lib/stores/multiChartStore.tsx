@@ -331,7 +331,7 @@ export const LayoutSelector: React.FC = () => {
 
   return (
     <div className="flex items-center space-x-2">
-      <span className="text-sm text-gray-400">Layout:</span>
+      <span className="text-sm text-surface-300">Layout:</span>
       <div className="flex space-x-1">
         {(['1x1', '1x2', '2x2'] as LayoutType[]).map((layout: LayoutType) => (
           <button
@@ -340,7 +340,7 @@ export const LayoutSelector: React.FC = () => {
             className={`px-2 py-1 text-xs rounded border transition-colors ${
               currentLayout === layout
                 ? 'bg-blue-600 border-blue-500 text-white'
-                : 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
+                : 'bg-surface-200 border-surface-300 text-surface-300 hover:bg-surface-300'
             }`}
           >
             {layout}
@@ -361,7 +361,7 @@ export const LinkingControls: React.FC = () => {
 
   return (
     <div className="flex items-center space-x-4">
-      <span className="text-sm text-gray-400">Link:</span>
+      <span className="text-sm text-surface-300">Link:</span>
       <div className="flex space-x-3">
         {Object.entries(linking).map(([dimension, enabled]) => (
           <label key={dimension} className="flex items-center space-x-1">
@@ -373,7 +373,7 @@ export const LinkingControls: React.FC = () => {
               }
               className="w-3 h-3"
             />
-            <span className="text-xs text-gray-300 capitalize">{dimension}</span>
+            <span className="text-xs text-surface-300 capitalize">{dimension}</span>
           </label>
         ))}
       </div>
