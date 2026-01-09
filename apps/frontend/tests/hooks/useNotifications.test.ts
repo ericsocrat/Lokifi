@@ -315,9 +315,12 @@ describe('useNotifications', () => {
         useNotifications({ autoRefresh: false, realTimeEnabled: false })
       );
 
+      // Wait for initial load to complete (hasMore=true AND isLoading=false)
       await waitFor(
         () => {
           expect(result.current.hasMore).toBe(true);
+          expect(result.current.isLoading).toBe(false);
+          expect(result.current.notifications.length).toBe(1);
         },
         { timeout: 3000 }
       );

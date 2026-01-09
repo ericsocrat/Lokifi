@@ -248,9 +248,7 @@ describe('DrawingToolbar', () => {
 
       // The vline item should have active styling (blue color class)
       const dropdownButtons = screen.getAllByRole('button');
-      const vlineButton = dropdownButtons.find((btn) =>
-        btn.textContent?.includes('Vertical Line')
-      );
+      const vlineButton = dropdownButtons.find((btn) => btn.textContent?.includes('Vertical Line'));
 
       expect(vlineButton).toHaveClass('text-[#2962ff]');
     });
