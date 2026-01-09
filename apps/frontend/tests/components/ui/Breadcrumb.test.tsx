@@ -492,7 +492,7 @@ describe('BreadcrumbLink', () => {
           </BreadcrumbItem>
         </Breadcrumb>
       );
-      expect(screen.getByRole('link')).toHaveClass('hover:text-gray-900');
+      expect(screen.getByRole('link')).toHaveClass('hover:text-white');
     });
   });
 });

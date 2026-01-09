@@ -72,17 +72,17 @@ describe('Badge', () => {
 
     it('applies correct classes for primary variant', () => {
       render(<Badge variant="primary">Primary</Badge>);
-      expect(screen.getByText('Primary')).toHaveClass('bg-lokifi-100');
+      expect(screen.getByText('Primary')).toHaveClass('bg-lokifi-900');
     });
 
     it('applies correct classes for success variant', () => {
       render(<Badge variant="success">Success</Badge>);
-      expect(screen.getByText('Success')).toHaveClass('bg-green-100');
+      expect(screen.getByText('Success')).toHaveClass('bg-green-900');
     });
 
     it('applies correct classes for danger variant', () => {
       render(<Badge variant="danger">Danger</Badge>);
-      expect(screen.getByText('Danger')).toHaveClass('bg-red-100');
+      expect(screen.getByText('Danger')).toHaveClass('bg-red-900');
     });
 
     it('applies correct classes for outline variant', () => {
@@ -208,7 +208,7 @@ describe('Badge', () => {
 
     it('uses gray dot color by default', () => {
       render(<Badge dot>Default Dot</Badge>);
-      expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-gray-500');
+      expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-surface-300');
     });
 
     it('dot has aria-hidden', () => {
@@ -603,7 +603,7 @@ describe('StatusBadge', () => {
 
     it('shows gray dot for offline status', () => {
       render(<StatusBadge status="offline" />);
-      expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-gray-500');
+      expect(document.querySelector('[data-badge-dot]')).toHaveClass('bg-surface-300');
     });
   });
 

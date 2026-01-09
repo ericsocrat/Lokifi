@@ -571,7 +571,7 @@ describe('AvatarFallback', () => {
       );
 
       const fallback = screen.getByTestId('fallback');
-      expect(fallback).toHaveClass('bg-gray-200');
+      expect(fallback).toHaveClass('bg-surface-200');
     });
   });
 

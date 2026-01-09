@@ -86,7 +86,7 @@ describe('Alert', () => {
           Content
         </Alert>
       );
-      expect(screen.getByTestId('alert')).toHaveClass('bg-blue-50');
+      expect(screen.getByTestId('alert')).toHaveClass('bg-blue-950');
     });
 
     it('applies success variant styles', () => {
@@ -95,7 +95,7 @@ describe('Alert', () => {
           Content
         </Alert>
       );
-      expect(screen.getByTestId('alert')).toHaveClass('bg-green-50');
+      expect(screen.getByTestId('alert')).toHaveClass('bg-green-950');
     });
 
     it('applies warning variant styles', () => {
@@ -104,7 +104,7 @@ describe('Alert', () => {
           Content
         </Alert>
       );
-      expect(screen.getByTestId('alert')).toHaveClass('bg-amber-50');
+      expect(screen.getByTestId('alert')).toHaveClass('bg-amber-950');
     });
 
     it('applies error variant styles', () => {
@@ -113,7 +113,7 @@ describe('Alert', () => {
           Content
         </Alert>
       );
-      expect(screen.getByTestId('alert')).toHaveClass('bg-red-50');
+      expect(screen.getByTestId('alert')).toHaveClass('bg-red-950');
     });
 
     it('applies destructive variant styles', () => {

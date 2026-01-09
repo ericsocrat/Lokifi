@@ -305,7 +305,7 @@ describe('ProfileDropdown', () => {
     it('should apply hover effect to trigger button', () => {
       render(<ProfileDropdown />);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('hover:bg-gray-100', 'dark:hover:bg-gray-800');
+      expect(button).toHaveClass('hover:bg-surface-200');
     });
 
     it('should have correct dropdown menu positioning', async () => {
@@ -325,7 +325,7 @@ describe('ProfileDropdown', () => {
       await user.click(screen.getByRole('button'));
 
       const logoutButton = screen.getByText('Log out');
-      expect(logoutButton).toHaveClass('text-red-600', 'dark:text-red-400');
+      expect(logoutButton).toHaveClass('text-red-400');
     });
   });
 

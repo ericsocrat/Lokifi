@@ -167,7 +167,7 @@ describe('TimeframePicker', () => {
       render(<TimeframePicker />);
 
       const inactiveButton = screen.getByText('5m');
-      expect(inactiveButton).toHaveClass('text-gray-400');
+      expect(inactiveButton).toHaveClass('text-surface-300');
       expect(inactiveButton).not.toHaveClass('bg-blue-600');
     });
 

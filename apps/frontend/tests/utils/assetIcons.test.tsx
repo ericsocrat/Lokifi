@@ -450,12 +450,12 @@ describe('assetIcons', () => {
 
       it('handles multiple custom classes', () => {
         render(
-          <AssetIcon symbol="BTC" type="crypto" className="border border-gray-200 shadow-md" />
+          <AssetIcon symbol="BTC" type="crypto" className="border border-surface-200 shadow-md" />
         );
         const img = screen.getByTestId('asset-icon');
         expect(img).toHaveClass('rounded-full');
         expect(img).toHaveClass('border');
-        expect(img).toHaveClass('border-gray-200');
+        expect(img).toHaveClass('border-surface-200');
         expect(img).toHaveClass('shadow-md');
       });
     });

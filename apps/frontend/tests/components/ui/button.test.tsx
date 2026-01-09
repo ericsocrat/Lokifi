@@ -44,13 +44,13 @@ describe('Button', () => {
     it('should render secondary variant', () => {
       render(<Button variant="secondary">Secondary</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('bg-gray-600');
+      expect(button).toHaveClass('bg-surface-300');
     });
 
     it('should render ghost variant', () => {
       render(<Button variant="ghost">Ghost</Button>);
       const button = screen.getByRole('button');
-      expect(button).toHaveClass('hover:bg-gray-100');
+      expect(button).toHaveClass('hover:bg-surface-200');
     });
 
     it('should render link variant', () => {

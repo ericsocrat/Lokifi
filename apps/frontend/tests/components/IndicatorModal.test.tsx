@@ -185,7 +185,7 @@ describe('IndicatorModal', () => {
     render(<IndicatorModal isOpen={true} onClose={onClose} />);
 
     // Click on the modal content
-    const modalContent = screen.getByText('Add Indicator').closest('.bg-gray-800');
+    const modalContent = screen.getByText('Add Indicator').closest('.bg-surface-100');
     fireEvent.click(modalContent!);
 
     expect(onClose).not.toHaveBeenCalled();

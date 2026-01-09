@@ -111,12 +111,12 @@ describe('Toggle', () => {
 
     it('shows disabled label styling', () => {
       render(<Toggle disabled label="Disabled toggle" data-testid="toggle" />);
-      expect(screen.getByText('Disabled toggle')).toHaveClass('text-gray-500');
+      expect(screen.getByText('Disabled toggle')).toHaveClass('text-surface-300');
     });
 
     it('shows disabled description styling', () => {
       render(<Toggle disabled label="Toggle" description="Description" data-testid="toggle" />);
-      expect(screen.getByText('Description')).toHaveClass('text-gray-600');
+      expect(screen.getByText('Description')).toHaveClass('text-surface-400');
     });
 
     it('has opacity-50 class when disabled', () => {
@@ -175,7 +175,7 @@ describe('Toggle', () => {
 
     it('applies gray background when unchecked', () => {
       render(<Toggle checked={false} data-testid="toggle" />);
-      expect(screen.getByRole('switch')).toHaveClass('bg-gray-600');
+      expect(screen.getByRole('switch')).toHaveClass('bg-surface-400');
     });
   });
 

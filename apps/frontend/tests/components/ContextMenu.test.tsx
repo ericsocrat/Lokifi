@@ -41,7 +41,7 @@ describe('ContextMenu', () => {
 
       const menu = container.querySelector('.context-menu');
       expect(menu).toHaveClass('absolute');
-      expect(menu).toHaveClass('bg-gray-800');
+      expect(menu).toHaveClass('bg-surface-100');
       expect(menu).toHaveClass('rounded-lg');
       expect(menu).toHaveClass('shadow-lg');
       expect(menu).toHaveClass('py-1');

@@ -264,7 +264,7 @@ describe('ProfileDropdown', () => {
       await user.click(screen.getByRole('button'));
 
       const logoutButton = screen.getByText('Log out').closest('button');
-      expect(logoutButton).toHaveClass('text-red-600');
+      expect(logoutButton).toHaveClass('text-red-400');
     });
 
     it('should apply rounded styling to dropdown', async () => {

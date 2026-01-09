@@ -99,7 +99,7 @@ describe('PageContent', () => {
       );
 
       const description = screen.getByText('Styled description');
-      expect(description).toHaveClass('text-gray-600');
+      expect(description).toHaveClass('text-surface-300');
     });
 
     it('should have margin on header section when title exists', () => {

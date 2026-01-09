@@ -205,7 +205,7 @@ describe('MultiChartLayout', () => {
         </MultiChartLayout>
       );
 
-      const chartCells = container.querySelectorAll('.bg-gray-900.border');
+      const chartCells = container.querySelectorAll('.bg-surface-0.border');
       expect(chartCells[0]).toHaveStyle({ gridRow: '1', gridColumn: '1' });
       expect(chartCells[1]).toHaveStyle({ gridRow: '2', gridColumn: '2' });
     });
