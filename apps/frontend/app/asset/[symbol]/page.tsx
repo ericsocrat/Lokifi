@@ -185,14 +185,14 @@ function AssetDetailContent() {
 
   if (!asset || cryptosLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
+      <div className="min-h-screen flex items-center justify-center bg-surface-0">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600 dark:text-gray-400 font-medium">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi mx-auto mb-4" />
+          <p className="text-surface-300 font-medium">
             Loading asset data from backend...
           </p>
           {connected && (
-            <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+            <p className="text-green-400 text-sm mt-2">
               ✅ Live updates connected
             </p>
           )}
@@ -202,9 +202,7 @@ function AssetDetailContent() {
   }
 
   const isPositive = asset.changePercent >= 0;
-  const changeColor = isPositive
-    ? 'text-green-600 dark:text-green-400'
-    : 'text-red-600 dark:text-red-400';
+  const changeColor = isPositive ? 'text-green-400' : 'text-red-400';
 
   const timeFrameButtons: { value: TimeFrame; label: string }[] = [
     { value: '1d', label: '1D' },
@@ -220,24 +218,24 @@ function AssetDetailContent() {
   const periodChangePercent = (periodChange / periodStart) * 100;
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950 p-6 md:p-8">
+    <div className="min-h-screen bg-surface-0 p-6 md:p-8">
       <div className="max-w-[1800px] mx-auto">
         {/* Back Button */}
         <button
           onClick={() => router.push('/markets')}
-          className="mb-6 px-4 py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center gap-2 font-bold text-gray-700 dark:text-gray-300 shadow-lg"
+          className="mb-6 px-4 py-2 bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-xl hover:bg-surface-200 transition-all flex items-center gap-2 font-bold text-surface-300 shadow-lg"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to Markets
         </button>
 
         {/* Asset Header Card */}
-        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-8 mb-8 shadow-xl">
+        <div className="bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-2xl p-8 mb-8 shadow-xl">
           <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
             <div className="flex items-start gap-5">
               {/* Premium Asset Icon */}
               <div className="relative">
-                <div className="w-20 h-20 bg-linear-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-linear-to-br from-lokifi to-electric rounded-2xl shadow-xl flex items-center justify-center">
                   <span className="text-4xl font-black text-white">{symbol.charAt(0)}</span>
                 </div>
                 {/* Live indicator */}
@@ -253,33 +251,31 @@ function AssetDetailContent() {
 
               <div>
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white">
+                  <h1 className="text-4xl md:text-5xl font-black text-white">
                     {asset.name}
                   </h1>
-                  <span className="px-3 py-1.5 text-sm font-bold rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                  <span className="px-3 py-1.5 text-sm font-bold rounded-xl bg-surface-200 text-surface-300">
                     {symbol}
                   </span>
-                  <span className="px-3 py-1.5 text-xs font-bold rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                  <span className="px-3 py-1.5 text-xs font-bold rounded-xl bg-lokifi/20 text-lokifi-light">
                     CRYPTO
                   </span>
                 </div>
 
-                <p className="text-gray-600 dark:text-gray-400 text-lg font-medium mb-4">
+                <p className="text-surface-300 text-lg font-medium mb-4">
                   {asset.category}
                 </p>
 
                 {/* Massive Price Display */}
                 <div className="flex items-baseline gap-4 flex-wrap mb-3">
-                  <span className="text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
+                  <span className="text-6xl md:text-7xl font-black text-white">
                     {formatPrice(asset.price)}
                   </span>
 
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${
-                        isPositive
-                          ? 'bg-green-100 dark:bg-green-900/30'
-                          : 'bg-red-100 dark:bg-red-900/30'
+                        isPositive ? 'bg-green-500/20' : 'bg-red-500/20'
                       }`}
                     >
                       {isPositive ? (
@@ -296,8 +292,8 @@ function AssetDetailContent() {
                     <div
                       className={`px-4 py-2.5 rounded-xl text-2xl font-black ${
                         isPositive
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                          : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-red-500/20 text-red-400'
                       }`}
                     >
                       {isPositive ? '↑' : '↓'} {Math.abs(asset.changePercent).toFixed(2)}%
@@ -305,7 +301,7 @@ function AssetDetailContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
+                <div className="flex items-center gap-2 text-surface-300 text-sm">
                   <Activity className="w-4 h-4" />
                   <span className="font-medium">
                     {connected ? '🔴 LIVE • Real-time updates' : 'Real-time data from CoinGecko'}
@@ -320,8 +316,8 @@ function AssetDetailContent() {
                 onClick={toggleWatchlist}
                 className={`px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 hover:scale-105 shadow-lg ${
                   isInWatchlist
-                    ? 'bg-linear-to-r from-yellow-500 to-orange-500 text-white'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
+                    ? 'bg-linear-to-r from-lokifi to-electric text-white'
+                    : 'bg-surface-200 text-surface-300 border border-surface-300'
                 }`}
               >
                 <Star className={`w-5 h-5 ${isInWatchlist ? 'fill-current' : ''}`} />
@@ -336,23 +332,23 @@ function AssetDetailContent() {
           {/* Chart Section - Takes 2 columns */}
           <div className="xl:col-span-2 space-y-6">
             {/* Chart Card */}
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl">
+            <div className="bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-2xl p-8 shadow-xl">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <LineChart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-                  <h2 className="text-3xl font-black text-gray-900 dark:text-white">Price Chart</h2>
+                  <LineChart className="w-7 h-7 text-lokifi" />
+                  <h2 className="text-3xl font-black text-white">Price Chart</h2>
                 </div>
 
                 {/* Time Frame Selector */}
-                <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl">
+                <div className="flex gap-2 bg-surface-200 p-1.5 rounded-xl">
                   {timeFrameButtons.map((tf) => (
                     <button
                       key={tf.value}
                       onClick={() => setSelectedTimeFrame(tf.value)}
                       className={`px-4 py-2 rounded-lg font-bold transition-all text-sm ${
                         selectedTimeFrame === tf.value
-                          ? 'bg-linear-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
-                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? 'bg-linear-to-r from-lokifi to-electric text-white shadow-lg scale-105'
+                          : 'text-surface-300 hover:bg-surface-300'
                       }`}
                     >
                       {tf.label}
@@ -365,12 +361,12 @@ function AssetDetailContent() {
               {historyLoading ? (
                 <div className="h-[400px] flex items-center justify-center">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2" />
-                    <p className="text-gray-500 dark:text-gray-400">Loading chart data...</p>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-lokifi mx-auto mb-2" />
+                    <p className="text-surface-300">Loading chart data...</p>
                   </div>
                 </div>
               ) : historicalData.length === 0 ? (
-                <div className="h-[400px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+                <div className="h-[400px] flex items-center justify-center text-surface-300">
                   <p>No historical data available for this period</p>
                 </div>
               ) : (
@@ -430,35 +426,35 @@ function AssetDetailContent() {
                   {/* Chart Stats */}
                   <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                      <p className="text-xs font-bold text-surface-300 mb-1">
                         High
                       </p>
-                      <span className="text-lg font-black text-green-600 dark:text-green-400">
+                      <span className="text-lg font-black text-green-400">
                         {formatPrice(Math.max(...historicalData.map((d) => d.price)))}
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Low</p>
-                      <span className="text-lg font-black text-red-600 dark:text-red-400">
+                      <p className="text-xs font-bold text-surface-300 mb-1">Low</p>
+                      <span className="text-lg font-black text-red-400">
                         {formatPrice(Math.min(...historicalData.map((d) => d.price)))}
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                      <p className="text-xs font-bold text-surface-300 mb-1">
                         Change
                       </p>
                       <span
-                        className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                        className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}
                       >
                         {periodChangePercent >= 0 ? '+' : ''}
                         {periodChangePercent.toFixed(2)}%
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                      <p className="text-xs font-bold text-surface-300 mb-1">
                         Data Points
                       </p>
-                      <span className="text-lg font-black text-gray-900 dark:text-white">
+                      <span className="text-lg font-black text-white">
                         {historicalData.length}
                       </span>
                     </div>
@@ -469,26 +465,26 @@ function AssetDetailContent() {
 
             {/* Price Range Card */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+              <div className="bg-linear-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
-                    <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
+                    <TrendingUp className="w-5 h-5 text-green-400" />
                   </div>
-                  <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W High</h3>
+                  <h3 className="text-sm font-bold text-surface-300">52W High</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">
+                <p className="text-2xl font-black text-white">
                   {formatPrice(asset.high52w)}
                 </p>
               </div>
 
-              <div className="bg-linear-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl border-2 border-orange-200 dark:border-orange-800 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+              <div className="bg-linear-to-br from-orange-500/10 to-red-500/10 rounded-2xl border-2 border-orange-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
-                    <TrendingDown className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                  <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
+                    <TrendingDown className="w-5 h-5 text-orange-400" />
                   </div>
-                  <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W Low</h3>
+                  <h3 className="text-sm font-bold text-surface-300">52W Low</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">
+                <p className="text-2xl font-black text-white">
                   {formatPrice(asset.low52w)}
                 </p>
               </div>
@@ -499,20 +495,20 @@ function AssetDetailContent() {
           <div className="space-y-6">
             {/* Live Market Data Card */}
             {connected && (
-              <div className="bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg">
+              <div className="bg-linear-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="relative">
                     <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse" />
                     <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping" />
                   </div>
-                  <span className="font-black text-gray-900 dark:text-white text-xl">
+                  <span className="font-black text-white text-xl">
                     LIVE MARKET DATA
                   </span>
                 </div>
-                <p className="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">
+                <p className="text-base text-surface-300 mb-3 font-medium">
                   Real-time updates via WebSocket
                 </p>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <div className="flex items-center gap-2 text-sm text-surface-300 font-medium">
                   <Activity className="w-4 h-4" />
                   <span>Connected to backend</span>
                 </div>
@@ -520,49 +516,49 @@ function AssetDetailContent() {
             )}
 
             {/* Market Statistics Card */}
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                <PieChart className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-xl font-black text-white mb-6 flex items-center gap-3">
+                <PieChart className="w-6 h-6 text-lokifi" />
                 Market Statistics
               </h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
+                  <span className="text-sm font-bold text-surface-300">
                     Market Cap
                   </span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">
+                  <span className="font-black text-white text-base">
                     {formatMarketCap(asset.marketCap)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
+                  <span className="text-sm font-bold text-surface-300">
                     Volume (24h)
                   </span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">
+                  <span className="font-black text-white text-base">
                     {formatVolume(asset.volume)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
+                  <span className="text-sm font-bold text-surface-300">
                     24h High
                   </span>
-                  <span className="font-black text-green-600 dark:text-green-400 text-base">
+                  <span className="font-black text-green-400 text-base">
                     {formatPrice(asset.high24h)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                <div className="flex justify-between items-center py-3 border-b-2 border-surface-200">
+                  <span className="text-sm font-bold text-surface-300">
                     24h Low
                   </span>
-                  <span className="font-black text-red-600 dark:text-red-400 text-base">
+                  <span className="font-black text-red-400 text-base">
                     {formatPrice(asset.low24h)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center py-3">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                  <span className="text-sm font-bold text-surface-300">
                     Prev. Close
                   </span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">
+                  <span className="font-black text-white text-base">
                     {formatPrice(asset.previousClose)}
                   </span>
                 </div>
@@ -570,15 +566,15 @@ function AssetDetailContent() {
             </div>
 
             {/* Performance Metrics Card */}
-            <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xl">
-              <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 flex items-center gap-3">
-                <Activity className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="bg-surface-100/80 backdrop-blur-xl border border-surface-200 rounded-2xl p-6 shadow-xl">
+              <h3 className="text-xl font-black text-white mb-6 flex items-center gap-3">
+                <Activity className="w-6 h-6 text-green-400" />
                 Performance Metrics
               </h3>
               <div className="space-y-5">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-surface-300">
                       Today&apos;s Change
                     </span>
                     <span className={`font-black ${changeColor}`}>
@@ -586,7 +582,7 @@ function AssetDetailContent() {
                       {asset.changePercent.toFixed(2)}%
                     </span>
                   </div>
-                  <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-surface-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${isPositive ? 'bg-linear-to-r from-green-500 to-emerald-500' : 'bg-linear-to-r from-red-500 to-rose-500'}`}
                       style={{ width: `${Math.min(Math.abs(asset.changePercent) * 10, 100)}%` }}
@@ -595,17 +591,17 @@ function AssetDetailContent() {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-gray-600 dark:text-gray-400">
+                    <span className="font-bold text-surface-300">
                       Period Change
                     </span>
                     <span
-                      className={`font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                      className={`font-black ${periodChangePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}
                     >
                       {periodChangePercent >= 0 ? '+' : ''}
                       {periodChangePercent.toFixed(2)}%
                     </span>
                   </div>
-                  <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-surface-200 rounded-full overflow-hidden">
                     <div
                       className={`h-full ${periodChangePercent >= 0 ? 'bg-linear-to-r from-green-500 to-emerald-500' : 'bg-linear-to-r from-red-500 to-rose-500'}`}
                       style={{ width: `${Math.min(Math.abs(periodChangePercent) * 5, 100)}%` }}
@@ -616,11 +612,11 @@ function AssetDetailContent() {
             </div>
 
             {/* Data Source Info */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 p-6">
-              <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+            <div className="bg-lokifi/10 rounded-2xl border-2 border-lokifi/30 p-6">
+              <p className="text-sm font-bold text-surface-300 mb-2">
                 💎 Real Data from Backend
               </p>
-              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+              <ul className="text-xs text-surface-300 space-y-1">
                 <li>✅ CoinGecko API integration</li>
                 <li>✅ Historical price data</li>
                 <li>✅ WebSocket live updates</li>
