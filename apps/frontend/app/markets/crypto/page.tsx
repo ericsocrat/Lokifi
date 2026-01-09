@@ -151,7 +151,7 @@ function MarketsPageContent() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-lokifi via-electric to-lokifi-light mb-2">
+              <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lokifi via-electric to-lokifi-light mb-2">
                 Crypto Markets
               </h1>
               <p className="text-surface-300 text-lg font-medium">
@@ -169,7 +169,7 @@ function MarketsPageContent() {
             <button
               onClick={() => refetch && refetch()}
               disabled={isLoading}
-              className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-lokifi text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
+              className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-lokifi text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
@@ -273,7 +273,7 @@ function MarketsPageContent() {
         <div className="bg-surface-100/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-surface-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-linear-to-r from-lokifi/20 to-electric/20 border-b-2 border-surface-200">
+              <thead className="bg-gradient-to-r from-lokifi/20 to-electric/20 border-b-2 border-surface-200">
                 <tr>
                   <th className="px-4 py-4 text-left text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
@@ -444,4 +444,5 @@ export default function MarketsPage() {
     </ProtectedRoute>
   );
 }
+
 

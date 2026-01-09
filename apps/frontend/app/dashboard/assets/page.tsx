@@ -287,7 +287,7 @@ export default function AssetsPage() {
             </a>
             <a
               href="/dashboard/assets"
-              className="flex items-center justify-between px-4 py-3 bg-linear-to-r from-lokifi/20 to-electric/10 rounded-lg text-white font-medium hover:from-lokifi/30 hover:to-electric/20 transition-colors border border-lokifi/20"
+              className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-lokifi/20 to-electric/10 rounded-lg text-white font-medium hover:from-lokifi/30 hover:to-electric/20 transition-colors border border-lokifi/20"
             >
               <div className="flex items-center space-x-3">
                 <TrendingUp className="w-5 h-5 text-lokifi-light" />
@@ -411,7 +411,7 @@ export default function AssetsPage() {
                         onDelete={() => removeAsset(section.title, asset.id)}
                       />
                     ))}
-                    <div className="bg-linear-to-r from-lokifi/20 to-electric/10 hover:from-lokifi/30 hover:to-electric/20 rounded-xl p-4 cursor-pointer transition-all duration-200 group border border-lokifi/20 hover:border-lokifi/40">
+                    <div className="bg-gradient-to-r from-lokifi/20 to-electric/10 hover:from-lokifi/30 hover:to-electric/20 rounded-xl p-4 cursor-pointer transition-all duration-200 group border border-lokifi/20 hover:border-lokifi/40">
                       <button
                         onClick={openAddAssetModal}
                         className="w-full text-center text-white font-medium"
@@ -441,7 +441,7 @@ export default function AssetsPage() {
                   <p className="mb-4 font-medium">No assets yet</p>
                   <button
                     onClick={openAddAssetModal}
-                    className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
+                    className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
                   >
                     Add your first asset
                   </button>
@@ -474,7 +474,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   return (
     <div className="bg-surface-100/50 border border-surface-300/50 rounded-xl p-4 flex items-center justify-between hover:border-surface-300 hover:shadow-lg hover:shadow-lokifi/5 transition-all duration-200">
       <div className="flex items-center space-x-4 flex-1">
-        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lokifi to-electric text-white flex items-center justify-center font-semibold text-sm shadow-lg shadow-lokifi/20">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-lokifi to-electric text-white flex items-center justify-center font-semibold text-sm shadow-lg shadow-lokifi/20">
           {bank.name.substring(0, 2).toUpperCase()}
         </div>
         <div className="flex-1">
@@ -539,4 +539,6 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
     </div>
   );
 }
+
+
 

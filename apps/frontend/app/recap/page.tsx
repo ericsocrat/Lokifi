@@ -180,7 +180,7 @@ export default function RecapPage() {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Monthly Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="border border-emerald-500/20 rounded-2xl bg-linear-to-br from-emerald-500/10 to-emerald-500/5 p-6 backdrop-blur-sm">
+          <div className="border border-emerald-500/20 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 p-6 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="p-2 bg-emerald-500/10 rounded-lg">
                 <ArrowDownRight className="w-4 h-4 text-emerald-400" />
@@ -190,7 +190,7 @@ export default function RecapPage() {
             <p className="text-2xl font-bold text-white">{formatCurrency(totalBuys)}</p>
           </div>
 
-          <div className="border border-rose-500/20 rounded-2xl bg-linear-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm">
+          <div className="border border-rose-500/20 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="p-2 bg-rose-500/10 rounded-lg">
                 <ArrowUpRight className="w-4 h-4 text-rose-400" />
@@ -200,7 +200,7 @@ export default function RecapPage() {
             <p className="text-2xl font-bold text-white">{formatCurrency(totalSells)}</p>
           </div>
 
-          <div className="border border-purple-500/20 rounded-2xl bg-linear-to-br from-purple-500/10 to-purple-500/5 p-6 backdrop-blur-sm">
+          <div className="border border-purple-500/20 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 p-6 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-4">
               <div className="p-2 bg-purple-500/10 rounded-lg">
                 <DollarSign className="w-4 h-4 text-purple-400" />
@@ -279,4 +279,5 @@ export default function RecapPage() {
     </div>
   );
 }
+
 

@@ -9,7 +9,36 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import type { Metadata } from 'next';
 import '../styles/globals.css';
 
-export const metadata: Metadata = { title: 'Lokifi - Personal Finance Tracker' };
+export const metadata: Metadata = {
+  title: 'Lokifi - Personal Finance & Crypto Portfolio Tracker',
+  description:
+    'Track your crypto, stocks, and investment portfolio in real-time. Join 50,000+ users managing $2B+ in assets with advanced analytics, price alerts, and AI-powered insights.',
+  keywords: [
+    'portfolio tracker',
+    'crypto tracker',
+    'investment tracking',
+    'finance app',
+    'crypto portfolio',
+    'stock portfolio',
+    'asset management',
+  ],
+  authors: [{ name: 'Lokifi' }],
+  openGraph: {
+    title: 'Lokifi - Personal Finance & Crypto Portfolio Tracker',
+    description:
+      'Track your crypto, stocks, and investment portfolio in real-time. Join 50,000+ users managing $2B+ in assets.',
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://lokifi.com',
+    siteName: 'Lokifi',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Lokifi - Personal Finance & Crypto Portfolio Tracker',
+    description:
+      'Track your crypto, stocks, and investment portfolio in real-time. Join 50,000+ users managing $2B+ in assets.',
+  },
+};
 
 // Google OAuth Client ID - Replace with your actual client ID
 const GOOGLE_CLIENT_ID =

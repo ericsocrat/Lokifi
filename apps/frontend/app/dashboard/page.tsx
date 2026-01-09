@@ -161,7 +161,7 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => router.push('/dashboard/add-assets')}
-              className="flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
             >
               <Plus className="w-4 h-4" />
               Add Assets
@@ -175,7 +175,7 @@ export default function DashboardPage() {
           /* Empty State */
           <div className="space-y-8">
             {/* Welcome Card */}
-            <div className="border border-lokifi/20 rounded-2xl bg-linear-to-br from-lokifi/10 via-electric/5 to-transparent p-8 backdrop-blur-sm">
+            <div className="border border-lokifi/20 rounded-2xl bg-gradient-to-br from-lokifi/10 via-electric/5 to-transparent p-8 backdrop-blur-sm">
               <div className="flex items-start justify-between">
                 <div className="flex-1 max-w-2xl">
                   <h2 className="text-3xl font-bold text-white mb-4">
@@ -192,7 +192,7 @@ export default function DashboardPage() {
                   </p>
                   <button
                     onClick={() => router.push('/dashboard/add-assets')}
-                    className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-semibold transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
+                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-semibold transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/40"
                   >
                     <Plus className="w-5 h-5" />
                     Add Your First Asset
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                   </button>
                 </div>
                 <div className="hidden md:block ml-8">
-                  <div className="w-32 h-32 rounded-2xl bg-linear-to-br from-lokifi to-electric flex items-center justify-center shadow-2xl shadow-lokifi/40 animate-float">
+                  <div className="w-32 h-32 rounded-2xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center shadow-2xl shadow-lokifi/40 animate-float">
                     <Wallet className="w-16 h-16 text-white" />
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function DashboardPage() {
             {/* Sample Stats Preview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Net Worth Card */}
-              <div className="border border-emerald-500/20 rounded-2xl bg-linear-to-br from-emerald-500/10 to-emerald-500/5 p-6 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-200">
+              <div className="border border-emerald-500/20 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 p-6 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-2.5 bg-emerald-500/10 rounded-xl">
                     <DollarSign className="w-5 h-5 text-emerald-400" />
@@ -231,7 +231,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Assets Card */}
-              <div className="border border-lokifi/20 rounded-2xl bg-linear-to-br from-lokifi/10 to-lokifi/5 p-6 backdrop-blur-sm hover:border-lokifi/30 transition-all duration-200">
+              <div className="border border-lokifi/20 rounded-2xl bg-gradient-to-br from-lokifi/10 to-lokifi/5 p-6 backdrop-blur-sm hover:border-lokifi/30 transition-all duration-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-2.5 bg-lokifi/10 rounded-xl">
                     <Wallet className="w-5 h-5 text-lokifi-light" />
@@ -252,7 +252,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Debts Card */}
-              <div className="border border-rose-500/20 rounded-2xl bg-linear-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm hover:border-rose-500/30 transition-all duration-200">
+              <div className="border border-rose-500/20 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 p-6 backdrop-blur-sm hover:border-rose-500/30 transition-all duration-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-2.5 bg-rose-500/10 rounded-xl">
                     <BarChart3 className="w-5 h-5 text-rose-400" />
@@ -281,7 +281,7 @@ export default function DashboardPage() {
                   <BarChart3 className="w-5 h-5 text-lokifi-light" />
                   Net Worth Over Time
                 </h3>
-                <div className="relative h-48 bg-linear-to-b from-lokifi/20 to-transparent rounded-xl overflow-hidden">
+                <div className="relative h-48 bg-gradient-to-b from-lokifi/20 to-transparent rounded-xl overflow-hidden">
                   <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 40">
                     <path
                       d="M0,35 Q10,32 20,30 T40,25 T60,20 T80,15 T100,10"
@@ -414,7 +414,7 @@ export default function DashboardPage() {
                       onClick={() => setSelectedPeriod(period)}
                       className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                         selectedPeriod === period
-                          ? 'bg-linear-to-r from-lokifi to-electric text-white shadow-lg shadow-lokifi/20'
+                          ? 'bg-gradient-to-r from-lokifi to-electric text-white shadow-lg shadow-lokifi/20'
                           : 'text-surface-400 hover:text-white hover:bg-surface-300'
                       }`}
                     >
@@ -445,7 +445,7 @@ export default function DashboardPage() {
                   {formatCurrency(stats?.illiquid || 0)}
                 </p>
               </div>
-              <div className="border border-rose-500/20 rounded-2xl bg-linear-to-br from-rose-500/10 to-rose-500/5 p-4 hover:border-rose-500/30 transition-all duration-200">
+              <div className="border border-rose-500/20 rounded-2xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 p-4 hover:border-rose-500/30 transition-all duration-200">
                 <p className="text-xs font-medium text-surface-400 mb-1">Debts</p>
                 <p className="text-2xl font-bold text-rose-400">
                   {formatCurrency(stats?.debts || 0)}
@@ -513,7 +513,7 @@ export default function DashboardPage() {
                         className="flex items-center justify-between py-2 border-b border-surface-300/50 last:border-0"
                       >
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-xl bg-linear-to-br from-lokifi to-electric flex items-center justify-center shadow-lg shadow-lokifi/20">
+                          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center shadow-lg shadow-lokifi/20">
                             <span className="text-xs font-bold text-white">{index + 1}</span>
                           </div>
                           <div>
@@ -542,7 +542,7 @@ export default function DashboardPage() {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => router.push('/portfolio')}
-                className="flex items-center gap-2 px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
               >
                 <Wallet className="w-4 h-4" />
                 View Full Portfolio
@@ -568,4 +568,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
 

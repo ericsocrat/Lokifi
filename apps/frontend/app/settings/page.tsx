@@ -81,7 +81,7 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     activeTab === tab.id
-                      ? 'bg-linear-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
+                      ? 'bg-gradient-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
                       : 'text-surface-300 hover:bg-surface-200 hover:text-white'
                   }`}
                 >
@@ -315,4 +315,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
 

@@ -123,6 +123,7 @@ export default function LandingPage() {
             <Link
               href="/dashboard"
               className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-2xl text-white font-semibold text-lg transition-all duration-300 shadow-xl shadow-lokifi/30 hover:shadow-lokifi/50 hover:scale-105"
+              aria-label="Get started with Lokifi for free - no credit card required"
             >
               <Zap className="w-5 h-5" />
               Get Started Free
@@ -131,6 +132,7 @@ export default function LandingPage() {
             <Link
               href="/markets"
               className="flex items-center gap-2 px-8 py-4 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-2xl text-white font-semibold text-lg transition-all duration-300"
+              aria-label="Browse cryptocurrency, stocks, forex, and indices markets"
             >
               <TrendingUp className="w-5 h-5 text-green-500" />
               Explore Markets
@@ -244,10 +246,13 @@ export default function LandingPage() {
                 Alerts
               </Link>
             </div>
-            <p className="text-sm text-surface-400">© 2026 Lokifi. All rights reserved.</p>
+            <p className="text-sm text-surface-400">
+              © {new Date().getFullYear()} Lokifi. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
+
