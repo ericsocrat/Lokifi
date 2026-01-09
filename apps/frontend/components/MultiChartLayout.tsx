@@ -31,7 +31,7 @@ export const MultiChartLayout: React.FC<MultiChartLayoutProps> = ({ children }) 
   return (
     <div className="w-full h-full flex flex-col">
       {/* Multi-chart controls */}
-      <div className="flex items-center justify-between p-2 bg-gray-800 border-b border-gray-700">
+      <div className="flex items-center justify-between p-2 bg-surface-100 border-b border-surface-200">
         <LayoutSelector />
         <LinkingControls />
       </div>
@@ -41,7 +41,7 @@ export const MultiChartLayout: React.FC<MultiChartLayoutProps> = ({ children }) 
         {charts.map((chart) => (
           <div
             key={chart.id}
-            className="bg-gray-900 border border-gray-700 rounded relative"
+            className="bg-surface-0 border border-surface-200 rounded relative"
             style={{
               gridRow: chart.position.row + 1,
               gridColumn: chart.position.col + 1,
