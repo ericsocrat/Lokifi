@@ -23,7 +23,7 @@ export default function LoginPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-surface-300">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading...</span>
         </div>
@@ -66,7 +66,7 @@ export default function LoginPage() {
             </span>
           </h1>
 
-          <p className="text-gray-400 text-lg leading-relaxed mb-8">
+          <p className="text-surface-300 text-lg leading-relaxed mb-8">
             Track your investments, monitor markets, and make smarter financial decisions with
             real-time insights and beautiful analytics.
           </p>
@@ -79,7 +79,7 @@ export default function LoginPage() {
               'Smart alerts & notifications',
               'Beautiful, intuitive interface',
             ].map((feature, index) => (
-              <div key={index} className="flex items-center gap-3 text-gray-300">
+              <div key={index} className="flex items-center gap-3 text-surface-300">
                 <div className="w-6 h-6 rounded-full bg-lokifi/20 flex items-center justify-center">
                   <Sparkles className="w-3.5 h-3.5 text-lokifi-light" />
                 </div>
@@ -105,7 +105,7 @@ export default function LoginPage() {
           <div className="bg-surface-50/80 border border-surface-300/50 rounded-3xl p-8 backdrop-blur-xl shadow-2xl shadow-black/20">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
-              <p className="text-gray-400">Sign in to continue to your dashboard</p>
+              <p className="text-surface-300">Sign in to continue to your dashboard</p>
             </div>
 
             {/* Auth Buttons */}
@@ -124,7 +124,7 @@ export default function LoginPage() {
                   <div className="w-full border-t border-surface-300/50" />
                 </div>
                 <div className="relative flex justify-center">
-                  <span className="px-4 text-sm text-gray-500 bg-surface-50/80">
+                  <span className="px-4 text-sm text-surface-300 bg-surface-50/80">
                     New to Lokifi?
                   </span>
                 </div>
@@ -144,8 +144,8 @@ export default function LoginPage() {
               <div className="flex items-start gap-3">
                 <Mail className="w-5 h-5 text-lokifi-light mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-300 font-medium">Try without signing up</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm text-surface-200 font-medium">Try without signing up</p>
+                  <p className="text-xs text-surface-300 mt-1">
                     Explore the dashboard with demo data to see what Lokifi can do.
                   </p>
                   <Link
@@ -160,15 +160,15 @@ export default function LoginPage() {
           </div>
 
           {/* Footer Links */}
-          <div className="flex items-center justify-center gap-6 mt-8 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-6 mt-8 text-sm text-surface-300">
             <Link href="/markets" className="hover:text-white transition-colors">
               Markets
             </Link>
-            <span className="w-1 h-1 rounded-full bg-gray-600" />
+            <span className="w-1 h-1 rounded-full bg-surface-300" />
             <Link href="/" className="hover:text-white transition-colors">
               About
             </Link>
-            <span className="w-1 h-1 rounded-full bg-gray-600" />
+            <span className="w-1 h-1 rounded-full bg-surface-300" />
             <button className="hover:text-white transition-colors">Help</button>
           </div>
         </div>
