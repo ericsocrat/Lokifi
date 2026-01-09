@@ -66,7 +66,7 @@ export default function SettingsPage() {
             <Settings className="w-6 h-6 text-lokifi-light" />
             Settings
           </h1>
-          <p className="text-sm text-gray-400 mt-1">Manage your preferences and account settings</p>
+          <p className="text-sm text-surface-300 mt-1">Manage your preferences and account settings</p>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ export default function SettingsPage() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                     activeTab === tab.id
                       ? 'bg-linear-to-r from-lokifi/15 to-electric/10 text-lokifi-light border border-lokifi/20'
-                      : 'text-gray-400 hover:bg-surface-200 hover:text-white'
+                      : 'text-surface-300 hover:bg-surface-200 hover:text-white'
                   }`}
                 >
                   {tab.icon}
@@ -104,7 +104,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Display Currency</h3>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-surface-300">
                         Choose your preferred currency for displaying values
                       </p>
                     </div>
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                         className={`p-3 rounded-xl border transition-all duration-200 ${
                           currency === curr.code
                             ? 'border-lokifi bg-lokifi/10 text-lokifi-light'
-                            : 'border-surface-300 hover:border-surface-200 text-gray-300'
+                            : 'border-surface-300 hover:border-surface-200 text-surface-300'
                         }`}
                       >
                         <span className="text-lg font-bold">{curr.symbol}</span>
@@ -138,7 +138,7 @@ export default function SettingsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">Language</h3>
-                      <p className="text-sm text-gray-400">Select your preferred language</p>
+                      <p className="text-sm text-surface-300">Select your preferred language</p>
                     </div>
                   </div>
                   <select
@@ -164,7 +164,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">Theme</h3>
-                    <p className="text-sm text-gray-400">Choose your preferred color scheme</p>
+                    <p className="text-sm text-surface-300">Choose your preferred color scheme</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                       <Sun className="w-6 h-6 text-amber-400" />
                       <span className="font-semibold text-white">Light</span>
                     </div>
-                    <div className="h-16 rounded-lg bg-white border border-gray-200" />
+                    <div className="h-16 rounded-lg bg-white border border-surface-200" />
                   </button>
                   <button
                     onClick={() => setDarkMode(true)}
@@ -194,7 +194,7 @@ export default function SettingsPage() {
                       <Moon className="w-6 h-6 text-indigo-400" />
                       <span className="font-semibold text-white">Dark</span>
                     </div>
-                    <div className="h-16 rounded-lg bg-gray-900 border border-gray-700" />
+                    <div className="h-16 rounded-lg bg-surface-0 border border-surface-200" />
                   </button>
                 </div>
               </div>
@@ -208,7 +208,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">Notification Preferences</h3>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Manage how and when you receive notifications
                     </p>
                   </div>
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                         <p className="font-medium text-white capitalize">
                           {key.replace(/([A-Z])/g, ' $1').trim()}
                         </p>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-surface-300">
                           Receive notifications for {key.toLowerCase()}
                         </p>
                       </div>
@@ -258,7 +258,7 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">Privacy & Security</h3>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Manage your privacy settings and account security
                     </p>
                   </div>
@@ -266,15 +266,15 @@ export default function SettingsPage() {
                 <div className="space-y-4">
                   <button className="w-full p-4 text-left rounded-xl border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200/50 transition-all">
                     <h4 className="font-medium text-white">Change Password</h4>
-                    <p className="text-sm text-gray-400">Update your account password</p>
+                    <p className="text-sm text-surface-300">Update your account password</p>
                   </button>
                   <button className="w-full p-4 text-left rounded-xl border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200/50 transition-all">
                     <h4 className="font-medium text-white">Two-Factor Authentication</h4>
-                    <p className="text-sm text-gray-400">Add an extra layer of security</p>
+                    <p className="text-sm text-surface-300">Add an extra layer of security</p>
                   </button>
                   <button className="w-full p-4 text-left rounded-xl border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200/50 transition-all">
                     <h4 className="font-medium text-white">Download Your Data</h4>
-                    <p className="text-sm text-gray-400">Export all your portfolio data</p>
+                    <p className="text-sm text-surface-300">Export all your portfolio data</p>
                   </button>
                 </div>
               </div>
@@ -288,17 +288,17 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">Account Settings</h3>
-                    <p className="text-sm text-gray-400">Manage your account information</p>
+                    <p className="text-sm text-surface-300">Manage your account information</p>
                   </div>
                 </div>
                 <div className="space-y-4">
                   <button className="w-full p-4 text-left rounded-xl border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200/50 transition-all">
                     <h4 className="font-medium text-white">Edit Profile</h4>
-                    <p className="text-sm text-gray-400">Update your name and email</p>
+                    <p className="text-sm text-surface-300">Update your name and email</p>
                   </button>
                   <button className="w-full p-4 text-left rounded-xl border border-surface-300 hover:border-lokifi/30 hover:bg-surface-200/50 transition-all">
                     <h4 className="font-medium text-white">Connected Accounts</h4>
-                    <p className="text-sm text-gray-400">Manage linked brokerage accounts</p>
+                    <p className="text-sm text-surface-300">Manage linked brokerage accounts</p>
                   </button>
                   <button className="w-full p-4 text-left rounded-xl border border-rose-500/30 hover:border-rose-500/50 hover:bg-rose-500/10 text-rose-400 transition-all">
                     <h4 className="font-medium">Delete Account</h4>
