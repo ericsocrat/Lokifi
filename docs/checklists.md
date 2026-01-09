@@ -27,7 +27,7 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- 🔄 **Session 141** - Quality audit campaign: Landing page + Dashboard page (2/24 pages complete)
+- 🔄 **Session 141** - Quality audit campaign: Landing + Dashboard + Markets pages (6/24 pages complete)
 
 **Previous Sessions:**
 - ✅ **Session 140** - Page testing expansion (77 tests: AssetDetail, Chart, ApiTest) + coverage 89.48% → 91.23%
@@ -169,15 +169,44 @@
 - `839da734` - test: update tests to match corrected bg-gradient-to-* classes
 - `58458149` - feat(dashboard): accessibility and configuration improvements
 - `49b422fa` - test(dashboard): update tests to match new aria-labels
+- `83fb5f2d` - feat(a11y): add aria-labels to all market pages (stocks, forex, indices)
 
-**Remaining Pages** (22 of 24):
-- Markets pages (5): /markets, /markets/crypto, /markets/forex, /markets/indices, /markets/stocks
+**Markets Pages Audit Completed** (5/5 pages) ✅:
+1. **Markets Main Page** ✅:
+   - Added aria-labels: error retry, header refresh, all "View All" links (crypto, stocks, indices, forex)
+   - Tested: all buttons functional, trading data displays correctly
+
+2. **Crypto Markets Page** ✅:
+   - Added aria-labels: refresh button, 6 sort buttons (rank, price, 24h change, volume, market cap)
+   - Dynamic watchlist button labels based on current state
+   - WebSocket live prices verified working
+
+3. **Stocks Markets Page** ✅:
+   - Added aria-labels: refresh button, error retry, 4 sort buttons (name, price, 24h%, market cap)
+   - Watchlist star buttons functional with localStorage persistence
+
+4. **Forex Markets Page** ✅:
+   - Added aria-labels: refresh button, error retry, sort direction toggle
+   - Exchange rate data displays correctly from ExchangeRate-API
+
+5. **Indices Markets Page** ✅:
+   - Added aria-labels: refresh button, error retry
+   - Mock data notice displays correctly, real integration ready
+
+**Test Updates for Markets Pages**:
+- Updated 5 test files to match new aria-label patterns
+- All button references updated to use new accessible names
+- All 10,836 frontend tests passing ✅
+- Commit: `83fb5f2d`
+
+**Remaining Pages** (19 of 24):
 - Portfolio & Assets (3): /portfolio, /dashboard/assets, /dashboard/add-assets
 - User pages (5): /profile, /profile/edit, /profile/settings, /notifications, /notifications/preferences
 - Feature pages (5): /alerts, /chat, /ai-research, /goals, /recap
 - Utility & Auth (4): /debts, /settings, /login, /test
 
-**Next Steps**: Begin Markets pages audit starting with /markets main page
+**Next Steps**: Continue with Portfolio pages audit
+
 
 ---
 
