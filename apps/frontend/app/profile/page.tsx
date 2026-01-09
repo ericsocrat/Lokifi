@@ -6,12 +6,16 @@ import {
   Bell,
   Calendar,
   Camera,
+  Download,
   Edit,
   Globe,
   Heart,
+  Lock,
   MessageCircle,
+  RefreshCw,
   Settings,
   Shield,
+  Sparkles,
   Star,
   User,
   Users,
@@ -19,7 +23,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Navbar } from '../../src/components/Navbar';
 import { authToken } from '../../src/lib/api/auth';
 
 interface Profile {
@@ -100,12 +103,10 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500" />
-          </div>
+      <div className="min-h-screen bg-surface-0 flex items-center justify-center">
+        <div className="flex items-center gap-3 text-gray-400">
+          <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
+          <span>Loading profile...</span>
         </div>
       </div>
     );
@@ -113,19 +114,20 @@ export default function ProfilePage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900">
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="bg-red-900/20 border border-red-500 rounded-lg p-6 text-center">
-            <h2 className="text-xl font-bold text-red-400 mb-2">Error Loading Profile</h2>
-            <p className="text-red-300">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-            >
-              Retry
-            </button>
+      <div className="min-h-screen bg-surface-0 flex items-center justify-center p-6">
+        <div className="max-w-md w-full border border-red-500/30 bg-red-500/10 rounded-2xl p-8 text-center backdrop-blur-sm">
+          <div className="w-14 h-14 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-7 h-7 text-red-400" />
           </div>
+          <h2 className="text-xl font-bold text-white mb-2">Error Loading Profile</h2>
+          <p className="text-gray-400 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -133,142 +135,181 @@ export default function ProfilePage() {
 
   const renderOverviewTab = () => (
     <div className="space-y-6">
-      {/* Profile Header */}
-      <div className="bg-gray-800 rounded-lg p-6">
-        <div className="flex items-start space-x-6">
-          <div className="relative">
-            {profile?.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt="Profile"
-                width={96}
-                height={96}
-                className="rounded-full object-cover border-4 border-blue-500"
-              />
-            ) : (
-              <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">
-                <User className="w-12 h-12 text-gray-400" />
-              </div>
-            )}
-            <Link
-              href="/profile/edit"
-              className="absolute -bottom-2 -right-2 bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors"
-            >
-              <Camera className="w-4 h-4 text-white" />
-            </Link>
-          </div>
+      {/* Profile Header Card */}
+      <div className="border border-surface-300/50 rounded-2xl bg-gradient-to-br from-surface-100/80 to-surface-100/40 backdrop-blur-sm overflow-hidden">
+        {/* Banner */}
+        <div className="h-32 bg-gradient-to-r from-lokifi/30 via-electric/20 to-lokifi/30" />
 
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-white mb-1">
-              {profile?.display_name || 'User'}
-            </h1>
-            <p className="text-gray-400 mb-2">@{profile?.username}</p>
-            {profile?.bio && <p className="text-gray-300 mb-4">{profile.bio}</p>}
+        <div className="px-6 pb-6">
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 -mt-12">
+            {/* Avatar and Info */}
+            <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+              <div className="relative">
+                {profile?.avatar_url ? (
+                  <Image
+                    src={profile.avatar_url}
+                    alt="Profile"
+                    width={112}
+                    height={112}
+                    className="rounded-2xl object-cover border-4 border-surface-100 shadow-xl"
+                  />
+                ) : (
+                  <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-lokifi to-electric flex items-center justify-center border-4 border-surface-100 shadow-xl">
+                    <User className="w-12 h-12 text-white" />
+                  </div>
+                )}
+                <Link
+                  href="/profile/edit"
+                  className="absolute -bottom-2 -right-2 bg-lokifi p-2.5 rounded-xl hover:bg-lokifi-dark transition-colors shadow-lg"
+                >
+                  <Camera className="w-4 h-4 text-white" />
+                </Link>
+              </div>
 
-            <div className="flex items-center space-x-6 text-sm text-gray-400">
-              <div className="flex items-center space-x-1">
-                <Users className="w-4 h-4" />
-                <span>{profile?.follower_count || 0} followers</span>
+              <div className="pb-2">
+                <h1 className="text-2xl font-bold text-white mb-1">
+                  {profile?.display_name || 'User'}
+                </h1>
+                <p className="text-gray-400 text-lg">@{profile?.username}</p>
+                {profile?.bio && (
+                  <p className="text-gray-300 mt-2 max-w-xl">{profile.bio}</p>
+                )}
               </div>
-              <div className="flex items-center space-x-1">
-                <Users className="w-4 h-4" />
-                <span>{profile?.following_count || 0} following</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Calendar className="w-4 h-4" />
-                <span>Joined {new Date(profile?.created_at || '').toLocaleDateString()}</span>
-              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <Link
+                href="/profile/edit"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all shadow-lg shadow-lokifi/30"
+              >
+                <Edit className="w-4 h-4" />
+                Edit Profile
+              </Link>
+              <Link
+                href="/settings"
+                className="flex items-center gap-2 px-5 py-2.5 bg-surface-200 hover:bg-surface-300 border border-surface-300 rounded-xl text-white font-medium transition-all"
+              >
+                <Settings className="w-4 h-4" />
+                Settings
+              </Link>
             </div>
           </div>
 
-          <div className="flex space-x-2">
-            <Link
-              href="/profile/edit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
-            >
-              <Edit className="w-4 h-4" />
-              <span>Edit Profile</span>
-            </Link>
-            <Link
-              href="/profile/settings"
-              className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-2"
-            >
-              <Settings className="w-4 h-4" />
-              <span>Settings</span>
-            </Link>
+          {/* Stats Row */}
+          <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-surface-300/50">
+            <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
+              <Users className="w-4 h-4" />
+              <span className="font-semibold text-white">{profile?.follower_count || 0}</span>
+              <span>followers</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors cursor-pointer">
+              <Users className="w-4 h-4" />
+              <span className="font-semibold text-white">{profile?.following_count || 0}</span>
+              <span>following</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <Calendar className="w-4 h-4" />
+              <span>Joined {new Date(profile?.created_at || '').toLocaleDateString()}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${profile?.is_public ? 'bg-green-500' : 'bg-amber-500'}`} />
+              <span className="text-gray-400">{profile?.is_public ? 'Public profile' : 'Private profile'}</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Profile Completeness</p>
-                <p className="text-2xl font-bold text-white">{stats.profile_completeness}%</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="border border-lokifi/30 rounded-2xl bg-gradient-to-br from-lokifi/10 via-lokifi/5 to-transparent p-5 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2.5 bg-lokifi/20 rounded-xl">
+                <BarChart3 className="w-5 h-5 text-lokifi-light" />
               </div>
-              <BarChart3 className="w-8 h-8 text-blue-500" />
+              <Sparkles className="w-4 h-4 text-lokifi-light animate-pulse" />
             </div>
-            <div className="mt-2 bg-gray-700 rounded-full h-2">
+            <p className="text-sm text-gray-400 mb-1">Profile Completeness</p>
+            <p className="text-2xl font-bold text-white">{stats.profile_completeness}%</p>
+            <div className="mt-3 bg-surface-300 rounded-full h-2 overflow-hidden">
               <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                className="h-full rounded-full bg-gradient-to-r from-lokifi to-electric transition-all duration-500"
                 style={{ width: `${stats.profile_completeness}%` }}
-               />
+              />
             </div>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Activity Score</p>
-                <p className="text-2xl font-bold text-white">{stats.activity_score}</p>
+          <div className="border border-green-500/30 rounded-2xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent p-5 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2.5 bg-green-500/20 rounded-xl">
+                <Activity className="w-5 h-5 text-green-400" />
               </div>
-              <Activity className="w-8 h-8 text-green-500" />
             </div>
+            <p className="text-sm text-gray-400 mb-1">Activity Score</p>
+            <p className="text-2xl font-bold text-white">{stats.activity_score}</p>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Account Age</p>
-                <p className="text-2xl font-bold text-white">{stats.account_age_days} days</p>
+          <div className="border border-purple-500/30 rounded-2xl bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent p-5 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2.5 bg-purple-500/20 rounded-xl">
+                <Calendar className="w-5 h-5 text-purple-400" />
               </div>
-              <Calendar className="w-8 h-8 text-purple-500" />
             </div>
+            <p className="text-sm text-gray-400 mb-1">Account Age</p>
+            <p className="text-2xl font-bold text-white">{stats.account_age_days} days</p>
           </div>
 
-          <div className="bg-gray-800 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-400">Total Logins</p>
-                <p className="text-2xl font-bold text-white">{stats.total_logins}</p>
+          <div className="border border-amber-500/30 rounded-2xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-5 backdrop-blur-sm">
+            <div className="flex items-center justify-between mb-3">
+              <div className="p-2.5 bg-amber-500/20 rounded-xl">
+                <Star className="w-5 h-5 text-amber-400" />
               </div>
-              <Star className="w-8 h-8 text-yellow-500" />
             </div>
+            <p className="text-sm text-gray-400 mb-1">Total Logins</p>
+            <p className="text-2xl font-bold text-white">{stats.total_logins}</p>
           </div>
         </div>
       )}
 
-      {/* Activity Feed Placeholder */}
-      <div className="bg-gray-800 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3 text-gray-400">
-            <Heart className="w-5 h-5 text-red-500" />
-            <span>Updated profile information</span>
-            <span className="text-sm">2 hours ago</span>
+      {/* Activity Feed */}
+      <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-surface-300/50 flex items-center gap-3">
+          <div className="p-2 bg-lokifi/10 rounded-xl">
+            <Activity className="w-5 h-5 text-lokifi-light" />
           </div>
-          <div className="flex items-center space-x-3 text-gray-400">
-            <MessageCircle className="w-5 h-5 text-blue-500" />
-            <span>Changed notification preferences</span>
-            <span className="text-sm">1 day ago</span>
+          <div>
+            <h3 className="font-semibold text-white">Recent Activity</h3>
+            <p className="text-xs text-gray-500">Your latest profile updates</p>
           </div>
-          <div className="flex items-center space-x-3 text-gray-400">
-            <User className="w-5 h-5 text-green-500" />
-            <span>Profile created</span>
-            <span className="text-sm">{stats?.account_age_days} days ago</span>
+        </div>
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-4 p-3 bg-surface-200/50 rounded-xl">
+            <div className="p-2 bg-red-500/10 rounded-lg">
+              <Heart className="w-4 h-4 text-red-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-white text-sm">Updated profile information</p>
+              <p className="text-xs text-gray-500">2 hours ago</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-3 bg-surface-200/50 rounded-xl">
+            <div className="p-2 bg-blue-500/10 rounded-lg">
+              <MessageCircle className="w-4 h-4 text-blue-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-white text-sm">Changed notification preferences</p>
+              <p className="text-xs text-gray-500">1 day ago</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-3 bg-surface-200/50 rounded-xl">
+            <div className="p-2 bg-green-500/10 rounded-lg">
+              <User className="w-4 h-4 text-green-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-white text-sm">Profile created</p>
+              <p className="text-xs text-gray-500">{stats?.account_age_days} days ago</p>
+            </div>
           </div>
         </div>
       </div>
@@ -276,50 +317,66 @@ export default function ProfilePage() {
   );
 
   const renderSettingsTab = () => (
-    <div className="bg-gray-800 rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">Quick Settings</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-surface-300/50 flex items-center gap-3">
+        <div className="p-2 bg-lokifi/10 rounded-xl">
+          <Settings className="w-5 h-5 text-lokifi-light" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-white">Quick Settings</h3>
+          <p className="text-xs text-gray-500">Manage your account preferences</p>
+        </div>
+      </div>
+      <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <Link
-          href="/profile/settings"
-          className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+          href="/settings"
+          className="flex items-center gap-4 p-4 bg-surface-200/50 hover:bg-surface-200 border border-surface-300/50 hover:border-lokifi/30 rounded-xl transition-all group"
         >
-          <User className="w-6 h-6 text-blue-500" />
+          <div className="p-3 bg-blue-500/10 rounded-xl group-hover:bg-blue-500/20 transition-colors">
+            <User className="w-5 h-5 text-blue-400" />
+          </div>
           <div>
-            <h4 className="text-white font-medium">Account Settings</h4>
-            <p className="text-gray-400 text-sm">Manage your account information</p>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Account Settings</h4>
+            <p className="text-gray-500 text-sm">Manage your account information</p>
           </div>
         </Link>
 
         <Link
-          href="/profile/settings"
-          className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+          href="/settings"
+          className="flex items-center gap-4 p-4 bg-surface-200/50 hover:bg-surface-200 border border-surface-300/50 hover:border-lokifi/30 rounded-xl transition-all group"
         >
-          <Bell className="w-6 h-6 text-green-500" />
+          <div className="p-3 bg-green-500/10 rounded-xl group-hover:bg-green-500/20 transition-colors">
+            <Bell className="w-5 h-5 text-green-400" />
+          </div>
           <div>
-            <h4 className="text-white font-medium">Notifications</h4>
-            <p className="text-gray-400 text-sm">Control notification preferences</p>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Notifications</h4>
+            <p className="text-gray-500 text-sm">Control notification preferences</p>
           </div>
         </Link>
 
         <Link
-          href="/profile/settings"
-          className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+          href="/settings"
+          className="flex items-center gap-4 p-4 bg-surface-200/50 hover:bg-surface-200 border border-surface-300/50 hover:border-lokifi/30 rounded-xl transition-all group"
         >
-          <Shield className="w-6 h-6 text-red-500" />
+          <div className="p-3 bg-red-500/10 rounded-xl group-hover:bg-red-500/20 transition-colors">
+            <Shield className="w-5 h-5 text-red-400" />
+          </div>
           <div>
-            <h4 className="text-white font-medium">Privacy & Security</h4>
-            <p className="text-gray-400 text-sm">Manage privacy settings</p>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Privacy & Security</h4>
+            <p className="text-gray-500 text-sm">Manage privacy settings</p>
           </div>
         </Link>
 
         <Link
-          href="/profile/settings"
-          className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+          href="/settings"
+          className="flex items-center gap-4 p-4 bg-surface-200/50 hover:bg-surface-200 border border-surface-300/50 hover:border-lokifi/30 rounded-xl transition-all group"
         >
-          <Globe className="w-6 h-6 text-purple-500" />
+          <div className="p-3 bg-purple-500/10 rounded-xl group-hover:bg-purple-500/20 transition-colors">
+            <Globe className="w-5 h-5 text-purple-400" />
+          </div>
           <div>
-            <h4 className="text-white font-medium">Preferences</h4>
-            <p className="text-gray-400 text-sm">Language, timezone, and more</p>
+            <h4 className="text-white font-medium group-hover:text-lokifi-light transition-colors">Preferences</h4>
+            <p className="text-gray-500 text-sm">Language, timezone, and more</p>
           </div>
         </Link>
       </div>
@@ -327,38 +384,52 @@ export default function ProfilePage() {
   );
 
   const renderPrivacyTab = () => (
-    <div className="bg-gray-800 rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-white mb-4">Privacy Overview</h3>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <Globe
-              className={`w-5 h-5 ${profile?.is_public ? 'text-green-500' : 'text-red-500'}`}
-            />
+    <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm overflow-hidden">
+      <div className="px-6 py-4 border-b border-surface-300/50 flex items-center gap-3">
+        <div className="p-2 bg-lokifi/10 rounded-xl">
+          <Shield className="w-5 h-5 text-lokifi-light" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-white">Privacy Overview</h3>
+          <p className="text-xs text-gray-500">Control your data and visibility</p>
+        </div>
+      </div>
+      <div className="p-6 space-y-4">
+        <div className="flex items-center justify-between p-4 bg-surface-200/50 border border-surface-300/50 rounded-xl">
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${profile?.is_public ? 'bg-green-500/10' : 'bg-amber-500/10'}`}>
+              {profile?.is_public ? (
+                <Globe className="w-5 h-5 text-green-400" />
+              ) : (
+                <Lock className="w-5 h-5 text-amber-400" />
+              )}
+            </div>
             <div>
               <h4 className="text-white font-medium">Profile Visibility</h4>
-              <p className="text-gray-400 text-sm">
-                Your profile is {profile?.is_public ? 'public' : 'private'}
+              <p className="text-gray-500 text-sm">
+                Your profile is {profile?.is_public ? 'public and visible to everyone' : 'private and only visible to you'}
               </p>
             </div>
           </div>
           <Link
             href="/profile/edit"
-            className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-lokifi/20 hover:bg-lokifi/30 text-lokifi-light rounded-xl text-sm font-medium transition-colors"
           >
             Change
           </Link>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
-          <div className="flex items-center space-x-3">
-            <Shield className="w-5 h-5 text-blue-500" />
+        <div className="flex items-center justify-between p-4 bg-surface-200/50 border border-surface-300/50 rounded-xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl">
+              <Download className="w-5 h-5 text-blue-400" />
+            </div>
             <div>
               <h4 className="text-white font-medium">Data Export</h4>
-              <p className="text-gray-400 text-sm">Download your data (GDPR compliant)</p>
+              <p className="text-gray-500 text-sm">Download all your data (GDPR compliant)</p>
             </div>
           </div>
-          <button className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 transition-colors">
+          <button className="px-4 py-2 bg-surface-300 hover:bg-surface-400 text-white rounded-xl text-sm font-medium transition-colors">
             Export
           </button>
         </div>
@@ -367,33 +438,44 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      <Navbar />
+    <div className="min-h-screen bg-surface-0">
+      {/* Header */}
+      <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-gradient-to-br from-lokifi to-electric rounded-xl">
+              <User className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">Profile</h1>
+              <p className="text-sm text-gray-400">Manage your account and preferences</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Tab Navigation */}
         <div className="mb-8">
-          <div className="border-b border-gray-700">
-            <nav className="-mb-px flex space-x-8">
-              {[
-                { id: 'overview', label: 'Overview', icon: User },
-                { id: 'settings', label: 'Settings', icon: Settings },
-                { id: 'privacy', label: 'Privacy', icon: Shield },
-              ].map(({ id, label, icon: Icon }) => (
-                <button
-                  key={id}
-                  onClick={() => setActiveTab(id)}
-                  className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                    activeTab === id
-                      ? 'border-blue-500 text-blue-400'
-                      : 'border-transparent text-gray-400 hover:text-gray-300'
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{label}</span>
-                </button>
-              ))}
-            </nav>
+          <div className="inline-flex bg-surface-100 border border-surface-300/50 rounded-xl p-1">
+            {[
+              { id: 'overview', label: 'Overview', icon: User },
+              { id: 'settings', label: 'Settings', icon: Settings },
+              { id: 'privacy', label: 'Privacy', icon: Shield },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                  activeTab === id
+                    ? 'bg-lokifi text-white shadow-lg shadow-lokifi/30'
+                    : 'text-gray-400 hover:text-white hover:bg-surface-200'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
