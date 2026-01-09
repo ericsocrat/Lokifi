@@ -179,13 +179,13 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
 
   if (!isVisible) {
     return (
-      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
-        <div className="text-sm text-gray-400">
+      <div className="h-8 bg-surface-100 border-b border-surface-300 flex items-center justify-between px-3">
+        <div className="text-sm text-surface-300">
           {paneId.includes('price') ? 'Price Chart' : `Indicator Pane`} (Hidden)
         </div>
         <button
           onClick={() => togglePaneVisibility(paneId)}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="text-surface-300 hover:text-white transition-colors"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -194,27 +194,27 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
   }
 
   return (
-    <div className="relative border-b border-gray-700">
+    <div className="relative border-b border-surface-300">
       {/* Pane Header */}
-      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
+      <div className="h-8 bg-surface-100 border-b border-surface-300 flex items-center justify-between px-3">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium text-white">
             {paneId.includes('price') ? `${symbol} - ${timeframe}` : 'Indicators'}
           </div>
           {indicators.length > 0 && (
-            <div className="text-xs text-gray-400">({indicators.join(', ')})</div>
+            <div className="text-xs text-surface-300">({indicators.join(', ')})</div>
           )}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => togglePaneVisibility(paneId)}
-            className="text-gray-400 hover:text-white transition-colors p-1"
+            className="text-surface-300 hover:text-white transition-colors p-1"
           >
             {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
           <button
             onClick={() => togglePaneLock(paneId)}
-            className="text-gray-400 hover:text-white transition-colors p-1"
+            className="text-surface-300 hover:text-white transition-colors p-1"
           >
             {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
           </button>
@@ -225,7 +225,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
       <div
         ref={chartContainerRef}
         style={{ height: `${height}px` }}
-        className="relative bg-gray-900"
+        className="relative bg-surface-0"
       />
 
       {/* Resize Handle */}
@@ -236,7 +236,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
             isDragging ? 'bg-blue-500/30' : ''
           }`}
         >
-          <GripVertical className="w-4 h-4 text-gray-500" />
+          <GripVertical className="w-4 h-4 text-surface-300" />
         </div>
       )}
     </div>
@@ -270,7 +270,7 @@ export const MultiPaneChart: React.FC = () => {
     <ChartErrorBoundary>
       <div
         ref={containerRef}
-        className="w-full h-full bg-gray-900 overflow-hidden"
+        className="w-full h-full bg-surface-0 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
         {panes.map((pane: Pane) => (
