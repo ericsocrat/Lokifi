@@ -133,7 +133,7 @@ export default function AlertsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-surface-300">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading alerts...</span>
         </div>
@@ -154,7 +154,7 @@ export default function AlertsPage() {
                 <Bell className="w-6 h-6 text-amber-500" />
                 Price Alerts
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-surface-300 mt-1">
                 Get notified when assets hit your target prices
               </p>
             </div>
@@ -188,14 +188,14 @@ export default function AlertsPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-white">Create New Alert</h3>
-                <p className="text-sm text-gray-400">Set up a price or percentage change alert</p>
+                <p className="text-sm text-surface-300">Set up a price or percentage change alert</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
               {/* Alert Type */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">Alert Type</label>
+                <label className="text-sm font-medium text-surface-300">Alert Type</label>
                 <div className="relative">
                   <select
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
@@ -207,15 +207,15 @@ export default function AlertsPage() {
                     <option value="price_threshold">Price Threshold</option>
                     <option value="pct_change">% Change</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-300 pointer-events-none" />
                 </div>
               </div>
 
               {/* Symbol */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">Symbol</label>
+                <label className="text-sm font-medium text-surface-300">Symbol</label>
                 <input
-                  className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-gray-500"
+                  className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                   placeholder="e.g., BTCUSD"
                   value={form.symbol}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -226,7 +226,7 @@ export default function AlertsPage() {
 
               {/* Timeframe */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">Timeframe</label>
+                <label className="text-sm font-medium text-surface-300">Timeframe</label>
                 <div className="relative">
                   <select
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
@@ -242,13 +242,13 @@ export default function AlertsPage() {
                     <option value="4h">4 hours</option>
                     <option value="1d">1 day</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-300 pointer-events-none" />
                 </div>
               </div>
 
               {/* Direction */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">Direction</label>
+                <label className="text-sm font-medium text-surface-300">Direction</label>
                 <div className="relative">
                   <select
                     className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white appearance-none cursor-pointer"
@@ -261,18 +261,18 @@ export default function AlertsPage() {
                     <option value="below">Below / Down</option>
                     <option value="abs">Absolute (for %)</option>
                   </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-300 pointer-events-none" />
                 </div>
               </div>
 
               {/* Threshold */}
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-400">
+                <label className="text-sm font-medium text-surface-300">
                   {form.kind === 'price_threshold' ? 'Target Price' : 'Percentage'}
                 </label>
                 <div className="relative">
                   <input
-                    className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-gray-500"
+                    className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                     placeholder={form.kind === 'price_threshold' ? '45000' : '5'}
                     value={form.number}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -280,7 +280,7 @@ export default function AlertsPage() {
                     }
                   />
                   {form.kind === 'pct_change' && (
-                    <Percent className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                    <Percent className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-300" />
                   )}
                 </div>
               </div>
@@ -288,9 +288,9 @@ export default function AlertsPage() {
               {/* Window (for % change only) */}
               {form.kind === 'pct_change' && (
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-400">Window (minutes)</label>
+                  <label className="text-sm font-medium text-surface-300">Window (minutes)</label>
                   <input
-                    className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-gray-500"
+                    className="w-full px-4 py-3 bg-surface-100 border border-surface-300 focus:border-lokifi/50 focus:ring-2 focus:ring-lokifi/20 rounded-xl text-white placeholder-surface-300"
                     placeholder="60"
                     value={form.window}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -321,7 +321,7 @@ export default function AlertsPage() {
               </button>
               <button
                 onClick={() => setShowCreateForm(false)}
-                className="px-6 py-3 text-gray-400 hover:text-white transition-colors"
+                className="px-6 py-3 text-surface-300 hover:text-white transition-colors"
               >
                 Cancel
               </button>
@@ -336,16 +336,16 @@ export default function AlertsPage() {
               <div className="p-2 bg-green-500/10 rounded-lg">
                 <Activity className="w-5 h-5 text-green-500" />
               </div>
-              <span className="text-sm text-gray-400">Active Alerts</span>
+              <span className="text-sm text-surface-300">Active Alerts</span>
             </div>
             <p className="text-3xl font-bold text-white">{enabledAlerts.length}</p>
           </div>
           <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm p-5">
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-gray-500/10 rounded-lg">
-                <Pause className="w-5 h-5 text-gray-500" />
+              <div className="p-2 bg-surface-300/10 rounded-lg">
+                <Pause className="w-5 h-5 text-surface-300" />
               </div>
-              <span className="text-sm text-gray-400">Paused</span>
+              <span className="text-sm text-surface-300">Paused</span>
             </div>
             <p className="text-3xl font-bold text-white">{disabledAlerts.length}</p>
           </div>
@@ -354,7 +354,7 @@ export default function AlertsPage() {
               <div className="p-2 bg-amber-500/10 rounded-lg">
                 <Zap className="w-5 h-5 text-amber-500" />
               </div>
-              <span className="text-sm text-gray-400">Recent Triggers</span>
+              <span className="text-sm text-surface-300">Recent Triggers</span>
             </div>
             <p className="text-3xl font-bold text-white">{log.length}</p>
           </div>
@@ -370,10 +370,10 @@ export default function AlertsPage() {
           {alerts.length === 0 ? (
             <div className="border border-surface-300/50 rounded-2xl bg-surface-100/30 p-12 text-center">
               <div className="w-16 h-16 bg-surface-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Bell className="w-8 h-8 text-gray-500" />
+                <Bell className="w-8 h-8 text-surface-300" />
               </div>
               <h3 className="text-lg font-medium text-white mb-2">No alerts yet</h3>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-surface-300 text-sm mb-6">
                 Create your first price alert to get notified when assets hit your targets
               </p>
               <button
@@ -420,13 +420,13 @@ export default function AlertsPage() {
                             {a.kind === 'price_threshold' ? 'Price Target' : '% Change'}
                           </span>
                           {!a.enabled && (
-                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-500/20 text-gray-400">
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-surface-300/20 text-surface-300">
                               Paused
                             </span>
                           )}
                         </div>
                         <p className="text-white font-medium">{a.note || `${a.kind} alert`}</p>
-                        <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+                        <div className="flex items-center gap-4 mt-2 text-sm text-surface-300">
                           {a.maxTriggers && (
                             <span className="flex items-center gap-1">
                               <AlertTriangle className="w-3.5 h-3.5" />
@@ -450,7 +450,7 @@ export default function AlertsPage() {
                         }}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                           a.enabled
-                            ? 'bg-surface-200 hover:bg-surface-300 text-gray-300'
+                            ? 'bg-surface-200 hover:bg-surface-300 text-surface-300'
                             : 'bg-green-500/10 hover:bg-green-500/20 text-green-400'
                         }`}
                       >
@@ -492,7 +492,7 @@ export default function AlertsPage() {
             </div>
             <div>
               <h3 className="font-semibold text-white">Live Triggers</h3>
-              <p className="text-xs text-gray-500">Real-time alert activity</p>
+              <p className="text-xs text-surface-300">Real-time alert activity</p>
             </div>
             {log.length > 0 && (
               <div className="ml-auto flex items-center gap-1.5">
@@ -503,7 +503,7 @@ export default function AlertsPage() {
           </div>
           <div className="p-5 max-h-64 overflow-auto">
             {log.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-8">
+              <p className="text-sm text-surface-300 text-center py-8">
                 No triggers yet. Alerts will appear here in real-time.
               </p>
             ) : (
@@ -516,7 +516,7 @@ export default function AlertsPage() {
                     <div className="p-1.5 bg-amber-500/10 rounded-lg">
                       <Zap className="w-3.5 h-3.5 text-amber-500" />
                     </div>
-                    <span className="text-sm text-gray-300 font-mono">{l}</span>
+                    <span className="text-sm text-surface-300 font-mono">{l}</span>
                   </div>
                 ))}
               </div>
