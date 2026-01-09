@@ -36,7 +36,7 @@ function MarketsOverviewContent() {
               <Sparkles className="w-7 h-7 text-red-400" />
             </div>
             <h3 className="text-xl font-bold text-white mb-2">Error Loading Markets</h3>
-            <p className="text-gray-400 mb-6">{error?.message || 'Failed to load market data'}</p>
+            <p className="text-surface-300 mb-6">{error?.message || 'Failed to load market data'}</p>
             <button
               onClick={() => refetch()}
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
@@ -66,7 +66,7 @@ function MarketsOverviewContent() {
                 <Sparkles className="w-6 h-6 text-lokifi-light" />
                 Markets Overview
               </h1>
-              <p className="text-sm text-gray-400 mt-1">All asset classes in one place</p>
+              <p className="text-sm text-surface-300 mt-1">All asset classes in one place</p>
             </div>
             <button
               onClick={() => refetch()}
@@ -83,7 +83,7 @@ function MarketsOverviewContent() {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {isLoading && (
           <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3 text-gray-400">
+            <div className="flex items-center gap-3 text-surface-300">
               <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
               <span>Loading markets...</span>
             </div>
@@ -102,7 +102,7 @@ function MarketsOverviewContent() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white">Cryptocurrencies</h2>
-                  <p className="text-sm text-gray-400">Top {cryptos.length} by market cap</p>
+                  <p className="text-sm text-surface-300">Top {cryptos.length} by market cap</p>
                 </div>
               </div>
               <Link
@@ -132,7 +132,7 @@ function MarketsOverviewContent() {
                         />
                       </div>
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                      <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center text-xs font-bold text-surface-300">
                         {asset.symbol?.substring(0, 2).toUpperCase()}
                       </div>
                     )}
@@ -140,7 +140,7 @@ function MarketsOverviewContent() {
                       <div className="font-semibold text-white truncate text-sm group-hover:text-orange-400 transition-colors">
                         {asset.symbol}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">{asset.name}</div>
+                      <div className="text-xs text-surface-300 truncate">{asset.name}</div>
                     </div>
                   </div>
                   <div className="text-lg font-bold text-white mb-1">
@@ -180,7 +180,7 @@ function MarketsOverviewContent() {
                       Live Data
                     </span>
                   </h2>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-sm text-surface-300">
                     Top {stocks.length} • Real-time from Alpha Vantage
                   </p>
                 </div>
@@ -201,14 +201,14 @@ function MarketsOverviewContent() {
                   className="bg-surface-100/50 hover:bg-surface-100 border border-surface-300/50 hover:border-green-500/30 rounded-xl p-4 transition-all group"
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center text-xs font-bold text-gray-500">
+                    <div className="w-10 h-10 rounded-xl bg-surface-200 flex items-center justify-center text-xs font-bold text-surface-300">
                       {asset.symbol?.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-white truncate text-sm group-hover:text-green-400 transition-colors">
                         {asset.symbol}
                       </div>
-                      <div className="text-xs text-gray-500 truncate">{asset.name}</div>
+                      <div className="text-xs text-surface-300 truncate">{asset.name}</div>
                     </div>
                   </div>
                   <div className="text-lg font-bold text-white mb-1">
@@ -235,7 +235,7 @@ function MarketsOverviewContent() {
 
         {/* Cache Status */}
         {data && (
-          <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-2 text-xs text-surface-300">
             <div className={`w-2 h-2 rounded-full ${data.cached ? 'bg-green-500' : 'bg-lokifi'}`} />
             {data.cached ? 'Data from cache' : 'Fresh data from API'}
           </div>
