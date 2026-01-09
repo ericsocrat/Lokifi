@@ -126,37 +126,37 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
       onClick={onClose}
     >
       <div
-        className="bg-gray-800 rounded-lg w-96 max-h-[80vh] flex flex-col"
+        className="bg-surface-100 rounded-lg w-96 max-h-[80vh] flex flex-col"
         onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-surface-300">
           <h2 className="text-lg font-semibold text-white">Add Indicator</h2>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-surface-300 hover:text-white transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-surface-300">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-300 w-4 h-4" />
             <input
               type="text"
               placeholder="Search indicators..."
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
+              className="w-full bg-surface-200 text-white pl-10 pr-4 py-2 rounded-md border border-surface-300 focus:border-blue-500 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Categories */}
-        <div className="p-4 border-b border-gray-700">
+        <div className="p-4 border-b border-surface-300">
           <div className="flex flex-wrap gap-2">
             {categories.map((category: string) => (
               <button
@@ -165,7 +165,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
                 className={`px-3 py-1 rounded-full text-sm transition-colors ${
                   selectedCategory === category
                     ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    : 'bg-surface-200 text-surface-300 hover:bg-surface-300'
                 }`}
               >
                 {category}
@@ -187,7 +187,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
                 className={`p-3 rounded-lg border cursor-pointer transition-all mb-2 ${
                   isActive
                     ? 'border-green-500 bg-green-500/10 cursor-not-allowed'
-                    : 'border-gray-700 hover:border-blue-500 hover:bg-gray-700/50'
+                    : 'border-surface-300 hover:border-blue-500 hover:bg-surface-200/50'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -203,12 +203,12 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-400 mt-1">{indicator.description}</p>
+                    <p className="text-sm text-surface-300 mt-1">{indicator.description}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                      <span className="text-xs bg-surface-200 text-surface-300 px-2 py-1 rounded">
                         {indicator.category}
                       </span>
-                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                      <span className="text-xs bg-surface-200 text-surface-300 px-2 py-1 rounded">
                         {indicator.paneType === 'overlay' ? 'Overlay' : 'Separate Pane'}
                       </span>
                     </div>
@@ -219,7 +219,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
           })}
 
           {filteredIndicators.length === 0 && (
-            <div className="text-center text-gray-400 mt-8">
+            <div className="text-center text-surface-300 mt-8">
               <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No indicators found matching your search.</p>
             </div>
