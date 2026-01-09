@@ -522,7 +522,7 @@ describe('StocksPage', () => {
       const { container } = render(<StocksPage />);
 
       await waitFor(() => {
-        const mainDiv = container.querySelector('.bg-linear-to-br');
+        const mainDiv = container.querySelector('.bg-gradient-to-br');
         expect(mainDiv).toBeInTheDocument();
       });
     });
@@ -549,3 +549,4 @@ describe('StocksPage', () => {
     });
   });
 });
+

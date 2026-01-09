@@ -116,7 +116,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
         {/* Unread Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-linear-to-r from-red-500 to-rose-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium shadow-lg shadow-red-500/30">
+          <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-rose-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium shadow-lg shadow-red-500/30">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -279,3 +279,4 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 };
 
 export default NotificationBell;
+

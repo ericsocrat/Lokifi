@@ -235,7 +235,7 @@ function AssetDetailContent() {
             <div className="flex items-start gap-5">
               {/* Premium Asset Icon */}
               <div className="relative">
-                <div className="w-20 h-20 bg-linear-to-br from-lokifi to-electric rounded-2xl shadow-xl flex items-center justify-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-lokifi to-electric rounded-2xl shadow-xl flex items-center justify-center">
                   <span className="text-4xl font-black text-white">{symbol.charAt(0)}</span>
                 </div>
                 {/* Live indicator */}
@@ -316,7 +316,7 @@ function AssetDetailContent() {
                 onClick={toggleWatchlist}
                 className={`px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 hover:scale-105 shadow-lg ${
                   isInWatchlist
-                    ? 'bg-linear-to-r from-lokifi to-electric text-white'
+                    ? 'bg-gradient-to-r from-lokifi to-electric text-white'
                     : 'bg-surface-200 text-surface-300 border border-surface-300'
                 }`}
               >
@@ -347,7 +347,7 @@ function AssetDetailContent() {
                       onClick={() => setSelectedTimeFrame(tf.value)}
                       className={`px-4 py-2 rounded-lg font-bold transition-all text-sm ${
                         selectedTimeFrame === tf.value
-                          ? 'bg-linear-to-r from-lokifi to-electric text-white shadow-lg scale-105'
+                          ? 'bg-gradient-to-r from-lokifi to-electric text-white shadow-lg scale-105'
                           : 'text-surface-300 hover:bg-surface-300'
                       }`}
                     >
@@ -465,7 +465,7 @@ function AssetDetailContent() {
 
             {/* Price Range Card */}
             <div className="grid grid-cols-2 gap-6">
-              <div className="bg-linear-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
                     <TrendingUp className="w-5 h-5 text-green-400" />
@@ -477,7 +477,7 @@ function AssetDetailContent() {
                 </p>
               </div>
 
-              <div className="bg-linear-to-br from-orange-500/10 to-red-500/10 rounded-2xl border-2 border-orange-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+              <div className="bg-gradient-to-br from-orange-500/10 to-red-500/10 rounded-2xl border-2 border-orange-500/30 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
                     <TrendingDown className="w-5 h-5 text-orange-400" />
@@ -495,7 +495,7 @@ function AssetDetailContent() {
           <div className="space-y-6">
             {/* Live Market Data Card */}
             {connected && (
-              <div className="bg-linear-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg">
+              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border-2 border-green-500/30 p-6 shadow-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="relative">
                     <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse" />
@@ -584,7 +584,7 @@ function AssetDetailContent() {
                   </div>
                   <div className="w-full h-3 bg-surface-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${isPositive ? 'bg-linear-to-r from-green-500 to-emerald-500' : 'bg-linear-to-r from-red-500 to-rose-500'}`}
+                      className={`h-full ${isPositive ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
                       style={{ width: `${Math.min(Math.abs(asset.changePercent) * 10, 100)}%` }}
                     />
                   </div>
@@ -603,7 +603,7 @@ function AssetDetailContent() {
                   </div>
                   <div className="w-full h-3 bg-surface-200 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${periodChangePercent >= 0 ? 'bg-linear-to-r from-green-500 to-emerald-500' : 'bg-linear-to-r from-red-500 to-rose-500'}`}
+                      className={`h-full ${periodChangePercent >= 0 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-red-500 to-rose-500'}`}
                       style={{ width: `${Math.min(Math.abs(periodChangePercent) * 5, 100)}%` }}
                     />
                   </div>

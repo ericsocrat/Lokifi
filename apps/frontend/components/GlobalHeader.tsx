@@ -67,7 +67,7 @@ export default function GlobalHeader() {
           {/* Left: Logo and Navigation */}
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                 <span className="text-white font-bold text-lg">L</span>
               </div>
               <span className="text-xl font-bold text-white">Lokifi</span>
@@ -242,7 +242,7 @@ export default function GlobalHeader() {
                   className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-all hover:shadow-lg hover:shadow-blue-500/10"
                   aria-label="User profile"
                 >
-                  <div className="w-7 h-7 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
                   <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
@@ -265,7 +265,7 @@ export default function GlobalHeader() {
                   className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-colors hover:shadow-lg hover:shadow-blue-500/20"
                   aria-label="Log in or sign up"
                 >
-                  <div className="w-7 h-7 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
                   <span className="text-sm font-medium">Log In / Sign Up</span>
@@ -281,4 +281,5 @@ export default function GlobalHeader() {
     </>
   );
 }
+
 

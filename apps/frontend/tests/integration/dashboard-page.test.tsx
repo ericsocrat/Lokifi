@@ -71,7 +71,7 @@ describe('Dashboard Integration', () => {
             <button
               key={period}
               onClick={() => mockPush(`?period=${period}`)}
-              className={period === '1D' ? 'bg-linear-to-r from-lokifi-500' : 'bg-surface-2'}
+              className={period === '1D' ? 'bg-gradient-to-r from-lokifi-500' : 'bg-surface-2'}
             >
               {period}
             </button>
@@ -94,7 +94,7 @@ describe('Dashboard Integration', () => {
       render(<PeriodSelectorTest />);
 
       const selectedButton = screen.getByText('1D');
-      expect(selectedButton).toHaveClass('bg-linear-to-r');
+      expect(selectedButton).toHaveClass('bg-gradient-to-r');
     });
 
     it('should call router push when period is clicked', () => {
@@ -162,7 +162,7 @@ describe('Dashboard Integration', () => {
           onClick={() => mockPush(href)}
           className={
             variant === 'primary'
-              ? 'bg-linear-to-r from-lokifi-500 to-electric-500'
+              ? 'bg-gradient-to-r from-lokifi-500 to-electric-500'
               : 'border border-surface-3'
           }
         >
@@ -196,7 +196,7 @@ describe('Dashboard Integration', () => {
       render(<QuickAction label="Primary Action" href="/action" variant="primary" />);
 
       const button = screen.getByText('Primary Action');
-      expect(button).toHaveClass('bg-linear-to-r');
+      expect(button).toHaveClass('bg-gradient-to-r');
     });
 
     it('should have border styling for default variant', () => {
@@ -303,7 +303,7 @@ describe('Dashboard Integration', () => {
         <p className="text-surface-11 mb-6">Start building your portfolio today</p>
         <button
           onClick={onAddAssets}
-          className="bg-linear-to-r from-lokifi-500 to-electric-500 px-6 py-3 rounded-lg"
+          className="bg-gradient-to-r from-lokifi-500 to-electric-500 px-6 py-3 rounded-lg"
         >
           Add Your First Asset
         </button>
@@ -380,3 +380,4 @@ describe('Dashboard Integration', () => {
     });
   });
 });
+

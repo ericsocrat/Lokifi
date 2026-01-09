@@ -89,7 +89,9 @@ describe('LandingPage', () => {
     it('renders Get Started Free CTA button', () => {
       render(<LandingPage />);
 
-      const ctaButton = screen.getByRole('link', { name: /Get Started Free/i });
+      const ctaButton = screen.getByRole('link', {
+        name: /Get started with Lokifi for free/i,
+      });
       expect(ctaButton).toBeInTheDocument();
       expect(ctaButton).toHaveAttribute('href', '/dashboard');
     });
@@ -97,7 +99,9 @@ describe('LandingPage', () => {
     it('renders Explore Markets button', () => {
       render(<LandingPage />);
 
-      const marketsButton = screen.getByRole('link', { name: /Explore Markets/i });
+      const marketsButton = screen.getByRole('link', {
+        name: /Browse cryptocurrency, stocks, forex, and indices markets/i,
+      });
       expect(marketsButton).toBeInTheDocument();
       expect(marketsButton).toHaveAttribute('href', '/markets');
     });

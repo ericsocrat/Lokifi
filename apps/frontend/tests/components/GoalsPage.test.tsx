@@ -499,14 +499,14 @@ describe('GoalsPage Tests', () => {
     it('applies gradient background', () => {
       const { container } = render(<GoalsPage />);
 
-      expect(container.firstChild).toHaveClass('bg-linear-to-br');
+      expect(container.firstChild).toHaveClass('bg-gradient-to-br');
     });
 
     it('has styled add button with gradient', () => {
       render(<GoalsPage />);
 
       const addButton = screen.getByRole('button', { name: /add new goal/i });
-      expect(addButton).toHaveClass('bg-linear-to-r');
+      expect(addButton).toHaveClass('bg-gradient-to-r');
     });
 
     it('applies card styling', () => {
@@ -554,3 +554,4 @@ describe('GoalsPage Tests', () => {
     });
   });
 });
+

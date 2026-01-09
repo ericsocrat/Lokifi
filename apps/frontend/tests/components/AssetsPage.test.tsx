@@ -266,9 +266,9 @@ describe('AssetsPage', () => {
         // Get the sidebar link which has gradient class
         const assetsLinks = screen.getAllByText('Assets');
         const sidebarLink = assetsLinks.find((el) =>
-          el.closest('a')?.classList.contains('bg-linear-to-r')
+          el.closest('a')?.classList.contains('bg-gradient-to-r')
         );
-        expect(sidebarLink?.closest('a')).toHaveClass('bg-linear-to-r');
+        expect(sidebarLink?.closest('a')).toHaveClass('bg-gradient-to-r');
       });
     });
 
@@ -700,3 +700,4 @@ describe('AssetsPage', () => {
     });
   });
 });
+

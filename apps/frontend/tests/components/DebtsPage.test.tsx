@@ -238,7 +238,7 @@ describe('DebtsPage Tests', () => {
       render(<DebtsPage />);
 
       const addButton = screen.getByRole('button', { name: /add debt/i });
-      expect(addButton).toHaveClass('bg-linear-to-r');
+      expect(addButton).toHaveClass('bg-gradient-to-r');
     });
 
     it('has rounded cards', () => {
@@ -376,3 +376,4 @@ describe('DebtsPage Tests', () => {
     });
   });
 });
+
