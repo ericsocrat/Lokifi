@@ -18,7 +18,7 @@ const GOOGLE_CLIENT_ID =
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className="bg-surface-0 text-gray-200">
+      <body className="bg-surface-0 text-surface-200">
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ReactQueryProvider>
             <SWRProvider>
