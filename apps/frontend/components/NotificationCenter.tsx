@@ -170,7 +170,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       case 'mention':
         return 'border-l-orange-500 bg-orange-500/5';
       default:
-        return 'border-l-gray-500 bg-gray-500/5';
+        return 'border-l-surface-300 bg-surface-300/5';
     }
   };
 
