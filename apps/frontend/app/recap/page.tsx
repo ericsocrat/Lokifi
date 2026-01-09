@@ -152,7 +152,7 @@ export default function RecapPage() {
                 <Clock className="w-6 h-6 text-lokifi-light" />
                 Activity Recap
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
+              <p className="text-sm text-surface-300 mt-1">
                 Review your portfolio activity and transactions
               </p>
             </div>
@@ -161,7 +161,7 @@ export default function RecapPage() {
                 onClick={prevMonth}
                 className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-400" />
+                <ChevronLeft className="w-5 h-5 text-surface-300" />
               </button>
               <span className="px-4 py-2 text-white font-medium min-w-40 text-center">
                 {monthName}
@@ -170,7 +170,7 @@ export default function RecapPage() {
                 onClick={nextMonth}
                 className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
               >
-                <ChevronRight className="w-5 h-5 text-gray-400" />
+                <ChevronRight className="w-5 h-5 text-surface-300" />
               </button>
             </div>
           </div>
@@ -185,7 +185,7 @@ export default function RecapPage() {
               <div className="p-2 bg-emerald-500/10 rounded-lg">
                 <ArrowDownRight className="w-4 h-4 text-emerald-400" />
               </div>
-              <span className="text-sm text-gray-400">Total Bought</span>
+              <span className="text-sm text-surface-300">Total Bought</span>
             </div>
             <p className="text-2xl font-bold text-white">{formatCurrency(totalBuys)}</p>
           </div>
@@ -195,7 +195,7 @@ export default function RecapPage() {
               <div className="p-2 bg-rose-500/10 rounded-lg">
                 <ArrowUpRight className="w-4 h-4 text-rose-400" />
               </div>
-              <span className="text-sm text-gray-400">Total Sold</span>
+              <span className="text-sm text-surface-300">Total Sold</span>
             </div>
             <p className="text-2xl font-bold text-white">{formatCurrency(totalSells)}</p>
           </div>
@@ -205,7 +205,7 @@ export default function RecapPage() {
               <div className="p-2 bg-purple-500/10 rounded-lg">
                 <DollarSign className="w-4 h-4 text-purple-400" />
               </div>
-              <span className="text-sm text-gray-400">Dividends Received</span>
+              <span className="text-sm text-surface-300">Dividends Received</span>
             </div>
             <p className="text-2xl font-bold text-white">{formatCurrency(totalDividends)}</p>
           </div>
@@ -215,10 +215,10 @@ export default function RecapPage() {
         <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm overflow-hidden">
           <div className="p-6 border-b border-surface-300/50 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-gray-400" />
+              <Calendar className="w-5 h-5 text-surface-300" />
               Recent Activity
             </h2>
-            <span className="text-sm text-gray-400">{transactions.length} transactions</span>
+            <span className="text-sm text-surface-300">{transactions.length} transactions</span>
           </div>
           <div className="divide-y divide-surface-300/50">
             {transactions.map((tx) => {
@@ -244,7 +244,7 @@ export default function RecapPage() {
                             {tx.type}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-400">{tx.description}</p>
+                        <p className="text-sm text-surface-300">{tx.description}</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -254,7 +254,7 @@ export default function RecapPage() {
                         {tx.type === 'sell' || tx.type === 'withdrawal' ? '-' : '+'}
                         {formatCurrency(tx.amount)}
                       </p>
-                      <p className="text-sm text-gray-500">{formatDate(tx.date)}</p>
+                      <p className="text-sm text-surface-300">{formatDate(tx.date)}</p>
                     </div>
                   </div>
                 </div>
@@ -270,7 +270,7 @@ export default function RecapPage() {
               <Clock className="w-8 h-8 text-lokifi-light" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-2">No Activity Yet</h3>
-            <p className="text-gray-400">
+            <p className="text-surface-300">
               Your transaction history will appear here once you start trading.
             </p>
           </div>
