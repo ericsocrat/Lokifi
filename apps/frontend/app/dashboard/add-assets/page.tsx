@@ -12,10 +12,10 @@ export default function AddAssetsPage() {
   }, [router]);
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen flex items-center justify-center bg-surface-0">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
-        <p className="mt-4 text-gray-600 dark:text-gray-400">Redirecting...</p>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi mx-auto" />
+        <p className="mt-4 text-surface-400">Redirecting...</p>
       </div>
     </div>
   );

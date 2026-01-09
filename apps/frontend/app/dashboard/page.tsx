@@ -138,7 +138,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-surface-400">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading dashboard...</span>
         </div>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
                 <Sparkles className="w-6 h-6 text-lokifi-light" />
                 Welcome back, {getFirstName()}
               </h1>
-              <p className="text-sm text-gray-400 mt-1">Your financial overview at a glance</p>
+              <p className="text-sm text-surface-400 mt-1">Your financial overview at a glance</p>
             </div>
             <button
               onClick={() => router.push('/dashboard/add-assets')}
@@ -181,10 +181,10 @@ export default function DashboardPage() {
                   <h2 className="text-3xl font-bold text-white mb-4">
                     Yassou, {getFirstName()}! 👋
                   </h2>
-                  <p className="text-gray-300 text-lg mb-3 leading-relaxed">
+                  <p className="text-surface-300 text-lg mb-3 leading-relaxed">
                     Here&apos;s where you come to see the overview of your portfolio.
                   </p>
-                  <p className="text-gray-400 text-base mb-6 leading-relaxed">
+                  <p className="text-surface-400 text-base mb-6 leading-relaxed">
                     These numbers and charts will come alive when there&apos;s enough data.{' '}
                     <span className="font-semibold text-white">
                       Please add your assets to get started.
@@ -215,18 +215,18 @@ export default function DashboardPage() {
                   <div className="p-2.5 bg-emerald-500/10 rounded-xl">
                     <DollarSign className="w-5 h-5 text-emerald-400" />
                   </div>
-                  <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+                  <span className="text-xs text-surface-400 uppercase tracking-wide font-medium">
                     Sample
                   </span>
                 </div>
-                <p className="text-sm text-gray-400 mb-1">Net Worth</p>
+                <p className="text-sm text-surface-400 mb-1">Net Worth</p>
                 <p className="text-3xl font-bold text-white">€1.5M</p>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="flex items-center gap-1 text-sm text-emerald-400 font-medium">
                     <TrendingUp className="w-3 h-3" />
                     +180%
                   </span>
-                  <span className="text-xs text-gray-500">all time</span>
+                  <span className="text-xs text-surface-400">all time</span>
                 </div>
               </div>
 
@@ -236,18 +236,18 @@ export default function DashboardPage() {
                   <div className="p-2.5 bg-lokifi/10 rounded-xl">
                     <Wallet className="w-5 h-5 text-lokifi-light" />
                   </div>
-                  <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+                  <span className="text-xs text-surface-400 uppercase tracking-wide font-medium">
                     Sample
                   </span>
                 </div>
-                <p className="text-sm text-gray-400 mb-1">Total Assets</p>
+                <p className="text-sm text-surface-400 mb-1">Total Assets</p>
                 <p className="text-3xl font-bold text-white">€2M</p>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="flex items-center gap-1 text-sm text-emerald-400 font-medium">
                     <TrendingUp className="w-3 h-3" />
                     +53%
                   </span>
-                  <span className="text-xs text-gray-500">liquid</span>
+                  <span className="text-xs text-surface-400">liquid</span>
                 </div>
               </div>
 
@@ -257,18 +257,18 @@ export default function DashboardPage() {
                   <div className="p-2.5 bg-rose-500/10 rounded-xl">
                     <BarChart3 className="w-5 h-5 text-rose-400" />
                   </div>
-                  <span className="text-xs text-gray-500 uppercase tracking-wide font-medium">
+                  <span className="text-xs text-surface-400 uppercase tracking-wide font-medium">
                     Sample
                   </span>
                 </div>
-                <p className="text-sm text-gray-400 mb-1">Debts</p>
+                <p className="text-sm text-surface-400 mb-1">Debts</p>
                 <p className="text-3xl font-bold text-white">€500K</p>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="flex items-center gap-1 text-sm text-rose-400 font-medium">
                     <TrendingDown className="w-3 h-3" />
                     -€24K
                   </span>
-                  <span className="text-xs text-gray-500">paid off</span>
+                  <span className="text-xs text-surface-400">paid off</span>
                 </div>
               </div>
             </div>
@@ -301,7 +301,7 @@ export default function DashboardPage() {
                     </defs>
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-gray-700/50">SAMPLE</span>
+                    <span className="text-4xl font-bold text-surface-300/50">SAMPLE</span>
                   </div>
                 </div>
               </div>
@@ -346,24 +346,24 @@ export default function DashboardPage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-sm font-semibold text-gray-500">SAMPLE</span>
+                      <span className="text-sm font-semibold text-surface-400">SAMPLE</span>
                     </div>
                   </div>
                   <div className="ml-8 space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-lokifi" />
-                      <span className="text-sm text-gray-300">Stocks</span>
-                      <span className="text-sm text-gray-500 ml-auto">30%</span>
+                      <span className="text-sm text-surface-300">Stocks</span>
+                      <span className="text-sm text-surface-400 ml-auto">30%</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-electric" />
-                      <span className="text-sm text-gray-300">Crypto</span>
-                      <span className="text-sm text-gray-500 ml-auto">20%</span>
+                      <span className="text-sm text-surface-300">Crypto</span>
+                      <span className="text-sm text-surface-400 ml-auto">20%</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-gray-600" />
-                      <span className="text-sm text-gray-300">Other</span>
-                      <span className="text-sm text-gray-500 ml-auto">50%</span>
+                      <div className="w-3 h-3 rounded-full bg-surface-300" />
+                      <span className="text-sm text-surface-300">Other</span>
+                      <span className="text-sm text-surface-400 ml-auto">50%</span>
                     </div>
                   </div>
                 </div>
@@ -378,7 +378,7 @@ export default function DashboardPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-sm font-medium text-gray-400">Net Worth</h2>
+                    <h2 className="text-sm font-medium text-surface-400">Net Worth</h2>
                     <span className="inline-flex items-center gap-1 text-xs text-emerald-400 font-semibold uppercase tracking-wide">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -403,7 +403,7 @@ export default function DashboardPage() {
                       {formatCurrency(liveChange)} ({liveChangePercent >= 0 ? '+' : ''}
                       {liveChangePercent.toFixed(2)}%)
                     </span>
-                    <span className="text-xs text-gray-500 uppercase">TODAY</span>
+                    <span className="text-xs text-surface-400 uppercase">TODAY</span>
                   </div>
                 </div>
                 {/* Period Selector */}
@@ -415,7 +415,7 @@ export default function DashboardPage() {
                       className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                         selectedPeriod === period
                           ? 'bg-linear-to-r from-lokifi to-electric text-white shadow-lg shadow-lokifi/20'
-                          : 'text-gray-400 hover:text-white hover:bg-surface-300'
+                          : 'text-surface-400 hover:text-white hover:bg-surface-300'
                       }`}
                     >
                       {period.toUpperCase()}
@@ -428,25 +428,25 @@ export default function DashboardPage() {
             {/* Stats Cards Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm p-4 hover:border-surface-300 transition-all duration-200">
-                <p className="text-xs font-medium text-gray-400 mb-1">Investable Assets</p>
+                <p className="text-xs font-medium text-surface-400 mb-1">Investable Assets</p>
                 <p className="text-2xl font-bold text-white">
                   {formatCurrency(stats?.investableAssets || 0)}
                 </p>
               </div>
               <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm p-4 hover:border-surface-300 transition-all duration-200">
-                <p className="text-xs font-medium text-gray-400 mb-1">Cash on Hand</p>
+                <p className="text-xs font-medium text-surface-400 mb-1">Cash on Hand</p>
                 <p className="text-2xl font-bold text-white">
                   {formatCurrency(stats?.cashOnHand || 0)}
                 </p>
               </div>
               <div className="border border-surface-300/50 rounded-2xl bg-surface-100/50 backdrop-blur-sm p-4 hover:border-surface-300 transition-all duration-200">
-                <p className="text-xs font-medium text-gray-400 mb-1">Illiquid</p>
+                <p className="text-xs font-medium text-surface-400 mb-1">Illiquid</p>
                 <p className="text-2xl font-bold text-white">
                   {formatCurrency(stats?.illiquid || 0)}
                 </p>
               </div>
               <div className="border border-rose-500/20 rounded-2xl bg-linear-to-br from-rose-500/10 to-rose-500/5 p-4 hover:border-rose-500/30 transition-all duration-200">
-                <p className="text-xs font-medium text-gray-400 mb-1">Debts</p>
+                <p className="text-xs font-medium text-surface-400 mb-1">Debts</p>
                 <p className="text-2xl font-bold text-rose-400">
                   {formatCurrency(stats?.debts || 0)}
                 </p>
@@ -472,19 +472,19 @@ export default function DashboardPage() {
                             className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: item.color }}
                           />
-                          <span className="text-sm text-gray-300">{item.name}</span>
+                          <span className="text-sm text-surface-300">{item.name}</span>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold text-white">
                             {formatCurrency(item.value)}
                           </p>
-                          <p className="text-xs text-gray-500">{item.percentage.toFixed(1)}%</p>
+                          <p className="text-xs text-surface-400">{item.percentage.toFixed(1)}%</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-12 text-gray-500">
+                  <div className="flex items-center justify-center py-12 text-surface-400">
                     No allocations yet
                   </div>
                 )}
@@ -518,20 +518,20 @@ export default function DashboardPage() {
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-white">{holding.symbol}</p>
-                            <p className="text-xs text-gray-500">{holding.name}</p>
+                            <p className="text-xs text-surface-400">{holding.name}</p>
                           </div>
                         </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold text-white">
                             {formatCurrency(holding.value)}
                           </p>
-                          <p className="text-xs text-gray-500">{holding.percentage.toFixed(1)}%</p>
+                          <p className="text-xs text-surface-400">{holding.percentage.toFixed(1)}%</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-12 text-gray-500">
+                  <div className="flex items-center justify-center py-12 text-surface-400">
                     No holdings yet
                   </div>
                 )}

@@ -196,19 +196,22 @@ export default function AssetsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+      <div className="flex items-center justify-center min-h-screen bg-surface-0">
+        <div className="flex items-center gap-3 text-surface-400">
+          <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
+          <span>Loading assets...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+    <div className="min-h-screen bg-surface-0 transition-colors">
       {/* Navigation Bar */}
-      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
+      <nav className="bg-surface-50/80 border-b border-surface-300/50 backdrop-blur-xl px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
-            <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
+            <Menu className="w-6 h-6 text-surface-400 cursor-pointer hover:text-white transition-colors" />
             <div className="flex items-center gap-2 select-none">
               <svg
                 className="w-6 h-6"
@@ -221,40 +224,40 @@ export default function AssetsPage() {
                   cx="16"
                   cy="16"
                   r="16"
-                  className="fill-black dark:fill-white transition-colors"
+                  className="fill-lokifi"
                 />
                 <path
                   d="M11 9v14h10"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="stroke-white dark:stroke-black"
+                  className="stroke-white"
                 />
               </svg>
-              <span className="text-xl font-bold tracking-wide">Lokifi</span>
+              <span className="text-xl font-bold tracking-wide text-white">Lokifi</span>
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <button aria-label="Notifications" className="p-2 hover:bg-gray-100 rounded-lg">
-              <Bell className="w-5 h-5 text-gray-600" />
+            <button aria-label="Notifications" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+              <Bell className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
-            <button aria-label="Search" className="p-2 hover:bg-gray-100 rounded-lg">
-              <Search className="w-5 h-5 text-gray-600" />
+            <button aria-label="Search" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+              <Search className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
-            <button aria-label="Share" className="p-2 hover:bg-gray-100 rounded-lg">
-              <Share2 className="w-5 h-5 text-gray-600" />
+            <button aria-label="Share" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+              <Share2 className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
             <button
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+              className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
               title="Toggle Theme"
               onClick={() => {
                 setDarkMode(!darkMode);
               }}
             >
-              <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Settings className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
-            <span className="text-sm text-gray-600">EUR €</span>
-            <span className="text-sm font-medium text-gray-900 hidden sm:inline-block">
+            <span className="text-sm text-surface-400">EUR €</span>
+            <span className="text-sm font-medium text-white hidden sm:inline-block">
               {getFirstName()}
             </span>
             <ProfileDropdown
@@ -270,48 +273,48 @@ export default function AssetsPage() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
+        <aside className="w-64 bg-surface-50/80 border-r border-surface-300/50 min-h-screen p-4 transition-colors">
           <nav className="space-y-1">
             <a
               href="/dashboard"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="flex items-center justify-between px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <Wallet className="w-5 h-5" />
                 <span>Net Worth</span>
               </div>
-              <span className="text-sm text-gray-500">{formatCurrency(getTotalValue())}</span>
+              <span className="text-sm text-surface-400">{formatCurrency(getTotalValue())}</span>
             </a>
             <a
               href="/dashboard/assets"
-              className="flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-linear-to-r from-lokifi/20 to-electric/10 rounded-lg text-white font-medium hover:from-lokifi/30 hover:to-electric/20 transition-colors border border-lokifi/20"
             >
               <div className="flex items-center space-x-3">
-                <TrendingUp className="w-5 h-5" />
+                <TrendingUp className="w-5 h-5 text-lokifi-light" />
                 <span>Assets</span>
               </div>
-              <span className="text-sm text-gray-500">{formatCurrency(getTotalValue())}</span>
+              <span className="text-sm text-surface-300">{formatCurrency(getTotalValue())}</span>
             </a>
             <a
               href="/dashboard/debts"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              className="flex items-center justify-between px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <AlertCircle className="w-5 h-5" />
                 <span>Debts</span>
               </div>
-              <span className="text-sm text-gray-500">€0</span>
+              <span className="text-sm text-surface-400">€0</span>
             </a>
             <a
               href="/dashboard/recap"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center space-x-3 px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <PieChart className="w-5 h-5" />
               <span>Recap</span>
             </a>
             <a
               href="/dashboard/fast-forward"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center space-x-3 px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -325,7 +328,7 @@ export default function AssetsPage() {
             </a>
             <a
               href="/dashboard/beneficiary"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center space-x-3 px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -346,31 +349,31 @@ export default function AssetsPage() {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">Assets</h1>
-                <p className="text-base text-gray-500">
+                <h1 className="text-3xl font-bold text-white mb-1">Assets</h1>
+                <p className="text-base text-surface-400">
                   <span className="text-xs">1 DAY</span>{' '}
-                  <span className="font-semibold text-gray-700">
+                  <span className="font-semibold text-white">
                     {formatCurrency(getTotalValue())}
                   </span>
                 </p>
               </div>
               <div className="flex items-center space-x-3">
-                <span className="text-sm text-gray-500">Click on the</span>
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-gray-200 text-gray-600">
+                <span className="text-sm text-surface-400">Click on the</span>
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-surface-200 text-surface-400">
                   <MoreHorizontal className="w-4 h-4" />
                 </span>
-                <span className="text-sm text-gray-500">menu for more details</span>
+                <span className="text-sm text-surface-400">menu for more details</span>
               </div>
             </div>
 
             {/* Category Tabs */}
-            <div className="flex items-center space-x-6 mb-6 border-b border-gray-200">
-              <button className="pb-3 border-b-2 border-black font-semibold text-gray-900">
+            <div className="flex items-center space-x-6 mb-6 border-b border-surface-300/50">
+              <button className="pb-3 border-b-2 border-lokifi font-semibold text-white">
                 Investments
               </button>
-              <button className="pb-3 text-gray-500 hover:text-gray-700">Real Estate</button>
-              <button className="pb-3 text-gray-500 hover:text-gray-700">Others</button>
-              <button className="pb-3 text-gray-500 hover:text-gray-700">
+              <button className="pb-3 text-surface-400 hover:text-white transition-colors">Real Estate</button>
+              <button className="pb-3 text-surface-400 hover:text-white transition-colors">Others</button>
+              <button className="pb-3 text-surface-400 hover:text-white transition-colors">
                 Sheet &<br />
                 Other
               </button>
@@ -384,16 +387,16 @@ export default function AssetsPage() {
               return (
                 <section className="mb-8" key={idx}>
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    <h2 className="text-sm font-medium text-surface-400">
                       {section.title}
                     </h2>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                    <span className="text-sm text-surface-400 font-medium">
                       {formatCurrency(sectionValue)}
                     </span>
                   </div>
                   <div className="space-y-2">
                     <div className="px-4 py-2">
-                      <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
+                      <span className="text-xs font-medium text-surface-400 uppercase tracking-wide">
                         ASSET
                       </span>
                     </div>
@@ -408,14 +411,14 @@ export default function AssetsPage() {
                         onDelete={() => removeAsset(section.title, asset.id)}
                       />
                     ))}
-                    <div className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 cursor-pointer transition-colors group dark:bg-gray-800 dark:hover:bg-gray-700">
+                    <div className="bg-linear-to-r from-lokifi/20 to-electric/10 hover:from-lokifi/30 hover:to-electric/20 rounded-xl p-4 cursor-pointer transition-all duration-200 group border border-lokifi/20 hover:border-lokifi/40">
                       <button
                         onClick={openAddAssetModal}
                         className="w-full text-center text-white font-medium"
                       >
                         + ADD ASSET
                       </button>
-                      <div className="text-center text-sm text-gray-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="text-center text-sm text-surface-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         {formatCurrency(getTotalValue())}
                       </div>
                     </div>
@@ -425,20 +428,20 @@ export default function AssetsPage() {
             })}
 
             <section>
-              <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-                <button onClick={addNewSection} className="hover:text-gray-700">
+              <div className="flex items-center space-x-4 text-sm text-surface-400 mb-4">
+                <button onClick={addNewSection} className="hover:text-white transition-colors">
                   + NEW SECTION
                 </button>
-                <button onClick={openAddAssetModal} className="hover:text-gray-700">
+                <button onClick={openAddAssetModal} className="hover:text-white transition-colors">
                   + ADD ASSET
                 </button>
               </div>
               {!hasAnyAssets && connectingBanks.length === 0 && (
-                <div className="text-center py-16 border-2 border-dashed rounded-lg text-gray-500 dark:text-gray-400 dark:border-gray-700">
+                <div className="text-center py-16 border-2 border-dashed border-surface-300/50 rounded-2xl text-surface-400">
                   <p className="mb-4 font-medium">No assets yet</p>
                   <button
                     onClick={openAddAssetModal}
-                    className="px-4 py-2 bg-black text-white rounded text-sm"
+                    className="px-6 py-3 bg-linear-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
                   >
                     Add your first asset
                   </button>
@@ -469,30 +472,30 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow">
+    <div className="bg-surface-100/50 border border-surface-300/50 rounded-xl p-4 flex items-center justify-between hover:border-surface-300 hover:shadow-lg hover:shadow-lokifi/5 transition-all duration-200">
       <div className="flex items-center space-x-4 flex-1">
-        <div className="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center font-semibold text-sm dark:bg-gray-900">
+        <div className="w-10 h-10 rounded-xl bg-linear-to-br from-lokifi to-electric text-white flex items-center justify-center font-semibold text-sm shadow-lg shadow-lokifi/20">
           {bank.name.substring(0, 2).toUpperCase()}
         </div>
         <div className="flex-1">
           <div className="flex items-center space-x-2">
-            <h3 className="font-semibold text-gray-900 dark:text-gray-100">{bank.name}</h3>
-            <Loader2 className="w-4 h-4 text-blue-600 dark:text-blue-400 animate-spin" />
+            <h3 className="font-semibold text-white">{bank.name}</h3>
+            <Loader2 className="w-4 h-4 text-lokifi-light animate-spin" />
           </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{bank.message}</p>
+          <p className="text-sm text-surface-400 mt-0.5">{bank.message}</p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
         <div className="text-right">
-          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
+          <p className="text-lg font-semibold text-white tabular-nums">
             {formatCurrency(animatedValue)}
           </p>
         </div>
         <button
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          className="p-1 hover:bg-surface-200 rounded-lg transition-colors"
           aria-label="Options"
         >
-          <MoreHorizontal className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+          <MoreHorizontal className="w-5 h-5 text-surface-400" />
         </button>
       </div>
     </div>
@@ -503,30 +506,30 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void }) {
   const { formatCurrency } = useCurrencyFormatter();
   return (
-    <div className="bg-white dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
+    <div className="bg-surface-100/50 border border-surface-300/50 rounded-xl p-4 flex items-center justify-between hover:border-surface-300 hover:shadow-lg hover:shadow-lokifi/5 transition-all duration-200 group">
       <div className="flex items-center space-x-4 flex-1">
-        <div className="text-sm text-gray-500 dark:text-gray-400">{asset.symbol}</div>
+        <div className="text-sm text-surface-400">{asset.symbol}</div>
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{asset.name}</h3>
+          <h3 className="font-semibold text-white">{asset.name}</h3>
         </div>
       </div>
       <div className="flex items-center space-x-4 relative">
         <div className="text-right">
-          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          <p className="text-lg font-semibold text-white">
             {formatCurrency(asset.value)}
           </p>
         </div>
         <button
-          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          className="p-1 hover:bg-surface-200 rounded-lg transition-colors"
           aria-label="Options"
         >
-          <MoreHorizontal className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+          <MoreHorizontal className="w-5 h-5 text-surface-400" />
         </button>
         {onDelete && (
-          <div className="absolute right-0 top-8 w-32 bg-white dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 rounded shadow-lg py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+          <div className="absolute right-0 top-8 w-32 bg-surface-100 border border-surface-300/50 rounded-xl shadow-lg py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
             <button
               onClick={onDelete}
-              className="w-full text-left px-3 py-1.5 hover:bg-gray-50 dark:hover:bg-gray-800 text-red-600"
+              className="w-full text-left px-3 py-1.5 hover:bg-surface-200 text-rose-400 transition-colors"
             >
               Delete
             </button>
