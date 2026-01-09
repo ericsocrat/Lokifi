@@ -169,7 +169,7 @@ export const Breadcrumb = forwardRef<HTMLElement, BreadcrumbProps>(
               'flex flex-wrap items-center',
               sizeConfig.gap,
               sizeConfig.text,
-              'text-gray-500 dark:text-gray-400'
+              'text-surface-300'
             )}
             data-breadcrumb-list=""
           >
@@ -227,8 +227,8 @@ export const BreadcrumbLink = forwardRef<HTMLAnchorElement, BreadcrumbLinkProps>
     const baseClasses = cn(
       'transition-colors',
       isCurrent
-        ? 'font-medium text-gray-900 dark:text-gray-100 pointer-events-none'
-        : 'hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-lokifi-500 focus-visible:ring-offset-1 rounded'
+        ? 'font-medium text-white pointer-events-none'
+        : 'hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-lokifi-500 focus-visible:ring-offset-1 rounded'
     );
 
     if (isCurrent) {
@@ -277,7 +277,7 @@ export const BreadcrumbSeparator = forwardRef<HTMLLIElement, BreadcrumbSeparator
         ref={ref}
         role="presentation"
         aria-hidden="true"
-        className={cn('text-gray-400 dark:text-gray-500 flex items-center', className)}
+        className={cn('text-surface-300 flex items-center', className)}
         data-breadcrumb-separator=""
         {...props}
       >
@@ -331,7 +331,7 @@ export const BreadcrumbPage = forwardRef<HTMLSpanElement, BreadcrumbPageProps>(
     return (
       <span
         ref={ref}
-        className={cn('font-medium text-gray-900 dark:text-gray-100', className)}
+        className={cn('font-medium text-white', className)}
         aria-current="page"
         data-breadcrumb-page=""
         {...props}
