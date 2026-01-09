@@ -301,7 +301,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
 
     const renderValue = () => {
       if (selectedOptions.length === 0) {
-        return <span className="text-gray-500">{placeholder}</span>;
+        return <span className="text-surface-300">{placeholder}</span>;
       }
 
       if (multiple) {
@@ -357,7 +357,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             <div className="flex flex-col items-start min-w-0">
               <span className="truncate">{option.label}</span>
               {option.description && (
-                <span className="text-xs text-gray-500 truncate">{option.description}</span>
+                <span className="text-xs text-surface-300 truncate">{option.description}</span>
               )}
             </div>
           </div>
@@ -380,7 +380,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             className={cn(
               'block mb-1.5 font-medium',
               size === 'sm' ? 'text-xs' : 'text-sm',
-              disabled ? 'text-gray-500' : 'text-white'
+              disabled ? 'text-surface-300' : 'text-white'
             )}
           >
             {label}
@@ -441,13 +441,13 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
                 aria-label="Clear selection"
                 data-testid={testId ? `${testId}-clear` : undefined}
               >
-                <X className={cn(sizeConfig.icon, 'text-gray-400')} />
+                <X className={cn(sizeConfig.icon, 'text-surface-300')} />
               </button>
             )}
             <ChevronDown
               className={cn(
                 sizeConfig.icon,
-                'text-gray-400 transition-transform',
+                'text-surface-300 transition-transform',
                 isOpen && 'rotate-180'
               )}
               aria-hidden="true"
@@ -462,7 +462,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
             className={cn(
               'mt-1.5',
               size === 'sm' ? 'text-xs' : 'text-sm',
-              error ? 'text-red-500' : 'text-gray-500'
+              error ? 'text-red-500' : 'text-surface-300'
             )}
           >
             {error ? errorMessage : helperText}
@@ -499,7 +499,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
                   className={cn(
                     'w-full px-3 py-2 rounded-md',
                     'bg-surface-200 border border-surface-300',
-                    'text-white placeholder-gray-500',
+                    'text-white placeholder-surface-300',
                     'focus:outline-none focus:ring-2 focus:ring-blue-500',
                     size === 'sm' ? 'text-xs' : 'text-sm'
                   )}
@@ -522,7 +522,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
               {filteredOptions.length === 0 ? (
                 <div
                   className={cn(
-                    'text-center text-gray-500 py-4',
+                    'text-center text-surface-300 py-4',
                     size === 'sm' ? 'text-xs' : 'text-sm'
                   )}
                 >
@@ -534,7 +534,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
                     {group && (
                       <div
                         className={cn(
-                          'px-3 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider',
+                          'px-3 py-1.5 text-xs font-semibold text-surface-300 uppercase tracking-wider',
                           'bg-surface-50'
                         )}
                       >
