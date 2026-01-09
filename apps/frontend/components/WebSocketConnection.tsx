@@ -158,7 +158,7 @@ export default function WebSocketConnection({
       case 'error':
         return 'text-red-400';
       default:
-        return 'text-gray-400';
+        return 'text-surface-300';
     }
   };
 
@@ -181,7 +181,7 @@ export default function WebSocketConnection({
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-lg">
+      <div className="bg-surface-0 border border-surface-200 rounded-lg p-3 shadow-lg">
         <div className="flex items-center gap-2 mb-2">
           <div
             className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400' : connectionStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'}`}
@@ -189,7 +189,7 @@ export default function WebSocketConnection({
           <span className={`text-xs font-medium ${getStatusColor()}`}>{getStatusText()}</span>
         </div>
 
-        <div className="text-xs text-gray-300 space-y-1">
+        <div className="text-xs text-surface-300 space-y-1">
           <div>Symbols: {symbols.length}</div>
           {connectionStatus === 'connected' && (
             <>
