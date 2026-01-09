@@ -27,13 +27,13 @@ export default function TimeframePicker() {
   return (
     <div className="flex items-center gap-2">
       {/* Timeframe Icon */}
-      <div className="flex items-center gap-1.5 text-xs text-gray-400">
+      <div className="flex items-center gap-1.5 text-xs text-surface-300">
         <Clock className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Timeframe</span>
       </div>
 
       {/* Timeframe Buttons */}
-      <div className="flex items-center gap-1 bg-gray-800/50 rounded-lg p-1">
+      <div className="flex items-center gap-1 bg-surface-200/50 rounded-lg p-1">
         {TIMEFRAMES.map((tf) => (
           <button
             key={tf.value}
@@ -41,7 +41,7 @@ export default function TimeframePicker() {
             className={`px-2.5 py-1 text-xs font-bold rounded transition-all ${
               active === tf.value
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
+                : 'text-surface-300 hover:text-white hover:bg-surface-200/50'
             }`}
             title={`Switch to ${tf.label} timeframe`}
           >
