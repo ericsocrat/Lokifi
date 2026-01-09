@@ -17,11 +17,11 @@ export default function FeatureFlagsDebug() {
   }
 
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
+    <div className="p-6 bg-surface-0 min-h-screen text-white">
       <h1 className="text-2xl font-bold mb-6">Feature Flags Debug</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Object.entries(flags).map(([flag, enabled]) => (
-          <div key={flag} className="p-4 bg-gray-800 rounded-lg border">
+          <div key={flag} className="p-4 bg-surface-100 rounded-lg border border-surface-300">
             <div className="flex items-center justify-between mb-2">
               <span className="font-medium">{flag}</span>
               <button
@@ -29,21 +29,21 @@ export default function FeatureFlagsDebug() {
                 className={`px-3 py-1 rounded text-sm font-medium ${
                   enabled
                     ? 'bg-green-600 text-white'
-                    : 'bg-gray-600 text-gray-200'
+                    : 'bg-surface-300 text-surface-200'
                 }`}
               >
                 {enabled ? 'ON' : 'OFF'}
               </button>
             </div>
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-surface-300">
               Current: {FLAGS[flag as keyof FeatureFlags] ? 'Enabled' : 'Disabled'}
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-8 p-4 bg-gray-800 rounded-lg">
+      <div className="mt-8 p-4 bg-surface-100 rounded-lg border border-surface-300">
         <h2 className="text-lg font-semibold mb-2">Instructions</h2>
-        <p className="text-gray-300 text-sm">
+        <p className="text-surface-200 text-sm">
           Toggle flags here to test features in development. Changes apply immediately to the current session.
           These overrides do not persist across page reloads.
         </p>
