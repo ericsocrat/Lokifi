@@ -163,6 +163,6 @@ wcwidth==0.2.14
 webcolors==25.10.0
 webencodings==0.5.1
 websockets==15.0.1
-Werkzeug==3.1.4  # Updated: openapi-core compatibility fixed
+Werkzeug==3.1.5  # Updated: fix CVE-2025-22215 safe_join() Windows device names
 wheel==0.45.1
 yarl==1.22.0
