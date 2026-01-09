@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StocksPage from '../../app/markets/stocks/page';
 
 // Mock next/navigation
@@ -25,7 +25,8 @@ vi.mock('@/src/components/ProtectedRoute', () => ({
 // Mock useCurrencyFormatter
 vi.mock('@/src/components/dashboard/useCurrencyFormatter', () => ({
   useCurrencyFormatter: () => ({
-    formatCurrency: (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    formatCurrency: (value: number) =>
+      `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   }),
 }));
 
@@ -37,7 +38,7 @@ const mockStocksData = [
     id: 'AAPL',
     symbol: 'AAPL',
     name: 'Apple Inc',
-    current_price: 185.50,
+    current_price: 185.5,
     price_change_percentage_24h: 1.25,
     market_cap: 2900000000000,
   },
@@ -45,7 +46,7 @@ const mockStocksData = [
     id: 'MSFT',
     symbol: 'MSFT',
     name: 'Microsoft Corporation',
-    current_price: 378.20,
+    current_price: 378.2,
     price_change_percentage_24h: -0.45,
     market_cap: 2800000000000,
   },
@@ -53,7 +54,7 @@ const mockStocksData = [
     id: 'GOOGL',
     symbol: 'GOOGL',
     name: 'Alphabet Inc',
-    current_price: 142.30,
+    current_price: 142.3,
     price_change_percentage_24h: 0.85,
     market_cap: 1800000000000,
   },
@@ -113,7 +114,7 @@ describe('StocksPage', () => {
   describe('Header', () => {
     it('renders page title with dollar icon', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Stock Markets')).toBeInTheDocument();
       });
@@ -121,7 +122,7 @@ describe('StocksPage', () => {
 
     it('shows Live Data badge', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Live Data')).toBeInTheDocument();
       });
@@ -129,7 +130,7 @@ describe('StocksPage', () => {
 
     it('shows stock count', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/3 stocks/)).toBeInTheDocument();
       });
@@ -137,7 +138,7 @@ describe('StocksPage', () => {
 
     it('shows data source attribution', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Real-time from Alpha Vantage/)).toBeInTheDocument();
       });
@@ -145,7 +146,7 @@ describe('StocksPage', () => {
 
     it('renders refresh button', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /Refresh/i })).toBeInTheDocument();
       });
@@ -153,12 +154,12 @@ describe('StocksPage', () => {
 
     it('calls refetch on refresh button click', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
         fireEvent.click(refreshBtn);
       });
-      
+
       expect(mockRefetch).toHaveBeenCalled();
     });
   });
@@ -166,7 +167,7 @@ describe('StocksPage', () => {
   describe('Search', () => {
     it('renders search input', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByPlaceholderText(/Search stocks/)).toBeInTheDocument();
       });
@@ -174,7 +175,7 @@ describe('StocksPage', () => {
 
     it('allows typing in search input', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const searchInput = screen.getByPlaceholderText(/Search stocks/) as HTMLInputElement;
         fireEvent.change(searchInput, { target: { value: 'Apple' } });
@@ -184,12 +185,12 @@ describe('StocksPage', () => {
 
     it('filters stocks by search query', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const searchInput = screen.getByPlaceholderText(/Search stocks/) as HTMLInputElement;
         fireEvent.change(searchInput, { target: { value: 'Apple' } });
       });
-      
+
       // Only Apple should match
       await waitFor(() => {
         expect(screen.getByText('Apple Inc')).toBeInTheDocument();
@@ -200,7 +201,7 @@ describe('StocksPage', () => {
   describe('Mock Data Warning', () => {
     it('displays mock data notice', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Mock Data Notice')).toBeInTheDocument();
       });
@@ -208,9 +209,11 @@ describe('StocksPage', () => {
 
     it('shows warning about mock data', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
-        expect(screen.getByText(/This page currently displays mock stock data/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/This page currently displays mock stock data/)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -219,9 +222,9 @@ describe('StocksPage', () => {
     it('shows loading spinner when loading', async () => {
       mockHookReturn.isLoading = true;
       mockHookReturn.data = [];
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Loading stocks...')).toBeInTheDocument();
       });
@@ -230,9 +233,9 @@ describe('StocksPage', () => {
     it('shows spinner element', async () => {
       mockHookReturn.isLoading = true;
       mockHookReturn.data = [];
-      
+
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const spinner = container.querySelector('.animate-spin');
         expect(spinner).toBeInTheDocument();
@@ -244,9 +247,9 @@ describe('StocksPage', () => {
     it('shows error message when error occurs', async () => {
       mockHookReturn.error = { message: 'Failed to fetch stocks' };
       mockHookReturn.data = [];
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Error Loading Stocks')).toBeInTheDocument();
       });
@@ -255,9 +258,9 @@ describe('StocksPage', () => {
     it('shows Try Again button on error', async () => {
       mockHookReturn.error = { message: 'Network error' };
       mockHookReturn.data = [];
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
       });
@@ -266,14 +269,14 @@ describe('StocksPage', () => {
     it('calls refetch on Try Again click', async () => {
       mockHookReturn.error = { message: 'Network error' };
       mockHookReturn.data = [];
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const tryAgainBtn = screen.getByRole('button', { name: 'Try Again' });
         fireEvent.click(tryAgainBtn);
       });
-      
+
       expect(mockRefetch).toHaveBeenCalled();
     });
   });
@@ -281,7 +284,7 @@ describe('StocksPage', () => {
   describe('Table Headers', () => {
     it('renders Stock column', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Stock')).toBeInTheDocument();
       });
@@ -289,7 +292,7 @@ describe('StocksPage', () => {
 
     it('renders Price column', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Price')).toBeInTheDocument();
       });
@@ -297,7 +300,7 @@ describe('StocksPage', () => {
 
     it('renders 24h % column', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('24h %')).toBeInTheDocument();
       });
@@ -305,7 +308,7 @@ describe('StocksPage', () => {
 
     it('renders Market Cap column', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Market Cap')).toBeInTheDocument();
       });
@@ -315,7 +318,7 @@ describe('StocksPage', () => {
   describe('Stock Data Display', () => {
     it('renders Apple stock', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('AAPL')).toBeInTheDocument();
         expect(screen.getByText('Apple Inc')).toBeInTheDocument();
@@ -324,7 +327,7 @@ describe('StocksPage', () => {
 
     it('renders Microsoft stock', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('MSFT')).toBeInTheDocument();
         expect(screen.getByText('Microsoft Corporation')).toBeInTheDocument();
@@ -333,7 +336,7 @@ describe('StocksPage', () => {
 
     it('renders Google stock', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('GOOGL')).toBeInTheDocument();
         expect(screen.getByText('Alphabet Inc')).toBeInTheDocument();
@@ -342,7 +345,7 @@ describe('StocksPage', () => {
 
     it('displays stock prices', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('$185.50')).toBeInTheDocument();
         expect(screen.getByText('$378.20')).toBeInTheDocument();
@@ -352,7 +355,7 @@ describe('StocksPage', () => {
 
     it('displays positive price changes', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('+1.25%')).toBeInTheDocument();
         expect(screen.getByText('+0.85%')).toBeInTheDocument();
@@ -361,7 +364,7 @@ describe('StocksPage', () => {
 
     it('displays negative price changes', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('-0.45%')).toBeInTheDocument();
       });
@@ -371,41 +374,41 @@ describe('StocksPage', () => {
   describe('Sorting', () => {
     it('allows sorting by Stock name', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const stockHeader = screen.getByText('Stock').closest('div');
         if (stockHeader) {
           fireEvent.click(stockHeader);
         }
       });
-      
+
       // Should still render data
       expect(screen.getByText('AAPL')).toBeInTheDocument();
     });
 
     it('allows sorting by Price', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const priceHeader = screen.getByText('Price').closest('div');
         if (priceHeader) {
           fireEvent.click(priceHeader);
         }
       });
-      
+
       expect(screen.getByText('AAPL')).toBeInTheDocument();
     });
 
     it('allows sorting by Market Cap', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const marketCapHeader = screen.getByText('Market Cap').closest('div');
         if (marketCapHeader) {
           fireEvent.click(marketCapHeader);
         }
       });
-      
+
       expect(screen.getByText('AAPL')).toBeInTheDocument();
     });
   });
@@ -413,9 +416,9 @@ describe('StocksPage', () => {
   describe('Watchlist', () => {
     it('loads watchlist from localStorage', async () => {
       localStorageMock.getItem.mockReturnValue('["AAPL"]');
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(localStorageMock.getItem).toHaveBeenCalledWith('watchlist');
       });
@@ -423,7 +426,7 @@ describe('StocksPage', () => {
 
     it('renders watchlist star buttons', async () => {
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const starIcons = container.querySelectorAll('.lucide-star');
         expect(starIcons.length).toBe(3);
@@ -432,17 +435,17 @@ describe('StocksPage', () => {
 
     it('saves to watchlist on star click', async () => {
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const starButtons = container.querySelectorAll('button');
-        const watchlistBtn = Array.from(starButtons).find(btn => 
+        const watchlistBtn = Array.from(starButtons).find((btn) =>
           btn.querySelector('.lucide-star')
         );
         if (watchlistBtn) {
           fireEvent.click(watchlistBtn);
         }
       });
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalled();
     });
   });
@@ -450,30 +453,30 @@ describe('StocksPage', () => {
   describe('Navigation', () => {
     it('navigates to asset page on row click', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const aaplRow = screen.getByText('AAPL').closest('div[class*="cursor-pointer"]');
         if (aaplRow) {
           fireEvent.click(aaplRow);
         }
       });
-      
+
       expect(mockPush).toHaveBeenCalledWith('/asset/AAPL');
     });
 
     it('does not navigate on watchlist star click', async () => {
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const starButtons = container.querySelectorAll('button');
-        const watchlistBtn = Array.from(starButtons).find(btn => 
+        const watchlistBtn = Array.from(starButtons).find((btn) =>
           btn.querySelector('.lucide-star')
         );
         if (watchlistBtn) {
           fireEvent.click(watchlistBtn);
         }
       });
-      
+
       // Should not navigate because stopPropagation
       expect(mockPush).not.toHaveBeenCalled();
     });
@@ -482,9 +485,9 @@ describe('StocksPage', () => {
   describe('Cache Status', () => {
     it('shows fresh data indicator', async () => {
       mockHookReturn.response = { cached: false };
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Fresh data from API')).toBeInTheDocument();
       });
@@ -492,9 +495,9 @@ describe('StocksPage', () => {
 
     it('shows cached data indicator', async () => {
       mockHookReturn.response = { cached: true };
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Data from cache')).toBeInTheDocument();
       });
@@ -504,9 +507,9 @@ describe('StocksPage', () => {
   describe('Fetching State', () => {
     it('disables refresh button when fetching', async () => {
       mockHookReturn.isFetching = true;
-      
+
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
         expect(refreshBtn).toBeDisabled();
@@ -517,7 +520,7 @@ describe('StocksPage', () => {
   describe('Styling', () => {
     it('has dark gradient background', async () => {
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const mainDiv = container.querySelector('.bg-linear-to-br');
         expect(mainDiv).toBeInTheDocument();
@@ -526,7 +529,7 @@ describe('StocksPage', () => {
 
     it('has sticky header', async () => {
       const { container } = render(<StocksPage />);
-      
+
       await waitFor(() => {
         const header = container.querySelector('.sticky');
         expect(header).toBeInTheDocument();
@@ -537,7 +540,7 @@ describe('StocksPage', () => {
   describe('Accessibility', () => {
     it('renders stock names for screen readers', async () => {
       render(<StocksPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Apple Inc')).toBeInTheDocument();
         expect(screen.getByText('Microsoft Corporation')).toBeInTheDocument();

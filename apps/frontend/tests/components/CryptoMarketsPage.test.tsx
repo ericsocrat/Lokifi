@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import CryptoMarketsPage from '../../app/markets/crypto/page';
 
 // Mock next/navigation
@@ -25,7 +25,8 @@ vi.mock('@/src/components/ProtectedRoute', () => ({
 // Mock useCurrencyFormatter
 vi.mock('@/src/components/dashboard/useCurrencyFormatter', () => ({
   useCurrencyFormatter: () => ({
-    formatCurrency: (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    formatCurrency: (value: number) =>
+      `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   }),
 }));
 
@@ -87,7 +88,19 @@ vi.mock('@/src/hooks/useBackendPrices', () => ({
 
 // Mock next/image
 vi.mock('next/image', () => ({
-  default: ({ src, alt, width, height, className }: { src: string; alt: string; width: number; height: number; className?: string }) => (
+  default: ({
+    src,
+    alt,
+    width,
+    height,
+    className,
+  }: {
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+    className?: string;
+  }) => (
     // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} width={width} height={height} className={className} />
   ),
@@ -128,7 +141,7 @@ describe('CryptoMarketsPage', () => {
   describe('Header', () => {
     it('renders page title', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Crypto Markets')).toBeInTheDocument();
       });
@@ -136,7 +149,7 @@ describe('CryptoMarketsPage', () => {
 
     it('shows number of tracked assets', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Track 3\+ cryptocurrencies/)).toBeInTheDocument();
       });
@@ -144,7 +157,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders refresh button', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /Refresh/i })).toBeInTheDocument();
       });
@@ -152,12 +165,12 @@ describe('CryptoMarketsPage', () => {
 
     it('calls refetch on refresh button click', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
         fireEvent.click(refreshBtn);
       });
-      
+
       expect(mockRefetch).toHaveBeenCalled();
     });
   });
@@ -165,7 +178,7 @@ describe('CryptoMarketsPage', () => {
   describe('Market Stats', () => {
     it('renders Assets card', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Assets')).toBeInTheDocument();
         expect(screen.getByText('Tracked')).toBeInTheDocument();
@@ -174,7 +187,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Top Gainer card', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Top Gainer')).toBeInTheDocument();
       });
@@ -182,7 +195,7 @@ describe('CryptoMarketsPage', () => {
 
     it('shows top gainer symbol (Solana with highest gain)', async () => {
       render(<CryptoMarketsPage />);
-      
+
       // Solana has 5.8% gain, highest
       await waitFor(() => {
         expect(screen.getByText('SOL')).toBeInTheDocument();
@@ -191,7 +204,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Top Loser card', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Top Loser')).toBeInTheDocument();
       });
@@ -199,7 +212,7 @@ describe('CryptoMarketsPage', () => {
 
     it('shows top loser symbol (Ethereum with negative change)', async () => {
       render(<CryptoMarketsPage />);
-      
+
       // Ethereum has -1.2% change
       await waitFor(() => {
         expect(screen.getByText('ETH')).toBeInTheDocument();
@@ -208,7 +221,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Market Cap card', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // Market Cap appears in stats card and table header
         const marketCapElements = screen.getAllByText('Market Cap');
@@ -221,7 +234,7 @@ describe('CryptoMarketsPage', () => {
   describe('Search', () => {
     it('renders search input', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByPlaceholderText(/Search cryptocurrencies/)).toBeInTheDocument();
       });
@@ -229,9 +242,11 @@ describe('CryptoMarketsPage', () => {
 
     it('allows typing in search input', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
-        const searchInput = screen.getByPlaceholderText(/Search cryptocurrencies/) as HTMLInputElement;
+        const searchInput = screen.getByPlaceholderText(
+          /Search cryptocurrencies/
+        ) as HTMLInputElement;
         fireEvent.change(searchInput, { target: { value: 'bitcoin' } });
         expect(searchInput.value).toBe('bitcoin');
       });
@@ -241,7 +256,7 @@ describe('CryptoMarketsPage', () => {
   describe('Table Headers', () => {
     it('renders Rank column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Rank')).toBeInTheDocument();
       });
@@ -249,7 +264,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Asset column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Asset')).toBeInTheDocument();
       });
@@ -257,7 +272,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Price column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Price')).toBeInTheDocument();
       });
@@ -265,7 +280,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders 24h Change column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('24h Change')).toBeInTheDocument();
       });
@@ -273,7 +288,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Volume column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Volume')).toBeInTheDocument();
       });
@@ -281,7 +296,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Market Cap column in table', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // There are multiple Market Cap elements - one in stats card, one in table
         const marketCapElements = screen.getAllByText('Market Cap');
@@ -291,7 +306,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Actions column', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Actions')).toBeInTheDocument();
       });
@@ -301,7 +316,7 @@ describe('CryptoMarketsPage', () => {
   describe('Crypto Table Data', () => {
     it('renders Bitcoin row', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Bitcoin')).toBeInTheDocument();
         expect(screen.getByText('btc')).toBeInTheDocument();
@@ -310,7 +325,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Ethereum row', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // Ethereum appears in table row and possibly in top loser card
         const ethElements = screen.getAllByText('Ethereum');
@@ -321,7 +336,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders Solana row', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // Solana appears in table row and top gainer card
         const solElements = screen.getAllByText('Solana');
@@ -332,7 +347,7 @@ describe('CryptoMarketsPage', () => {
 
     it('displays market cap rank', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('#1')).toBeInTheDocument();
         expect(screen.getByText('#2')).toBeInTheDocument();
@@ -341,7 +356,7 @@ describe('CryptoMarketsPage', () => {
 
     it('renders crypto images', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const images = screen.getAllByRole('img');
         expect(images.length).toBe(3);
@@ -350,7 +365,7 @@ describe('CryptoMarketsPage', () => {
 
     it('displays price changes with colors', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // Positive change shows green - may appear multiple times (table + stats)
         const positiveChanges = screen.getAllByText('+2.50%');
@@ -365,58 +380,58 @@ describe('CryptoMarketsPage', () => {
   describe('Sorting', () => {
     it('allows sorting by rank', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const rankBtn = screen.getByRole('button', { name: /Rank/i });
         fireEvent.click(rankBtn);
       });
-      
+
       // Should toggle sort direction
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
 
     it('allows sorting by price', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const priceBtn = screen.getByRole('button', { name: /Price/i });
         fireEvent.click(priceBtn);
       });
-      
+
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
 
     it('allows sorting by 24h change', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const changeBtn = screen.getByRole('button', { name: /24h Change/i });
         fireEvent.click(changeBtn);
       });
-      
+
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
 
     it('allows sorting by volume', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const volumeBtn = screen.getByRole('button', { name: /Volume/i });
         fireEvent.click(volumeBtn);
       });
-      
+
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
 
     it('toggles sort direction on double click', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const priceBtn = screen.getByRole('button', { name: /Price/i });
         fireEvent.click(priceBtn);
         fireEvent.click(priceBtn);
       });
-      
+
       // Should still render data
       expect(screen.getByText('Bitcoin')).toBeInTheDocument();
     });
@@ -425,20 +440,20 @@ describe('CryptoMarketsPage', () => {
   describe('Watchlist', () => {
     it('renders watchlist star buttons', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
-        const starButtons = screen.getAllByRole('button').filter(
-          btn => btn.querySelector('svg.lucide-star')
-        );
+        const starButtons = screen
+          .getAllByRole('button')
+          .filter((btn) => btn.querySelector('svg.lucide-star'));
         expect(starButtons.length).toBe(3);
       });
     });
 
     it('loads watchlist from localStorage', async () => {
       localStorageMock.getItem.mockReturnValue('["BTC"]');
-      
+
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(localStorageMock.getItem).toHaveBeenCalledWith('watchlist');
       });
@@ -446,14 +461,14 @@ describe('CryptoMarketsPage', () => {
 
     it('saves to watchlist on star click', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
-        const starButtons = screen.getAllByRole('button').filter(
-          btn => btn.querySelector('svg.lucide-star')
-        );
+        const starButtons = screen
+          .getAllByRole('button')
+          .filter((btn) => btn.querySelector('svg.lucide-star'));
         fireEvent.click(starButtons[0]);
       });
-      
+
       expect(localStorageMock.setItem).toHaveBeenCalledWith(
         'watchlist',
         expect.stringContaining('BTC')
@@ -464,27 +479,27 @@ describe('CryptoMarketsPage', () => {
   describe('Row Click Navigation', () => {
     it('navigates to asset page on row click', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const bitcoinRow = screen.getByText('Bitcoin').closest('tr');
         if (bitcoinRow) {
           fireEvent.click(bitcoinRow);
         }
       });
-      
+
       expect(mockPush).toHaveBeenCalledWith('/asset/BTC');
     });
 
     it('does not navigate when clicking watchlist star', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
-        const starButtons = screen.getAllByRole('button').filter(
-          btn => btn.querySelector('svg.lucide-star')
-        );
+        const starButtons = screen
+          .getAllByRole('button')
+          .filter((btn) => btn.querySelector('svg.lucide-star'));
         fireEvent.click(starButtons[0]);
       });
-      
+
       // Should not navigate since stopPropagation is called
       expect(mockPush).not.toHaveBeenCalledWith(expect.stringContaining('/asset/'));
     });
@@ -493,7 +508,7 @@ describe('CryptoMarketsPage', () => {
   describe('Styling', () => {
     it('has gradient title', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const title = screen.getByText('Crypto Markets');
         expect(title).toHaveClass('bg-clip-text', 'text-transparent');
@@ -502,7 +517,7 @@ describe('CryptoMarketsPage', () => {
 
     it('has proper background', async () => {
       const { container } = render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         // The outer div has min-h-screen and bg-surface-0
         const bgDiv = container.querySelector('.min-h-screen.bg-surface-0');
@@ -514,7 +529,7 @@ describe('CryptoMarketsPage', () => {
   describe('Accessibility', () => {
     it('has accessible table structure', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('table')).toBeInTheDocument();
       });
@@ -522,7 +537,7 @@ describe('CryptoMarketsPage', () => {
 
     it('has column headers', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const headers = screen.getAllByRole('columnheader');
         expect(headers.length).toBe(7);
@@ -531,7 +546,7 @@ describe('CryptoMarketsPage', () => {
 
     it('has table rows', async () => {
       render(<CryptoMarketsPage />);
-      
+
       await waitFor(() => {
         const rows = screen.getAllByRole('row');
         // Header row + 3 data rows

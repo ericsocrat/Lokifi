@@ -6,7 +6,7 @@
  */
 
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -53,8 +53,8 @@ const mockIndices = [
     id: 'dow',
     symbol: 'DJI',
     name: 'Dow Jones Industrial',
-    current_price: 39127.80,
-    price_change_24h: -125.50,
+    current_price: 39127.8,
+    price_change_24h: -125.5,
     price_change_percentage_24h: -0.32,
     volume_24h: 1800000000,
     market_cap: 12000000000000,
@@ -76,7 +76,7 @@ const mockIndices = [
     symbol: 'FTSE',
     name: 'FTSE 100',
     current_price: 8317.59,
-    price_change_24h: -15.20,
+    price_change_24h: -15.2,
     price_change_percentage_24h: -0.18,
     volume_24h: 900000000,
     market_cap: 2500000000000,
@@ -87,7 +87,7 @@ const mockIndices = [
     symbol: 'N225',
     name: 'Nikkei 225',
     current_price: 38647.75,
-    price_change_24h: 423.50,
+    price_change_24h: 423.5,
     price_change_percentage_24h: 1.11,
     volume_24h: 1200000000,
     market_cap: 6800000000000,
@@ -109,8 +109,8 @@ vi.mock('@/src/hooks/useUnifiedAssets', () => ({
 }));
 
 // Import after mocks
-import IndicesPage from '../../app/markets/indices/page';
 import { useUnifiedIndices } from '@/src/hooks/useUnifiedAssets';
+import IndicesPage from '../../app/markets/indices/page';
 
 describe('IndicesPage', () => {
   beforeEach(() => {

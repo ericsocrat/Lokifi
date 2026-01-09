@@ -1,5 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ForexPage from '../../app/markets/forex/page';
 
 // Mock next/navigation
@@ -25,7 +25,8 @@ vi.mock('@/src/components/ProtectedRoute', () => ({
 // Mock useCurrencyFormatter
 vi.mock('@/src/components/dashboard/useCurrencyFormatter', () => ({
   useCurrencyFormatter: () => ({
-    formatCurrency: (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    formatCurrency: (value: number) =>
+      `$${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   }),
 }));
 
@@ -37,7 +38,7 @@ const mockForexData = [
     id: 'EUR/USD',
     symbol: 'EUR/USD',
     name: 'Euro / US Dollar',
-    current_price: 1.0850,
+    current_price: 1.085,
     price_change_percentage_24h: 0.25,
     volume_24h: 5000000000,
     market_cap: 0,
@@ -46,7 +47,7 @@ const mockForexData = [
     id: 'GBP/USD',
     symbol: 'GBP/USD',
     name: 'British Pound / US Dollar',
-    current_price: 1.2650,
+    current_price: 1.265,
     price_change_percentage_24h: -0.15,
     volume_24h: 3000000000,
     market_cap: 0,
@@ -93,7 +94,7 @@ describe('ForexPage', () => {
   describe('Header', () => {
     it('renders page title with globe icon', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Forex Markets')).toBeInTheDocument();
       });
@@ -101,7 +102,7 @@ describe('ForexPage', () => {
 
     it('shows Live Data badge', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Live Data')).toBeInTheDocument();
       });
@@ -109,7 +110,7 @@ describe('ForexPage', () => {
 
     it('shows currency pair count', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/3 currency pairs/)).toBeInTheDocument();
       });
@@ -117,7 +118,7 @@ describe('ForexPage', () => {
 
     it('shows data source attribution', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/Real-time from ExchangeRate-API/)).toBeInTheDocument();
       });
@@ -125,7 +126,7 @@ describe('ForexPage', () => {
 
     it('renders refresh button', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: /Refresh/i })).toBeInTheDocument();
       });
@@ -133,12 +134,12 @@ describe('ForexPage', () => {
 
     it('calls refetch on refresh button click', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
         fireEvent.click(refreshBtn);
       });
-      
+
       expect(mockRefetch).toHaveBeenCalled();
     });
   });
@@ -147,9 +148,9 @@ describe('ForexPage', () => {
     it('shows loading spinner when loading', async () => {
       mockHookReturn.isLoading = true;
       mockHookReturn.data = [];
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Loading forex pairs...')).toBeInTheDocument();
       });
@@ -158,9 +159,9 @@ describe('ForexPage', () => {
     it('shows loading spinner element', async () => {
       mockHookReturn.isLoading = true;
       mockHookReturn.data = [];
-      
+
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const spinner = container.querySelector('.animate-spin');
         expect(spinner).toBeInTheDocument();
@@ -172,9 +173,9 @@ describe('ForexPage', () => {
     it('shows error message when error occurs', async () => {
       mockHookReturn.error = { message: 'Failed to fetch forex data' };
       mockHookReturn.data = [];
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Error Loading Forex Data')).toBeInTheDocument();
       });
@@ -183,9 +184,9 @@ describe('ForexPage', () => {
     it('shows Try Again button on error', async () => {
       mockHookReturn.error = { message: 'Network error' };
       mockHookReturn.data = [];
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
       });
@@ -194,23 +195,23 @@ describe('ForexPage', () => {
     it('calls refetch on Try Again click', async () => {
       mockHookReturn.error = { message: 'Network error' };
       mockHookReturn.data = [];
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const tryAgainBtn = screen.getByRole('button', { name: 'Try Again' });
         fireEvent.click(tryAgainBtn);
       });
-      
+
       expect(mockRefetch).toHaveBeenCalled();
     });
 
     it('displays error message text', async () => {
       mockHookReturn.error = { message: 'API rate limit exceeded' };
       mockHookReturn.data = [];
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('API rate limit exceeded')).toBeInTheDocument();
       });
@@ -220,7 +221,7 @@ describe('ForexPage', () => {
   describe('Forex Pair Cards', () => {
     it('renders EUR/USD pair', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('EUR/USD')).toBeInTheDocument();
         expect(screen.getByText('Euro / US Dollar')).toBeInTheDocument();
@@ -229,7 +230,7 @@ describe('ForexPage', () => {
 
     it('renders GBP/USD pair', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('GBP/USD')).toBeInTheDocument();
         expect(screen.getByText('British Pound / US Dollar')).toBeInTheDocument();
@@ -238,7 +239,7 @@ describe('ForexPage', () => {
 
     it('renders USD/JPY pair', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('USD/JPY')).toBeInTheDocument();
         expect(screen.getByText('US Dollar / Japanese Yen')).toBeInTheDocument();
@@ -247,7 +248,7 @@ describe('ForexPage', () => {
 
     it('displays exchange rates with 4 decimal places', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('1.0850')).toBeInTheDocument();
         expect(screen.getByText('1.2650')).toBeInTheDocument();
@@ -257,7 +258,7 @@ describe('ForexPage', () => {
 
     it('displays positive price changes with plus sign', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('+0.25%')).toBeInTheDocument();
         expect(screen.getByText('+0.45%')).toBeInTheDocument();
@@ -266,7 +267,7 @@ describe('ForexPage', () => {
 
     it('displays negative price changes', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('-0.15%')).toBeInTheDocument();
       });
@@ -276,7 +277,7 @@ describe('ForexPage', () => {
   describe('Card Stats', () => {
     it('displays 24h Volume label', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const volumeLabels = screen.getAllByText('24h Volume');
         expect(volumeLabels.length).toBe(3);
@@ -285,7 +286,7 @@ describe('ForexPage', () => {
 
     it('displays Market Cap label', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const capLabels = screen.getAllByText('Market Cap');
         expect(capLabels.length).toBe(3);
@@ -296,27 +297,27 @@ describe('ForexPage', () => {
   describe('Navigation', () => {
     it('navigates to asset page on card click', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const eurUsdCard = screen.getByText('EUR/USD').closest('div[class*="cursor-pointer"]');
         if (eurUsdCard) {
           fireEvent.click(eurUsdCard);
         }
       });
-      
+
       expect(mockPush).toHaveBeenCalledWith('/asset/EUR/USD');
     });
 
     it('navigates to correct asset for each pair', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const gbpUsdCard = screen.getByText('GBP/USD').closest('div[class*="cursor-pointer"]');
         if (gbpUsdCard) {
           fireEvent.click(gbpUsdCard);
         }
       });
-      
+
       expect(mockPush).toHaveBeenCalledWith('/asset/GBP/USD');
     });
   });
@@ -324,9 +325,9 @@ describe('ForexPage', () => {
   describe('Cache Status', () => {
     it('shows fresh data indicator when not cached', async () => {
       mockHookReturn.response = { cached: false };
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Fresh data from API')).toBeInTheDocument();
       });
@@ -334,9 +335,9 @@ describe('ForexPage', () => {
 
     it('shows cached data indicator when cached', async () => {
       mockHookReturn.response = { cached: true };
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Data from cache')).toBeInTheDocument();
       });
@@ -344,9 +345,9 @@ describe('ForexPage', () => {
 
     it('shows green indicator for cached data', async () => {
       mockHookReturn.response = { cached: true };
-      
+
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const greenDot = container.querySelector('.bg-green-500');
         expect(greenDot).toBeInTheDocument();
@@ -355,9 +356,9 @@ describe('ForexPage', () => {
 
     it('shows blue indicator for fresh data', async () => {
       mockHookReturn.response = { cached: false };
-      
+
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const blueDot = container.querySelector('.bg-blue-500');
         expect(blueDot).toBeInTheDocument();
@@ -368,9 +369,9 @@ describe('ForexPage', () => {
   describe('Fetching State', () => {
     it('disables refresh button when fetching', async () => {
       mockHookReturn.isFetching = true;
-      
+
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
         expect(refreshBtn).toBeDisabled();
@@ -379,9 +380,9 @@ describe('ForexPage', () => {
 
     it('shows spinning icon when fetching', async () => {
       mockHookReturn.isFetching = true;
-      
+
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const spinningIcon = container.querySelector('.animate-spin');
         expect(spinningIcon).toBeInTheDocument();
@@ -392,7 +393,7 @@ describe('ForexPage', () => {
   describe('Styling', () => {
     it('has dark gradient background', async () => {
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const mainDiv = container.querySelector('.bg-linear-to-br');
         expect(mainDiv).toBeInTheDocument();
@@ -401,7 +402,7 @@ describe('ForexPage', () => {
 
     it('has sticky header', async () => {
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const header = container.querySelector('.sticky');
         expect(header).toBeInTheDocument();
@@ -410,7 +411,7 @@ describe('ForexPage', () => {
 
     it('renders cards in a grid layout', async () => {
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const grid = container.querySelector('.grid');
         expect(grid).toBeInTheDocument();
@@ -421,9 +422,11 @@ describe('ForexPage', () => {
   describe('Responsive Design', () => {
     it('has responsive grid columns', async () => {
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
-        const grid = container.querySelector('.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4');
+        const grid = container.querySelector(
+          '.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3.xl\\:grid-cols-4'
+        );
         expect(grid).toBeInTheDocument();
       });
     });
@@ -432,7 +435,7 @@ describe('ForexPage', () => {
   describe('Accessibility', () => {
     it('renders all currency pair names', async () => {
       render(<ForexPage />);
-      
+
       await waitFor(() => {
         expect(screen.getByText('Euro / US Dollar')).toBeInTheDocument();
         expect(screen.getByText('British Pound / US Dollar')).toBeInTheDocument();
@@ -442,7 +445,7 @@ describe('ForexPage', () => {
 
     it('has clickable cards for navigation', async () => {
       const { container } = render(<ForexPage />);
-      
+
       await waitFor(() => {
         const clickableCards = container.querySelectorAll('.cursor-pointer');
         expect(clickableCards.length).toBe(3);

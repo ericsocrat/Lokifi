@@ -14,8 +14,8 @@
  * - Verified badge display
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import ProfileSettingsPage from '../../app/profile/settings/page';
 
 // Mock next/navigation
@@ -29,13 +29,9 @@ vi.mock('next/navigation', () => ({
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => <a href={href}>{children}</a>,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 // Mock Navbar to avoid AuthProvider dependency
@@ -105,9 +101,7 @@ describe('ProfileSettingsPage', () => {
   describe('Loading State', () => {
     it('shows loading spinner while fetching settings', async () => {
       // Make fetch hang
-      mockFetch.mockImplementation(
-        () => new Promise(() => {})
-      );
+      mockFetch.mockImplementation(() => new Promise(() => {}));
 
       render(<ProfileSettingsPage />);
 

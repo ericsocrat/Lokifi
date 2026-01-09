@@ -5,8 +5,8 @@
  * Covers welcome state, suggested queries, conversation flow, and input handling.
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import AIResearchPage from '../../app/ai-research/page';
 
 // Mock Lucide icons
@@ -109,9 +109,7 @@ describe('AIResearchPage', () => {
       render(<AIResearchPage />);
 
       expect(screen.getByText('Investment Ideas')).toBeInTheDocument();
-      expect(
-        screen.getByText('Get personalized investment recommendations')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Get personalized investment recommendations')).toBeInTheDocument();
     });
 
     it('renders four suggested query cards', () => {

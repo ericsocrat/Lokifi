@@ -5,8 +5,8 @@
  * Covers monthly summary cards, transaction list, navigation, and empty states.
  */
 
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import RecapPage from '../../app/recap/page';
 
 // Mock Lucide icons

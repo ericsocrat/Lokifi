@@ -5,19 +5,15 @@
  * Covers authentication states, preference loading/saving, form controls, and UI.
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import NotificationPreferencesPage from '../../app/notifications/preferences/page';
 
 // Mock next/link
 vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => <a href={href}>{children}</a>,
+  default: ({ children, href }: { children: React.ReactNode; href: string }) => (
+    <a href={href}>{children}</a>
+  ),
 }));
 
 // Mock Lucide icons
@@ -221,9 +217,7 @@ describe('NotificationPreferencesPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('In-App Notifications')).toBeInTheDocument();
-        expect(
-          screen.getByText('Show notifications in the application')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Show notifications in the application')).toBeInTheDocument();
       });
     });
 
@@ -288,9 +282,7 @@ describe('NotificationPreferencesPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('AI Responses')).toBeInTheDocument();
-        expect(
-          screen.getByText('When AI assistant completes a response')
-        ).toBeInTheDocument();
+        expect(screen.getByText('When AI assistant completes a response')).toBeInTheDocument();
       });
     });
 
@@ -335,9 +327,7 @@ describe('NotificationPreferencesPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Daily Digest')).toBeInTheDocument();
-        expect(
-          screen.getByText('Receive a daily summary of notifications')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Receive a daily summary of notifications')).toBeInTheDocument();
       });
     });
 
@@ -346,9 +336,7 @@ describe('NotificationPreferencesPage', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Weekly Digest')).toBeInTheDocument();
-        expect(
-          screen.getByText('Receive a weekly summary of notifications')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Receive a weekly summary of notifications')).toBeInTheDocument();
       });
     });
 
@@ -418,9 +406,7 @@ describe('NotificationPreferencesPage', () => {
       render(<NotificationPreferencesPage />);
 
       await waitFor(() => {
-        expect(
-          screen.getByRole('button', { name: /save preferences/i })
-        ).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /save preferences/i })).toBeInTheDocument();
       });
     });
 

@@ -26,14 +26,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock Next.js Link
 vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => (
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -121,9 +114,7 @@ describe('NotificationsPage', () => {
     it('should show login prompt message', () => {
       render(<NotificationsPage />);
 
-      expect(
-        screen.getByText('Please log in to view your notifications.')
-      ).toBeInTheDocument();
+      expect(screen.getByText('Please log in to view your notifications.')).toBeInTheDocument();
     });
 
     it('should render Log In button', () => {

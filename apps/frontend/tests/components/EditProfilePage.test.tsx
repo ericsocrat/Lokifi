@@ -9,7 +9,7 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
 const mockPush = vi.fn();
@@ -154,7 +154,7 @@ describe('EditProfilePage', () => {
       await waitFor(() => {
         // The X button to remove avatar
         const buttons = screen.getAllByRole('button');
-        const removeButton = buttons.find(btn => btn.querySelector('svg'));
+        const removeButton = buttons.find((btn) => btn.querySelector('svg'));
         expect(removeButton).toBeDefined();
       });
     });
