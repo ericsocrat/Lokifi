@@ -142,7 +142,7 @@ export default function NotificationPreferencesPage() {
               <Bell className="w-8 h-8 text-lokifi" />
             </div>
             <h1 className="text-2xl font-semibold text-white mb-4">Access Required</h1>
-            <p className="text-gray-400 mb-6">
+            <p className="text-surface-300 mb-6">
               Please log in to manage your notification preferences.
             </p>
             <Link
@@ -165,14 +165,14 @@ export default function NotificationPreferencesPage() {
           <div className="flex items-center gap-3 mb-4">
             <Link
               href="/notifications"
-              className="p-2 text-gray-400 hover:text-white hover:bg-surface-200 rounded-lg transition-colors"
+              className="p-2 text-surface-300 hover:text-white hover:bg-surface-200 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <Settings className="w-6 h-6 text-lokifi" />
             <h1 className="text-2xl font-semibold text-white">Notification Preferences</h1>
           </div>
-          <p className="text-gray-400">Customize how and when you receive notifications.</p>
+          <p className="text-surface-300">Customize how and when you receive notifications.</p>
         </div>
 
         {/* Status Messages */}
@@ -192,7 +192,7 @@ export default function NotificationPreferencesPage() {
         {isLoading && (
           <div className="text-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-surface-300 border-t-lokifi rounded-full mx-auto mb-4" />
-            <p className="text-gray-400">Loading preferences...</p>
+            <p className="text-surface-300">Loading preferences...</p>
           </div>
         )}
 
@@ -207,7 +207,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">In-App Notifications</label>
-                    <p className="text-sm text-gray-400">Show notifications in the application</p>
+                    <p className="text-sm text-surface-300">Show notifications in the application</p>
                   </div>
                   <input
                     type="checkbox"
@@ -222,7 +222,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Push Notifications</label>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Browser push notifications when app is closed
                     </p>
                   </div>
@@ -239,7 +239,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Email Notifications</label>
-                    <p className="text-sm text-gray-400">Send notifications to your email</p>
+                    <p className="text-sm text-surface-300">Send notifications to your email</p>
                   </div>
                   <input
                     type="checkbox"
@@ -263,7 +263,7 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">👤</span>
                     <div>
                       <label className="text-white font-medium">Follow Notifications</label>
-                      <p className="text-sm text-gray-400">When someone starts following you</p>
+                      <p className="text-sm text-surface-300">When someone starts following you</p>
                     </div>
                   </div>
                   <input
@@ -281,7 +281,7 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">💬</span>
                     <div>
                       <label className="text-white font-medium">Direct Messages</label>
-                      <p className="text-sm text-gray-400">When you receive a direct message</p>
+                      <p className="text-sm text-surface-300">When you receive a direct message</p>
                     </div>
                   </div>
                   <input
@@ -299,7 +299,7 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">🤖</span>
                     <div>
                       <label className="text-white font-medium">AI Responses</label>
-                      <p className="text-sm text-gray-400">
+                      <p className="text-sm text-surface-300">
                         When AI assistant completes a response
                       </p>
                     </div>
@@ -319,7 +319,7 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">🏷️</span>
                     <div>
                       <label className="text-white font-medium">Mentions</label>
-                      <p className="text-sm text-gray-400">When someone mentions you</p>
+                      <p className="text-sm text-surface-300">When someone mentions you</p>
                     </div>
                   </div>
                   <input
@@ -337,7 +337,7 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">⚠️</span>
                     <div>
                       <label className="text-white font-medium">System Notifications</label>
-                      <p className="text-sm text-gray-400">Important system announcements</p>
+                      <p className="text-sm text-surface-300">Important system announcements</p>
                     </div>
                   </div>
                   <input
@@ -360,7 +360,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Daily Digest</label>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Receive a daily summary of notifications
                     </p>
                   </div>
@@ -377,7 +377,7 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Weekly Digest</label>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-surface-300">
                       Receive a weekly summary of notifications
                     </p>
                   </div>
@@ -437,7 +437,7 @@ export default function NotificationPreferencesPage() {
                 </div>
               </div>
 
-              <p className="text-sm text-gray-400 mt-2">
+              <p className="text-sm text-surface-300 mt-2">
                 During quiet hours, only urgent notifications will be delivered.
               </p>
             </div>
