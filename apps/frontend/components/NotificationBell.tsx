@@ -98,7 +98,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       case 'mention':
         return 'border-l-orange-500';
       default:
-        return 'border-l-gray-500';
+        return 'border-l-surface-300';
     }
   };
 
@@ -109,7 +109,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       {/* Bell Icon with Badge */}
       <button
         onClick={handleBellClick}
-        className="relative p-2.5 text-gray-400 hover:text-white bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl transition-all duration-200"
+        className="relative p-2.5 text-surface-300 hover:text-white bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl transition-all duration-200"
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
       >
         <Bell className="w-5 h-5" />
@@ -141,7 +141,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
               )}
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-surface-300 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -151,7 +151,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           {/* Notifications List */}
           <div className="max-h-96 overflow-y-auto">
             {isLoading && (
-              <div className="p-4 text-center text-gray-400">
+              <div className="p-4 text-center text-surface-300">
                 <div className="animate-spin w-5 h-5 border-2 border-surface-300 border-t-lokifi rounded-full mx-auto mb-2" />
                 Loading notifications...
               </div>
@@ -170,7 +170,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             )}
 
             {!isLoading && !error && recentNotifications.length === 0 && (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-surface-300">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
                 <p>No notifications yet</p>
               </div>
@@ -198,7 +198,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       <div className="flex items-start justify-between gap-2">
                         <h4
                           className={`font-medium text-sm ${
-                            notification.is_read ? 'text-gray-400' : 'text-white'
+                            notification.is_read ? 'text-surface-300' : 'text-white'
                           }`}
                         >
                           {notification.title}
@@ -212,7 +212,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                                 e.stopPropagation();
                                 markAsRead(notification.id);
                               }}
-                              className="text-gray-500 hover:text-white transition-colors"
+                              className="text-surface-300 hover:text-white transition-colors"
                               title="Mark as read"
                             >
                               <Check className="w-3 h-3" />
@@ -223,7 +223,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                               e.stopPropagation();
                               dismissNotification(notification.id);
                             }}
-                            className="text-gray-500 hover:text-red-400 transition-colors"
+                            className="text-surface-300 hover:text-red-400 transition-colors"
                             title="Dismiss"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -234,7 +234,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       {notification.message && (
                         <p
                           className={`text-sm mt-1 ${
-                            notification.is_read ? 'text-gray-500' : 'text-gray-300'
+                            notification.is_read ? 'text-surface-300' : 'text-surface-300'
                           }`}
                         >
                           {notification.message}
@@ -242,7 +242,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                       )}
 
                       {/* Timestamp */}
-                      <p className="text-xs text-gray-600 mt-2">
+                      <p className="text-xs text-surface-300 mt-2">
                         {formatDistanceToNow(new Date(notification.created_at), {
                           addSuffix: true,
                         })}
