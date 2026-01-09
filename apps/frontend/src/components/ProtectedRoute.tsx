@@ -31,10 +31,10 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
   // Show loading state while checking authentication
   if (loading || !hasChecked) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
+      <div className="flex items-center justify-center min-h-screen bg-surface-0">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <p className="text-surface-300">Loading...</p>
         </div>
       </div>
     );
@@ -45,11 +45,11 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
     return (
       <>
         {fallback || (
-          <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
+          <div className="flex items-center justify-center min-h-screen bg-surface-0">
             <div className="text-center space-y-4 max-w-md mx-auto p-6">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center mx-auto">
                 <svg
-                  className="w-8 h-8 text-blue-600 dark:text-blue-400"
+                  className="w-8 h-8 text-blue-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -62,14 +62,14 @@ export function ProtectedRoute({ children, fallback, requireAuth = true }: Prote
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold text-white">
                 Authentication Required
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-surface-300">
                 Please use the &quot;Login / Sign Up&quot; button in the top right to access this
                 page
               </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex items-center justify-center gap-2 text-sm text-surface-300">
                 <span>👆</span>
                 <span>Look for the blue button in the navigation bar</span>
               </div>
