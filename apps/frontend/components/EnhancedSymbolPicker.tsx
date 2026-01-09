@@ -174,7 +174,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
   const renderSymbolList = (symbolList: Symbol[]) => (
     <div className="max-h-80 overflow-y-auto">
       {symbolList.length === 0 ? (
-        <div className="px-4 py-8 text-center text-gray-500">
+        <div className="px-4 py-8 text-center text-surface-300">
           <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p className="text-sm">
             {activeTab === 'search' ? 'No symbols found' : 'Loading symbols...'}
@@ -185,7 +185,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
           <button
             key={symbol.symbol}
             onClick={() => handleSymbolSelect(symbol.symbol)}
-            className="w-full px-4 py-3 text-left hover:bg-gray-700 transition-colors border-b border-gray-700/50 last:border-b-0"
+            className="w-full px-4 py-3 text-left hover:bg-surface-200 transition-colors border-b border-surface-300/50 last:border-b-0"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -197,23 +197,23 @@ export const EnhancedSymbolPicker: React.FC = () => {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-white">{symbol.symbol}</span>
-                    <span className="text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded uppercase">
+                    <span className="text-xs bg-surface-200 text-surface-300 px-2 py-0.5 rounded uppercase">
                       {symbol.asset_type}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-400 truncate">{symbol.name}</p>
+                  <p className="text-sm text-surface-300 truncate">{symbol.name}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs text-gray-500">{symbol.exchange}</span>
+                    <span className="text-xs text-surface-300">{symbol.exchange}</span>
                     {symbol.sector && (
                       <>
-                        <span className="text-xs text-gray-600">•</span>
-                        <span className="text-xs text-gray-500">{symbol.sector}</span>
+                        <span className="text-xs text-surface-300">•</span>
+                        <span className="text-xs text-surface-300">{symbol.sector}</span>
                       </>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="text-xs text-gray-500 font-mono">{symbol.currency}</div>
+              <div className="text-xs text-surface-300 font-mono">{symbol.currency}</div>
             </div>
           </button>
         ))
@@ -226,7 +226,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
       {/* Trigger Button */}
       <button
         onClick={handleOpen}
-        className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded-lg transition-colors min-w-50"
+        className="flex items-center gap-2 px-4 py-2 bg-surface-100 hover:bg-surface-200 border border-surface-300 rounded-lg transition-colors min-w-50"
       >
         <div className="flex items-center gap-2 flex-1">
           <div className="w-4 h-4 text-blue-400">
@@ -237,16 +237,16 @@ export const EnhancedSymbolPicker: React.FC = () => {
           </div>
           <span className="font-semibold text-white">{selectedSymbol}</span>
         </div>
-        <Search className="w-4 h-4 text-gray-400" />
+        <Search className="w-4 h-4 text-surface-300" />
       </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-surface-100 border border-surface-300 rounded-lg shadow-xl z-50">
           {/* Search Header */}
-          <div className="p-4 border-b border-gray-700">
+          <div className="p-4 border-b border-surface-300">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-300 w-4 h-4" />
               <input
                 ref={searchRef}
                 type="text"
@@ -255,19 +255,19 @@ export const EnhancedSymbolPicker: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSearchQuery(e.target.value)
                 }
-                className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
+                className="w-full bg-surface-200 text-white pl-10 pr-4 py-2 rounded-md border border-surface-300 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-gray-700">
+          <div className="flex border-b border-surface-300">
             <button
               onClick={() => setActiveTab('popular')}
               className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'popular'
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  : 'text-surface-300 hover:text-white hover:bg-surface-200'
               }`}
             >
               Popular
@@ -277,7 +277,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
               className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === 'search'
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  : 'text-surface-300 hover:text-white hover:bg-surface-200'
               }`}
             >
               Search Results
