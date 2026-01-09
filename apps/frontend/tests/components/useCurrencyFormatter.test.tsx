@@ -286,4 +286,56 @@ describe('useCurrencyFormatter', () => {
       expect(typeof result.current.formatPercentage).toBe('function');
     });
   });
+
+  describe('error handling', () => {
+    it('should fallback when formatCurrency encounters invalid currency', () => {
+      // Use an invalid currency code to trigger the catch block
+      mockUsePreferences.mockReturnValue({ currency: 'INVALID_CURRENCY_CODE' });
+
+      // Suppress console.error for this test
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useCurrencyFormatter());
+      const formatted = result.current.formatCurrency(1234.56);
+
+      // Should fallback to default format
+      expect(formatted).toBe('$1234.56');
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should fallback when formatCompactCurrency encounters invalid currency for thousands', () => {
+      mockUsePreferences.mockReturnValue({ currency: 'INVALID_CURRENCY_CODE' });
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useCurrencyFormatter());
+      // Use a value < 1000000 but >= 1000 to hit the K suffix path
+      const formatted = result.current.formatCompactCurrency(5000);
+
+      // Should fallback to default format (formatCurrency fallback + K)
+      expect(formatted).toContain('$');
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+
+    it('should fallback when formatCompactCurrency encounters invalid currency for millions', () => {
+      mockUsePreferences.mockReturnValue({ currency: 'INVALID_CURRENCY_CODE' });
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      const { result } = renderHook(() => useCurrencyFormatter());
+      // Use a value >= 1000000 to hit the M suffix path
+      const formatted = result.current.formatCompactCurrency(5000000);
+
+      // Should fallback to default format (formatCurrency fallback + M)
+      expect(formatted).toContain('$');
+      expect(formatted).toContain('M');
+      expect(consoleSpy).toHaveBeenCalled();
+
+      consoleSpy.mockRestore();
+    });
+  });
 });
