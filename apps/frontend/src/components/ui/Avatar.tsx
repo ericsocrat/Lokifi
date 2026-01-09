@@ -288,6 +288,7 @@ export const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
     const baseClasses = ['h-full w-full object-cover'].join(' ');
 
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- Using native img for flexibility in Avatar component
       <img
         ref={ref}
         className={className ? `${baseClasses} ${className}` : baseClasses}

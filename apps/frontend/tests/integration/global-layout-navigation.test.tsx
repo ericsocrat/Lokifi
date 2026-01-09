@@ -230,8 +230,8 @@ describe('GlobalLayout Navigation', () => {
       </aside>
     );
 
-    const SidebarToggle = () => {
-      const [collapsed, setCollapsed] = vi.hoisted(() => {
+    const _SidebarToggle = () => {
+      const [_collapsed, _setCollapsed] = vi.hoisted(() => {
         let state = false;
         return [
           () => state,

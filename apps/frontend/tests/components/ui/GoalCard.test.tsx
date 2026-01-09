@@ -186,7 +186,7 @@ describe('GoalCard Component', () => {
 
   describe('Action Menu', () => {
     it('should show menu button on hover', () => {
-      const { container } = render(
+      const { container: _container } = render(
         <GoalCard goal={mockGoal} formatCurrency={formatCurrency} onEdit={vi.fn()} />
       );
 

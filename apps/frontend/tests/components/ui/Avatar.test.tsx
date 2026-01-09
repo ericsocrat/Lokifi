@@ -15,7 +15,7 @@ import { beforeAll, describe, expect, it, vi } from 'vitest';
 // ============================================================================
 
 // Mock Image loading
-const mockImageLoad = (shouldSucceed = true) => {
+const _mockImageLoad = (shouldSucceed = true) => {
   const originalImage = global.Image;
 
   // @ts-expect-error - Mocking Image constructor

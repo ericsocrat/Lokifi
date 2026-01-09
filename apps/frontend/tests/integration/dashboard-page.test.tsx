@@ -55,7 +55,7 @@ describe('Dashboard Integration', () => {
     // Test a simple PeriodSelector component behavior
     const PeriodSelectorTest = () => {
       const periods = ['1D', '7D', '30D', '1Y', 'ALL'];
-      const [selected, setSelected] = vi.hoisted(() => {
+      const [_selected, _setSelected] = vi.hoisted(() => {
         let state = '1D';
         return [
           () => state,

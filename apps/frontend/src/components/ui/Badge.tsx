@@ -321,7 +321,7 @@ export interface CountBadgeProps extends Omit<BadgeProps, 'children'> {
 }
 
 export const CountBadge = forwardRef<HTMLSpanElement, CountBadgeProps>(
-  ({ count, max = 99, showZero = false, offset, pill = true, size = 'xs', ...props }, ref) => {
+  ({ count, max = 99, showZero = false, offset: _offset, pill = true, size = 'xs', ...props }, ref) => {
     // Don't render if count is zero and showZero is false
     if (count === 0 && !showZero) {
       return null;

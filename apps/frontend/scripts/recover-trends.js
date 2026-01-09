@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console -- CLI script requires console output for user feedback */
 /**
  * Recover historical trends from git history
  * Merges all unique trend entries and properly sorts them by timestamp
@@ -43,7 +44,7 @@ for (const commit of commits) {
         allTrends.set(key, trend);
       }
     }
-  } catch (e) {
+  } catch (_e) {
     // Skip commits where file doesn't exist or is invalid
   }
 }

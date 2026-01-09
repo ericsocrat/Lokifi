@@ -335,7 +335,7 @@ function SummaryCard({
 
 // Main Page Component
 export default function GoalsPage() {
-  const { currency } = usePreferences();
+  const { currency: _currency } = usePreferences();
   const { formatCurrency } = useCurrencyFormatter();
   const [goals, setGoals] = useState<FinancialGoal[]>(mockGoals);
   const [filter, setFilter] = useState<'all' | GoalCategory>('all');
@@ -361,9 +361,8 @@ export default function GoalsPage() {
       }
     });
 
-  const handleEdit = (id: string) => {
-    console.log('Edit goal:', id);
-    // TODO: Open edit modal
+  const handleEdit = (_id: string) => {
+    // TODO: Open edit modal with id parameter
   };
 
   const handleDelete = (id: string) => {
