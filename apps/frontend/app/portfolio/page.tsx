@@ -391,7 +391,7 @@ function PortfolioPageContent() {
 
             {/* Quick Actions & Insights Card */}
             <div className="bg-surface-100 rounded-2xl p-6 border border-surface-200/50 shadow-sm">
-              <h3 className="text-sm font-medium text-gray-400 mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-medium text-surface-300 mb-4 flex items-center gap-2">
                 <Zap className="w-4 h-4" />
                 Quick Actions
               </h3>
@@ -407,7 +407,7 @@ function PortfolioPageContent() {
                   <Download className="w-4 h-4" />
                   Export PDF
                 </button>
-                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-surface-300 hover:border-lokifi text-gray-300 rounded-xl font-medium transition-all">
+                <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-surface-300 hover:border-lokifi text-surface-300 rounded-xl font-medium transition-all">
                   <BarChart3 className="w-4 h-4" />
                   Analytics
                 </button>
@@ -416,7 +416,7 @@ function PortfolioPageContent() {
               {/* Quick Stats */}
               <div className="space-y-3 pt-4 border-t border-surface-200/50">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400 flex items-center gap-2">
+                  <span className="text-surface-300 flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Avg. Return
                   </span>
@@ -425,7 +425,7 @@ function PortfolioPageContent() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-400 flex items-center gap-2">
+                  <span className="text-surface-300 flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     Updated
                   </span>
@@ -443,7 +443,7 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-lokifi/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Briefcase className="w-5 h-5 text-lokifi" />
                   </div>
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-surface-300 uppercase tracking-wide">
                     Assets
                   </span>
                 </div>
@@ -451,7 +451,7 @@ function PortfolioPageContent() {
               <div className="text-3xl font-bold text-white mb-1">
                 {sections.reduce((sum: number, s: PortfolioSection) => sum + s.assets.length, 0)}
               </div>
-              <div className="text-xs text-gray-400">Total holdings</div>
+              <div className="text-xs text-surface-300">Total holdings</div>
             </div>
 
             <div className="bg-surface-100 rounded-xl p-5 border border-surface-200/50 hover:shadow-lg hover:border-electric/50 transition-all group cursor-pointer">
@@ -460,13 +460,13 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-electric/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <PieChart className="w-5 h-5 text-electric" />
                   </div>
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-surface-300 uppercase tracking-wide">
                     Diversity
                   </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-white mb-1">{sections.length}</div>
-              <div className="text-xs text-gray-400">Sections</div>
+              <div className="text-xs text-surface-300">Sections</div>
             </div>
 
             <div className="bg-gradient-to-br from-emerald-900/30 to-emerald-800/20 rounded-xl p-5 border border-emerald-700/30 hover:shadow-lg transition-all group cursor-pointer">
@@ -493,13 +493,13 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Star className="w-5 h-5 text-amber-500" />
                   </div>
-                  <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">
+                  <span className="text-xs font-medium text-surface-300 uppercase tracking-wide">
                     Rating
                   </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-white mb-1 flex items-center gap-1">A+</div>
-              <div className="text-xs text-gray-400">Portfolio health</div>
+              <div className="text-xs text-surface-300">Portfolio health</div>
             </div>
           </div>
         </div>
@@ -508,12 +508,12 @@ function PortfolioPageContent() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-white mb-1">Portfolio Overview</h1>
-            <p className="text-sm text-gray-400">Track and manage all your investments</p>
+            <p className="text-sm text-surface-300">Track and manage all your investments</p>
           </div>
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
             <div className="relative">
-              <button className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-gray-300 hover:bg-surface-200 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors">
                 <ArrowUpDown className="w-4 h-4" />
                 Sort:{' '}
                 {sortBy === 'value'
@@ -533,7 +533,7 @@ function PortfolioPageContent() {
               className={`flex items-center gap-2 px-4 py-2 border rounded-xl text-sm font-medium transition-all ${
                 showFilters
                   ? 'bg-lokifi/20 border-lokifi/50 text-lokifi'
-                  : 'bg-surface-100 border-surface-200/50 text-gray-300 hover:bg-surface-200'
+                  : 'bg-surface-100 border-surface-200/50 text-surface-300 hover:bg-surface-200'
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -548,7 +548,7 @@ function PortfolioPageContent() {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'list'
                     ? 'bg-lokifi/20 text-lokifi'
-                    : 'text-gray-400 hover:text-gray-300'
+                    : 'text-surface-300 hover:text-white'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -565,7 +565,7 @@ function PortfolioPageContent() {
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === 'grid'
                     ? 'bg-lokifi/20 text-lokifi'
-                    : 'text-gray-400 hover:text-gray-300'
+                    : 'text-surface-300 hover:text-white'
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -588,7 +588,7 @@ function PortfolioPageContent() {
               <div>
                 <label
                   htmlFor="filter-asset-type"
-                  className="block text-sm font-medium text-gray-300 mb-2"
+                  className="block text-sm font-medium text-surface-300 mb-2"
                 >
                   Asset Type
                 </label>
@@ -605,7 +605,7 @@ function PortfolioPageContent() {
               <div>
                 <label
                   htmlFor="filter-performance"
-                  className="block text-sm font-medium text-gray-300 mb-2"
+                  className="block text-sm font-medium text-surface-300 mb-2"
                 >
                   Performance
                 </label>
@@ -621,7 +621,7 @@ function PortfolioPageContent() {
               <div>
                 <label
                   htmlFor="filter-value-range"
-                  className="block text-sm font-medium text-gray-300 mb-2"
+                  className="block text-sm font-medium text-surface-300 mb-2"
                 >
                   Value Range
                 </label>
@@ -637,7 +637,7 @@ function PortfolioPageContent() {
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between">
-              <button className="text-sm text-gray-400 hover:text-gray-300">
+              <button className="text-sm text-surface-300 hover:text-white">
                 Clear all filters
               </button>
               <button className="px-4 py-2 bg-lokifi hover:bg-lokifi/90 text-white text-sm font-medium rounded-lg transition-colors">
@@ -655,13 +655,13 @@ function PortfolioPageContent() {
               Investments
             </div>
           </button>
-          <button className="px-4 py-2 text-gray-400 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
+          <button className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
             <div className="flex items-center gap-2">
               <Home className="w-4 h-4" />
               Real Estate
             </div>
           </button>
-          <button className="px-4 py-2 text-gray-400 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
+          <button className="px-4 py-2 text-surface-300 hover:bg-surface-200 rounded-lg text-sm font-medium transition-colors">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4" />
               Others
@@ -686,12 +686,12 @@ function PortfolioPageContent() {
               >
                 <div className="flex items-center gap-3">
                   <ChevronDown
-                    className={`w-5 h-5 text-gray-400 transition-transform ${
+                    className={`w-5 h-5 text-surface-300 transition-transform ${
                       isCollapsed ? '-rotate-90' : ''
                     }`}
                   />
                   <h2 className="text-lg font-semibold text-white">{section.title}</h2>
-                  <span className="px-2.5 py-0.5 bg-surface-200 text-gray-400 text-xs font-medium rounded-full">
+                  <span className="px-2.5 py-0.5 bg-surface-200 text-surface-300 text-xs font-medium rounded-full">
                     {section.assets.length} {section.assets.length === 1 ? 'asset' : 'assets'}
                   </span>
                 </div>
@@ -719,7 +719,7 @@ function PortfolioPageContent() {
                       e.stopPropagation();
                       openAddAssetModal();
                     }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-surface-100 hover:bg-surface-200 text-gray-400 rounded-xl font-medium transition-colors border-2 border-dashed border-surface-300"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-4 bg-surface-100 hover:bg-surface-200 text-surface-300 rounded-xl font-medium transition-colors border-2 border-dashed border-surface-300"
                   >
                     <Plus className="w-5 h-5" />
                     Add Asset to {section.title}
@@ -739,7 +739,7 @@ function PortfolioPageContent() {
               </div>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">No assets yet</h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-surface-300 mb-6">
               Start building your portfolio by adding your first asset
             </p>
             <button
@@ -753,14 +753,14 @@ function PortfolioPageContent() {
           <div className="flex items-center gap-4 mt-8">
             <button
               onClick={addNewSection}
-              className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-gray-300 hover:bg-surface-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Section
             </button>
             <button
               onClick={openAddAssetModal}
-              className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-gray-300 hover:bg-surface-200 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add Asset
@@ -806,7 +806,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
             <h3 className="font-semibold text-white text-base">{bank.name}</h3>
             <Loader2 className="w-4 h-4 text-lokifi animate-spin" />
           </div>
-          <p className="text-sm text-gray-400">{bank.message}</p>
+          <p className="text-sm text-surface-300">{bank.message}</p>
         </div>
       </div>
       <div className="flex items-center gap-4">
@@ -819,7 +819,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
           className="p-2 hover:bg-surface-200 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
           aria-label="Options"
         >
-          <MoreHorizontal className="w-5 h-5 text-gray-400" />
+          <MoreHorizontal className="w-5 h-5 text-surface-300" />
         </button>
       </div>
     </div>
@@ -866,7 +866,7 @@ function AssetItem({
               {asset.symbol.substring(0, 3)}
             </span>
           </div>
-          <span className="text-xs font-mono text-gray-400 font-medium">{asset.symbol}</span>
+          <span className="text-xs font-mono text-surface-300 font-medium">{asset.symbol}</span>
         </div>
 
         {/* Asset Details */}
@@ -878,11 +878,11 @@ function AssetItem({
               className="opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <Star
-                className={`w-4 h-4 ${isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`}
+                className={`w-4 h-4 ${isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-surface-300'}`}
               />
             </button>
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-400">
+          <div className="flex items-center gap-4 text-sm text-surface-300">
             <span className="flex items-center gap-1">
               <DollarSign className="w-3.5 h-3.5" />
               {asset.shares.toFixed(4)} shares
@@ -933,15 +933,15 @@ function AssetItem({
             className="p-2.5 hover:bg-surface-200 rounded-lg transition-all opacity-0 group-hover:opacity-100 hover:scale-110"
             aria-label="Options"
           >
-            <MoreHorizontal className="w-5 h-5 text-gray-400" />
+            <MoreHorizontal className="w-5 h-5 text-surface-300" />
           </button>
           {showMenu && (
             <div className="absolute right-0 top-12 w-48 bg-surface-100 border border-surface-200/50 rounded-xl shadow-xl py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200">
-              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-gray-300 text-sm font-medium transition-colors flex items-center gap-2">
+              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2">
                 <Eye className="w-4 h-4" />
                 View Details
               </button>
-              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-gray-300 text-sm font-medium transition-colors flex items-center gap-2">
+              <button className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2">
                 <Edit2 className="w-4 h-4" />
                 Edit Asset
               </button>
