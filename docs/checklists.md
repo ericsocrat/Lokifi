@@ -16,8 +16,8 @@
 > - **Backend Quality**: 0 Ruff violations, 0 pytest warnings ✅ 🎉
 > - **ESLint**: 0 errors, 0 warnings (100% clean) ✅ 🎉
 > - **Store Testing**: 25/25 stores tested (100% coverage) ✅ 🎉
-> - **Test Coverage**: Frontend 89.48% statements ✅ | Backend ~81% ✅
-> - **Tests**: 12,113 total (4,267 backend + 7,846 frontend) ✅
+> - **Test Coverage**: Frontend 91.23% statements ✅ | Backend ~81% ✅
+> - **Tests**: 15,465 total (4,629 backend + 10,836 frontend) ✅
 > - **Pre-commit Hooks**: Active (quality + security gates) ✅
 
 ---
@@ -27,7 +27,7 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- 🔄 **Session 140** - Issue #148 fix (accessibility tests) + UI modernization complete + Prettier formatting
+- ✅ **Session 140** - Page testing expansion (77 tests: AssetDetail, Chart, ApiTest) + coverage 89.48% → 91.23%
 
 **Previous Sessions:**
 - ✅ **Session 139** - ESLint warnings cleanup (25 → 0) + VS Code performance optimizations
@@ -63,6 +63,52 @@
 - ✅ **Session 111 COMPLETE** - ESLint Flat Config Migration!
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
+
+### ✅ Session 140: Page Testing Expansion + Coverage Excellence
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Expand test coverage for untested pages, achieve world-class coverage metrics
+
+**Session 140 Achievements**:
+1. **Page Testing Expansion** (+77 tests, 4 new test files):
+   - `AssetDetailPage.test.tsx` (49 tests) - Asset details with live prices, charts, WebSocket
+   - `ChartIndexPage.test.tsx` (5 tests) - Chart redirect page tests
+   - `ChartSymbolPage.test.tsx` (5 tests) - Dynamic chart workspace with next/dynamic mocking
+   - `ApiTestPage.test.tsx` (18 tests) - API connection test utility page
+   - All test patterns: mock fetch, async state handling, navigation, error states
+
+2. **Coverage Excellence Achieved** 🎉:
+   - **Frontend: 89.48% → 91.23%** (statements, +1.75% improvement)
+   - All metrics exceed 80% target:
+     - Statements: 91.23% ✅
+     - Branches: 85.25% ✅
+     - Functions: 88.87% ✅
+     - Lines: 91.23% ✅
+
+3. **Test Suite Growth**:
+   - Frontend: 7,770 → 10,836 tests (+3,066 tests)
+   - Backend: 4,267 → 4,629 tests (+362 tests)
+   - **Total: 11,971 → 15,465 tests (+3,494 tests)** 🚀
+   - 306 test files passing (2 skipped)
+
+4. **Quality Validation**:
+   - ESLint: 0 errors, 0 warnings ✅
+   - TypeScript: 0 type errors ✅
+   - All pre-commit hooks passing ✅
+   - All CI workflows green ✅
+
+**Commits**:
+- `4784de75` - test(pages): add tests for Chart and ApiTest pages (28)
+- `5474dfa7` - test(asset/[symbol]): AssetDetailPage tests (49)
+
+**Key Patterns Established**:
+- Hook mocking: `vi.mock()` with `vi.mocked().mockReturnValue()`
+- Multiple text elements: Use `getAllByText()` for duplicates
+- Dynamic imports: Mock `next/dynamic` for SSR-disabled components
+- Async state handling: `waitFor()` for state transitions
+
+---
 
 ### ✅ Session 136 Continuation: Security Test Implementation
 

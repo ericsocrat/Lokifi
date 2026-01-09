@@ -4,8 +4,8 @@
  * @session 140 - Page testing coverage
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -24,7 +24,10 @@ vi.mock('@/lib/stores/symbolStore', () => ({
 
 // Mock next/dynamic - return a simple component instead of actual TradingWorkspace
 vi.mock('next/dynamic', () => ({
-  default: (importFn: () => Promise<{ default: React.ComponentType }>, options?: { loading?: () => React.ReactNode }) => {
+  default: (
+    importFn: () => Promise<{ default: React.ComponentType }>,
+    options?: { loading?: () => React.ReactNode }
+  ) => {
     // Return the loading component for testing the loading state
     const LoadingComponent = options?.loading || (() => null);
     return function MockedDynamic() {
@@ -33,8 +36,8 @@ vi.mock('next/dynamic', () => ({
   },
 }));
 
-import ChartSymbolPage from '../../app/chart/[symbol]/page';
 import { symbolStore } from '@/lib/stores/symbolStore';
+import ChartSymbolPage from '../../app/chart/[symbol]/page';
 
 describe('ChartSymbolPage', () => {
   beforeEach(() => {
