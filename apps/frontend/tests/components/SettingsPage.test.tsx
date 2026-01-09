@@ -95,11 +95,11 @@ describe('SettingsPage', () => {
     it('should render all navigation tabs', () => {
       render(<SettingsPage />);
 
-      expect(screen.getByRole('button', { name: /general/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /appearance/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /notifications/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /privacy & security/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /account/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /general/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /appearance/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /notifications/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /privacy & security/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /account/i })).toBeInTheDocument();
     });
 
     it('should default to general tab', () => {
@@ -114,7 +114,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
 
       expect(screen.getByText('Theme')).toBeInTheDocument();
       expect(screen.getByText('Choose your preferred color scheme')).toBeInTheDocument();
@@ -124,7 +124,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
 
       expect(screen.getByText('Notification Preferences')).toBeInTheDocument();
     });
@@ -133,7 +133,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       // Use getByRole for the heading to avoid duplicate text issue (nav button vs heading)
       expect(screen.getByRole('heading', { name: /privacy & security/i })).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       expect(screen.getByText('Account Settings')).toBeInTheDocument();
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
@@ -194,8 +194,8 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      // Find and click EUR button
-      const eurButton = screen.getByRole('button', { name: /€\s*EUR/i });
+      // Find and click EUR button by its aria-label
+      const eurButton = screen.getByRole('button', { name: /select euro currency/i });
       await user.click(eurButton);
 
       expect(mockSetCurrency).toHaveBeenCalledWith('EUR');
@@ -254,7 +254,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
 
       expect(screen.getByText('Theme')).toBeInTheDocument();
       expect(screen.getByText('Choose your preferred color scheme')).toBeInTheDocument();
@@ -264,7 +264,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
 
       expect(screen.getByText('Light')).toBeInTheDocument();
       expect(screen.getByText('Dark')).toBeInTheDocument();
@@ -274,7 +274,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
 
       expect(screen.getByTestId('sun-icon')).toBeInTheDocument();
       expect(screen.getByTestId('moon-icon')).toBeInTheDocument();
@@ -284,7 +284,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
       await user.click(screen.getByText('Light').closest('button')!);
 
       expect(mockSetDarkMode).toHaveBeenCalledWith(false);
@@ -294,7 +294,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
       await user.click(screen.getByText('Dark').closest('button')!);
 
       expect(mockSetDarkMode).toHaveBeenCalledWith(true);
@@ -306,7 +306,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
 
       expect(screen.getByText('Notification Preferences')).toBeInTheDocument();
       expect(screen.getByText('Manage how and when you receive notifications')).toBeInTheDocument();
@@ -316,7 +316,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
 
       expect(screen.getByText(/price Alerts/i)).toBeInTheDocument();
       expect(screen.getByText(/portfolio Updates/i)).toBeInTheDocument();
@@ -329,7 +329,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
 
       // Find toggle button - notification toggles are buttons with role="button"
       const toggleContainer = screen.getByText(/price Alerts/i).closest('div')?.parentElement;
@@ -347,7 +347,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       // Section title is an h3 element
       expect(screen.getByRole('heading', { name: /privacy & security/i })).toBeInTheDocument();
@@ -360,7 +360,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       expect(screen.getByText('Change Password')).toBeInTheDocument();
       expect(screen.getByText('Update your account password')).toBeInTheDocument();
@@ -370,7 +370,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       expect(screen.getByText('Two-Factor Authentication')).toBeInTheDocument();
       expect(screen.getByText('Add an extra layer of security')).toBeInTheDocument();
@@ -380,7 +380,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       expect(screen.getByText('Download Your Data')).toBeInTheDocument();
       expect(screen.getByText('Export all your portfolio data')).toBeInTheDocument();
@@ -392,7 +392,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       expect(screen.getByText('Account Settings')).toBeInTheDocument();
       expect(screen.getByText('Manage your account information')).toBeInTheDocument();
@@ -402,7 +402,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       expect(screen.getByText('Edit Profile')).toBeInTheDocument();
       expect(screen.getByText('Update your name and email')).toBeInTheDocument();
@@ -412,7 +412,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       expect(screen.getByText('Connected Accounts')).toBeInTheDocument();
       expect(screen.getByText('Manage linked brokerage accounts')).toBeInTheDocument();
@@ -422,7 +422,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       expect(screen.getByText('Delete Account')).toBeInTheDocument();
       expect(screen.getByText('Permanently delete your account and data')).toBeInTheDocument();
@@ -432,7 +432,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /account/i }));
+      await user.click(screen.getByRole('tab', { name: /account/i }));
 
       const deleteButton = screen.getByText('Delete Account').closest('button');
       expect(deleteButton).toHaveClass('text-rose-400');
@@ -495,7 +495,7 @@ describe('SettingsPage', () => {
     it('should have accessible currency buttons', () => {
       render(<SettingsPage />);
 
-      const usdButton = screen.getByRole('button', { name: /\$\s*USD/i });
+      const usdButton = screen.getByRole('button', { name: /select us dollar currency/i });
       expect(usdButton).toBeEnabled();
     });
   });
@@ -524,15 +524,15 @@ describe('SettingsPage', () => {
       render(<SettingsPage />);
 
       // Switch to appearance
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
       expect(screen.getByText('Theme')).toBeInTheDocument();
 
       // Switch to notifications
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
       expect(screen.getByText('Notification Preferences')).toBeInTheDocument();
 
       // Switch back to general
-      await user.click(screen.getByRole('button', { name: /general/i }));
+      await user.click(screen.getByRole('tab', { name: /general/i }));
       expect(screen.getByText('Display Currency')).toBeInTheDocument();
     });
 
@@ -540,7 +540,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /notifications/i }));
+      await user.click(screen.getByRole('tab', { name: /notifications/i }));
 
       // Toggle a notification
       const toggleContainer = screen.getByText(/price Alerts/i).closest('div')?.parentElement;
@@ -561,7 +561,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /appearance/i }));
+      await user.click(screen.getByRole('tab', { name: /appearance/i }));
 
       expect(screen.queryByText('Display Currency')).not.toBeInTheDocument();
       expect(screen.queryByText('Language')).not.toBeInTheDocument();
@@ -578,7 +578,7 @@ describe('SettingsPage', () => {
       const user = userEvent.setup();
       render(<SettingsPage />);
 
-      await user.click(screen.getByRole('button', { name: /privacy & security/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy & security/i }));
 
       // Should show privacy content
       expect(screen.getByText('Change Password')).toBeInTheDocument();

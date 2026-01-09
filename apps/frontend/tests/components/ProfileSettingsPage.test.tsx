@@ -346,7 +346,9 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -354,10 +356,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         const updateCall = mockFetch.mock.calls.find(
@@ -425,7 +429,9 @@ describe('ProfileSettingsPage', () => {
 
     it('renders save preferences button', async () => {
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Preferences/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save notification preferences/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -446,10 +452,12 @@ describe('ProfileSettingsPage', () => {
 
     it('calls update API when save preferences is clicked', async () => {
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Preferences/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save notification preferences/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Preferences/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save notification preferences/i }));
 
       await waitFor(() => {
         const updateCall = mockFetch.mock.calls.find(
@@ -653,10 +661,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/Failed to update settings/i)).toBeInTheDocument();
@@ -760,10 +770,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/Settings updated/i)).toBeInTheDocument();
@@ -796,10 +808,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         const successContainer = document.querySelector('.bg-green-900\\/20');
@@ -833,10 +847,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         expect(screen.getByText(/Saving.../i)).toBeInTheDocument();
@@ -866,13 +882,16 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
-        const saveButton = screen.getByRole('button', { name: /Saving.../i });
+        // The aria-label stays the same, but button text changes to "Saving..."
+        const saveButton = screen.getByRole('button', { name: /save account information/i });
         expect(saveButton).toBeDisabled();
       });
     });
@@ -917,10 +936,12 @@ describe('ProfileSettingsPage', () => {
       render(<ProfileSettingsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Save Changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save account information/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Save Changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save account information/i }));
 
       await waitFor(() => {
         const updateCall = mockFetch.mock.calls.find(

@@ -166,31 +166,31 @@ describe('GoalsPage Tests', () => {
     it('renders All Goals filter', () => {
       render(<GoalsPage />);
 
-      expect(screen.getByRole('button', { name: 'All Goals' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by all goals/i })).toBeInTheDocument();
     });
 
     it('renders category filters', () => {
       render(<GoalsPage />);
 
-      expect(screen.getByRole('button', { name: 'Emergency' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Retirement' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'House' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Vacation' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Education' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Investment' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by emergency/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by retirement/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by house/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by vacation/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by education/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /filter by investment/i })).toBeInTheDocument();
     });
 
     it('All Goals filter is active by default', () => {
       render(<GoalsPage />);
 
-      const allGoalsButton = screen.getByRole('button', { name: 'All Goals' });
+      const allGoalsButton = screen.getByRole('button', { name: /filter by all goals/i });
       expect(allGoalsButton).toHaveClass('bg-lokifi-500');
     });
 
     it('changes filter on click', () => {
       render(<GoalsPage />);
 
-      const emergencyButton = screen.getByRole('button', { name: 'Emergency' });
+      const emergencyButton = screen.getByRole('button', { name: /filter by emergency/i });
       fireEvent.click(emergencyButton);
 
       expect(emergencyButton).toHaveClass('bg-lokifi-500');
@@ -200,7 +200,7 @@ describe('GoalsPage Tests', () => {
       render(<GoalsPage />);
 
       // Click on Vacation filter
-      const vacationButton = screen.getByRole('button', { name: 'Vacation' });
+      const vacationButton = screen.getByRole('button', { name: /filter by vacation/i });
       fireEvent.click(vacationButton);
 
       // Should only show Japan Trip (vacation category)
@@ -214,10 +214,10 @@ describe('GoalsPage Tests', () => {
       render(<GoalsPage />);
 
       // First filter to vacation
-      fireEvent.click(screen.getByRole('button', { name: 'Vacation' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by vacation/i }));
 
       // Then back to all
-      fireEvent.click(screen.getByRole('button', { name: 'All Goals' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by all goals/i }));
 
       // All goals should be visible
       expect(screen.getByText('Emergency Fund')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('GoalsPage Tests', () => {
       render(<GoalsPage />);
 
       // Investment category has no goals in mock data
-      fireEvent.click(screen.getByRole('button', { name: 'Investment' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by investment/i }));
 
       expect(screen.getByText('No goals found')).toBeInTheDocument();
     });
@@ -380,7 +380,7 @@ describe('GoalsPage Tests', () => {
     it('shows empty state when no goals match filter', () => {
       render(<GoalsPage />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Investment' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by investment/i }));
 
       expect(screen.getByText('No goals found')).toBeInTheDocument();
     });
@@ -388,7 +388,7 @@ describe('GoalsPage Tests', () => {
     it('shows category-specific message', () => {
       render(<GoalsPage />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Investment' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by investment/i }));
 
       expect(screen.getByText(/No goals in the investment category/i)).toBeInTheDocument();
     });
@@ -396,9 +396,11 @@ describe('GoalsPage Tests', () => {
     it('shows create goal button in empty state', () => {
       render(<GoalsPage />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Investment' }));
+      fireEvent.click(screen.getByRole('button', { name: /filter by investment/i }));
 
-      expect(screen.getByRole('button', { name: 'Create Your First Goal' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /create your first financial goal/i })
+      ).toBeInTheDocument();
     });
   });
 
@@ -554,4 +556,3 @@ describe('GoalsPage Tests', () => {
     });
   });
 });
-

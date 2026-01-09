@@ -113,10 +113,9 @@ export default function LoginPage() {
               <button
                 onClick={() => handleOpenAuth('login')}
                 className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-semibold transition-all duration-200 shadow-lg shadow-lokifi/30 hover:shadow-lokifi/50 hover:scale-[1.02]"
-                aria-label="Sign in to your Lokifi account"
               >
                 Sign In
-                <ArrowRight className="w-5 h-5 ml-auto" />
+                <ArrowRight className="w-5 h-5 ml-auto" aria-hidden="true" />
               </button>
 
               <div className="relative">
@@ -133,9 +132,8 @@ export default function LoginPage() {
               <button
                 onClick={() => handleOpenAuth('register')}
                 className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl text-white font-medium transition-all duration-200"
-                aria-label="Create a new Lokifi account"
               >
-                <User className="w-5 h-5" />
+                <User className="w-5 h-5" aria-hidden="true" />
                 Create an Account
               </button>
             </div>
@@ -152,9 +150,8 @@ export default function LoginPage() {
                   <Link
                     href="/dashboard"
                     className="inline-flex items-center gap-1 text-xs text-lokifi-light hover:text-lokifi mt-2 font-medium"
-                    aria-label="Enter Lokifi demo mode without signing up"
                   >
-                    Enter Demo Mode <ArrowRight className="w-3 h-3" />
+                    Enter Demo Mode <ArrowRight className="w-3 h-3" aria-hidden="true" />
                   </Link>
                 </div>
               </div>
@@ -162,26 +159,19 @@ export default function LoginPage() {
           </div>
 
           {/* Footer Links */}
-          <nav className="flex items-center justify-center gap-6 mt-8 text-sm text-surface-300">
-            <Link
-              href="/markets"
-              className="hover:text-white transition-colors"
-              aria-label="Visit markets page"
-            >
+          <nav
+            className="flex items-center justify-center gap-6 mt-8 text-sm text-surface-300"
+            aria-label="Footer navigation"
+          >
+            <Link href="/markets" className="hover:text-white transition-colors">
               Markets
             </Link>
             <span className="w-1 h-1 rounded-full bg-surface-300" aria-hidden="true" />
-            <Link
-              href="/"
-              className="hover:text-white transition-colors"
-              aria-label="Learn more about Lokifi"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               About
             </Link>
             <span className="w-1 h-1 rounded-full bg-surface-300" aria-hidden="true" />
-            <button className="hover:text-white transition-colors" aria-label="Get help">
-              Help
-            </button>
+            <button className="hover:text-white transition-colors">Help</button>
           </nav>
         </div>
       </div>

@@ -75,10 +75,7 @@ describe('ProfilePage', () => {
   });
 
   // Helper to setup fetch mock for success case
-  const setupSuccessFetch = (
-    profile = mockProfile,
-    stats: typeof mockStats | null = mockStats
-  ) => {
+  const setupSuccessFetch = (profile = mockProfile, stats: typeof mockStats | null = mockStats) => {
     global.fetch = vi.fn().mockImplementation((url: string) => {
       if (url.includes('/api/profile/me')) {
         return Promise.resolve({
@@ -207,9 +204,9 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /overview/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /overview/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
     });
 
@@ -217,7 +214,7 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        const overviewTab = screen.getByRole('button', { name: /overview/i });
+        const overviewTab = screen.getByRole('tab', { name: /overview/i });
         expect(overviewTab).toHaveClass('bg-lokifi');
       });
     });
@@ -227,12 +224,12 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
-      const settingsTab = screen.getByRole('button', { name: /settings/i });
+      const settingsTab = screen.getByRole('tab', { name: /settings/i });
       expect(settingsTab).toHaveClass('bg-lokifi');
     });
 
@@ -241,12 +238,12 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
-      const privacyTab = screen.getByRole('button', { name: /privacy/i });
+      const privacyTab = screen.getByRole('tab', { name: /privacy/i });
       expect(privacyTab).toHaveClass('bg-lokifi');
     });
   });
@@ -445,10 +442,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
       expect(screen.getByText('Quick Settings')).toBeInTheDocument();
     });
@@ -458,10 +455,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
       expect(screen.getByText('Account Settings')).toBeInTheDocument();
       expect(screen.getByText('Manage your account information')).toBeInTheDocument();
@@ -472,10 +469,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
       expect(screen.getByText('Notifications')).toBeInTheDocument();
       expect(screen.getByText('Control notification preferences')).toBeInTheDocument();
@@ -486,10 +483,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
       // Use getAllByText since this text appears multiple times
       const elements = screen.getAllByText('Privacy & Security');
@@ -501,10 +498,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /settings/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /settings/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /settings/i }));
+      await user.click(screen.getByRole('tab', { name: /settings/i }));
 
       expect(screen.getByText('Preferences')).toBeInTheDocument();
       expect(screen.getByText('Language, timezone, and more')).toBeInTheDocument();
@@ -521,10 +518,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByText('Privacy Overview')).toBeInTheDocument();
     });
@@ -534,10 +531,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByText('Profile Visibility')).toBeInTheDocument();
     });
@@ -547,10 +544,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByText(/public and visible to everyone/i)).toBeInTheDocument();
     });
@@ -562,10 +559,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByText(/private and only visible to you/i)).toBeInTheDocument();
     });
@@ -575,10 +572,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByText('Data Export')).toBeInTheDocument();
       expect(screen.getByText(/download all your data/i)).toBeInTheDocument();
@@ -589,10 +586,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByRole('button', { name: /export/i })).toBeInTheDocument();
     });
@@ -602,10 +599,10 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /privacy/i })).toBeInTheDocument();
+        expect(screen.getByRole('tab', { name: /privacy/i })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: /privacy/i }));
+      await user.click(screen.getByRole('tab', { name: /privacy/i }));
 
       expect(screen.getByRole('link', { name: /change/i })).toBeInTheDocument();
     });
@@ -750,7 +747,7 @@ describe('ProfilePage', () => {
       render(<ProfilePage />);
 
       await waitFor(() => {
-        const tabs = screen.getAllByRole('button');
+        const tabs = screen.getAllByRole('tab');
         const tabButtons = tabs.filter((btn) =>
           ['Overview', 'Settings', 'Privacy'].some((text) => btn.textContent?.includes(text))
         );

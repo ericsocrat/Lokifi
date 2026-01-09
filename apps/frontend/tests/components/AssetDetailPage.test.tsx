@@ -265,16 +265,16 @@ describe('AssetDetailPage', () => {
 
     it('displays time frame selector buttons', () => {
       render(<AssetDetailPage />);
-      expect(screen.getByRole('button', { name: '1D' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '7D' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '30D' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: '1Y' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /view 1d chart period/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /view 7d chart period/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /view 30d chart period/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /view 1y chart period/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /view all chart period/i })).toBeInTheDocument();
     });
 
     it('allows changing time frame', () => {
       render(<AssetDetailPage />);
-      const monthButton = screen.getByRole('button', { name: '30D' });
+      const monthButton = screen.getByRole('button', { name: /view 30d chart period/i });
       fireEvent.click(monthButton);
       expect(monthButton).toBeInTheDocument();
     });
@@ -384,19 +384,21 @@ describe('AssetDetailPage', () => {
   describe('Watchlist Functionality', () => {
     it('displays add to watchlist button by default', () => {
       render(<AssetDetailPage />);
-      expect(screen.getByRole('button', { name: /add to watchlist/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /add bitcoin to watchlist/i })).toBeInTheDocument();
     });
 
     it('displays remove from watchlist button when asset is in watchlist', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(['BTC']));
 
       render(<AssetDetailPage />);
-      expect(screen.getByRole('button', { name: /remove from watchlist/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /remove bitcoin from watchlist/i })
+      ).toBeInTheDocument();
     });
 
     it('adds asset to watchlist when button is clicked', () => {
       render(<AssetDetailPage />);
-      const addButton = screen.getByRole('button', { name: /add to watchlist/i });
+      const addButton = screen.getByRole('button', { name: /add bitcoin to watchlist/i });
       fireEvent.click(addButton);
 
       expect(localStorageMock.setItem).toHaveBeenCalled();
@@ -406,7 +408,7 @@ describe('AssetDetailPage', () => {
       localStorageMock.getItem.mockReturnValue(JSON.stringify(['BTC']));
 
       render(<AssetDetailPage />);
-      const removeButton = screen.getByRole('button', { name: /remove from watchlist/i });
+      const removeButton = screen.getByRole('button', { name: /remove bitcoin from watchlist/i });
       fireEvent.click(removeButton);
 
       expect(localStorageMock.setItem).toHaveBeenCalled();

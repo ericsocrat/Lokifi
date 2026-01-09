@@ -108,7 +108,7 @@ describe('EditProfilePage', () => {
     it('renders back link to profile', async () => {
       render(<EditProfilePage />);
       await waitFor(() => {
-        const backLink = screen.getByRole('link', { name: '' });
+        const backLink = screen.getByRole('link', { name: /back to profile/i });
         expect(backLink).toHaveAttribute('href', '/profile');
       });
     });

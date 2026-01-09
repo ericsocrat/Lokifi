@@ -406,7 +406,9 @@ describe('NotificationPreferencesPage', () => {
       render(<NotificationPreferencesPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save preferences/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save notification preferences/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -482,7 +484,7 @@ describe('NotificationPreferencesPage', () => {
         expect(screen.getByText('Save Preferences')).toBeInTheDocument();
       });
 
-      const saveButton = screen.getByRole('button', { name: /save preferences/i });
+      const saveButton = screen.getByRole('button', { name: /save notification preferences/i });
       fireEvent.click(saveButton);
 
       await waitFor(() => {
@@ -507,7 +509,7 @@ describe('NotificationPreferencesPage', () => {
         expect(screen.getByText('Save Preferences')).toBeInTheDocument();
       });
 
-      const saveButton = screen.getByRole('button', { name: /save preferences/i });
+      const saveButton = screen.getByRole('button', { name: /save notification preferences/i });
       fireEvent.click(saveButton);
 
       await waitFor(() => {

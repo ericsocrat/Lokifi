@@ -50,9 +50,7 @@ describe('ChatPage', () => {
     it('should render input field with placeholder', () => {
       render(<ChatPage />);
 
-      const input = screen.getByPlaceholderText(
-        /Ask:.*\/price.*\/alert.*\/portfolio/i
-      );
+      const input = screen.getByPlaceholderText(/Ask:.*\/price.*\/alert.*\/portfolio/i);
       expect(input).toBeInTheDocument();
     });
 
@@ -151,7 +149,7 @@ describe('ChatPage', () => {
       await user.click(screen.getByRole('button', { name: /send/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /\.\.\./i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /sending message/i })).toBeInTheDocument();
       });
     });
 
@@ -164,7 +162,7 @@ describe('ChatPage', () => {
       await user.click(screen.getByRole('button', { name: /send/i }));
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /\.\.\./i })).toBeDisabled();
+        expect(screen.getByRole('button', { name: /sending message/i })).toBeDisabled();
       });
     });
 
