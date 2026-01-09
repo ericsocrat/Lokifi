@@ -232,7 +232,9 @@ describe('IndicesPage', () => {
         isFetching: false,
       });
       render(<IndicesPage />);
-      expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /retry loading indices data/i })
+      ).toBeInTheDocument();
     });
 
     it('calls refetch on Try Again click', () => {
@@ -245,7 +247,7 @@ describe('IndicesPage', () => {
         isFetching: false,
       });
       render(<IndicesPage />);
-      fireEvent.click(screen.getByRole('button', { name: /try again/i }));
+      fireEvent.click(screen.getByRole('button', { name: /retry loading indices data/i }));
       expect(mockRefetch).toHaveBeenCalled();
     });
   });

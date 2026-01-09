@@ -167,6 +167,7 @@ function MarketsPageContent() {
             <button
               onClick={() => refetch && refetch()}
               disabled={isLoading}
+              aria-label="Refresh cryptocurrency market data"
               className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-lokifi text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 disabled:opacity-50"
             >
               <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`} />
@@ -271,6 +272,7 @@ function MarketsPageContent() {
                   <th className="px-4 py-4 text-left text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('market_cap_rank')}
+                      aria-label="Sort by market cap rank"
                       className="flex items-center gap-2 hover:text-lokifi transition"
                     >
                       Rank {sortField === 'market_cap_rank' && <ArrowUpDown className="w-4 h-4" />}
@@ -282,6 +284,7 @@ function MarketsPageContent() {
                   <th className="px-4 py-4 text-right text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('current_price')}
+                      aria-label="Sort by current price"
                       className="flex items-center gap-2 ml-auto hover:text-lokifi transition"
                     >
                       Price {sortField === 'current_price' && <ArrowUpDown className="w-4 h-4" />}
@@ -290,6 +293,7 @@ function MarketsPageContent() {
                   <th className="px-4 py-4 text-right text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('price_change_percentage_24h')}
+                      aria-label="Sort by 24 hour price change"
                       className="flex items-center gap-2 ml-auto hover:text-lokifi transition"
                     >
                       24h Change{' '}
@@ -301,6 +305,7 @@ function MarketsPageContent() {
                   <th className="px-4 py-4 text-right text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('total_volume')}
+                      aria-label="Sort by trading volume"
                       className="flex items-center gap-2 ml-auto hover:text-lokifi transition"
                     >
                       Volume {sortField === 'total_volume' && <ArrowUpDown className="w-4 h-4" />}
@@ -309,6 +314,7 @@ function MarketsPageContent() {
                   <th className="px-4 py-4 text-right text-xs font-black text-surface-300 uppercase tracking-wider">
                     <button
                       onClick={() => handleSort('market_cap')}
+                      aria-label="Sort by market capitalization"
                       className="flex items-center gap-2 ml-auto hover:text-lokifi transition"
                     >
                       Market Cap {sortField === 'market_cap' && <ArrowUpDown className="w-4 h-4" />}
@@ -400,6 +406,11 @@ function MarketsPageContent() {
                               e.stopPropagation();
                               toggleWatchlist(asset.symbol.toUpperCase());
                             }}
+                            aria-label={
+                              watchlist.includes(asset.symbol.toUpperCase())
+                                ? `Remove ${asset.name} from watchlist`
+                                : `Add ${asset.name} to watchlist`
+                            }
                             className="p-2 hover:bg-lokifi/20 rounded-lg transition-colors"
                           >
                             <Star

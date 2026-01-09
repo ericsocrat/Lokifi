@@ -35,14 +35,7 @@ vi.mock('next/image', () => ({
 
 // Mock Next.js Link
 vi.mock('next/link', () => ({
-  default: ({
-    children,
-    href,
-    ...props
-  }: {
-    children: React.ReactNode;
-    href: string;
-  }) => (
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string }) => (
     <a href={href} {...props}>
       {children}
     </a>
@@ -61,9 +54,7 @@ vi.mock('@/src/components/dashboard/useCurrencyFormatter', () => ({
 // Mock MarketStats component
 vi.mock('@/src/components/markets/MarketStats', () => ({
   MarketStats: ({ data }: { data: unknown }) => (
-    <div data-testid="market-stats">
-      Market Stats: {JSON.stringify(data).substring(0, 50)}
-    </div>
+    <div data-testid="market-stats">Market Stats: {JSON.stringify(data).substring(0, 50)}</div>
   ),
 }));
 
@@ -299,14 +290,16 @@ describe('MarketsPage', () => {
       setupErrorState();
       render(<MarketsOverviewPage />);
 
-      expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /retry loading market data/i })
+      ).toBeInTheDocument();
     });
 
     it('should call refetch when Try Again is clicked', async () => {
       setupErrorState();
       render(<MarketsOverviewPage />);
 
-      const tryAgainButton = screen.getByRole('button', { name: /try again/i });
+      const tryAgainButton = screen.getByRole('button', { name: /retry loading market data/i });
       await userEvent.click(tryAgainButton);
 
       expect(mockRefetch).toHaveBeenCalledTimes(1);
@@ -618,10 +611,7 @@ describe('MarketsPage', () => {
       setupSuccessState();
       render(<MarketsOverviewPage />);
 
-      expect(mockUseUnifiedAssets).toHaveBeenCalledWith(
-        10,
-        expect.any(Array)
-      );
+      expect(mockUseUnifiedAssets).toHaveBeenCalledWith(10, expect.any(Array));
     });
   });
 

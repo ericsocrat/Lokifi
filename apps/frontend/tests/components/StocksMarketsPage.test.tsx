@@ -262,7 +262,9 @@ describe('StocksPage', () => {
       render(<StocksPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Retry loading stock data' })
+        ).toBeInTheDocument();
       });
     });
 
@@ -273,7 +275,7 @@ describe('StocksPage', () => {
       render(<StocksPage />);
 
       await waitFor(() => {
-        const tryAgainBtn = screen.getByRole('button', { name: 'Try Again' });
+        const tryAgainBtn = screen.getByRole('button', { name: 'Retry loading stock data' });
         fireEvent.click(tryAgainBtn);
       });
 
@@ -549,4 +551,3 @@ describe('StocksPage', () => {
     });
   });
 });
-

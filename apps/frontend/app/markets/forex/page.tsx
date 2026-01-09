@@ -86,6 +86,7 @@ function ForexPageContent() {
             <button
               onClick={() => refetch()}
               className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition-colors"
+              aria-label="Retry loading forex data"
             >
               Try Again
             </button>
@@ -143,6 +144,7 @@ function ForexPageContent() {
                 onClick={() => refetch()}
                 disabled={isFetching}
                 className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors disabled:opacity-50"
+                aria-label="Refresh forex market data"
               >
                 <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
                 Refresh

@@ -188,7 +188,9 @@ describe('ForexPage', () => {
       render(<ForexPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: 'Retry loading forex data' })
+        ).toBeInTheDocument();
       });
     });
 
@@ -199,7 +201,7 @@ describe('ForexPage', () => {
       render(<ForexPage />);
 
       await waitFor(() => {
-        const tryAgainBtn = screen.getByRole('button', { name: 'Try Again' });
+        const tryAgainBtn = screen.getByRole('button', { name: 'Retry loading forex data' });
         fireEvent.click(tryAgainBtn);
       });
 
@@ -453,4 +455,3 @@ describe('ForexPage', () => {
     });
   });
 });
-

@@ -122,6 +122,7 @@ function StocksPageContent() {
             <button
               onClick={() => refetch()}
               className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition-colors"
+              aria-label="Retry loading stock data"
             >
               Try Again
             </button>
@@ -153,6 +154,7 @@ function StocksPageContent() {
               onClick={() => refetch()}
               disabled={isFetching}
               className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg text-white transition-colors disabled:opacity-50"
+              aria-label="Refresh stock market data"
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
               Refresh
@@ -205,33 +207,37 @@ function StocksPageContent() {
             {/* Table Header */}
             <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-neutral-800/50 text-neutral-400 text-sm font-medium border-b border-neutral-800">
               <div className="col-span-1 text-center">#</div>
-              <div
+              <button
                 className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
                 onClick={() => handleSort('name')}
+                aria-label="Sort by stock name"
               >
                 Stock
                 {getSortIcon('name')}
-              </div>
-              <div
+              </button>
+              <button
                 className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
                 onClick={() => handleSort('current_price')}
+                aria-label="Sort by current price"
               >
                 Price
                 {getSortIcon('current_price')}
-              </div>
-              <div
+              </button>
+              <button
                 className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
                 onClick={() => handleSort('price_change_percentage_24h')}
+                aria-label="Sort by 24 hour price change"
               >
                 24h %{getSortIcon('price_change_percentage_24h')}
-              </div>
-              <div
+              </button>
+              <button
                 className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
                 onClick={() => handleSort('market_cap')}
+                aria-label="Sort by market capitalization"
               >
                 Market Cap
                 {getSortIcon('market_cap')}
-              </div>
+              </button>
               <div className="col-span-1" />
             </div>
 

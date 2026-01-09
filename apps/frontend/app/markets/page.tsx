@@ -43,6 +43,7 @@ function MarketsOverviewContent() {
             </p>
             <button
               onClick={() => refetch()}
+              aria-label="Retry loading market data"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
             >
               <RefreshCw className="w-4 h-4" />
@@ -75,6 +76,7 @@ function MarketsOverviewContent() {
             <button
               onClick={() => refetch()}
               disabled={isFetching}
+              aria-label="Refresh market data"
               className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-lokifi/30 rounded-xl text-white transition-all disabled:opacity-50"
             >
               <RefreshCw className={`w-4 h-4 ${isFetching ? 'animate-spin' : ''}`} />
@@ -120,6 +122,7 @@ function MarketsOverviewContent() {
               </div>
               <Link
                 href="/markets/crypto"
+                aria-label="View all cryptocurrencies"
                 className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-orange-500/30 rounded-xl text-white text-sm transition-all group"
               >
                 View All
@@ -200,6 +203,7 @@ function MarketsOverviewContent() {
               </div>
               <Link
                 href="/markets/stocks"
+                aria-label="View all stocks"
                 className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-green-500/30 rounded-xl text-white text-sm transition-all group"
               >
                 View All
@@ -266,6 +270,7 @@ function MarketsOverviewContent() {
               </div>
               <Link
                 href="/markets/indices"
+                aria-label="View all market indices"
                 className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-blue-500/30 rounded-xl text-white text-sm transition-all group"
               >
                 View All
@@ -336,6 +341,7 @@ function MarketsOverviewContent() {
               </div>
               <Link
                 href="/markets/forex"
+                aria-label="View all forex pairs"
                 className="flex items-center gap-2 px-4 py-2.5 bg-surface-100 hover:bg-surface-200 border border-surface-300 hover:border-purple-500/30 rounded-xl text-white text-sm transition-all group"
               >
                 View All

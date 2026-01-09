@@ -159,7 +159,9 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Refresh/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /refresh cryptocurrency market data/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -167,7 +169,9 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const refreshBtn = screen.getByRole('button', { name: /Refresh/i });
+        const refreshBtn = screen.getByRole('button', {
+          name: /refresh cryptocurrency market data/i,
+        });
         fireEvent.click(refreshBtn);
       });
 
@@ -382,7 +386,7 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const rankBtn = screen.getByRole('button', { name: /Rank/i });
+        const rankBtn = screen.getByRole('button', { name: /sort by market cap rank/i });
         fireEvent.click(rankBtn);
       });
 
@@ -394,7 +398,7 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const priceBtn = screen.getByRole('button', { name: /Price/i });
+        const priceBtn = screen.getByRole('button', { name: /sort by current price/i });
         fireEvent.click(priceBtn);
       });
 
@@ -405,7 +409,7 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const changeBtn = screen.getByRole('button', { name: /24h Change/i });
+        const changeBtn = screen.getByRole('button', { name: /sort by 24 hour price change/i });
         fireEvent.click(changeBtn);
       });
 
@@ -416,7 +420,7 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const volumeBtn = screen.getByRole('button', { name: /Volume/i });
+        const volumeBtn = screen.getByRole('button', { name: /sort by trading volume/i });
         fireEvent.click(volumeBtn);
       });
 
@@ -427,7 +431,7 @@ describe('CryptoMarketsPage', () => {
       render(<CryptoMarketsPage />);
 
       await waitFor(() => {
-        const priceBtn = screen.getByRole('button', { name: /Price/i });
+        const priceBtn = screen.getByRole('button', { name: /sort by current price/i });
         fireEvent.click(priceBtn);
         fireEvent.click(priceBtn);
       });
