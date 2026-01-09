@@ -31,7 +31,7 @@ export default function LandingPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-surface-400">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading...</span>
         </div>
@@ -113,7 +113,7 @@ export default function LandingPage() {
           </h1>
 
           {/* Subheadline */}
-          <p className="text-xl text-gray-400 text-center max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-xl text-surface-400 text-center max-w-2xl mx-auto mb-10 leading-relaxed">
             The modern way to manage your portfolio. Track crypto, stocks, and all your assets with
             real-time data, smart analytics, and beautiful visualizations.
           </p>
@@ -150,7 +150,7 @@ export default function LandingPage() {
                 className="text-center p-4 bg-surface-50/50 border border-surface-300/50 rounded-2xl backdrop-blur-sm"
               >
                 <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                <div className="text-sm text-gray-500">{stat.label}</div>
+                <div className="text-sm text-surface-400">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -165,7 +165,7 @@ export default function LandingPage() {
               Everything You Need to
               <span className="text-lokifi-light"> Succeed</span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-xl mx-auto">
+            <p className="text-surface-400 text-lg max-w-xl mx-auto">
               Powerful features designed to help you track, analyze, and grow your investments.
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function LandingPage() {
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{feature.description}</p>
+                  <p className="text-surface-400 text-sm leading-relaxed">{feature.description}</p>
                 </div>
               );
             })}
@@ -204,13 +204,13 @@ export default function LandingPage() {
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Ready to Take Control?
               </h2>
-              <p className="text-gray-300 text-lg mb-8 max-w-xl mx-auto">
+              <p className="text-surface-300 text-lg mb-8 max-w-xl mx-auto">
                 Join thousands of investors who trust Lokifi to manage their portfolio. No credit
                 card required.
               </p>
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 rounded-2xl text-gray-900 font-semibold text-lg transition-all duration-300 hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-surface-100 rounded-2xl text-surface-0 font-semibold text-lg transition-all duration-300 hover:scale-105"
               >
                 Start Tracking for Free
                 <ArrowRight className="w-5 h-5" />
@@ -230,7 +230,7 @@ export default function LandingPage() {
               </div>
               <span className="font-bold text-xl text-white">Lokifi</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
+            <div className="flex items-center gap-6 text-sm text-surface-400">
               <Link href="/markets" className="hover:text-white transition-colors">
                 Markets
               </Link>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                 Alerts
               </Link>
             </div>
-            <p className="text-sm text-gray-600">© 2026 Lokifi. All rights reserved.</p>
+            <p className="text-sm text-surface-400">© 2026 Lokifi. All rights reserved.</p>
           </div>
         </div>
       </footer>
