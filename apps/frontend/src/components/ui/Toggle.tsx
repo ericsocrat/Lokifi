@@ -140,7 +140,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
             className={cn(
               sizeConfig.label,
               'font-medium',
-              disabled ? 'text-gray-500' : 'text-white'
+              disabled ? 'text-surface-300' : 'text-white'
             )}
           >
             {label}
@@ -148,7 +148,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
           {description && (
             <span
               id={descriptionId}
-              className={cn(sizeConfig.description, disabled ? 'text-gray-600' : 'text-gray-400')}
+              className={cn(sizeConfig.description, disabled ? 'text-surface-400' : 'text-surface-300')}
             >
               {description}
             </span>
@@ -177,7 +177,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
           'transition-colors duration-200 ease-in-out',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0',
           sizeConfig.track,
-          isChecked ? colorClass : 'bg-gray-600',
+          isChecked ? colorClass : 'bg-surface-400',
           disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
         )}
       >
