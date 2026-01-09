@@ -423,11 +423,11 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: '1D' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '7D' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '30D' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '1Y' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'ALL' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View 1d performance' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View 7d performance' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View 30d performance' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View 1y performance' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View all performance' })).toBeInTheDocument();
       });
     });
 
@@ -435,7 +435,7 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        const button1D = screen.getByRole('button', { name: '1D' });
+        const button1D = screen.getByRole('button', { name: 'View 1d performance' });
         expect(button1D.className).toContain('from-lokifi');
       });
     });
@@ -444,10 +444,10 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: '7D' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'View 7d performance' })).toBeInTheDocument();
       });
 
-      const button7D = screen.getByRole('button', { name: '7D' });
+      const button7D = screen.getByRole('button', { name: 'View 7d performance' });
       await userEvent.click(button7D);
 
       await waitFor(() => {
@@ -657,7 +657,7 @@ describe('DashboardPage', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: /view full portfolio/i })
+          screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' })
         ).toBeInTheDocument();
       });
     });
@@ -666,11 +666,11 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: /view full portfolio/i });
+        const button = screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' });
         expect(button).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button', { name: /view full portfolio/i });
+      const button = screen.getByRole('button', { name: 'View your complete portfolio with detailed asset breakdown' });
       await userEvent.click(button);
 
       expect(mockPush).toHaveBeenCalledWith('/portfolio');
@@ -705,7 +705,7 @@ describe('DashboardPage', () => {
 
       await waitFor(() => {
         expect(
-          screen.getByRole('button', { name: /explore markets/i })
+          screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' })
         ).toBeInTheDocument();
       });
     });
@@ -714,11 +714,11 @@ describe('DashboardPage', () => {
       render(<DashboardPage />);
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: /explore markets/i });
+        const button = screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' });
         expect(button).toBeInTheDocument();
       });
 
-      const button = screen.getByRole('button', { name: /explore markets/i });
+      const button = screen.getByRole('button', { name: 'Browse live cryptocurrency, stock, forex, and indices markets' });
       await userEvent.click(button);
 
       expect(mockPush).toHaveBeenCalledWith('/markets');
