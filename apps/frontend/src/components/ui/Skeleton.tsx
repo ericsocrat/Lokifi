@@ -74,7 +74,7 @@ export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(
     ref
   ) => {
     const baseClass = cn(
-      'bg-gray-700/50',
+      'bg-surface-200/50',
       variantClasses[variant],
       animate ? animationClasses[animation] : '',
       className
