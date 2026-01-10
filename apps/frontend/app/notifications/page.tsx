@@ -34,7 +34,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950">
+    <main className="min-h-screen bg-neutral-950" role="main" aria-label="Notifications page">
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
@@ -45,13 +45,13 @@ export default function NotificationsPage() {
             Stay updated with your latest activities and interactions.
           </p>
         </div>
-        
+
         <NotificationCenter 
           className="w-full"
           showHeader={false}
           maxHeight="calc(100vh - 200px)"
         />
       </div>
-    </div>
+    </main>
   );
 }

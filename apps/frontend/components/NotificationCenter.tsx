@@ -186,7 +186,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   return (
-    <div className={`bg-neutral-900 border border-neutral-700 rounded-lg ${className}`}>
+    <div
+      className={`bg-neutral-900 border border-neutral-700 rounded-lg ${className}`}
+      role="region"
+      aria-label="Notification center"
+    >
       {/* Header */}
       {showHeader && (
         <div className="p-4 border-b border-neutral-700">
@@ -207,6 +211,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   onClick={() => setShowFiltersPanel(!showFiltersPanel)}
                   className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg"
                   title="Toggle filters"
+                  aria-label="Toggle filters panel"
+                  aria-expanded={showFiltersPanel}
                 >
                   <Filter className="w-4 h-4" />
                 </button>
@@ -217,6 +223,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg"
                 title="Refresh notifications"
                 disabled={isLoading}
+                aria-label="Refresh notifications"
               >
                 <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
@@ -229,6 +236,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   }}
                   className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg"
                   title="Notification preferences"
+                  aria-label="Open notification preferences"
                 >
                   <Settings className="w-4 h-4" />
                 </button>
@@ -410,6 +418,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       setSelectedNotifications(newSelection);
                     }}
                     className="rounded border-neutral-600 bg-neutral-800 text-blue-500"
+                    aria-label={`Select notification ${notification.title ?? ''}`}
                   />
                 </div>
 
@@ -504,6 +513,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           onClick={() => markAsRead(notification.id)}
                           className="p-1.5 text-neutral-400 hover:text-green-400 hover:bg-green-400/10 rounded"
                           title="Mark as read"
+                          aria-label="Mark notification as read"
                         >
                           <Check className="w-3 h-3" />
                         </button>
@@ -513,6 +523,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         onClick={() => dismissNotification(notification.id)}
                         className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded"
                         title="Dismiss"
+                        aria-label="Dismiss notification"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -526,6 +537,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           }}
                           className="p-1.5 text-neutral-400 hover:text-blue-400 hover:bg-blue-400/10 rounded"
                           title="Open conversation"
+                          aria-label="Open conversation thread"
                         >
                           <ExternalLink className="w-3 h-3" />
                         </button>
@@ -593,6 +605,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <button
             onClick={clearAllNotifications}
             className="text-xs text-red-400 hover:text-red-300"
+            aria-label="Clear all notifications"
           >
             Clear all notifications
           </button>
