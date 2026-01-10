@@ -19,6 +19,7 @@ export default function FeatureFlagsDebug() {
   return (
     <main
       className="p-6 bg-surface-0 min-h-screen text-white"
+      role="main"
       aria-label="Feature flags debug interface"
     >
       <h1 className="text-2xl font-bold mb-6">Feature Flags Debug</h1>
