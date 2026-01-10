@@ -111,7 +111,10 @@ export default function DebtsPage() {
                 Track and manage your outstanding debts
               </p>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30" aria-label="Add a new debt to track">
+            <button
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
+              aria-label="Add a new debt to track"
+            >
               <Plus className="w-4 h-4" />
               Add Debt
             </button>
@@ -204,7 +207,10 @@ export default function DebtsPage() {
             <p className="text-surface-300 mb-6">
               Great job! You don&apos;t have any debts tracked yet.
             </p>
-            <button className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium" aria-label="Add your first debt to start tracking">
+            <button
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium"
+              aria-label="Add your first debt to start tracking"
+            >
               <Plus className="w-4 h-4" />
               Add Your First Debt
             </button>
