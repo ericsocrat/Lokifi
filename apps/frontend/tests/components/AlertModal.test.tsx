@@ -12,8 +12,10 @@
  * Session 131: Test coverage for AlertModal component
  */
 
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { safeChange, safeClick, safeRender } from '../utils/safeTestUtils';
 
 import AlertModal from '../../src/components/AlertModal';
 import { useChartStore } from '../../src/state/store';
@@ -46,6 +48,9 @@ const createMockDrawing = (
 describe('AlertModal', () => {
   const mockOnClose = vi.fn();
 
+  const renderModal = async (props?: Partial<ComponentProps<typeof AlertModal>>) =>
+    safeRender(<AlertModal open={true} onClose={mockOnClose} {...props} />);
+
   beforeEach(() => {
     vi.clearAllMocks();
     resetStore();
@@ -60,58 +65,58 @@ describe('AlertModal', () => {
   // ==========================================================================
 
   describe('rendering', () => {
-    it('should not render when open is false', () => {
-      render(<AlertModal open={false} onClose={mockOnClose} />);
+    it('should not render when open is false', async () => {
+      await safeRender(<AlertModal open={false} onClose={mockOnClose} />);
       expect(screen.queryByText('Create Alert')).not.toBeInTheDocument();
     });
 
-    it('should render when open is true', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render when open is true', async () => {
+      await renderModal();
       expect(screen.getByText('Create Alert')).toBeInTheDocument();
     });
 
-    it('should render type selector', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render type selector', async () => {
+      await renderModal();
       expect(screen.getByText('Type')).toBeInTheDocument();
       // Multiple comboboxes (type, sound)
       expect(screen.getAllByRole('combobox').length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should render note input', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render note input', async () => {
+      await renderModal();
       expect(screen.getByText('Note')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Alert')).toBeInTheDocument();
     });
 
-    it('should render cooldown input', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render cooldown input', async () => {
+      await renderModal();
       expect(screen.getByText('Cooldown')).toBeInTheDocument();
       expect(screen.getByDisplayValue('60000')).toBeInTheDocument();
     });
 
-    it('should render max triggers input', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render max triggers input', async () => {
+      await renderModal();
       expect(screen.getByText('Max triggers')).toBeInTheDocument();
     });
 
-    it('should render sound selector', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render sound selector', async () => {
+      await renderModal();
       expect(screen.getByText('Sound')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Ping')).toBeInTheDocument();
     });
 
-    it('should render cancel button', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render cancel button', async () => {
+      await renderModal();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 
-    it('should render create button', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render create button', async () => {
+      await renderModal();
       expect(screen.getByText('Create')).toBeInTheDocument();
     });
 
-    it('should render backdrop overlay', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should render backdrop overlay', async () => {
+      await renderModal();
       const backdrop = document.querySelector('.bg-black\\/50');
       expect(backdrop).toBeInTheDocument();
     });
@@ -122,27 +127,27 @@ describe('AlertModal', () => {
   // ==========================================================================
 
   describe('alert type options', () => {
-    it('should have all alert type options', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should have all alert type options', async () => {
+      await renderModal();
       expect(screen.getByRole('option', { name: 'Line cross' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Fib level cross' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Region touch' })).toBeInTheDocument();
       expect(screen.getByRole('option', { name: 'Time reminder' })).toBeInTheDocument();
     });
 
-    it('should default to "cross" type', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should default to "cross" type', async () => {
+      await renderModal();
       const select = screen.getAllByRole('combobox')[0];
       expect(select).toHaveValue('cross');
     });
 
-    it('should disable line cross when no hline/trendline/arrow selected', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should disable line cross when no hline/trendline/arrow selected', async () => {
+      await renderModal();
       const crossOption = screen.getByRole('option', { name: 'Line cross' });
       expect(crossOption).toBeDisabled();
     });
 
-    it('should enable line cross when hline is selected', () => {
+    it('should enable line cross when hline is selected', async () => {
       const drawing = createMockDrawing('hline');
 
       act(() => {
@@ -152,12 +157,12 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const crossOption = screen.getByRole('option', { name: 'Line cross' });
       expect(crossOption).not.toBeDisabled();
     });
 
-    it('should enable line cross when trendline is selected', () => {
+    it('should enable line cross when trendline is selected', async () => {
       const drawing = createMockDrawing('trendline');
 
       act(() => {
@@ -167,12 +172,12 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const crossOption = screen.getByRole('option', { name: 'Line cross' });
       expect(crossOption).not.toBeDisabled();
     });
 
-    it('should enable line cross when arrow is selected', () => {
+    it('should enable line cross when arrow is selected', async () => {
       const drawing = createMockDrawing('arrow');
 
       act(() => {
@@ -182,18 +187,18 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const crossOption = screen.getByRole('option', { name: 'Line cross' });
       expect(crossOption).not.toBeDisabled();
     });
 
-    it('should disable fib level cross when no fib drawing selected', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should disable fib level cross when no fib drawing selected', async () => {
+      await renderModal();
       const fibOption = screen.getByRole('option', { name: 'Fib level cross' });
       expect(fibOption).toBeDisabled();
     });
 
-    it('should enable fib level cross when fib drawing is selected', () => {
+    it('should enable fib level cross when fib drawing is selected', async () => {
       const drawing = createMockDrawing('fib');
 
       act(() => {
@@ -203,18 +208,18 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const fibOption = screen.getByRole('option', { name: 'Fib level cross' });
       expect(fibOption).not.toBeDisabled();
     });
 
-    it('should disable region touch when no rect drawing selected', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should disable region touch when no rect drawing selected', async () => {
+      await renderModal();
       const regionOption = screen.getByRole('option', { name: 'Region touch' });
       expect(regionOption).toBeDisabled();
     });
 
-    it('should enable region touch when rect drawing is selected', () => {
+    it('should enable region touch when rect drawing is selected', async () => {
       const drawing = createMockDrawing('rect');
 
       act(() => {
@@ -224,13 +229,13 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const regionOption = screen.getByRole('option', { name: 'Region touch' });
       expect(regionOption).not.toBeDisabled();
     });
 
-    it('should always enable time reminder option', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should always enable time reminder option', async () => {
+      await renderModal();
       const timeOption = screen.getByRole('option', { name: 'Time reminder' });
       expect(timeOption).not.toBeDisabled();
     });
@@ -242,47 +247,39 @@ describe('AlertModal', () => {
 
   describe('form inputs', () => {
     it('should update note value on input change', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const noteInput = screen.getByDisplayValue('Alert');
 
-      await act(async () => {
-        fireEvent.change(noteInput, { target: { value: 'My custom alert' } });
-      });
+      await safeChange(noteInput, 'My custom alert');
 
       expect(screen.getByDisplayValue('My custom alert')).toBeInTheDocument();
     });
 
     it('should update cooldown value on input change', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const cooldownInput = screen.getByDisplayValue('60000');
 
-      await act(async () => {
-        fireEvent.change(cooldownInput, { target: { value: '30000' } });
-      });
+      await safeChange(cooldownInput, '30000');
 
       expect(screen.getByDisplayValue('30000')).toBeInTheDocument();
     });
 
     it('should update max triggers value on input change', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       // Max triggers is the second spinbutton (after cooldown)
       const spinButtons = screen.getAllByRole('spinbutton');
       const maxTriggersInput = spinButtons[1];
 
-      await act(async () => {
-        fireEvent.change(maxTriggersInput, { target: { value: '5' } });
-      });
+      await safeChange(maxTriggersInput, '5');
 
       expect(screen.getByDisplayValue('5')).toBeInTheDocument();
     });
 
     it('should update sound value on select change', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const soundSelect = screen.getByDisplayValue('Ping');
 
-      await act(async () => {
-        fireEvent.change(soundSelect, { target: { value: 'none' } });
-      });
+      await safeChange(soundSelect, 'none');
 
       expect(screen.getByDisplayValue('None')).toBeInTheDocument();
     });
@@ -293,8 +290,8 @@ describe('AlertModal', () => {
   // ==========================================================================
 
   describe('conditional inputs', () => {
-    it('should not show fib level input for non-fib alert type', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should not show fib level input for non-fib alert type', async () => {
+      await renderModal();
       expect(screen.queryByText('Fib level')).not.toBeInTheDocument();
     });
 
@@ -308,29 +305,25 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'fib-cross' } });
-      });
+      await safeChange(typeSelect, 'fib-cross');
 
       expect(screen.getByText('Fib level')).toBeInTheDocument();
       expect(screen.getByDisplayValue('0.618')).toBeInTheDocument();
     });
 
-    it('should not show when input for non-time alert type', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should not show when input for non-time alert type', async () => {
+      await renderModal();
       expect(screen.queryByText('When')).not.toBeInTheDocument();
     });
 
     it('should show when input for time alert type', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'time' } });
-      });
+      await safeChange(typeSelect, 'time');
 
       expect(screen.getByText('When')).toBeInTheDocument();
     });
@@ -345,18 +338,14 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'fib-cross' } });
-      });
+      await safeChange(typeSelect, 'fib-cross');
 
       const fibInput = screen.getByDisplayValue('0.618');
 
-      await act(async () => {
-        fireEvent.change(fibInput, { target: { value: '0.5' } });
-      });
+      await safeChange(fibInput, '0.5');
 
       expect(screen.getByDisplayValue('0.5')).toBeInTheDocument();
     });
@@ -368,23 +357,19 @@ describe('AlertModal', () => {
 
   describe('modal close', () => {
     it('should call onClose when cancel button is clicked', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const cancelButton = screen.getByText('Cancel');
 
-      await act(async () => {
-        fireEvent.click(cancelButton);
-      });
+      await safeClick(cancelButton);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
     it('should call onClose when backdrop is clicked', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const backdrop = document.querySelector('.bg-black\\/50');
 
-      await act(async () => {
-        fireEvent.click(backdrop!);
-      });
+      await safeClick(backdrop!);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
@@ -395,13 +380,13 @@ describe('AlertModal', () => {
   // ==========================================================================
 
   describe('alert creation', () => {
-    it('should disable create button when no drawing selected for cross type', () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+    it('should disable create button when no drawing selected for cross type', async () => {
+      await renderModal();
       const createButton = screen.getByText('Create');
       expect(createButton).toBeDisabled();
     });
 
-    it('should enable create button when drawing is selected', () => {
+    it('should enable create button when drawing is selected', async () => {
       const drawing = createMockDrawing('hline');
 
       act(() => {
@@ -411,18 +396,16 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
       expect(createButton).not.toBeDisabled();
     });
 
     it('should enable create button for time type without drawing', async () => {
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'time' } });
-      });
+      await safeChange(typeSelect, 'time');
 
       const createButton = screen.getByText('Create');
       expect(createButton).not.toBeDisabled();
@@ -440,12 +423,10 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -471,18 +452,14 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'fib-cross' } });
-      });
+      await safeChange(typeSelect, 'fib-cross');
 
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -505,18 +482,14 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'region-touch' } });
-      });
+      await safeChange(typeSelect, 'region-touch');
 
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -536,24 +509,18 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'time' } });
-      });
+      await safeChange(typeSelect, 'time');
 
       const whenInput = document.querySelector('input[type="datetime-local"]');
 
-      await act(async () => {
-        fireEvent.change(whenInput!, { target: { value: futureDate } });
-      });
+      await safeChange(whenInput!, futureDate);
 
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -572,18 +539,14 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const typeSelect = screen.getAllByRole('combobox')[0];
 
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'time' } });
-      });
+      await safeChange(typeSelect, 'time');
 
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).not.toHaveBeenCalled();
       expect(mockOnClose).not.toHaveBeenCalled();
@@ -601,21 +564,17 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
 
       // Find max triggers input (third spinbutton - after cooldown)
       const spinButtons = screen.getAllByRole('spinbutton');
       const maxTriggersInput = spinButtons[1]; // Second spinbutton is max triggers
 
-      await act(async () => {
-        fireEvent.change(maxTriggersInput, { target: { value: '10' } });
-      });
+      await safeChange(maxTriggersInput, '10');
 
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -636,12 +595,10 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       expect(addAlertSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -656,7 +613,7 @@ describe('AlertModal', () => {
   // ==========================================================================
 
   describe('selection handling', () => {
-    it('should use first selected drawing when multiple selected', () => {
+    it('should use first selected drawing when multiple selected', async () => {
       const drawing1 = createMockDrawing('hline', { id: 'drawing-1' });
       const drawing2 = createMockDrawing('rect', { id: 'drawing-2' });
 
@@ -667,7 +624,7 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
 
       // Line cross should be enabled because first selection is hline
       const crossOption = screen.getByRole('option', { name: 'Line cross' });
@@ -678,26 +635,26 @@ describe('AlertModal', () => {
       expect(regionOption).toBeDisabled();
     });
 
-    it('should handle empty selection set', () => {
+    it('should handle empty selection set', async () => {
       act(() => {
         useChartStore.setState({
           selection: new Set(),
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
       expect(createButton).toBeDisabled();
     });
 
-    it('should handle undefined selection', () => {
+    it('should handle undefined selection', async () => {
       act(() => {
         useChartStore.setState({
           selection: undefined,
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
       expect(createButton).toBeDisabled();
     });
@@ -719,12 +676,10 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
       const createButton = screen.getByText('Create');
 
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       await waitFor(() => {
         expect(useChartStore.getState().alerts.length).toBeGreaterThan(0);
@@ -742,37 +697,27 @@ describe('AlertModal', () => {
         });
       });
 
-      render(<AlertModal open={true} onClose={mockOnClose} />);
+      await renderModal();
 
       // Select fib-cross type
       const typeSelect = screen.getAllByRole('combobox')[0];
-      await act(async () => {
-        fireEvent.change(typeSelect, { target: { value: 'fib-cross' } });
-      });
+      await safeChange(typeSelect, 'fib-cross');
 
       // Update note
       const noteInput = screen.getByDisplayValue('Alert');
-      await act(async () => {
-        fireEvent.change(noteInput, { target: { value: 'Fib alert' } });
-      });
+      await safeChange(noteInput, 'Fib alert');
 
       // Update fib level
       const fibInput = screen.getByDisplayValue('0.618');
-      await act(async () => {
-        fireEvent.change(fibInput, { target: { value: '0.5' } });
-      });
+      await safeChange(fibInput, '0.5');
 
       // Change sound
       const soundSelect = screen.getByDisplayValue('Ping');
-      await act(async () => {
-        fireEvent.change(soundSelect, { target: { value: 'none' } });
-      });
+      await safeChange(soundSelect, 'none');
 
       // Submit
       const createButton = screen.getByText('Create');
-      await act(async () => {
-        fireEvent.click(createButton);
-      });
+      await safeClick(createButton);
 
       // Verify alert was created with correct values
       await waitFor(() => {

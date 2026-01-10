@@ -146,6 +146,8 @@ function setupFailedFetch() {
 // Tests
 // ============================================================================
 
+import { safeRender } from '../utils/safeTestUtils';
+
 describe('DashboardPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -158,16 +160,22 @@ describe('DashboardPage', () => {
   // ==========================================================================
 
   describe('Loading State', () => {
-    it('should show loading spinner initially', () => {
+    it('should show loading spinner initially', async () => {
       setupEmptyState();
-      render(<DashboardPage />);
+      const pendingFetch = new Promise(() => {});
+      global.fetch = vi.fn().mockReturnValue(pendingFetch as unknown as Response);
+
+      await safeRender(<DashboardPage />);
 
       expect(screen.getByText('Loading dashboard...')).toBeInTheDocument();
     });
 
-    it('should show loading animation', () => {
+    it('should show loading animation', async () => {
       setupEmptyState();
-      render(<DashboardPage />);
+      const pendingFetch = new Promise(() => {});
+      global.fetch = vi.fn().mockReturnValue(pendingFetch as unknown as Response);
+
+      await safeRender(<DashboardPage />);
 
       const spinner = document.querySelector('.animate-spin');
       expect(spinner).toBeInTheDocument();
@@ -182,7 +190,7 @@ describe('DashboardPage', () => {
     it('should render welcome message with user name', async () => {
       setupEmptyState();
       setupSuccessFetch({ email: 'john@example.com', name: 'John Doe' });
-      render(<DashboardPage />);
+      await safeRender(<DashboardPage />);
 
       await waitFor(() => {
         expect(screen.getByText(/Welcome back, John/)).toBeInTheDocument();
@@ -192,7 +200,7 @@ describe('DashboardPage', () => {
     it('should use email prefix when no name provided', async () => {
       setupEmptyState();
       setupSuccessFetch({ email: 'jane@example.com' });
-      render(<DashboardPage />);
+      await safeRender(<DashboardPage />);
 
       await waitFor(() => {
         expect(screen.getByText(/Welcome back, Jane/)).toBeInTheDocument();
@@ -202,7 +210,7 @@ describe('DashboardPage', () => {
     it('should show fallback name on auth failure', async () => {
       setupEmptyState();
       setupFailedFetch();
-      render(<DashboardPage />);
+      await safeRender(<DashboardPage />);
 
       await waitFor(() => {
         expect(screen.getByText(/Welcome back, Demo/)).toBeInTheDocument();
@@ -211,7 +219,7 @@ describe('DashboardPage', () => {
 
     it('should render subtitle', async () => {
       setupEmptyState();
-      render(<DashboardPage />);
+      await safeRender(<DashboardPage />);
 
       await waitFor(() => {
         expect(screen.getByText('Your financial overview at a glance')).toBeInTheDocument();
