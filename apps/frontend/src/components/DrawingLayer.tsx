@@ -1,12 +1,8 @@
 import ContextMenu from '@/components/ContextMenu';
 import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
+import * as canvasHelpers from '@/lib/drawing/canvasHelpers';
 import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
-import {
-  createDrawing,
-  drawParallelChannel,
-  drawPitchfork,
-  updateDrawingGeometry,
-} from '@/lib/utils/drawings';
+import { createDrawing, updateDrawingGeometry } from '@/lib/utils/drawings';
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/utils/geom';
 import { useChartStore } from '@/state/store';
 import React from 'react';
@@ -77,7 +73,7 @@ export default function DrawingLayer() {
       const ctx = el.getContext('2d')!;
       const width = el.width,
         height = el.height;
-      ctx.clearRect(0, 0, width, height);
+      canvasHelpers.clearCanvas(ctx, width, height);
       ctx.save();
       const dpr = window.devicePixelRatio || 1;
       ctx.scale(dpr, dpr);
@@ -108,71 +104,56 @@ export default function DrawingLayer() {
           case 'trendline':
           case 'arrow': {
             const [a, b] = d.points;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
+            canvasHelpers.drawLine(ctx, a, b);
             if (d.kind === 'arrow')
-              drawArrowHead(
+              canvasHelpers.drawArrowHead(
                 ctx,
                 a,
                 b,
-                s.drawingSettings.arrowHead,
-                s.drawingSettings.arrowHeadSize,
-                getStrokeColor(ctx)
+                s.drawingSettings.arrowHead === 'filled' ? 'filled' : 'simple',
+                s.drawingSettings.arrowHeadSize
               );
             if (selected && s.drawingSettings.showHandles) {
-              drawLineHandles(ctx, a, b);
+              canvasHelpers.drawLineHandles(ctx, a, b);
             }
             if (s.drawingSettings.showLineLabels) {
-              drawLineLabel(ctx, a, b);
+              canvasHelpers.drawLineLabel(ctx, a, b, yToPrice);
             }
             break;
           }
           case 'ray': {
             const [a, b] = d.points;
-            const ext = extendRayToBounds(a, b, el.width, el.height);
-            ctx.beginPath();
-            ctx.moveTo(ext.start.x, ext.start.y);
-            ctx.lineTo(ext.end.x, ext.end.y);
-            ctx.stroke();
+            canvasHelpers.drawRay(ctx, a, b, el.width, el.height);
             if (selected && s.drawingSettings.showHandles) {
-              drawLineHandles(ctx, a, b);
+              canvasHelpers.drawLineHandles(ctx, a, b);
             }
             if (s.drawingSettings.showLineLabels) {
-              drawLineLabel(ctx, a, b);
+              canvasHelpers.drawLineLabel(ctx, a, b, yToPrice);
             }
             break;
           }
           case 'hline': {
             const y = d.points[0].y;
-            ctx.beginPath();
-            ctx.moveTo(0, y);
-            ctx.lineTo(el.width, y);
-            ctx.stroke();
-            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, { x: 24, y });
+            canvasHelpers.drawHorizontalLine(ctx, y, el.width);
+            if (selected && s.drawingSettings.showHandles)
+              canvasHelpers.drawHandle(ctx, { x: 24, y });
             break;
           }
           case 'vline': {
             const x = d.points[0].x;
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, el.height);
-            ctx.stroke();
-            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, { x, y: 24 });
+            canvasHelpers.drawVerticalLine(ctx, x, el.height);
+            if (selected && s.drawingSettings.showHandles)
+              canvasHelpers.drawHandle(ctx, { x, y: 24 });
             break;
           }
           case 'rect': {
             const r = rectFromPoints(d.points[0], d.points[1]);
-            if (sty.fill) {
-              ctx.save();
-              ctx.globalAlpha = 0.18;
-              ctx.fillStyle = sty.fill;
-              ctx.fillRect(r.x, r.y, r.w, r.h);
-              ctx.restore();
-            }
-            ctx.strokeRect(r.x, r.y, r.w, r.h);
-            if (selected && s.drawingSettings.showHandles) drawRectHandles(ctx, r.x, r.y, r.w, r.h);
+            canvasHelpers.drawRect(ctx, r.x, r.y, r.w, r.h, {
+              ...sty,
+              fill: sty.fill ?? undefined,
+            });
+            if (selected && s.drawingSettings.showHandles)
+              canvasHelpers.drawRectHandles(ctx, r.x, r.y, r.w, r.h);
             break;
           }
           case 'ellipse': {
@@ -181,83 +162,72 @@ export default function DrawingLayer() {
               cy = r.y + r.h / 2;
             const rx = Math.abs(r.w / 2),
               ry = Math.abs(r.h / 2);
-            ctx.beginPath();
-            ctx.ellipse(cx, cy, Math.max(rx, 0.1), Math.max(ry, 0.1), 0, 0, Math.PI * 2);
-            if (sty.fill) {
-              ctx.save();
-              ctx.globalAlpha = 0.18;
-              ctx.fillStyle = sty.fill;
-              ctx.fill();
-              ctx.restore();
-            }
-            ctx.stroke();
-            if (selected && s.drawingSettings.showHandles) drawRectHandles(ctx, r.x, r.y, r.w, r.h);
+            canvasHelpers.drawEllipse(ctx, cx, cy, rx, ry, { ...sty, fill: sty.fill ?? undefined });
+            if (selected && s.drawingSettings.showHandles)
+              canvasHelpers.drawRectHandles(ctx, r.x, r.y, r.w, r.h);
             break;
           }
           case 'fib': {
             const [a, b] = d.points;
-            const levels = (d.fibLevels ?? s.drawingSettings.fibDefaultLevels)
-              .slice()
-              .sort((x: number, y: number) => x - y);
-            const y0 = a.y,
-              y1 = b.y;
-            const left = 0,
-              right = el.width;
-            ctx.font = '12px ui-sans-serif, system-ui';
-            levels.forEach((p: number) => {
-              const y = y0 + (y1 - y0) * p;
-              ctx.beginPath();
-              ctx.moveTo(left, y);
-              ctx.lineTo(right, y);
-              ctx.stroke();
-              const price = yToPrice(y);
-              const txt = `${Math.round(p * 100)}%${price != null ? ` @ ${price}` : ''}`;
-              ctx.fillStyle = '#e5e7eb';
-              ctx.fillText(txt, right - 8 - ctx.measureText(txt).width, y - 4);
-            });
+            const levels = d.fibLevels ?? s.drawingSettings.fibDefaultLevels;
+            canvasHelpers.drawFibonacci(
+              ctx,
+              a,
+              b,
+              levels,
+              el.width,
+              { ...sty, fill: sty.fill ?? undefined },
+              yToPrice
+            );
             if (selected && s.drawingSettings.showHandles) {
-              drawHandle(ctx, a);
-              drawHandle(ctx, b);
+              canvasHelpers.drawHandle(ctx, a);
+              canvasHelpers.drawHandle(ctx, b);
             }
             break;
           }
           case 'parallel-channel': {
             const [a, b, c] = d.points;
-            drawParallelChannel(ctx, a, b, c, el.width, el.height, sty.fill);
+            canvasHelpers.drawParallelChannel(
+              ctx,
+              a,
+              b,
+              c,
+              el.width,
+              el.height,
+              sty.fill ?? undefined
+            );
             if (selected && s.drawingSettings.showHandles) {
-              drawHandle(ctx, a);
-              drawHandle(ctx, b);
-              drawHandle(ctx, c);
+              canvasHelpers.drawHandle(ctx, a);
+              canvasHelpers.drawHandle(ctx, b);
+              canvasHelpers.drawHandle(ctx, c);
             }
             break;
           }
           case 'pitchfork': {
             const [a, b, c] = d.points;
-            drawPitchfork(ctx, a, b, c, el.width, el.height);
+            canvasHelpers.drawPitchfork(ctx, a, b, c, el.width, el.height);
             if (selected && s.drawingSettings.showHandles) {
-              drawHandle(ctx, a);
-              drawHandle(ctx, b);
-              drawHandle(ctx, c);
+              canvasHelpers.drawHandle(ctx, a);
+              canvasHelpers.drawHandle(ctx, b);
+              canvasHelpers.drawHandle(ctx, c);
             }
             break;
           }
           case 'text': {
             const p = d.points[0];
-            ctx.fillStyle = '#e5e7eb';
-            ctx.font = '12px ui-sans-serif, system-ui';
-            ctx.fillText(d.text || 'Text', p.x, p.y);
-            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, p);
+            canvasHelpers.drawText(ctx, p, d.text || 'Text', {
+              ...sty,
+              fill: sty.fill ?? undefined,
+            });
+            if (selected && s.drawingSettings.showHandles) canvasHelpers.drawHandle(ctx, p);
             break;
           }
           case 'ruler': {
             // Ruler drawing logic (if needed)
             const [a, b] = d.points;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
+            canvasHelpers.drawLine(ctx, a, b);
             if (selected && s.drawingSettings.showHandles) {
-              drawLineHandles(ctx, a, b);
+              canvasHelpers.drawLineHandles(ctx, a, b);
             }
             break;
           }
@@ -329,7 +299,7 @@ export default function DrawingLayer() {
       case 'ray': {
         // approximate by clamping second point to bounds
         const [a, b] = d.points;
-        const ext = extendRayToBounds(a, b, W, H);
+        const ext = canvasHelpers.extendRay(a, b, W, H);
         return edge(ext.start, ext.end);
       }
       case 'hline': {
@@ -506,105 +476,3 @@ export default function DrawingLayer() {
     </div>
   );
 }
-
-/** ===== Helpers ===== */
-function drawHandle(ctx: CanvasRenderingContext2D, p: Point) {
-  ctx.save();
-  ctx.fillStyle = '#0b1220';
-  ctx.strokeStyle = '#60a5fa';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.rect(p.x - 4, p.y - 4, 8, 8);
-  ctx.fill();
-  ctx.stroke();
-  ctx.restore();
-}
-function drawLineHandles(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
-  drawHandle(ctx, a);
-  drawHandle(ctx, b);
-}
-function drawRectHandles(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number
-) {
-  drawHandle(ctx, { x, y });
-  drawHandle(ctx, { x: x + w, y });
-  drawHandle(ctx, { x, y: y + h });
-  drawHandle(ctx, { x: x + w, y: y + h });
-  drawHandle(ctx, { x: x + w / 2, y });
-  drawHandle(ctx, { x: x + w / 2, y: y + h });
-  drawHandle(ctx, { x, y: y + h / 2 });
-  drawHandle(ctx, { x: x + w, y: y + h / 2 });
-}
-function getStrokeColor(ctx: CanvasRenderingContext2D): string {
-  const s = ctx.strokeStyle;
-  return typeof s === 'string' ? s : '#9ca3af';
-}
-function drawArrowHead(
-  ctx: CanvasRenderingContext2D,
-  a: Point,
-  b: Point,
-  kind: 'none' | 'open' | 'filled',
-  size: number,
-  color: string
-) {
-  if (kind === 'none') return;
-  const vx = b.x - a.x,
-    vy = b.y - a.y;
-  const len = Math.hypot(vx, vy) || 1;
-  const nx = vx / len,
-    ny = vy / len;
-  const px = -ny,
-    py = nx;
-  const tip = b;
-  const baseX = b.x - nx * size;
-  const baseY = b.y - ny * size;
-  ctx.save();
-  ctx.beginPath();
-  if (kind === 'filled') {
-    ctx.moveTo(tip.x, tip.y);
-    ctx.lineTo(baseX + px * size * 0.6, baseY + py * size * 0.6);
-    ctx.lineTo(baseX - px * size * 0.6, baseY - py * size * 0.6);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-  } else {
-    ctx.moveTo(tip.x, tip.y);
-    ctx.lineTo(baseX + px * size * 0.6, baseY + py * size * 0.6);
-    ctx.moveTo(tip.x, tip.y);
-    ctx.lineTo(baseX - px * size * 0.6, baseY - py * size * 0.6);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
-  const p1 = yToPrice(a.y),
-    p2 = yToPrice(b.y);
-  if (p1 == null || p2 == null || p1 === 0) return;
-  const pct = ((p2 - p1) / Math.abs(p1)) * 100;
-  const txt = `${Math.round(pct)}% @ ${p2}`;
-  ctx.save();
-  ctx.fillStyle = '#e5e7eb';
-  ctx.font = '12px ui-sans-serif, system-ui';
-  ctx.fillText(txt, Math.min(a.x, b.x) + 8, Math.min(a.y, b.y) - 6);
-  ctx.restore();
-}
-
-// simple ray extender
-function extendRayToBounds(a: Point, b: Point, W: number, H: number) {
-  const vx = b.x - a.x,
-    vy = b.y - a.y;
-  const len = Math.hypot(vx, vy) || 1;
-  const nx = vx / len,
-    ny = vy / len;
-  const t = 1e6; // far distance
-  const end = { x: a.x + nx * t, y: a.y + ny * t };
-  // clamp to bounds
-  end.x = Math.max(0, Math.min(W, end.x));
-  end.y = Math.max(0, Math.min(H, end.y));
-  return { start: a, end };
-}
-

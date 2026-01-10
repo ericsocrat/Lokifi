@@ -286,3 +286,272 @@ export function pointInRect(
 ): boolean {
   return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
 }
+
+/**
+ * Draw fibonacci retracement levels
+ */
+export function drawFibonacci(
+  ctx: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+  levels: number[],
+  canvasWidth: number,
+  style: DrawingStyle = {},
+  yToPrice?: (y: number) => number | null
+): void {
+  const sortedLevels = [...levels].sort((a, b) => a - b);
+  const y0 = from.y;
+  const y1 = to.y;
+  const left = 0;
+  const right = canvasWidth;
+
+  ctx.save();
+  applyStyle(ctx, style);
+  ctx.font = '12px ui-sans-serif, system-ui';
+
+  sortedLevels.forEach((level) => {
+    const y = y0 + (y1 - y0) * level;
+
+    // Draw horizontal line
+    ctx.beginPath();
+    ctx.moveTo(left, y);
+    ctx.lineTo(right, y);
+    ctx.stroke();
+
+    // Draw label
+    const price = yToPrice ? yToPrice(y) : null;
+    const txt = `${Math.round(level * 100)}%${price != null ? ` @ ${price}` : ''}`;
+    ctx.fillStyle = '#e5e7eb';
+    ctx.fillText(txt, right - 8 - ctx.measureText(txt).width, y - 4);
+  });
+
+  ctx.restore();
+}
+
+/**
+ * Draw parallel channel with three points
+ */
+export function drawParallelChannel(
+  ctx: CanvasRenderingContext2D,
+  a: Point,
+  b: Point,
+  c: Point,
+  canvasWidth: number,
+  canvasHeight: number,
+  fillColor?: string
+): void {
+  // Calculate the width/offset from the base line (a-b) to point c
+  const midY = (a.y + b.y) / 2;
+  const offset = c.y - midY;
+
+  // Base line
+  const baseLine = extendLine(a, b, canvasWidth, canvasHeight);
+
+  // Parallel lines (top and bottom)
+  const topLine = extendLine(
+    { x: a.x, y: a.y - offset },
+    { x: b.x, y: b.y - offset },
+    canvasWidth,
+    canvasHeight
+  );
+  const bottomLine = extendLine(
+    { x: a.x, y: a.y + offset },
+    { x: b.x, y: b.y + offset },
+    canvasWidth,
+    canvasHeight
+  );
+
+  ctx.save();
+
+  // Fill the channel if requested
+  if (fillColor) {
+    ctx.fillStyle = fillColor;
+    ctx.globalAlpha = 0.18;
+    ctx.beginPath();
+    ctx.moveTo(topLine.start.x, topLine.start.y);
+    ctx.lineTo(topLine.end.x, topLine.end.y);
+    ctx.lineTo(bottomLine.end.x, bottomLine.end.y);
+    ctx.lineTo(bottomLine.start.x, bottomLine.start.y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Draw the three lines
+  [topLine, baseLine, bottomLine].forEach((line) => {
+    ctx.beginPath();
+    ctx.moveTo(line.start.x, line.start.y);
+    ctx.lineTo(line.end.x, line.end.y);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+/**
+ * Draw pitchfork with three pivot points
+ */
+export function drawPitchfork(
+  ctx: CanvasRenderingContext2D,
+  a: Point,
+  b: Point,
+  c: Point,
+  canvasWidth: number,
+  canvasHeight: number
+): void {
+  ctx.save();
+
+  // Calculate the midpoint between a and b
+  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+
+  // Median line from c through midpoint
+  const medianLine = extendLine(c, mid, canvasWidth, canvasHeight);
+
+  // Prong from a to extended point parallel to median
+  const prongA = extendLine(a, c, canvasWidth, canvasHeight);
+
+  // Prong from b to extended point parallel to median
+  const prongB = extendLine(b, c, canvasWidth, canvasHeight);
+
+  // Draw all three lines
+  [medianLine, prongA, prongB].forEach((line) => {
+    ctx.beginPath();
+    ctx.moveTo(line.start.x, line.start.y);
+    ctx.lineTo(line.end.x, line.end.y);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+/**
+ * Draw a ray (infinite line from one point through another)
+ */
+export function drawRay(
+  ctx: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+  canvasWidth: number,
+  canvasHeight: number
+): void {
+  const extended = extendRay(from, to, canvasWidth, canvasHeight);
+
+  ctx.beginPath();
+  ctx.moveTo(extended.start.x, extended.start.y);
+  ctx.lineTo(extended.end.x, extended.end.y);
+  ctx.stroke();
+}
+
+/**
+ * Extend a ray to canvas bounds
+ */
+export function extendRay(
+  from: Point,
+  to: Point,
+  canvasWidth: number,
+  canvasHeight: number
+): { start: Point; end: Point } {
+  const vx = to.x - from.x;
+  const vy = to.y - from.y;
+  const len = Math.hypot(vx, vy) || 1;
+  const nx = vx / len;
+  const ny = vy / len;
+
+  // Extend to a far distance
+  const t = 1e6;
+  const end = { x: from.x + nx * t, y: from.y + ny * t };
+
+  // Clamp to canvas bounds
+  end.x = Math.max(0, Math.min(canvasWidth, end.x));
+  end.y = Math.max(0, Math.min(canvasHeight, end.y));
+
+  return { start: from, end };
+}
+
+/**
+ * Extend a line segment to canvas bounds in both directions
+ */
+export function extendLine(
+  a: Point,
+  b: Point,
+  canvasWidth: number,
+  canvasHeight: number
+): { start: Point; end: Point } {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const nx = dx / len;
+  const ny = dy / len;
+
+  // Extend in both directions
+  const t = 1e6;
+  const start = { x: a.x - nx * t, y: a.y - ny * t };
+  const end = { x: a.x + nx * t, y: a.y + ny * t };
+
+  // Clamp to canvas bounds
+  start.x = Math.max(0, Math.min(canvasWidth, start.x));
+  start.y = Math.max(0, Math.min(canvasHeight, start.y));
+  end.x = Math.max(0, Math.min(canvasWidth, end.x));
+  end.y = Math.max(0, Math.min(canvasHeight, end.y));
+
+  return { start, end };
+}
+
+/**
+ * Draw text label at a point
+ */
+export function drawText(
+  ctx: CanvasRenderingContext2D,
+  point: Point,
+  text: string,
+  style: DrawingStyle = {}
+): void {
+  ctx.save();
+  ctx.fillStyle = style.stroke || '#e5e7eb';
+  ctx.font = '12px ui-sans-serif, system-ui';
+  ctx.fillText(text, point.x, point.y);
+  ctx.restore();
+}
+
+/**
+ * Draw a line label showing percentage change and price
+ */
+export function drawLineLabel(
+  ctx: CanvasRenderingContext2D,
+  from: Point,
+  to: Point,
+  yToPrice: (y: number) => number | null
+): void {
+  const p1 = yToPrice(from.y);
+  const p2 = yToPrice(to.y);
+
+  if (p1 == null || p2 == null || p1 === 0) return;
+
+  const pct = ((p2 - p1) / Math.abs(p1)) * 100;
+  const txt = `${Math.round(pct)}% @ ${p2}`;
+
+  ctx.save();
+  ctx.fillStyle = '#e5e7eb';
+  ctx.font = '12px ui-sans-serif, system-ui';
+  ctx.fillText(txt, Math.min(from.x, to.x) + 8, Math.min(from.y, to.y) - 6);
+  ctx.restore();
+}
+
+/**
+ * Create rectangle from two corner points
+ */
+export function rectFromPoints(
+  p1: Point,
+  p2: Point
+): {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+} {
+  const x = Math.min(p1.x, p2.x);
+  const y = Math.min(p1.y, p2.y);
+  const w = Math.abs(p2.x - p1.x);
+  const h = Math.abs(p2.y - p1.y);
+  return { x, y, w, h };
+}

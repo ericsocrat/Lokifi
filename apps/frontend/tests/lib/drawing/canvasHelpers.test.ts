@@ -4,16 +4,25 @@ import {
   distanceToSegment,
   drawArrowHead,
   drawEllipse,
+  drawFibonacci,
   drawFilledRect,
   drawHandle,
   drawHorizontalLine,
   drawLine,
   drawLineHandles,
+  drawLineLabel,
+  drawParallelChannel,
+  drawPitchfork,
+  drawRay,
   drawRect,
   drawRectHandles,
+  drawText,
   drawVerticalLine,
+  extendLine,
+  extendRay,
   pointInRect,
   pointNearPoint,
+  rectFromPoints,
   setLineDash,
   type DrawingStyle,
   type Point,
@@ -39,10 +48,13 @@ describe('Canvas Helpers', () => {
       restore: vi.fn(),
       clearRect: vi.fn(),
       closePath: vi.fn(),
+      fillText: vi.fn(),
+      measureText: vi.fn().mockReturnValue({ width: 50 }),
       fillStyle: '#000000',
       strokeStyle: '#000000',
       lineWidth: 1,
       globalAlpha: 1,
+      font: '12px sans-serif',
     } as unknown as CanvasRenderingContext2D;
   });
 
@@ -445,6 +457,203 @@ describe('Canvas Helpers', () => {
       const inside = pointInRect(point, 50, 50, 0, 0);
 
       expect(inside).toBe(true);
+    });
+  });
+
+  describe('drawFibonacci', () => {
+    it('should draw fibonacci retracement levels', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 100, y: 200 };
+      const levels = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+
+      drawFibonacci(mockCtx, from, to, levels, 800);
+
+      expect(mockCtx.moveTo).toHaveBeenCalled();
+      expect(mockCtx.lineTo).toHaveBeenCalled();
+      expect(mockCtx.fillText).toHaveBeenCalled();
+    });
+
+    it('should sort levels before drawing', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 100, y: 200 };
+      const levels = [1, 0.5, 0, 0.618]; // Unsorted
+
+      drawFibonacci(mockCtx, from, to, levels, 800);
+
+      expect(mockCtx.stroke).toHaveBeenCalled();
+    });
+  });
+
+  describe('drawParallelChannel', () => {
+    it('should draw parallel channel with three lines', () => {
+      const a: Point = { x: 100, y: 100 };
+      const b: Point = { x: 200, y: 150 };
+      const c: Point = { x: 150, y: 200 };
+
+      drawParallelChannel(mockCtx, a, b, c, 800, 600);
+
+      expect(mockCtx.moveTo).toHaveBeenCalled();
+      expect(mockCtx.lineTo).toHaveBeenCalled();
+      expect(mockCtx.stroke).toHaveBeenCalled();
+    });
+
+    it('should fill channel when fill color provided', () => {
+      const a: Point = { x: 100, y: 100 };
+      const b: Point = { x: 200, y: 150 };
+      const c: Point = { x: 150, y: 200 };
+
+      drawParallelChannel(mockCtx, a, b, c, 800, 600, '#ff0000');
+
+      expect(mockCtx.fill).toHaveBeenCalled();
+      expect(mockCtx.closePath).toHaveBeenCalled();
+    });
+  });
+
+  describe('drawPitchfork', () => {
+    it('should draw pitchfork with median and prongs', () => {
+      const a: Point = { x: 100, y: 100 };
+      const b: Point = { x: 200, y: 100 };
+      const c: Point = { x: 150, y: 200 };
+
+      drawPitchfork(mockCtx, a, b, c, 800, 600);
+
+      expect(mockCtx.moveTo).toHaveBeenCalled();
+      expect(mockCtx.lineTo).toHaveBeenCalled();
+      expect(mockCtx.stroke).toHaveBeenCalled();
+    });
+  });
+
+  describe('drawRay', () => {
+    it('should draw ray extending to canvas bounds', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 200, y: 200 };
+
+      drawRay(mockCtx, from, to, 800, 600);
+
+      expect(mockCtx.beginPath).toHaveBeenCalled();
+      expect(mockCtx.moveTo).toHaveBeenCalled();
+      expect(mockCtx.lineTo).toHaveBeenCalled();
+      expect(mockCtx.stroke).toHaveBeenCalled();
+    });
+  });
+
+  describe('extendRay', () => {
+    it('should extend ray to canvas bounds', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 200, y: 200 };
+
+      const extended = extendRay(from, to, 800, 600);
+
+      expect(extended.start).toEqual(from);
+      expect(extended.end.x).toBeGreaterThan(from.x);
+      expect(extended.end.y).toBeGreaterThan(from.y);
+    });
+
+    it('should clamp to canvas bounds', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 200, y: 200 };
+
+      const extended = extendRay(from, to, 800, 600);
+
+      expect(extended.end.x).toBeLessThanOrEqual(800);
+      expect(extended.end.y).toBeLessThanOrEqual(600);
+    });
+  });
+
+  describe('extendLine', () => {
+    it('should extend line in both directions', () => {
+      const a: Point = { x: 400, y: 300 };
+      const b: Point = { x: 500, y: 400 };
+
+      const extended = extendLine(a, b, 800, 600);
+
+      expect(extended.start.x).toBeLessThan(a.x);
+      expect(extended.end.x).toBeGreaterThan(b.x);
+    });
+
+    it('should clamp to canvas bounds', () => {
+      const a: Point = { x: 400, y: 300 };
+      const b: Point = { x: 500, y: 400 };
+
+      const extended = extendLine(a, b, 800, 600);
+
+      expect(extended.start.x).toBeGreaterThanOrEqual(0);
+      expect(extended.start.y).toBeGreaterThanOrEqual(0);
+      expect(extended.end.x).toBeLessThanOrEqual(800);
+      expect(extended.end.y).toBeLessThanOrEqual(600);
+    });
+  });
+
+  describe('drawText', () => {
+    it('should draw text at point', () => {
+      const point: Point = { x: 100, y: 100 };
+
+      drawText(mockCtx, point, 'Test Label');
+
+      expect(mockCtx.fillText).toHaveBeenCalledWith('Test Label', 100, 100);
+    });
+
+    it('should apply style', () => {
+      const point: Point = { x: 100, y: 100 };
+      const style = { stroke: '#ff0000' };
+
+      drawText(mockCtx, point, 'Test', style);
+
+      expect(mockCtx.fillStyle).toBe('#ff0000');
+    });
+  });
+
+  describe('drawLineLabel', () => {
+    it('should draw line label with percentage and price', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 200, y: 150 };
+      const yToPrice = vi.fn().mockReturnValueOnce(100).mockReturnValueOnce(110);
+
+      drawLineLabel(mockCtx, from, to, yToPrice);
+
+      expect(mockCtx.fillText).toHaveBeenCalled();
+      expect(yToPrice).toHaveBeenCalledWith(100);
+      expect(yToPrice).toHaveBeenCalledWith(150);
+    });
+
+    it('should not draw if price is null', () => {
+      const from: Point = { x: 100, y: 100 };
+      const to: Point = { x: 200, y: 150 };
+      const yToPrice = vi.fn().mockReturnValue(null);
+
+      drawLineLabel(mockCtx, from, to, yToPrice);
+
+      expect(mockCtx.fillText).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('rectFromPoints', () => {
+    it('should create rectangle from two points', () => {
+      const p1: Point = { x: 100, y: 100 };
+      const p2: Point = { x: 300, y: 200 };
+
+      const rect = rectFromPoints(p1, p2);
+
+      expect(rect).toEqual({ x: 100, y: 100, w: 200, h: 100 });
+    });
+
+    it('should handle reversed points', () => {
+      const p1: Point = { x: 300, y: 200 };
+      const p2: Point = { x: 100, y: 100 };
+
+      const rect = rectFromPoints(p1, p2);
+
+      expect(rect).toEqual({ x: 100, y: 100, w: 200, h: 100 });
+    });
+
+    it('should handle negative dimensions', () => {
+      const p1: Point = { x: 300, y: 100 };
+      const p2: Point = { x: 100, y: 200 };
+
+      const rect = rectFromPoints(p1, p2);
+
+      expect(rect.w).toBeGreaterThanOrEqual(0);
+      expect(rect.h).toBeGreaterThanOrEqual(0);
     });
   });
 });
