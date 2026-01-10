@@ -29,6 +29,7 @@ export default function EditProfilePage() {
     username: '',
     is_public: true,
   });
+  const [fieldErrors, setFieldErrors] = useState<{ display_name?: string; username?: string; bio?: string }>({});
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -71,12 +72,36 @@ export default function EditProfilePage() {
     }
   };
 
+  const validateField = (name: string, value: string | boolean): string | undefined => {
+    if (name === 'display_name') {
+      const v = String(value).trim();
+      if (!v) return 'Display name is required';
+      if (v.length < 2) return 'Display name must be at least 2 characters';
+      if (v.length > 50) return 'Display name must be 50 characters or fewer';
+    }
+    if (name === 'username') {
+      const v = String(value).trim();
+      if (!v) return 'Username is required';
+      const re = /^[a-zA-Z0-9_]{3,20}$/;
+      if (!re.test(v)) return 'Username must be 3-20 characters (letters, numbers, underscores)';
+    }
+    if (name === 'bio') {
+      const v = String(value);
+      if (v.length > 500) return 'Bio must be 500 characters or fewer';
+    }
+    return undefined;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
+    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: newValue,
     }));
+    // Real-time field validation
+    const message = validateField(name, newValue);
+    setFieldErrors((prev) => ({ ...prev, [name]: message }));
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,6 +138,20 @@ export default function EditProfilePage() {
     setSaving(true);
     setError(null);
     setSuccess(null);
+
+    // Validate all fields before submit
+    const errors: { display_name?: string; username?: string; bio?: string } = {
+      display_name: validateField('display_name', formData.display_name),
+      username: validateField('username', formData.username),
+      bio: validateField('bio', formData.bio),
+    };
+    setFieldErrors(errors);
+    const hasErrors = Object.values(errors).some((m) => !!m);
+    if (hasErrors) {
+      setSaving(false);
+      setError('Please fix the highlighted errors and try again.');
+      return;
+    }
 
     try {
       const token = authToken();
@@ -271,51 +310,75 @@ export default function EditProfilePage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">
-                  Display Name
-                </label>
-                <input
-                  type="text"
-                  name="display_name"
-                  value={formData.display_name}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
-                  placeholder="Your display name"
-                  maxLength={50}
-                />
+                  <label htmlFor="display_name" className="block text-sm font-medium text-surface-300 mb-2">
+                    Display Name
+                  </label>
+                  <input
+                    id="display_name"
+                    type="text"
+                    name="display_name"
+                    value={formData.display_name}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
+                    placeholder="Your display name"
+                    maxLength={50}
+                    aria-invalid={!!fieldErrors.display_name}
+                    aria-describedby={fieldErrors.display_name ? 'display_name-error' : undefined}
+                  />
+                  {fieldErrors.display_name && (
+                    <p id="display_name-error" role="alert" aria-live="assertive" className="text-red-300 text-sm mt-1">
+                      {fieldErrors.display_name}
+                    </p>
+                  )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
-                  placeholder="Your username"
-                  pattern="^[a-zA-Z0-9_]{3,20}$"
-                  title="Username must be 3-20 characters, letters, numbers and underscores only"
-                />
+                  <label htmlFor="username" className="block text-sm font-medium text-surface-300 mb-2">Username</label>
+                  <input
+                    id="username"
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
+                    placeholder="Your username"
+                    pattern="^[a-zA-Z0-9_]{3,20}$"
+                    title="Username must be 3-20 characters, letters, numbers and underscores only"
+                    aria-invalid={!!fieldErrors.username}
+                    aria-describedby={fieldErrors.username ? 'username-error' : undefined}
+                  />
                 <p className="text-surface-300 text-sm mt-1">
                   3-20 characters, letters, numbers and underscores only
                 </p>
+                  {fieldErrors.username && (
+                    <p id="username-error" role="alert" aria-live="assertive" className="text-red-300 text-sm mt-1">
+                      {fieldErrors.username}
+                    </p>
+                  )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-surface-300 mb-2">Bio</label>
-                <textarea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi resize-none"
-                  placeholder="Tell us about yourself..."
-                  maxLength={500}
-                />
+                  <label htmlFor="bio" className="block text-sm font-medium text-surface-300 mb-2">Bio</label>
+                  <textarea
+                    id="bio"
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi resize-none"
+                    placeholder="Tell us about yourself..."
+                    maxLength={500}
+                    aria-invalid={!!fieldErrors.bio}
+                    aria-describedby={fieldErrors.bio ? 'bio-error' : undefined}
+                  />
                 <p className="text-surface-300 text-sm mt-1">
                   {formData.bio.length}/500 characters
                 </p>
+                  {fieldErrors.bio && (
+                    <p id="bio-error" role="alert" aria-live="polite" className="text-red-300 text-sm mt-1">
+                      {fieldErrors.bio}
+                    </p>
+                  )}
               </div>
             </div>
           </div>
