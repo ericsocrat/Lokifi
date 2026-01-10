@@ -61,7 +61,7 @@ function MarketsOverviewContent() {
   const forex = data?.data.forex || [];
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main role="main" aria-label="Markets page" className="min-h-screen bg-surface-0">
       {/* Sticky Header */}
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -400,7 +400,7 @@ function MarketsOverviewContent() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }
 

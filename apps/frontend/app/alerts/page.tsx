@@ -191,7 +191,7 @@ export default function AlertsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main role="main" aria-label="Price Alerts page" className="min-h-screen bg-surface-0">
       {needAuthModal && <AuthModal onClose={() => setNeedAuthModal(false)} />}
 
       {/* Header */}
@@ -632,6 +632,6 @@ export default function AlertsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

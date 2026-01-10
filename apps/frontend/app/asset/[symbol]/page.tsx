@@ -213,7 +213,11 @@ function AssetDetailContent() {
   const periodChangePercent = (periodChange / periodStart) * 100;
 
   return (
-    <div className="min-h-screen bg-surface-0 p-6 md:p-8">
+    <main
+      role="main"
+      aria-label="Asset detail page"
+      className="min-h-screen bg-surface-0 p-6 md:p-8"
+    >
       <div className="max-w-[1800px] mx-auto">
         {/* Back Button */}
         <button
@@ -599,7 +603,7 @@ function AssetDetailContent() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

@@ -145,7 +145,11 @@ function MarketsPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main
+      role="main"
+      aria-label="Cryptocurrency Markets page"
+      className="min-h-screen bg-surface-0"
+    >
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -431,7 +435,7 @@ function MarketsPageContent() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

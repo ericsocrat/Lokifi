@@ -97,7 +97,7 @@ export default function DebtsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main role="main" aria-label="Debts page" className="min-h-screen bg-surface-0">
       {/* Header */}
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -107,7 +107,9 @@ export default function DebtsPage() {
                 <CreditCard className="w-6 h-6 text-rose-400" />
                 Debts & Liabilities
               </h1>
-              <p className="text-sm text-surface-300 mt-1">Track and manage your outstanding debts</p>
+              <p className="text-sm text-surface-300 mt-1">
+                Track and manage your outstanding debts
+              </p>
             </div>
             <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30">
               <Plus className="w-4 h-4" />
@@ -209,8 +211,6 @@ export default function DebtsPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }
-
-

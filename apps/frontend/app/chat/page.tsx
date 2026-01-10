@@ -38,7 +38,7 @@ export default function ChatPage() {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <main role="main" aria-label="AI Chat page" className="space-y-4">
       <h1 className="text-2xl font-semibold">AI Chat</h1>
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900">
         <div
@@ -104,6 +104,6 @@ export default function ChatPage() {
           </>
         )}
       </p>
-    </div>
+    </main>
   );
 }

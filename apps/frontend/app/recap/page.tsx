@@ -150,7 +150,7 @@ export default function RecapPage() {
     .reduce((sum, t) => sum + t.amount, 0);
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main role="main" aria-label="Recap page" className="min-h-screen bg-surface-0">
       {/* Header */}
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
@@ -292,6 +292,6 @@ export default function RecapPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

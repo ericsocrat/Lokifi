@@ -83,7 +83,11 @@ export default function AIResearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0 flex flex-col">
+    <main
+      role="main"
+      aria-label="AI Research Assistant page"
+      className="min-h-screen bg-surface-0 flex flex-col"
+    >
       {/* Header */}
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-4xl mx-auto px-6 py-4">
@@ -234,6 +238,6 @@ export default function AIResearchPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
