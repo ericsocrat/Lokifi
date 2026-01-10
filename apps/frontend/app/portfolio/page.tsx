@@ -343,7 +343,11 @@ function PortfolioPageContent() {
                     )}
 
                     {/* Timeframe Selector */}
-                    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1" role="group" aria-label="Portfolio performance timeframe selection">
+                    <div
+                      className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1"
+                      role="group"
+                      aria-label="Portfolio performance timeframe selection"
+                    >
                       {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map(
                         (tf: '1D' | '1W' | '1M' | '1Y' | 'ALL') => (
                           <button
@@ -522,7 +526,11 @@ function PortfolioPageContent() {
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
             <div className="relative">
-              <button className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors" aria-label="Sort portfolio by value, change, name, or symbol" aria-haspopup="true">
+              <button
+                className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors"
+                aria-label="Sort portfolio by value, change, name, or symbol"
+                aria-haspopup="true"
+              >
                 <ArrowUpDown className="w-4 h-4" />
                 Sort:{' '}
                 {sortBy === 'value'
@@ -551,7 +559,11 @@ function PortfolioPageContent() {
             </button>
 
             {/* View Toggle */}
-            <div className="flex items-center gap-1 bg-surface-100 border border-surface-200/50 rounded-xl p-1" role="group" aria-label="Portfolio view mode selection">
+            <div
+              className="flex items-center gap-1 bg-surface-100 border border-surface-200/50 rounded-xl p-1"
+              role="group"
+              aria-label="Portfolio view mode selection"
+            >
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-colors ${

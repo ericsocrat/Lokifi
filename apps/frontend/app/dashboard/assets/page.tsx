@@ -211,7 +211,12 @@ export default function AssetsPage() {
       <nav className="bg-surface-50/80 border-b border-surface-300/50 backdrop-blur-xl px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
-            <Menu className="w-6 h-6 text-surface-400 cursor-pointer hover:text-white transition-colors" />
+            <button
+              aria-label="Toggle navigation menu"
+              className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+            >
+              <Menu className="w-6 h-6 text-surface-400 cursor-pointer hover:text-white transition-colors" />
+            </button>
             <div className="flex items-center gap-2 select-none">
               <svg
                 className="w-6 h-6"
@@ -220,12 +225,7 @@ export default function AssetsPage() {
                 role="img"
                 aria-label="Lokifi Logo"
               >
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="16"
-                  className="fill-lokifi"
-                />
+                <circle cx="16" cy="16" r="16" className="fill-lokifi" />
                 <path
                   d="M11 9v14h10"
                   strokeWidth="2.5"
@@ -238,16 +238,26 @@ export default function AssetsPage() {
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <button aria-label="Notifications" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+            <button
+              aria-label="Notifications"
+              className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+            >
               <Bell className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
-            <button aria-label="Search" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+            <button
+              aria-label="Search"
+              className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+            >
               <Search className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
-            <button aria-label="Share" className="p-2 hover:bg-surface-200 rounded-lg transition-colors">
+            <button
+              aria-label="Share"
+              className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
+            >
               <Share2 className="w-5 h-5 text-surface-400 hover:text-white" />
             </button>
             <button
+              aria-label={`Toggle ${darkMode ? 'light' : 'dark'} mode`}
               className="p-2 hover:bg-surface-200 rounded-lg transition-colors"
               title="Toggle Theme"
               onClick={() => {
@@ -277,6 +287,7 @@ export default function AssetsPage() {
           <nav className="space-y-1">
             <a
               href="/dashboard"
+              aria-label={`Net Worth Dashboard - ${formatCurrency(getTotalValue())}`}
               className="flex items-center justify-between px-4 py-3 text-surface-400 hover:bg-surface-200 hover:text-white rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
@@ -287,6 +298,8 @@ export default function AssetsPage() {
             </a>
             <a
               href="/dashboard/assets"
+              aria-current="page"
+              aria-label={`Assets - Current Page - ${formatCurrency(getTotalValue())}`}
               className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-lokifi/20 to-electric/10 rounded-lg text-white font-medium hover:from-lokifi/30 hover:to-electric/20 transition-colors border border-lokifi/20"
             >
               <div className="flex items-center space-x-3">
@@ -367,13 +380,41 @@ export default function AssetsPage() {
             </div>
 
             {/* Category Tabs */}
-            <div className="flex items-center space-x-6 mb-6 border-b border-surface-300/50">
-              <button className="pb-3 border-b-2 border-lokifi font-semibold text-white">
+            <div
+              className="flex items-center space-x-6 mb-6 border-b border-surface-300/50"
+              role="tablist"
+              aria-label="Asset category selection"
+            >
+              <button
+                className="pb-3 border-b-2 border-lokifi font-semibold text-white"
+                role="tab"
+                aria-selected="true"
+                aria-label="Investments tab (selected)"
+              >
                 Investments
               </button>
-              <button className="pb-3 text-surface-400 hover:text-white transition-colors">Real Estate</button>
-              <button className="pb-3 text-surface-400 hover:text-white transition-colors">Others</button>
-              <button className="pb-3 text-surface-400 hover:text-white transition-colors">
+              <button
+                className="pb-3 text-surface-400 hover:text-white transition-colors"
+                role="tab"
+                aria-selected="false"
+                aria-label="Real Estate tab"
+              >
+                Real Estate
+              </button>
+              <button
+                className="pb-3 text-surface-400 hover:text-white transition-colors"
+                role="tab"
+                aria-selected="false"
+                aria-label="Others tab"
+              >
+                Others
+              </button>
+              <button
+                className="pb-3 text-surface-400 hover:text-white transition-colors"
+                role="tab"
+                aria-selected="false"
+                aria-label="Sheet and Other tab"
+              >
                 Sheet &<br />
                 Other
               </button>
@@ -387,9 +428,7 @@ export default function AssetsPage() {
               return (
                 <section className="mb-8" key={idx}>
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-sm font-medium text-surface-400">
-                      {section.title}
-                    </h2>
+                    <h2 className="text-sm font-medium text-surface-400">{section.title}</h2>
                     <span className="text-sm text-surface-400 font-medium">
                       {formatCurrency(sectionValue)}
                     </span>
@@ -414,6 +453,7 @@ export default function AssetsPage() {
                     <div className="bg-gradient-to-r from-lokifi/20 to-electric/10 hover:from-lokifi/30 hover:to-electric/20 rounded-xl p-4 cursor-pointer transition-all duration-200 group border border-lokifi/20 hover:border-lokifi/40">
                       <button
                         onClick={openAddAssetModal}
+                        aria-label={`Add asset to ${section.title} section`}
                         className="w-full text-center text-white font-medium"
                       >
                         + ADD ASSET
@@ -428,11 +468,23 @@ export default function AssetsPage() {
             })}
 
             <section>
-              <div className="flex items-center space-x-4 text-sm text-surface-400 mb-4">
-                <button onClick={addNewSection} className="hover:text-white transition-colors">
+              <div
+                className="flex items-center space-x-4 text-sm text-surface-400 mb-4"
+                role="group"
+                aria-label="Portfolio management actions"
+              >
+                <button
+                  onClick={addNewSection}
+                  aria-label="Create a new portfolio section"
+                  className="hover:text-white transition-colors"
+                >
                   + NEW SECTION
                 </button>
-                <button onClick={openAddAssetModal} className="hover:text-white transition-colors">
+                <button
+                  onClick={openAddAssetModal}
+                  aria-label="Add asset to portfolio"
+                  className="hover:text-white transition-colors"
+                >
                   + ADD ASSET
                 </button>
               </div>
@@ -441,6 +493,7 @@ export default function AssetsPage() {
                   <p className="mb-4 font-medium">No assets yet</p>
                   <button
                     onClick={openAddAssetModal}
+                    aria-label="Add your first asset to get started"
                     className="px-6 py-3 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 text-white rounded-xl text-sm font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
                   >
                     Add your first asset
@@ -493,7 +546,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
         </div>
         <button
           className="p-1 hover:bg-surface-200 rounded-lg transition-colors"
-          aria-label="Options"
+          aria-label={`Options menu for ${bank.name} bank account`}
         >
           <MoreHorizontal className="w-5 h-5 text-surface-400" />
         </button>
@@ -515,20 +568,24 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
       </div>
       <div className="flex items-center space-x-4 relative">
         <div className="text-right">
-          <p className="text-lg font-semibold text-white">
-            {formatCurrency(asset.value)}
-          </p>
+          <p className="text-lg font-semibold text-white">{formatCurrency(asset.value)}</p>
         </div>
         <button
           className="p-1 hover:bg-surface-200 rounded-lg transition-colors"
-          aria-label="Options"
+          aria-label={`Options menu for ${asset.name} (${asset.symbol}) asset`}
         >
           <MoreHorizontal className="w-5 h-5 text-surface-400" />
         </button>
         {onDelete && (
-          <div className="absolute right-0 top-8 w-32 bg-surface-100 border border-surface-300/50 rounded-xl shadow-lg py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto">
+          <div
+            className="absolute right-0 top-8 w-32 bg-surface-100 border border-surface-300/50 rounded-xl shadow-lg py-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto"
+            role="menu"
+            aria-label={`Asset actions for ${asset.name}`}
+          >
             <button
               onClick={onDelete}
+              role="menuitem"
+              aria-label={`Delete ${asset.name} (${asset.symbol}) from portfolio`}
               className="w-full text-left px-3 py-1.5 hover:bg-surface-200 text-rose-400 transition-colors"
             >
               Delete
@@ -539,6 +596,3 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
     </div>
   );
 }
-
-
-

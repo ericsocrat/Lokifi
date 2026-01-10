@@ -346,8 +346,9 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        const investmentsTab = screen.getByRole('button', { name: 'Investments' });
+        const investmentsTab = screen.getByRole('tab', { name: /Investments tab \(selected\)/ });
         expect(investmentsTab).toHaveClass('border-lokifi', 'font-semibold');
+        expect(investmentsTab).toHaveAttribute('aria-selected', 'true');
       });
     });
 
@@ -355,7 +356,9 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Real Estate' })).toBeInTheDocument();
+        const realEstateTab = screen.getByRole('tab', { name: /Real Estate tab/ });
+        expect(realEstateTab).toBeInTheDocument();
+        expect(realEstateTab).toHaveAttribute('aria-selected', 'false');
       });
     });
 
@@ -363,7 +366,9 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Others' })).toBeInTheDocument();
+        const othersTab = screen.getByRole('tab', { name: /Others tab/ });
+        expect(othersTab).toBeInTheDocument();
+        expect(othersTab).toHaveAttribute('aria-selected', 'false');
       });
     });
   });
@@ -493,7 +498,7 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Add your first asset' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Add your first asset/ })).toBeInTheDocument();
       });
     });
 
@@ -503,7 +508,7 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        const addFirstButton = screen.getByRole('button', { name: 'Add your first asset' });
+        const addFirstButton = screen.getByRole('button', { name: /Add your first asset/ });
         fireEvent.click(addFirstButton);
       });
 
@@ -580,7 +585,8 @@ describe('AssetsPage', () => {
       render(<AssetsPage />);
 
       await waitFor(() => {
-        const optionButtons = screen.getAllByLabelText('Options');
+        // Options buttons have descriptive aria-labels like "Options menu for {asset} asset"
+        const optionButtons = screen.getAllByLabelText(/Options menu for/);
         expect(optionButtons.length).toBeGreaterThan(0);
       });
     });
@@ -700,4 +706,3 @@ describe('AssetsPage', () => {
     });
   });
 });
-

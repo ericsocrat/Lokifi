@@ -1,0 +1,193 @@
+
+> lokifi-frontend@0.1.0 test
+> vitest DrawingLayer.test.tsx
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/ericsocrat/Desktop/lokifi/apps/frontend[39m
+
+ [32mΓ£ô[39m tests/components/DrawingLayer.test.tsx [2m([22m[2m23 tests[22m[2m)[22m[32m 233[2mms[22m[39m
+ [31mΓ¥»[39m tests/DrawingLayer.test.tsx [2m([22m[2m42 tests[22m[2m | [22m[31m42 failed[39m[2m)[22m[33m 327[2mms[22m[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mRendering[2m > [22mshould render canvas element[39m[32m 26[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mRendering[2m > [22mshould render container with correct attributes[39m[32m 3[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mRendering[2m > [22mshould render context menu when open[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mRendering[2m > [22mshould close context menu when clicking close button[39m[32m 35[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mCanvas Initialization[2m > [22mshould initialize canvas with correct dimensions[39m[32m 7[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mCanvas Initialization[2m > [22mshould set up resize observer[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mCanvas Initialization[2m > [22mshould attempt to transfer control to offscreen canvas[39m[32m 8[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMouse Events - Select Tool[2m > [22mshould start marquee selection on mouse down without hitting drawing[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMouse Events - Select Tool[2m > [22mshould select drawing on mouse down with valid hit[39m[32m 23[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMouse Events - Select Tool[2m > [22mshould toggle selection with shift key[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMouse Events - Drawing Tools[2m > [22mshould create drawing on mouse down with drawing tool[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMouse Events - Drawing Tools[2m > [22mshould update drawing geometry on mouse move during drag[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould render trendline drawing[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould render hidden drawings as invisible[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould render locked drawings without interaction[39m[32m 3[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould apply selected drawing style[39m[32m 72[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould render handles for selected drawing when showHandles is enabled[39m[32m 36[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Rendering[2m > [22mshould render line labels when showLineLabels is enabled[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render rectangle drawing[39m[32m 14[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render ellipse drawing[39m[32m 9[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render horizontal line drawing[39m[32m 6[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render vertical line drawing[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render text drawing[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render arrow drawing[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render ray drawing[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render fibonacci drawing[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Types[2m > [22mshould render ruler drawing[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Styles[2m > [22mshould apply stroke color from drawing style[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Styles[2m > [22mshould apply dash pattern[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Styles[2m > [22mshould apply dot dash pattern[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mDrawing Styles[2m > [22mshould apply opacity setting[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mMarquee Selection[2m > [22mshould render marquee rectangle during selection drag[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mSnap Settings[2m > [22mshould snap to grid when enabled[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mSnap Settings[2m > [22mshould snap to price levels when enabled[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mSnap Settings[2m > [22mshould snap to OHLC when enabled[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mLayer Management[2m > [22mshould not render drawings from hidden layers[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mLayer Management[2m > [22mshould respect layer opacity[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mContext Menu[2m > [22mshould prevent default context menu[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mStore Subscription[2m > [22mshould subscribe to store changes on mount[39m[32m 18[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mStore Subscription[2m > [22mshould update drawings when store changes[39m[32m 2[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mCleanup[2m > [22mshould cancel animation frame on unmount[39m[32m 20[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+[31m   [31m├ù[31m DrawingLayer[2m > [22mCleanup[2m > [22mshould disconnect resize observer on unmount[39m[32m 1[2mms[22m[39m
+[31m     ΓåÆ ResizeObserver is not defined[39m
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ» Failed Tests 42 ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»
+
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Rendering > should render canvas element
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Rendering > should render container with correct attributes
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Rendering > should render context menu when open
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Rendering > should close context menu when clicking close button
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Canvas Initialization > should initialize canvas with correct dimensions
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Canvas Initialization > should attempt to transfer control to offscreen canvas
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Mouse Events - Select Tool > should start marquee selection on mouse down without hitting drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Mouse Events - Select Tool > should select drawing on mouse down with valid hit
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Mouse Events - Select Tool > should toggle selection with shift key
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Mouse Events - Drawing Tools > should create drawing on mouse down with drawing tool
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Mouse Events - Drawing Tools > should update drawing geometry on mouse move during drag
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should render trendline drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should render hidden drawings as invisible
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should render locked drawings without interaction
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should apply selected drawing style
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should render handles for selected drawing when showHandles is enabled
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Rendering > should render line labels when showLineLabels is enabled
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render rectangle drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render ellipse drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render horizontal line drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render vertical line drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render text drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render arrow drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render ray drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render fibonacci drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Types > should render ruler drawing
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Styles > should apply stroke color from drawing style
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Styles > should apply dash pattern
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Styles > should apply dot dash pattern
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Drawing Styles > should apply opacity setting
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Marquee Selection > should render marquee rectangle during selection drag
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Snap Settings > should snap to grid when enabled
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Snap Settings > should snap to price levels when enabled
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Snap Settings > should snap to OHLC when enabled
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Layer Management > should not render drawings from hidden layers
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Layer Management > should respect layer opacity
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Context Menu > should prevent default context menu
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Store Subscription > should subscribe to store changes on mount
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Store Subscription > should update drawings when store changes
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Cleanup > should cancel animation frame on unmount
+ReferenceError: ResizeObserver is not defined
+ Γ¥» src/components/DrawingLayer.tsx:285:16
+    283|     needsDraw.current = true;
+    284|     rafId.current = requestAnimationFrame(drawFrame);
+    285|     const ro = new ResizeObserver(() => {
+       |                ^
+    286|       setup();
+    287|     });
+ Γ¥» Object.react_stack_bottom_frame ../../node_modules/react-dom/cjs/react-dom-client.development.js:25989:20
+ Γ¥» runWithFiberInDEV ../../node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ Γ¥» commitHookEffectListMount ../../node_modules/react-dom/cjs/react-dom-client.development.js:13249:29
+ Γ¥» commitHookPassiveMountEffects ../../node_modules/react-dom/cjs/react-dom-client.development.js:13336:11
+ Γ¥» commitPassiveMountOnFiber ../../node_modules/react-dom/cjs/react-dom-client.development.js:15484:13
+ Γ¥» recursivelyTraversePassiveMountEffects ../../node_modules/react-dom/cjs/react-dom-client.development.js:15439:11
+ Γ¥» commitPassiveMountOnFiber ../../node_modules/react-dom/cjs/react-dom-client.development.js:15519:11
+ Γ¥» flushPassiveEffects ../../node_modules/react-dom/cjs/react-dom-client.development.js:18432:9
+ Γ¥» ../../node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[1/42]ΓÄ»
+
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Canvas Initialization > should set up resize observer
+ReferenceError: ResizeObserver is not defined
+ Γ¥» tests/DrawingLayer.test.tsx:182:35
+    180| 
+    181|     it('should set up resize observer', () => {
+    182|       const observeSpy = vi.spyOn(ResizeObserver.prototype, 'observe');
+       |                                   ^
+    183|       render(<DrawingLayer />);
+    184| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[2/42]ΓÄ»
+
+ FAIL  tests/DrawingLayer.test.tsx > DrawingLayer > Cleanup > should disconnect resize observer on unmount
+ReferenceError: ResizeObserver is not defined
+ Γ¥» tests/DrawingLayer.test.tsx:649:38
+    647| 
+    648|     it('should disconnect resize observer on unmount', () => {
+    649|       const disconnectSpy = vi.spyOn(ResizeObserver.prototype, 'disconΓÇª
+       |                                      ^
+    650|       const { unmount } = render(<DrawingLayer />);
+    651| 
+
+ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»ΓÄ»[3/42]ΓÄ»
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m42 failed[39m[22m[2m | [22m[1m[32m23 passed[39m[22m[90m (65)[39m
+[2m   Start at [22m 02:17:20
+[2m   Duration [22m 4.38s[2m (transform 679ms, setup 2.38s, collect 574ms, tests 560ms, environment 2.99s, prepare 399ms)[22m
+
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path C:\Users\ericsocrat\Desktop\lokifi\apps\frontend
+npm error workspace lokifi-frontend@0.1.0
+npm error location C:\Users\ericsocrat\Desktop\lokifi\apps\frontend
+npm error command failed
+npm error command C:\WINDOWS\system32\cmd.exe /d /s /c vitest DrawingLayer.test.tsx

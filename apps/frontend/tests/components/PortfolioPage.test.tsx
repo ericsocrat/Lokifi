@@ -90,8 +90,7 @@ describe('PortfolioPage', () => {
     });
     mockFetch.mockResolvedValue({
       ok: true,
-      json: () =>
-        Promise.resolve({ email: 'test@example.com', name: 'Test User' }),
+      json: () => Promise.resolve({ email: 'test@example.com', name: 'Test User' }),
     });
   });
 
@@ -184,7 +183,9 @@ describe('PortfolioPage', () => {
         expect(screen.getByRole('button', { name: /View 1W performance/ })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /View 1M performance/ })).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /View 1Y performance/ })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /View all-time performance/ })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /View all-time performance/ })
+        ).toBeInTheDocument();
       });
     });
 
@@ -239,7 +240,8 @@ describe('PortfolioPage', () => {
         // Check for Grid and List text in view toggle
         const viewButtons = document.querySelectorAll('button');
         const hasListView = Array.from(viewButtons).some(
-          (btn) => btn.textContent?.includes('List') || btn.getAttribute('aria-label')?.includes('list')
+          (btn) =>
+            btn.textContent?.includes('List') || btn.getAttribute('aria-label')?.includes('list')
         );
         expect(hasListView || viewButtons.length > 0).toBe(true);
       });
@@ -280,8 +282,22 @@ describe('PortfolioPage', () => {
           title: 'Stocks',
           icon: 'briefcase',
           assets: [
-            { id: 'asset-1', symbol: 'AAPL', name: 'Apple Inc.', shares: 10, value: 1500, color: '#FF0000' },
-            { id: 'asset-2', symbol: 'MSFT', name: 'Microsoft', shares: 5, value: 2000, color: '#00FF00' },
+            {
+              id: 'asset-1',
+              symbol: 'AAPL',
+              name: 'Apple Inc.',
+              shares: 10,
+              value: 1500,
+              color: '#FF0000',
+            },
+            {
+              id: 'asset-2',
+              symbol: 'MSFT',
+              name: 'Microsoft',
+              shares: 5,
+              value: 2000,
+              color: '#00FF00',
+            },
           ],
         },
         {
@@ -289,7 +305,14 @@ describe('PortfolioPage', () => {
           title: 'Crypto',
           icon: 'bitcoin',
           assets: [
-            { id: 'asset-3', symbol: 'BTC', name: 'Bitcoin', shares: 0.5, value: 25000, color: '#F7931A' },
+            {
+              id: 'asset-3',
+              symbol: 'BTC',
+              name: 'Bitcoin',
+              shares: 0.5,
+              value: 25000,
+              color: '#F7931A',
+            },
           ],
         },
       ]);
@@ -439,7 +462,14 @@ describe('PortfolioPage', () => {
           title: 'Stocks',
           icon: 'briefcase',
           assets: [
-            { id: 'asset-1', symbol: 'AAPL', name: 'Apple', shares: 10, value: 1500, color: '#FF0000' },
+            {
+              id: 'asset-1',
+              symbol: 'AAPL',
+              name: 'Apple',
+              shares: 10,
+              value: 1500,
+              color: '#FF0000',
+            },
           ],
         },
       ]);
@@ -481,7 +511,7 @@ describe('PortfolioPage', () => {
           /View 1W performance/,
           /View 1M performance/,
           /View 1Y performance/,
-          /View all-time performance/
+          /View all-time performance/,
         ];
         timeframeTests.forEach((tf) => {
           const button = screen.getByRole('button', { name: tf });
