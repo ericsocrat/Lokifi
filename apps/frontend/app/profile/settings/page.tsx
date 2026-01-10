@@ -295,6 +295,7 @@ export default function SettingsPage() {
                   )
                 }
                 className="sr-only peer"
+                aria-label="Enable email notifications"
               />
               <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
@@ -315,6 +316,7 @@ export default function SettingsPage() {
                   )
                 }
                 className="sr-only peer"
+                aria-label="Email notifications for new followers"
               />
               <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
@@ -335,6 +337,7 @@ export default function SettingsPage() {
                   )
                 }
                 className="sr-only peer"
+                aria-label="Email notifications for messages"
               />
               <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
@@ -361,6 +364,7 @@ export default function SettingsPage() {
                   )
                 }
                 className="sr-only peer"
+                aria-label="Enable push notifications"
               />
               <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
@@ -381,6 +385,7 @@ export default function SettingsPage() {
                   )
                 }
                 className="sr-only peer"
+                aria-label="Push notifications for messages"
               />
               <div className="w-11 h-6 bg-surface-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-lokifi/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-lokifi" />
             </label>
@@ -421,6 +426,7 @@ export default function SettingsPage() {
             <button
               onClick={exportData}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+              aria-label="Export your profile data"
             >
               Export
             </button>
@@ -444,7 +450,10 @@ export default function SettingsPage() {
             <p className="text-surface-300 text-sm mb-4">
               Permanently delete your account and all associated data. This action cannot be undone.
             </p>
-            <button className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center space-x-2">
+            <button
+              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors flex items-center space-x-2"
+              aria-label="Delete account permanently"
+            >
               <Trash2 className="w-4 h-4" />
               <span>Delete Account</span>
             </button>
@@ -465,6 +474,7 @@ export default function SettingsPage() {
             <Link
               href="/profile"
               className="p-2 bg-surface-100 rounded-lg hover:bg-surface-200 transition-colors"
+              aria-label="Back to profile"
             >
               <ArrowLeft className="w-5 h-5 text-white" />
             </Link>
@@ -503,6 +513,9 @@ export default function SettingsPage() {
                       ? 'bg-lokifi text-white'
                       : 'bg-surface-100 text-surface-300 hover:bg-surface-200'
                   }`}
+                  type="button"
+                  aria-label={`${label} tab`}
+                  aria-pressed={activeTab === id}
                 >
                   <Icon className="w-5 h-5" />
                   <span>{label}</span>
