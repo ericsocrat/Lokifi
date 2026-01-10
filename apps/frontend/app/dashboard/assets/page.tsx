@@ -196,17 +196,25 @@ export default function AssetsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-surface-0">
+      <main
+        className="flex items-center justify-center min-h-screen bg-surface-0"
+        role="main"
+        aria-label="Loading portfolio assets"
+      >
         <div className="flex items-center gap-3 text-surface-400">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading assets...</span>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-0 transition-colors">
+    <main
+      className="min-h-screen bg-surface-0 transition-colors"
+      role="main"
+      aria-label="Portfolio assets dashboard"
+    >
       {/* Navigation Bar */}
       <nav className="bg-surface-50/80 border-b border-surface-300/50 backdrop-blur-xl px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -504,7 +512,7 @@ export default function AssetsPage() {
           </div>
         </main>
       </div>
-    </div>
+    </main>
   );
 }
 

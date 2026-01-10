@@ -12,12 +12,16 @@ const TradingWorkspace = dynamic(
     })),
   {
     loading: () => (
-      <div className="min-h-screen flex items-center justify-center bg-surface-0">
+      <main
+        className="min-h-screen flex items-center justify-center bg-surface-0"
+        role="main"
+        aria-label="Loading chart workspace"
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" />
           <p className="text-surface-300 font-medium">Loading chart workspace...</p>
         </div>
-      </div>
+      </main>
     ),
     ssr: false,
   }
@@ -33,5 +37,13 @@ export default function ChartSymbolPage() {
     }
   }, [symbol]);
 
-  return <TradingWorkspace />;
+  return (
+    <main
+      className="min-h-screen flex items-center justify-center bg-surface-0"
+      role="main"
+      aria-label={`Chart workspace for ${symbol ? symbol.toUpperCase() : 'selected symbol'}`}
+    >
+      <TradingWorkspace />
+    </main>
+  );
 }

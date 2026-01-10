@@ -15,12 +15,15 @@ export default function ChartIndexPage() {
   }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <main
+      className="flex items-center justify-center min-h-screen"
+      role="main"
+      aria-label="Chart redirect"
+    >
       <div className="flex flex-col items-center gap-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
         <p className="text-sm text-muted-foreground">Loading chart...</p>
       </div>
-    </div>
+    </main>
   );
 }
-

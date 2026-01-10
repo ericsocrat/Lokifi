@@ -135,7 +135,11 @@ export default function NotificationPreferencesPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-surface-0">
+      <main
+        className="min-h-screen bg-surface-0"
+        role="main"
+        aria-label="Notification preferences access prompt"
+      >
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-lokifi/20 flex items-center justify-center">
@@ -153,12 +157,12 @@ export default function NotificationPreferencesPage() {
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main className="min-h-screen bg-surface-0" role="main" aria-label="Notification preferences">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-6">
@@ -470,6 +474,6 @@ export default function NotificationPreferencesPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

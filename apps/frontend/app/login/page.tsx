@@ -22,12 +22,16 @@ export default function LoginPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-0 flex items-center justify-center">
+      <main
+        className="min-h-screen bg-surface-0 flex items-center justify-center"
+        role="main"
+        aria-label="Checking login state"
+      >
         <div className="flex items-center gap-3 text-surface-300">
           <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
           <span>Loading...</span>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -39,7 +43,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0 flex">
+    <main
+      className="min-h-screen bg-surface-0 flex"
+      role="main"
+      aria-label="Login or create account"
+    >
       {/* Left Side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Background Gradient */}
@@ -180,6 +188,6 @@ export default function LoginPage() {
       {showAuthModal && (
         <AuthModal initialMode={authMode} onClose={() => setShowAuthModal(false)} />
       )}
-    </div>
+    </main>
   );
 }
