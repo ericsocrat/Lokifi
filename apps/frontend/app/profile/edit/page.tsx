@@ -351,6 +351,7 @@ export default function EditProfilePage() {
             <Link
               href="/profile"
               className="px-6 py-2 bg-surface-200 text-white rounded-lg hover:bg-surface-300 transition-colors"
+              aria-label="Cancel editing and return to profile"
             >
               Cancel
             </Link>
@@ -358,6 +359,7 @@ export default function EditProfilePage() {
               type="submit"
               disabled={saving}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              aria-label={saving ? 'Saving your profile changes' : 'Save your profile changes'}
             >
               <Save className="w-4 h-4" />
               <span>{saving ? 'Saving...' : 'Save Changes'}</span>
