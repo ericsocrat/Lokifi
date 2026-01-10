@@ -22,10 +22,18 @@ export function drawLine(
   to: Point,
   style: DrawingStyle = {}
 ): void {
+  const hasStyle = Object.keys(style).length > 0;
+  if (hasStyle) {
+    ctx.save();
+    applyStyle(ctx, style);
+  }
   ctx.beginPath();
   ctx.moveTo(from.x, from.y);
   ctx.lineTo(to.x, to.y);
   ctx.stroke();
+  if (hasStyle) {
+    ctx.restore();
+  }
 }
 
 /**

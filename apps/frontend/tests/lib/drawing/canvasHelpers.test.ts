@@ -27,7 +27,7 @@ import {
   type DrawingStyle,
   type Point,
 } from '@/lib/drawing/canvasHelpers';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 
 describe('Canvas Helpers', () => {
   let mockCtx: CanvasRenderingContext2D;
@@ -239,7 +239,8 @@ describe('Canvas Helpers', () => {
 
       drawLineHandles(mockCtx, from, to);
 
-      const arcCalls = (mockCtx.arc as any).mock.calls;
+      const arcCalls = (mockCtx.arc as Mock<[number, number, number, number, number], void>).mock
+        .calls;
       expect(arcCalls.length).toBe(2);
       expect(arcCalls[0][0]).toBe(10);
       expect(arcCalls[0][1]).toBe(10);
@@ -252,14 +253,16 @@ describe('Canvas Helpers', () => {
     it('should draw 8 handles (4 corners + 4 edges)', () => {
       drawRectHandles(mockCtx, 10, 10, 100, 80);
 
-      const arcCalls = (mockCtx.arc as any).mock.calls;
+      const arcCalls = (mockCtx.arc as Mock<[number, number, number, number, number], void>).mock
+        .calls;
       expect(arcCalls.length).toBe(8);
     });
 
     it('should position corner handles correctly', () => {
       drawRectHandles(mockCtx, 0, 0, 100, 100);
 
-      const arcCalls = (mockCtx.arc as any).mock.calls;
+      const arcCalls = (mockCtx.arc as Mock<[number, number, number, number, number], void>).mock
+        .calls;
       // Top-left corner
       expect(arcCalls[0]).toEqual([0, 0, 4, 0, Math.PI * 2]);
       // Top-right corner
