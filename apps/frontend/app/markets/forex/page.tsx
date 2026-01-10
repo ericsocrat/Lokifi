@@ -78,7 +78,11 @@ function ForexPageContent() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6" role="alert" aria-live="assertive">
+          <div
+            className="bg-red-500/10 border border-red-500/20 rounded-lg p-6"
+            role="alert"
+            aria-live="assertive"
+          >
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Forex Data</h3>
             <p className="text-neutral-400 text-sm">
               {error?.message || 'Failed to load forex data'}

@@ -33,7 +33,11 @@ function MarketsOverviewContent() {
     return (
       <div className="min-h-screen bg-surface-0 p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 text-center" role="alert" aria-live="assertive">
+          <div
+            className="bg-red-500/10 border border-red-500/30 rounded-2xl p-8 text-center"
+            role="alert"
+            aria-live="assertive"
+          >
             <div className="w-14 h-14 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-7 h-7 text-red-400" />
             </div>

@@ -29,7 +29,11 @@ export default function EditProfilePage() {
     username: '',
     is_public: true,
   });
-  const [fieldErrors, setFieldErrors] = useState<{ display_name?: string; username?: string; bio?: string }>({});
+  const [fieldErrors, setFieldErrors] = useState<{
+    display_name?: string;
+    username?: string;
+    bio?: string;
+  }>({});
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -310,75 +314,100 @@ export default function EditProfilePage() {
 
             <div className="space-y-4">
               <div>
-                  <label htmlFor="display_name" className="block text-sm font-medium text-surface-300 mb-2">
-                    Display Name
-                  </label>
-                  <input
-                    id="display_name"
-                    type="text"
-                    name="display_name"
-                    value={formData.display_name}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
-                    placeholder="Your display name"
-                    maxLength={50}
-                    aria-invalid={!!fieldErrors.display_name}
-                    aria-describedby={fieldErrors.display_name ? 'display_name-error' : undefined}
-                  />
-                  {fieldErrors.display_name && (
-                    <p id="display_name-error" role="alert" aria-live="assertive" className="text-red-300 text-sm mt-1">
-                      {fieldErrors.display_name}
-                    </p>
-                  )}
+                <label
+                  htmlFor="display_name"
+                  className="block text-sm font-medium text-surface-300 mb-2"
+                >
+                  Display Name
+                </label>
+                <input
+                  id="display_name"
+                  type="text"
+                  name="display_name"
+                  value={formData.display_name}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
+                  placeholder="Your display name"
+                  maxLength={50}
+                  aria-invalid={!!fieldErrors.display_name}
+                  aria-describedby={fieldErrors.display_name ? 'display_name-error' : undefined}
+                />
+                {fieldErrors.display_name && (
+                  <p
+                    id="display_name-error"
+                    role="alert"
+                    aria-live="assertive"
+                    className="text-red-300 text-sm mt-1"
+                  >
+                    {fieldErrors.display_name}
+                  </p>
+                )}
               </div>
 
               <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-surface-300 mb-2">Username</label>
-                  <input
-                    id="username"
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
-                    placeholder="Your username"
-                    pattern="^[a-zA-Z0-9_]{3,20}$"
-                    title="Username must be 3-20 characters, letters, numbers and underscores only"
-                    aria-invalid={!!fieldErrors.username}
-                    aria-describedby={fieldErrors.username ? 'username-error' : undefined}
-                  />
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-surface-300 mb-2"
+                >
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi"
+                  placeholder="Your username"
+                  pattern="^[a-zA-Z0-9_]{3,20}$"
+                  title="Username must be 3-20 characters, letters, numbers and underscores only"
+                  aria-invalid={!!fieldErrors.username}
+                  aria-describedby={fieldErrors.username ? 'username-error' : undefined}
+                />
                 <p className="text-surface-300 text-sm mt-1">
                   3-20 characters, letters, numbers and underscores only
                 </p>
-                  {fieldErrors.username && (
-                    <p id="username-error" role="alert" aria-live="assertive" className="text-red-300 text-sm mt-1">
-                      {fieldErrors.username}
-                    </p>
-                  )}
+                {fieldErrors.username && (
+                  <p
+                    id="username-error"
+                    role="alert"
+                    aria-live="assertive"
+                    className="text-red-300 text-sm mt-1"
+                  >
+                    {fieldErrors.username}
+                  </p>
+                )}
               </div>
 
               <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-surface-300 mb-2">Bio</label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi resize-none"
-                    placeholder="Tell us about yourself..."
-                    maxLength={500}
-                    aria-invalid={!!fieldErrors.bio}
-                    aria-describedby={fieldErrors.bio ? 'bio-error' : undefined}
-                  />
+                <label htmlFor="bio" className="block text-sm font-medium text-surface-300 mb-2">
+                  Bio
+                </label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full px-3 py-2 bg-surface-100 border border-surface-300 rounded-lg text-white placeholder-surface-300 focus:outline-none focus:ring-2 focus:ring-lokifi resize-none"
+                  placeholder="Tell us about yourself..."
+                  maxLength={500}
+                  aria-invalid={!!fieldErrors.bio}
+                  aria-describedby={fieldErrors.bio ? 'bio-error' : undefined}
+                />
                 <p className="text-surface-300 text-sm mt-1">
                   {formData.bio.length}/500 characters
                 </p>
-                  {fieldErrors.bio && (
-                    <p id="bio-error" role="alert" aria-live="polite" className="text-red-300 text-sm mt-1">
-                      {fieldErrors.bio}
-                    </p>
-                  )}
+                {fieldErrors.bio && (
+                  <p
+                    id="bio-error"
+                    role="alert"
+                    aria-live="polite"
+                    className="text-red-300 text-sm mt-1"
+                  >
+                    {fieldErrors.bio}
+                  </p>
+                )}
               </div>
             </div>
           </div>

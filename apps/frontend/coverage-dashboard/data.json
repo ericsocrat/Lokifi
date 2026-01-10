@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-09T19:04:26.543Z",
+  "generated": "2026-01-10T16:44:48.375Z",
   "git": {
     "branch": "main",
-    "commit": "4784de75",
+    "commit": "fec88045",
     "author": "ericsocrat",
-    "message": "test(pages): add tests for Chart and ApiTest pages (28)"
+    "message": "fix(a11y): align DebtsPage add button accessible name"
   },
   "current": {
     "tests": {
@@ -13,31 +13,31 @@
       "skipped": 0,
       "failing": 0,
       "total": 0,
-      "files": 220,
+      "files": 221,
       "duration": "-"
     },
     "coverage": {
-      "statements": 91.23,
-      "branches": 85.25,
-      "functions": 88.87,
-      "lines": 91.23
+      "statements": 91.49,
+      "branches": 85.34,
+      "functions": 89.3,
+      "lines": 91.49
     },
     "totals": {
       "statements": {
-        "covered": 48359,
-        "total": 53007
+        "covered": 48756,
+        "total": 53293
       },
       "branches": {
-        "covered": 7967,
-        "total": 9346
+        "covered": 8028,
+        "total": 9407
       },
       "functions": {
-        "covered": 1853,
-        "total": 2085
+        "covered": 1878,
+        "total": 2103
       },
       "lines": {
-        "covered": 48359,
-        "total": 53007
+        "covered": 48756,
+        "total": 53293
       }
     }
   },
@@ -47,39 +47,21 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 91.23134680325239,
-        "branches": 85.2450246094586,
-        "functions": 88.87290167865707,
-        "lines": 91.23134680325239
+        "statements": 91.48668680689772,
+        "branches": 85.34070373126396,
+        "functions": 89.30099857346647,
+        "lines": 91.48668680689772
       },
-      "files": 220,
+      "files": 221,
       "metrics": {
-        "totalLines": 53007,
-        "coveredLines": 48359,
-        "uncoveredLines": 4648
+        "totalLines": 53293,
+        "coveredLines": 48756,
+        "uncoveredLines": 4537
       },
       "health": "good"
     }
   ],
   "gaps": [
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
-      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
-      "coverage": 15.3,
-      "details": {
-        "lines": "15.3",
-        "branches": "53.8",
-        "functions": "15.0"
-      },
-      "metrics": {
-        "totalLines": 554,
-        "uncoveredLines": 469,
-        "complexity": 33,
-        "impact": 737
-      },
-      "priority": "HIGH",
-      "reason": "Critical - Very low coverage"
-    },
     {
       "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
       "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
@@ -171,6 +153,24 @@
       "reason": "No coverage"
     },
     {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
+      "coverage": 20.1,
+      "details": {
+        "lines": "20.1",
+        "branches": "50.0",
+        "functions": "23.1"
+      },
+      "metrics": {
+        "totalLines": 437,
+        "uncoveredLines": 349,
+        "complexity": 27,
+        "impact": 555
+      },
+      "priority": "MEDIUM",
+      "reason": "High priority - Low coverage"
+    },
+    {
       "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
       "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
       "coverage": 54.3,
@@ -252,16 +252,6 @@
         "Add 321 lines of test coverage",
         "Focus on 6 untested functions",
         "Cover 0 untested branches"
-      ]
-    },
-    {
-      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
-      "priority": "HIGH",
-      "reason": "High impact file with 554 lines and 15.3% coverage",
-      "actions": [
-        "Add 359 lines of test coverage",
-        "Focus on 17 untested functions",
-        "Cover 6 untested branches"
       ]
     }
   ],
@@ -1849,50 +1839,65 @@
         "branch": "main",
         "commit": "4784de75"
       }
+    },
+    {
+      "timestamp": "2026-01-10T16:44:48.375Z",
+      "coverage": {
+        "statements": 91.48668680689772,
+        "branches": 85.34070373126396,
+        "functions": 89.30099857346647,
+        "lines": 91.48668680689772
+      },
+      "tests": 0,
+      "files": 221,
+      "git": {
+        "branch": "main",
+        "commit": "fec88045"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.00%",
-      "value": 0.0034089544064244137,
+      "text": "↑ 0.26%",
+      "value": 0.2553400036453297,
       "direction": "↑",
       "color": "green"
     },
     "branches": {
-      "text": "↓ 0.03%",
-      "value": -0.027371837078916883,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.10%",
+      "value": 0.09567912180536098,
+      "direction": "↑",
+      "color": "green"
     },
     "functions": {
-      "text": "↓ 0.01%",
-      "value": -0.00533417944456005,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.43%",
+      "value": 0.42809689480939994,
+      "direction": "↑",
+      "color": "green"
     },
     "lines": {
-      "text": "↑ 0.00%",
-      "value": 0.0034089544064244137,
+      "text": "↑ 0.26%",
+      "value": 0.2553400036453297,
       "direction": "↑",
       "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 0.23534438961534931,
-    "branches": 0.1601331415884033,
-    "functions": 0.5275779376498804,
-    "lines": 0.23534438961534931
+    "statements": 0.432229120972238,
+    "branches": 0.14796240193936683,
+    "functions": 0.9077132017638405,
+    "lines": 0.432229120972238
   },
   "metadata": {
-    "totalRuns": 105,
+    "totalRuns": 106,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-09T19:04:26.543Z",
+    "lastRun": "2026-01-10T16:44:48.375Z",
     "bestCoverage": {
-      "statements": 91.24113742645949,
-      "branches": 85.26608844630046,
-      "functions": 88.87823585810163,
-      "lines": 91.24113742645949,
-      "timestamp": "2026-01-09T02:09:10.604Z"
+      "statements": 91.48668680689772,
+      "branches": 85.34070373126396,
+      "functions": 89.30099857346647,
+      "lines": 91.48668680689772,
+      "timestamp": "2026-01-10T16:44:48.375Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1908,12 +1913,12 @@
   },
   "insights": [],
   "summary": {
-    "totalFiles": 220,
+    "totalFiles": 221,
     "totalModules": 1,
-    "criticalGaps": 6,
-    "mediumGaps": 0,
+    "criticalGaps": 5,
+    "mediumGaps": 1,
     "lowGaps": 4,
-    "healthyFiles": 191,
+    "healthyFiles": 192,
     "criticalFiles": 16,
     "avgComplexity": 52
   },
@@ -2003,9 +2008,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
-        "coverage": "15.3",
-        "uncovered": 469,
-        "complexity": 33
+        "coverage": "20.1",
+        "uncovered": 349,
+        "complexity": 27
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
@@ -2049,9 +2054,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-        "complexity": 288,
-        "coverage": "87.2",
-        "branches": 234,
+        "complexity": 286,
+        "coverage": "86.7",
+        "branches": 232,
         "functions": 54
       },
       {
@@ -2063,9 +2068,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-        "complexity": 257,
-        "coverage": "95.5",
-        "branches": 213,
+        "complexity": 260,
+        "coverage": "96.1",
+        "branches": 216,
         "functions": 44
       },
       {

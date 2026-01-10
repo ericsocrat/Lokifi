@@ -13,7 +13,7 @@ type Menu = { open: boolean; x: number; y: number };
 const _HANDLE_R = 4;
 const HIT_PAD = 6;
 
-export default function DrawingLayer() {
+export default function DrawingLayer({ useOffscreen = true }: { useOffscreen?: boolean } = {}) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const s = useChartStore();
@@ -55,11 +55,15 @@ export default function DrawingLayer() {
       el.height = Math.floor(r.height * (window.devicePixelRatio || 1));
       el.style.width = r.width + 'px';
       el.style.height = r.height + 'px';
-      // try offscreen
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- transferControlToOffscreen is experimental browser API with incomplete types
-        offscreen.current = (el as any).transferControlToOffscreen?.() || null;
-      } catch {
+      // try offscreen (disabled if useOffscreen=false)
+      if (useOffscreen) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- transferControlToOffscreen is experimental browser API with incomplete types
+          offscreen.current = (el as any).transferControlToOffscreen?.() || null;
+        } catch {
+          offscreen.current = null;
+        }
+      } else {
         offscreen.current = null;
       }
       needsDraw.current = true;
