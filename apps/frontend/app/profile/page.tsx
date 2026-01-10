@@ -182,6 +182,7 @@ export default function ProfilePage() {
               <Link
                 href="/profile/edit"
                 className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all shadow-lg shadow-lokifi/30"
+                aria-label="Edit your profile information"
               >
                 <Edit className="w-4 h-4" />
                 Edit Profile
@@ -189,6 +190,7 @@ export default function ProfilePage() {
               <Link
                 href="/settings"
                 className="flex items-center gap-2 px-5 py-2.5 bg-surface-200 hover:bg-surface-300 border border-surface-300 rounded-xl text-white font-medium transition-all"
+                aria-label="Open account settings"
               >
                 <Settings className="w-4 h-4" />
                 Settings
