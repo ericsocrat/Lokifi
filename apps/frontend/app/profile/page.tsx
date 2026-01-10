@@ -129,7 +129,7 @@ export default function ProfilePage() {
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
-            aria-label="Reload profile page"
+            aria-label="Try again loading profile"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
