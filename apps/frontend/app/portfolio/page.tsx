@@ -343,7 +343,7 @@ function PortfolioPageContent() {
                     )}
 
                     {/* Timeframe Selector */}
-                    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1">
+                    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1" role="group" aria-label="Portfolio performance timeframe selection">
                       {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map(
                         (tf: '1D' | '1W' | '1M' | '1Y' | 'ALL') => (
                           <button
@@ -354,6 +354,8 @@ function PortfolioPageContent() {
                                 ? 'bg-white text-blue-600 shadow-lg'
                                 : 'text-white/70 hover:text-white hover:bg-white/10'
                             }`}
+                            aria-label={`View ${tf === 'ALL' ? 'all-time' : tf} performance`}
+                            aria-pressed={selectedTimeframe === tf}
                           >
                             {tf}
                           </button>
@@ -520,7 +522,7 @@ function PortfolioPageContent() {
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
             <div className="relative">
-              <button className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-surface-100 border border-surface-200/50 rounded-xl text-sm font-medium text-surface-300 hover:bg-surface-200 transition-colors" aria-label="Sort portfolio by value, change, name, or symbol" aria-haspopup="true">
                 <ArrowUpDown className="w-4 h-4" />
                 Sort:{' '}
                 {sortBy === 'value'
@@ -549,7 +551,7 @@ function PortfolioPageContent() {
             </button>
 
             {/* View Toggle */}
-            <div className="flex items-center gap-1 bg-surface-100 border border-surface-200/50 rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-surface-100 border border-surface-200/50 rounded-xl p-1" role="group" aria-label="Portfolio view mode selection">
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-colors ${
@@ -557,6 +559,8 @@ function PortfolioPageContent() {
                     ? 'bg-lokifi/20 text-lokifi'
                     : 'text-surface-300 hover:text-white'
                 }`}
+                aria-label="View portfolio in list format"
+                aria-pressed={viewMode === 'list'}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -574,6 +578,8 @@ function PortfolioPageContent() {
                     ? 'bg-lokifi/20 text-lokifi'
                     : 'text-surface-300 hover:text-white'
                 }`}
+                aria-label="View portfolio in grid format"
+                aria-pressed={viewMode === 'grid'}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -602,6 +608,7 @@ function PortfolioPageContent() {
                 <select
                   id="filter-asset-type"
                   className="w-full px-3 py-2 bg-surface-200 border border-surface-300/50 rounded-lg text-sm text-white focus:ring-2 focus:ring-lokifi focus:border-transparent"
+                  aria-label="Filter portfolio by asset type (stocks, crypto, real estate)"
                 >
                   <option>All Assets</option>
                   <option>Stocks</option>
@@ -619,6 +626,7 @@ function PortfolioPageContent() {
                 <select
                   id="filter-performance"
                   className="w-full px-3 py-2 bg-surface-200 border border-surface-300/50 rounded-lg text-sm text-white focus:ring-2 focus:ring-lokifi focus:border-transparent"
+                  aria-label="Filter portfolio by performance (gainers or losers)"
                 >
                   <option>All Performance</option>
                   <option>Gainers Only</option>
@@ -635,6 +643,7 @@ function PortfolioPageContent() {
                 <select
                   id="filter-value-range"
                   className="w-full px-3 py-2 bg-surface-200 border border-surface-300/50 rounded-lg text-sm text-white focus:ring-2 focus:ring-lokifi focus:border-transparent"
+                  aria-label="Filter portfolio by asset value range"
                 >
                   <option>Any Value</option>
                   <option>Under $1,000</option>
@@ -715,8 +724,15 @@ function PortfolioPageContent() {
               <div
                 className="flex items-center justify-between mb-3 cursor-pointer group"
                 onClick={() => toggleSection(section.title)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleSection(section.title);
+                  }
+                }}
                 role="button"
-                aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${section.title} section`}
+                tabIndex={0}
+                aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${section.title} section with ${section.assets.length} asset${section.assets.length === 1 ? '' : 's'}`}
                 aria-expanded={!isCollapsed}
               >
                 <div className="flex items-center gap-3">
@@ -856,7 +872,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
         </div>
         <button
           className="p-2 hover:bg-surface-200 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-          aria-label="Options"
+          aria-label={`Options for ${bank.name} bank account`}
         >
           <MoreHorizontal className="w-5 h-5 text-surface-300" />
         </button>
@@ -982,6 +998,7 @@ function AssetItem({
             <div
               className="absolute right-0 top-12 w-48 bg-surface-100 border border-surface-200/50 rounded-xl shadow-xl py-2 z-20 animate-in fade-in slide-in-from-top-2 duration-200"
               role="menu"
+              aria-label={`Asset actions menu for ${asset.name}`}
             >
               <button
                 className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2"
@@ -994,7 +1011,7 @@ function AssetItem({
               <button
                 className="w-full text-left px-4 py-2.5 hover:bg-lokifi/10 text-surface-300 text-sm font-medium transition-colors flex items-center gap-2"
                 role="menuitem"
-                aria-label={`Edit ${asset.name} asset`}
+                aria-label={`Edit ${asset.name} (${asset.symbol}) asset`}
               >
                 <Edit2 className="w-4 h-4" />
                 Edit Asset
@@ -1008,7 +1025,7 @@ function AssetItem({
                   }}
                   className="w-full text-left px-4 py-2.5 hover:bg-red-500/10 text-red-400 text-sm font-medium transition-colors flex items-center gap-2"
                   role="menuitem"
-                  aria-label={`Delete ${asset.name} from portfolio`}
+                  aria-label={`Delete ${asset.name} (${asset.symbol}) from portfolio`}
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete Asset

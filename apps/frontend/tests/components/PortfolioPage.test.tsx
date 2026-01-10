@@ -180,11 +180,11 @@ describe('PortfolioPage', () => {
       render(<PortfolioPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: '1D' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '1W' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '1M' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: '1Y' })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'ALL' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View 1D performance/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View 1W performance/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View 1M performance/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View 1Y performance/ })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View all-time performance/ })).toBeInTheDocument();
       });
     });
 
@@ -192,7 +192,7 @@ describe('PortfolioPage', () => {
       render(<PortfolioPage />);
 
       await waitFor(() => {
-        const button = screen.getByRole('button', { name: '1D' });
+        const button = screen.getByRole('button', { name: /View 1D performance/ });
         expect(button).toHaveClass('bg-white');
       });
     });
@@ -202,12 +202,12 @@ describe('PortfolioPage', () => {
       render(<PortfolioPage />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: '1M' })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /View 1M performance/ })).toBeInTheDocument();
       });
 
-      await user.click(screen.getByRole('button', { name: '1M' }));
+      await user.click(screen.getByRole('button', { name: /View 1M performance/ }));
 
-      const monthButton = screen.getByRole('button', { name: '1M' });
+      const monthButton = screen.getByRole('button', { name: /View 1M performance/ });
       expect(monthButton).toHaveClass('bg-white');
     });
   });
@@ -476,8 +476,14 @@ describe('PortfolioPage', () => {
       render(<PortfolioPage />);
 
       await waitFor(() => {
-        const timeframeButtons = ['1D', '1W', '1M', '1Y', 'ALL'];
-        timeframeButtons.forEach((tf) => {
+        const timeframeTests = [
+          /View 1D performance/,
+          /View 1W performance/,
+          /View 1M performance/,
+          /View 1Y performance/,
+          /View all-time performance/
+        ];
+        timeframeTests.forEach((tf) => {
           const button = screen.getByRole('button', { name: tf });
           expect(button).toBeEnabled();
         });
