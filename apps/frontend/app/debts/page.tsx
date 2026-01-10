@@ -113,7 +113,7 @@ export default function DebtsPage() {
             </div>
             <button
               className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-lokifi to-electric hover:from-lokifi-dark hover:to-electric/90 rounded-xl text-white font-medium transition-all duration-200 shadow-lg shadow-lokifi/30"
-              aria-label="Add a new debt to track"
+              aria-label="Add Debt"
             >
               <Plus className="w-4 h-4" />
               Add Debt
