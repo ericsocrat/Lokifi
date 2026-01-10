@@ -196,4 +196,3 @@ export function drawingsToSVG(drawings: Drawing[], width = 800, height = 400): s
   const payload = JSON.stringify({ drawings });
   return serializeSvg([textEl({ x: 12, y: 20 }, payload)], width, height);
 }
-
