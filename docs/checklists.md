@@ -27,7 +27,12 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- ✅ **Session 144 (IN PROGRESS)** - Component test cleanup: nested button fix in Select, non-blocking warnings catalogued
+- 🔄 **Session 145 (IN PROGRESS)** - React act() warning reduction + test infrastructure:
+  - Added `tests/utils/safeTestUtils.ts` with act-wrapped helpers (safeRender, safeClick, safeChange)
+  - Integrated into AlertModal (47/47 ✅) and DashboardPage (60/60 ✅) test suites
+  - Observation: ~350+ act warnings originate from component mount effects (useEffect patterns)
+  - Backend tests: All passing (health_router + realtime_market_router 6/6 ✅)
+  - Next: Document act pattern, evaluate accessibility impact, finalize non-boolean fill warnings
 - 🎯 **Next**: Continue quality improvements, monitor CI, prepare for next session phase
 
 **Recent Sessions:**
