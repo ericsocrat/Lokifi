@@ -388,7 +388,11 @@ export default function GoalsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-0 via-surface-0 to-lokifi-950/20 p-6">
+    <main
+      className="min-h-screen bg-gradient-to-br from-surface-0 via-surface-0 to-lokifi-950/20 p-6"
+      role="main"
+      aria-label="Financial Goals page"
+    >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -583,6 +587,6 @@ export default function GoalsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -82,9 +82,13 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-surface-0 overflow-hidden">
+    <main
+      className="min-h-screen bg-surface-0 overflow-hidden"
+      role="main"
+      aria-label="Landing page"
+    >
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 px-6">
+      <section className="relative pt-20 pb-32 px-6" aria-label="Hero section">
         {/* Background Effects */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/4 -left-32 w-96 h-96 bg-lokifi/20 rounded-full blur-3xl opacity-50" />
@@ -252,6 +256,6 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }

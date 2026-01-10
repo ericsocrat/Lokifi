@@ -459,7 +459,7 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main className="min-h-screen bg-surface-0" role="main" aria-label="Profile page">
       {/* Header */}
       <div className="border-b border-surface-300/50 bg-surface-50/80 backdrop-blur-xl sticky top-16 z-40">
         <div className="max-w-6xl mx-auto px-6 py-4">
@@ -513,6 +513,6 @@ export default function ProfilePage() {
         {activeTab === 'settings' && renderSettingsTab()}
         {activeTab === 'privacy' && renderPrivacyTab()}
       </div>
-    </div>
+    </main>
   );
 }

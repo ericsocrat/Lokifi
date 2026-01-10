@@ -278,7 +278,7 @@ function PortfolioPageContent() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-0">
+    <main className="min-h-screen bg-surface-0" role="main" aria-label="Portfolio page">
       <div className="p-6 max-w-7xl mx-auto">
         {/* Hero Stats Section */}
         <div className="mb-8">
@@ -842,7 +842,7 @@ function PortfolioPageContent() {
         onClose={() => setShowAddAssetModal(false)}
         onAddAssets={handleAddAssets}
       />
-    </div>
+    </main>
   );
 }
 
