@@ -1,6 +1,6 @@
 # ✅ Lokifi Development Checklists
 
-**Last Updated:** January 9, 2026
+**Last Updated:** January 10, 2026
 **Purpose:** Repeatable process checklists for development workflow
 **Status:** Production Ready
 
@@ -29,7 +29,8 @@
 **Current Session:**
 - 🔄 **Session 141** - Quality audit campaign: Landing + Dashboard + Markets pages (6/24 pages complete)
 
-**Previous Sessions:**
+**Recent Sessions:**
+- ✅ **Session 142** - A11y Phase 3: Add main landmarks to chart, dashboard, login, notifications pages
 - ✅ **Session 140** - Page testing expansion (77 tests: AssetDetail, Chart, ApiTest) + coverage 89.48% → 91.23%
 - ✅ **Session 139** - ESLint warnings cleanup (25 → 0) + VS Code performance optimizations
 - ✅ **Session 138 PART 2** - Dashboard UI redesign + coverage dashboard enhancements + backend coverage
@@ -64,6 +65,69 @@
 - ✅ **Session 111 COMPLETE** - ESLint Flat Config Migration!
 - ✅ **Session 110 COMPLETE** - Quality Improvements & PR Cleanup!
 - ✅ **Session 109 COMPLETE** - any Type Elimination (307 → 0 warnings, 100% reduction)
+
+### ✅ Session 142: A11y Phase 3 – Add Main Landmarks to Remaining Pages
+
+**Status:** ✅ **COMPLETE**
+
+**Objective**: Complete accessibility Phase 3 by adding `<main role="main" aria-label="...">` semantic landmarks to remaining pages; keep tests/lint/typecheck green.
+
+**Session 142 Achievements**:
+1. **A11y Main Landmarks Added** (6 pages):
+   - **[apps/frontend/app/chart/page.tsx](apps/frontend/app/chart/page.tsx)**: Redirect page with loading spinner wrapped in main landmark with centered layout
+   - **[apps/frontend/app/chart/[symbol]/page.tsx](apps/frontend/app/chart/[symbol]/page.tsx)**: Chart workspace with loading and content states in separate main landmarks with centered layout
+   - **[apps/frontend/app/dashboard/add-assets/page.tsx](apps/frontend/app/dashboard/add-assets/page.tsx)**: Add assets page with main landmark
+   - **[apps/frontend/app/dashboard/assets/page.tsx](apps/frontend/app/dashboard/assets/page.tsx)**: Dashboard assets with main landmarks for loading and content states
+   - **[apps/frontend/app/login/page.tsx](apps/frontend/app/login/page.tsx)**: Login page with main landmarks for loading and auth states
+   - **[apps/frontend/app/notifications/preferences/page.tsx](apps/frontend/app/notifications/preferences/page.tsx)**: Notifications preferences with main landmarks for authenticated and unauthenticated states
+
+2. **Test Suite Validation** ✅:
+   - **Full Vitest Suite**: 10,836 tests passed, 66 skipped
+   - **Fixed Failing Test**: ChartPage.test.tsx was expecting centered layout (`flex items-center justify-center`); added layout classes to main wrapper
+   - **Backend Tests**: Passing from pre-push validation
+   - **No Regressions**: All tests maintained green status
+
+3. **Quality Validation** ✅:
+   - **TypeScript**: `npm run typecheck` — 0 errors ✅
+   - **ESLint**: `npm run lint` — 0 warnings ✅
+   - **Build**: `npm run build` — "Compiled successfully" ✅
+   - **Coverage**: Frontend 91.23% statements, all thresholds passing ✅
+
+4. **Runtime Verification** ✅:
+   - Frontend dev server running at http://localhost:3000 (Turbopack)
+   - Coverage dashboard running at http://localhost:3002
+   - **A11y Spot-Checks Completed**:
+     - ✅ Chart redirect page (`/chart`): main landmark visible, centered loading state, proper redirect to BTCUSD
+     - ✅ Chart workspace (`/chart/BTCUSD`): main landmark with workspace, aria-label includes symbol
+     - ✅ Dashboard (`/dashboard`): main landmark with auth-checking and content rendering
+     - ✅ Login page (`/login`): main landmark with loading/auth states visible
+
+**Code Structure Verified**:
+```tsx
+// Pattern established for all pages:
+<main
+  className="flex items-center justify-center min-h-screen"
+  role="main"
+  aria-label="Descriptive label"
+>
+  {content}
+</main>
+```
+
+**Semantic Improvements**:
+- All primary content now wrapped in accessible `<main>` landmark
+- Loading states preserved with proper aria-labels
+- Centered layout maintained for visual balance and test compatibility
+- Descriptive aria-labels provide screen reader context
+
+**Commits**:
+- `feat(a11y): add main landmarks to chart, dashboard, login, notifications pages` (6 files)
+- `test(checklists): update documentation with Session 142 completion`
+
+**Key Learning**:
+When introducing a11y wrappers, preserve existing layout characteristics that tests expect. The centered layout in chart pages was critical for test expectations; adding flex classes to the main wrapper resolved test failures cleanly.
+
+---
 
 ### ✅ Session 140: Page Testing Expansion + Coverage Excellence
 
