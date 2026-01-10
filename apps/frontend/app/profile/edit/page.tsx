@@ -194,13 +194,21 @@ export default function EditProfilePage() {
 
         {/* Error/Success Messages */}
         {error && (
-          <div className="bg-red-900/20 border border-red-500 rounded-lg p-4 mb-6">
+          <div
+            className="bg-red-900/20 border border-red-500 rounded-lg p-4 mb-6"
+            role="alert"
+            aria-live="assertive"
+          >
             <p className="text-red-300">{error}</p>
           </div>
         )}
 
         {success && (
-          <div className="bg-green-900/20 border border-green-500 rounded-lg p-4 mb-6">
+          <div
+            className="bg-green-900/20 border border-green-500 rounded-lg p-4 mb-6"
+            role="alert"
+            aria-live="polite"
+          >
             <p className="text-green-300">{success}</p>
           </div>
         )}

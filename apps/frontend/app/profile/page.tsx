@@ -116,7 +116,11 @@ export default function ProfilePage() {
   if (error) {
     return (
       <div className="min-h-screen bg-surface-0 flex items-center justify-center p-6">
-        <div className="max-w-md w-full border border-red-500/30 bg-red-500/10 rounded-2xl p-8 text-center backdrop-blur-sm">
+        <div
+          className="max-w-md w-full border border-red-500/30 bg-red-500/10 rounded-2xl p-8 text-center backdrop-blur-sm"
+          role="alert"
+          aria-live="assertive"
+        >
           <div className="w-14 h-14 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Shield className="w-7 h-7 text-red-400" />
           </div>
@@ -125,6 +129,7 @@ export default function ProfilePage() {
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-lokifi to-electric rounded-xl text-white font-medium transition-all hover:from-lokifi-dark hover:to-electric/90"
+            aria-label="Reload profile page"
           >
             <RefreshCw className="w-4 h-4" />
             Try Again
