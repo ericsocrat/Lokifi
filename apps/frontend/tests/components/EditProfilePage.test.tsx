@@ -321,7 +321,9 @@ describe('EditProfilePage', () => {
     it('renders Save Changes button', async () => {
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
     });
   });
@@ -340,10 +342,12 @@ describe('EditProfilePage', () => {
 
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save your profile changes/i }));
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
@@ -368,10 +372,12 @@ describe('EditProfilePage', () => {
 
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save your profile changes/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Profile updated successfully!')).toBeInTheDocument();
@@ -392,10 +398,12 @@ describe('EditProfilePage', () => {
 
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save your profile changes/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Saving...')).toBeInTheDocument();
@@ -416,10 +424,12 @@ describe('EditProfilePage', () => {
 
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save your profile changes/i }));
 
       await waitFor(() => {
         const button = screen.getByRole('button', { name: /saving/i });
@@ -455,10 +465,12 @@ describe('EditProfilePage', () => {
 
       render(<EditProfilePage />);
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /save changes/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /save your profile changes/i })
+        ).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /save changes/i }));
+      fireEvent.click(screen.getByRole('button', { name: /save your profile changes/i }));
 
       await waitFor(() => {
         expect(screen.getByText('Failed to update profile')).toBeInTheDocument();

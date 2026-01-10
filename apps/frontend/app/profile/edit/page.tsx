@@ -1,12 +1,12 @@
 'use client';
 
+import { Navbar } from '@/src/components/Navbar';
+import { authToken } from '@/src/lib/api/auth';
 import { ArrowLeft, Globe, Lock, Save, Upload, User, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { Navbar } from '../../../src/components/Navbar';
-import { authToken } from '../../../src/lib/api/auth';
 
 interface _Profile {
   id: string;
