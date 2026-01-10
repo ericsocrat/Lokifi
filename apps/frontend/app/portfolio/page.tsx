@@ -271,8 +271,19 @@ function PortfolioPageContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-surface-0">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi" />
+      <div
+        className="flex items-center justify-center min-h-screen bg-surface-0"
+        role="status"
+        aria-live="polite"
+      >
+        <div className="flex flex-col items-center gap-3">
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 border-lokifi"
+            aria-hidden="true"
+          />
+          <span className="text-surface-300">Loading portfolio...</span>
+          <span className="sr-only">Loading your portfolio data</span>
+        </div>
       </div>
     );
   }

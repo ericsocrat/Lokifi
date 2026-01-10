@@ -30,10 +30,18 @@ export default function LandingPage() {
   // Show loading state while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-surface-0 flex items-center justify-center">
+      <div
+        className="min-h-screen bg-surface-0 flex items-center justify-center"
+        role="status"
+        aria-live="polite"
+      >
         <div className="flex items-center gap-3 text-surface-400">
-          <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
+          <div
+            className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin"
+            aria-hidden="true"
+          />
           <span>Loading...</span>
+          <span className="sr-only">Loading authentication status</span>
         </div>
       </div>
     );

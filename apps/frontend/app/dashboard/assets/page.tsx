@@ -201,9 +201,17 @@ export default function AssetsPage() {
         role="main"
         aria-label="Loading portfolio assets"
       >
-        <div className="flex items-center gap-3 text-surface-400">
-          <div className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin" />
+        <div
+          className="flex flex-col items-center gap-3 text-surface-400"
+          role="status"
+          aria-live="polite"
+        >
+          <div
+            className="w-5 h-5 border-2 border-lokifi border-t-transparent rounded-full animate-spin"
+            aria-hidden="true"
+          />
           <span>Loading assets...</span>
+          <span className="sr-only">Loading your portfolio assets data</span>
         </div>
       </main>
     );
