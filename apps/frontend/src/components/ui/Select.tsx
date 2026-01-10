@@ -431,15 +431,25 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(
           <span className="flex-1 text-left truncate text-white">{renderValue()}</span>
           <div className="flex items-center gap-1 shrink-0">
             {clearable && selectedOptions.length > 0 && !disabled && (
-              <button
-                type="button"
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={handleClear}
-                className="p-0.5 hover:bg-surface-200 rounded"
+                onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const emptyValue = multiple ? [] : '';
+                    if (!isControlled) setInternalValue(emptyValue);
+                    onChange?.(emptyValue);
+                  }
+                }}
+                className="p-0.5 hover:bg-surface-200 rounded cursor-pointer"
                 aria-label="Clear selection"
                 data-testid={testId ? `${testId}-clear` : undefined}
               >
                 <X className={cn(sizeConfig.icon, 'text-surface-300')} />
-              </button>
+              </div>
             )}
             <ChevronDown
               className={cn(
