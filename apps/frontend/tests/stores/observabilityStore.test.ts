@@ -282,12 +282,18 @@ describe('observabilityStore', () => {
       expect(state.lastDataUpdate).toBeInstanceOf(Date);
     });
 
-    it('limits stored system metrics to 1000 entries', () => {
+    it('limits stored system metrics to 1000 entries', async () => {
       const store = useObservabilityStore.getState();
 
-      act(() => {
-        for (let i = 0; i < 1100; i++) {
-          store.recordSystemMetrics({ ...createSystemMetricsInput() });
+      // Record metrics in smaller batches to avoid timeout
+      await act(async () => {
+        for (let i = 0; i < 1100; i += 100) {
+          const batch = Math.min(100, 1100 - i);
+          for (let j = 0; j < batch; j++) {
+            store.recordSystemMetrics({ ...createSystemMetricsInput() });
+          }
+          // Yield to event loop between batches
+          await Promise.resolve();
         }
       });
 
