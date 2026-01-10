@@ -27,11 +27,12 @@
 **Status:** 🔄 **IN PROGRESS**
 
 **Current Session:**
-- ✅ **Session 143 (COMPLETE)** - ESLint final cleanup: 1 → 0 warnings, coverage dashboard updates
-- 🎯 **Next**: Continue quality improvements, monitor CI, await Renovate PRs
+- ✅ **Session 144 (IN PROGRESS)** - Component test cleanup: nested button fix in Select, non-blocking warnings catalogued
+- 🎯 **Next**: Continue quality improvements, monitor CI, prepare for next session phase
 
 **Recent Sessions:**
-- ✅ **Session 143** - ESLint final cleanup (1 → 0 warnings), coverage dashboard auto-updates, Playwright E2E baseline
+- 🔄 **Session 144** - Fixed nested `<button>` accessibility issue in Select component (clearable variant), catalogued non-critical warnings (~350+ act() warnings, 2 fill={true} warnings)
+- ✅ **Session 143 (COMPLETE)** - ESLint final cleanup: 1 → 0 warnings, coverage dashboard updates
 - ✅ **Session 142** - A11y Phase 3: Add main landmarks to chart, dashboard, login, notifications pages
 - ✅ **Session 139** - ESLint warnings cleanup (25 → 0) + VS Code performance optimizations
 - ✅ **Session 138 PART 2** - Dashboard UI redesign + coverage dashboard enhancements + backend coverage
