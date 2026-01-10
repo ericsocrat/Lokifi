@@ -431,6 +431,7 @@ export default function ProfilePage() {
           <Link
             href="/profile/edit"
             className="px-4 py-2 bg-lokifi/20 hover:bg-lokifi/30 text-lokifi-light rounded-xl text-sm font-medium transition-colors"
+            aria-label="Change profile visibility settings"
           >
             Change
           </Link>
@@ -498,6 +499,7 @@ export default function ProfilePage() {
                 role="tab"
                 aria-selected={activeTab === id}
                 aria-pressed={activeTab === id}
+                aria-label={`${label} tab`}
               >
                 <Icon className="w-4 h-4" />
                 <span>{label}</span>
