@@ -552,6 +552,8 @@ function PortfolioPageContent() {
                   ? 'bg-lokifi/20 border-lokifi/50 text-lokifi'
                   : 'bg-surface-100 border-surface-200/50 text-surface-300 hover:bg-surface-200'
               }`}
+              aria-label={showFilters ? 'Hide portfolio filters' : 'Show portfolio filters'}
+              aria-pressed={showFilters}
             >
               <Filter className="w-4 h-4" />
               Filters
