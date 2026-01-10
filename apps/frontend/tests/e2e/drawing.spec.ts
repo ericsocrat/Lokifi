@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test.describe('DrawingLayer (Playwright)', () => {
   test('draws a trendline on the canvas', async ({ page, browserName }) => {
-    await page.goto('/dev/drawing');
+    await page.goto('http://localhost:3000/dev/drawing');
 
     // Explicitly wait for canvas to be visible across browsers
     await page.waitForSelector('#drawing-container canvas', { state: 'visible' });
@@ -42,7 +42,7 @@ test.describe('DrawingLayer (Playwright)', () => {
   });
 
   test('draws a rectangle on the canvas', async ({ page, browserName }) => {
-    await page.goto('/dev/drawing');
+    await page.goto('http://localhost:3000/dev/drawing');
     await page.waitForSelector('#drawing-container canvas', { state: 'visible' });
 
     // Switch to rect tool via state store
@@ -79,6 +79,91 @@ test.describe('DrawingLayer (Playwright)', () => {
         if (img[i] !== 0) count++;
       }
       return count > 50; // Expect more pixels for rect edges
+    }, handle);
+
+    expect(hasPaint).toBe(true);
+  });
+
+  test('draws an ellipse on the canvas', async ({ page, browserName }) => {
+    await page.goto('http://localhost:3000/dev/drawing');
+    await page.waitForSelector('#drawing-container canvas', { state: 'visible' });
+
+    // Switch to ellipse tool via state store
+    await page.evaluate(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).useChartStore?.getState()?.setTool('ellipse');
+    });
+
+    const canvas = page.locator('#drawing-container canvas');
+    const box = await canvas.boundingBox();
+    expect(box).toBeTruthy();
+    if (!box) return;
+
+    const center = { x: Math.floor(box.x + 200), y: Math.floor(box.y + 200) };
+    const radial = { x: Math.floor(box.x + 300), y: Math.floor(box.y + 150) };
+
+    // Draw ellipse from center to radial point
+    await page.mouse.move(center.x, center.y);
+    await page.mouse.down();
+    await page.mouse.move(radial.x, radial.y);
+    await page.mouse.up();
+
+    await page.waitForTimeout(browserName === 'webkit' ? 400 : 150);
+
+    // Verify rendering
+    const handle = await page.waitForSelector('#drawing-container canvas', { state: 'attached' });
+    const hasPaint = await page.evaluate((el) => {
+      const c = el as HTMLCanvasElement;
+      const ctx = c.getContext('2d');
+      if (!ctx) return false;
+      const img = ctx.getImageData(0, 0, c.width, c.height).data;
+      for (let i = 3; i < img.length; i += 4) {
+        if (img[i] !== 0) return true;
+      }
+      return false;
+    }, handle);
+
+    expect(hasPaint).toBe(true);
+  });
+
+  test('draws a pitchfork on the canvas', async ({ page, browserName }) => {
+    await page.goto('http://localhost:3000/dev/drawing');
+    await page.waitForSelector('#drawing-container canvas', { state: 'visible' });
+
+    // Switch to pitchfork tool via state store
+    await page.evaluate(() => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).useChartStore?.getState()?.setTool('pitchfork');
+    });
+
+    const canvas = page.locator('#drawing-container canvas');
+    const box = await canvas.boundingBox();
+    expect(box).toBeTruthy();
+    if (!box) return;
+
+    // Pitchfork needs three points: anchor, middle, and extent
+    const anchor = { x: Math.floor(box.x + 100), y: Math.floor(box.y + 300) };
+    const middle = { x: Math.floor(box.x + 200), y: Math.floor(box.y + 200) };
+
+    // Draw pitchfork (two-point drag for main prong)
+    await page.mouse.move(anchor.x, anchor.y);
+    await page.mouse.down();
+    await page.mouse.move(middle.x, middle.y);
+    await page.mouse.up();
+
+    await page.waitForTimeout(browserName === 'webkit' ? 400 : 150);
+
+    // Verify rendering
+    const handle = await page.waitForSelector('#drawing-container canvas', { state: 'attached' });
+    const hasPaint = await page.evaluate((el) => {
+      const c = el as HTMLCanvasElement;
+      const ctx = c.getContext('2d');
+      if (!ctx) return false;
+      const img = ctx.getImageData(0, 0, c.width, c.height).data;
+      for (let i = 3; i < img.length; i += 4) {
+        if (img[i] !== 0) return true;
+      }
+      return false;
     }, handle);
 
     expect(hasPaint).toBe(true);
