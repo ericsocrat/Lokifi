@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-10T17:07:39.686Z",
+  "generated": "2026-01-11T00:02:21.825Z",
   "git": {
     "branch": "main",
-    "commit": "b03ddea0",
+    "commit": "508bc7bb",
     "author": "ericsocrat",
-    "message": "docs: session 143 summary - component test stabilization complete (5315 tests passing)"
+    "message": "fix(frontend): observabilityStore test timeout - batch heavy operations"
   },
   "current": {
     "tests": {
@@ -18,26 +18,26 @@
     },
     "coverage": {
       "statements": 91.48,
-      "branches": 85.26,
+      "branches": 85.22,
       "functions": 89.26,
       "lines": 91.48
     },
     "totals": {
       "statements": {
-        "covered": 48758,
-        "total": 53300
+        "covered": 48764,
+        "total": 53303
       },
       "branches": {
-        "covered": 8016,
-        "total": 9402
+        "covered": 8012,
+        "total": 9401
       },
       "functions": {
-        "covered": 1879,
-        "total": 2105
+        "covered": 1878,
+        "total": 2104
       },
       "lines": {
-        "covered": 48758,
-        "total": 53300
+        "covered": 48764,
+        "total": 53303
       }
     }
   },
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 91.47842401500938,
-        "branches": 85.25845564773452,
-        "functions": 89.26365795724466,
-        "lines": 91.47842401500938
+        "statements": 91.48453182747687,
+        "branches": 85.22497606637592,
+        "functions": 89.25855513307985,
+        "lines": 91.48453182747687
       },
       "files": 221,
       "metrics": {
-        "totalLines": 53300,
-        "coveredLines": 48758,
-        "uncoveredLines": 4542
+        "totalLines": 53303,
+        "coveredLines": 48764,
+        "uncoveredLines": 4539
       },
       "health": "good"
     }
@@ -1869,44 +1869,59 @@
         "branch": "main",
         "commit": "b03ddea0"
       }
+    },
+    {
+      "timestamp": "2026-01-11T00:02:21.825Z",
+      "coverage": {
+        "statements": 91.48453182747687,
+        "branches": 85.22497606637592,
+        "functions": 89.25855513307985,
+        "lines": 91.48453182747687
+      },
+      "tests": 0,
+      "files": 221,
+      "git": {
+        "branch": "main",
+        "commit": "508bc7bb"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↓ 0.01%",
-      "value": -0.00826279188834178,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.01%",
+      "value": 0.006107812467490703,
+      "direction": "↑",
+      "color": "green"
     },
     "branches": {
-      "text": "↓ 0.08%",
-      "value": -0.08224808352943569,
+      "text": "↓ 0.03%",
+      "value": -0.033479581358605515,
       "direction": "↓",
       "color": "red"
     },
     "functions": {
-      "text": "↓ 0.04%",
-      "value": -0.03734061622181173,
+      "text": "↓ 0.01%",
+      "value": -0.0051028241648083394,
       "direction": "↓",
       "color": "red"
     },
     "lines": {
-      "text": "↓ 0.01%",
-      "value": -0.00826279188834178,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.01%",
+      "value": 0.006107812467490703,
+      "direction": "↑",
+      "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 0.3127127463414041,
-    "branches": 0.014487819316286732,
-    "functions": 0.8168698460270178,
-    "lines": 0.3127127463414041
+    "statements": 0.3697332153181776,
+    "branches": 0.1208764741887478,
+    "functions": 0.8597056604048703,
+    "lines": 0.3697332153181776
   },
   "metadata": {
-    "totalRuns": 107,
+    "totalRuns": 108,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-10T17:07:39.686Z",
+    "lastRun": "2026-01-11T00:02:21.825Z",
     "bestCoverage": {
       "statements": 91.48668680689772,
       "branches": 85.34070373126396,
@@ -2062,16 +2077,16 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-        "complexity": 289,
-        "coverage": "90.8",
-        "branches": 240,
+        "complexity": 288,
+        "coverage": "91.5",
+        "branches": 239,
         "functions": 49
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-        "complexity": 286,
-        "coverage": "86.8",
-        "branches": 232,
+        "complexity": 288,
+        "coverage": "87.2",
+        "branches": 234,
         "functions": 54
       },
       {
@@ -2097,9 +2112,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 240,
+        "complexity": 241,
         "coverage": "93.4",
-        "branches": 201,
+        "branches": 202,
         "functions": 39
       },
       {
@@ -2111,16 +2126,16 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-        "complexity": 220,
+        "complexity": 218,
         "coverage": "95.2",
-        "branches": 184,
+        "branches": 182,
         "functions": 36
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
-        "complexity": 214,
-        "coverage": "85.1",
-        "branches": 178,
+        "complexity": 212,
+        "coverage": "84.3",
+        "branches": 176,
         "functions": 36
       }
     ]
