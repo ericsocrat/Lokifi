@@ -37,8 +37,8 @@
 ### Session 150 Progress Summary
 
 **Start State (Session 149 finish):** 88.65% coverage, 4,960 tests (after WebSocket manager tests)
-**Current State:** 88.72% coverage, 4,964 tests (+4 tests, +0.07pp coverage)
-**Target:** 90% coverage (gap: 1.28pp remaining)
+**Current State:** 88.77% coverage, 4,973 tests (+13 tests, +0.12pp coverage from start)
+**Target:** 90% coverage (gap: 1.23pp remaining, ~177 lines)
 
 **Work Completed:**
 1. ✅ **Security Middleware Tests** - 4 tests added
@@ -47,10 +47,21 @@
    - Resolved pytest cache collision (renamed from test_security.py to test_security_headers.py)
    - Coverage impact: +0.07pp (88.65% → 88.72%)
 
-2. ✅ **Infrastructure Fixes**
+2. ✅ **Auth Router Error Handling Tests** - 9 tests added
+   - `test_auth_router_errors.py`: Exception path testing for auth endpoints
+   - Tests: register/login error handling, Google OAuth validation failures
+   - Edge cases: invalid token, audience mismatch, expired token, missing email, unverified email, network errors
+   - Coverage impact: +0.05pp (88.72% → 88.77%)
+
+3. ✅ **Infrastructure Fixes**
    - Resolved pytest cache collision between `tests/core/test_security.py` and `tests/middleware/test_security.py`
    - Cleaned __pycache__ directories to resolve import conflicts
    - Applied Black + Ruff formatting to all test files
+
+**Next Priority** (for remaining 1.23pp):
+- Target modules with 70-85% coverage for high ROI
+- Recommended: `unified_asset_service.py` (67.88%, 161 LOC), `huggingface_provider.py` (67.47%, 114 LOC)
+- Estimated: 10-15 more focused tests needed to reach 90%
 
 ### Session 149 Progress Summary
 
