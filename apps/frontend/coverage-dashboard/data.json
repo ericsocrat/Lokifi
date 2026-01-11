@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-11T00:02:21.825Z",
+  "generated": "2026-01-11T02:36:42.364Z",
   "git": {
     "branch": "main",
-    "commit": "508bc7bb",
+    "commit": "a7eb9933",
     "author": "ericsocrat",
-    "message": "fix(frontend): observabilityStore test timeout - batch heavy operations"
+    "message": "docs(session147): strategic planning - backend coverage expansion identified as next priority"
   },
   "current": {
     "tests": {
@@ -18,25 +18,25 @@
     },
     "coverage": {
       "statements": 91.48,
-      "branches": 85.22,
+      "branches": 85.29,
       "functions": 89.26,
       "lines": 91.48
     },
     "totals": {
       "statements": {
-        "covered": 48764,
+        "covered": 48760,
         "total": 53303
       },
       "branches": {
-        "covered": 8012,
-        "total": 9401
+        "covered": 8019,
+        "total": 9402
       },
       "functions": {
-        "covered": 1878,
-        "total": 2104
+        "covered": 1879,
+        "total": 2105
       },
       "lines": {
-        "covered": 48764,
+        "covered": 48760,
         "total": 53303
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 91.48453182747687,
-        "branches": 85.22497606637592,
-        "functions": 89.25855513307985,
-        "lines": 91.48453182747687
+        "statements": 91.47702755942441,
+        "branches": 85.2903637523931,
+        "functions": 89.26365795724466,
+        "lines": 91.47702755942441
       },
       "files": 221,
       "metrics": {
         "totalLines": 53303,
-        "coveredLines": 48764,
-        "uncoveredLines": 4539
+        "coveredLines": 48760,
+        "uncoveredLines": 4543
       },
       "health": "good"
     }
@@ -1884,44 +1884,74 @@
         "branch": "main",
         "commit": "508bc7bb"
       }
+    },
+    {
+      "timestamp": "2026-01-11T01:56:41.935Z",
+      "coverage": {
+        "statements": 91.48453182747687,
+        "branches": 85.29505582137162,
+        "functions": 89.26365795724466,
+        "lines": 91.48453182747687
+      },
+      "tests": 0,
+      "files": 221,
+      "git": {
+        "branch": "main",
+        "commit": "f7a408ce"
+      }
+    },
+    {
+      "timestamp": "2026-01-11T02:36:42.364Z",
+      "coverage": {
+        "statements": 91.47702755942441,
+        "branches": 85.2903637523931,
+        "functions": 89.26365795724466,
+        "lines": 91.47702755942441
+      },
+      "tests": 0,
+      "files": 221,
+      "git": {
+        "branch": "main",
+        "commit": "a7eb9933"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.01%",
-      "value": 0.006107812467490703,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.01%",
+      "value": -0.007504268052457519,
+      "direction": "↓",
+      "color": "red"
     },
     "branches": {
-      "text": "↓ 0.03%",
-      "value": -0.033479581358605515,
+      "text": "↓ 0.00%",
+      "value": -0.00469206897851393,
       "direction": "↓",
       "color": "red"
     },
     "functions": {
-      "text": "↓ 0.01%",
-      "value": -0.0051028241648083394,
-      "direction": "↓",
-      "color": "red"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "lines": {
-      "text": "↑ 0.01%",
-      "value": 0.006107812467490703,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.01%",
+      "value": -0.007504268052457519,
+      "direction": "↓",
+      "color": "red"
     }
   },
   "weeklyTrend": {
-    "statements": 0.3697332153181776,
-    "branches": 0.1208764741887478,
-    "functions": 0.8597056604048703,
-    "lines": 0.3697332153181776
+    "statements": 0.24908971057844553,
+    "branches": 0.01796730585559203,
+    "functions": 0.38542209914302816,
+    "lines": 0.24908971057844553
   },
   "metadata": {
-    "totalRuns": 108,
+    "totalRuns": 110,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-11T00:02:21.825Z",
+    "lastRun": "2026-01-11T02:36:42.364Z",
     "bestCoverage": {
       "statements": 91.48668680689772,
       "branches": 85.34070373126396,
@@ -1938,7 +1968,7 @@
     "velocity": {
       "testsPerDay": "NaN",
       "filesPerRun": "2.0",
-      "avgCoverageGain": "0.74"
+      "avgCoverageGain": "0.72"
     }
   },
   "insights": [],
@@ -2077,16 +2107,16 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-        "complexity": 288,
-        "coverage": "91.5",
-        "branches": 239,
+        "complexity": 289,
+        "coverage": "90.8",
+        "branches": 240,
         "functions": 49
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-        "complexity": 288,
-        "coverage": "87.2",
-        "branches": 234,
+        "complexity": 286,
+        "coverage": "86.8",
+        "branches": 232,
         "functions": 54
       },
       {
@@ -2098,9 +2128,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-        "complexity": 257,
-        "coverage": "95.5",
-        "branches": 213,
+        "complexity": 259,
+        "coverage": "96.1",
+        "branches": 215,
         "functions": 44
       },
       {
@@ -2112,9 +2142,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 241,
+        "complexity": 242,
         "coverage": "93.4",
-        "branches": 202,
+        "branches": 203,
         "functions": 39
       },
       {
@@ -2126,9 +2156,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-        "complexity": 218,
+        "complexity": 219,
         "coverage": "95.2",
-        "branches": 182,
+        "branches": 183,
         "functions": 36
       },
       {
