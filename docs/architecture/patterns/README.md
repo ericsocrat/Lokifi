@@ -1,19 +1,25 @@
 # Pattern Library
 
-> **World-Class Code Patterns from 123+ Proven Sessions**
+> **World-Class Code Patterns from 146+ Proven Sessions**
 >
 > A comprehensive, battle-tested collection of development patterns extracted from real-world problem-solving sessions. Each pattern includes context, solution approach, examples, and proven success metrics.
+>
+> **Latest Additions (Session 146):**
+> - 🎯 Act-Wrapped Test Helpers Pattern (TEST018)
+> - 🎯 Accessibility - Nested Interactive Elements (A11Y001)
+> - 🎯 Third-Party Library Warning Analysis (DEBUG003)
 
 ## 📖 Quick Navigation
 
 ### By Category
-- **[Testing Patterns](./testing/)** - Unit, integration, mocking, coverage (Sessions 30, 62, 63, 66, 77-89, 120)
+- **[Testing Patterns](./testing/)** - Unit, integration, mocking, coverage (Sessions 30, 62, 63, 66, 77-89, 120, 145-146)
 - **[CI/CD Patterns](./ci-cd/)** - Workflow optimization, debugging, health checks (Sessions 8-12, 33)
 - **[Code Quality Patterns](./code-quality/)** - TypeScript, Python, linting, refactoring (Sessions 42-59)
 - **[Dependency Management](./dependencies/)** - Conflict resolution, Renovate, security patches (Sessions 29-30)
 - **[Python Type Safety Patterns](./python/)** - MyPy errors, type elimination, compatibility (Sessions 60-61, 73-76)
-- **[Security Patterns](./security/)** - Secure logging, input validation, SSRF prevention (Sessions 32, 122-123) ⭐ **NEW**
-- **[Debugging Patterns](./debugging/)** - Root cause analysis, systematic investigation (Session 33)
+- **[Accessibility Patterns](./accessibility/)** - WCAG compliance, keyboard navigation, screen readers (Sessions 144-146) ⭐ **NEW**
+- **[Security Patterns](./security/)** - Secure logging, input validation, SSRF prevention (Sessions 32, 122-123)
+- **[Debugging Patterns](./debugging/)** - Root cause analysis, systematic investigation (Sessions 33, 145-146)
 
 ### By Difficulty
 - **🟢 Beginner**: Essential patterns for getting started
@@ -49,6 +55,13 @@
 | [vi.mocked() Pattern](./testing/vi-mocked-pattern.md) | 🟢 Beginner | 100% | 🎯 200+ fixes | 117, 118, 119 |
 | [Vitest Timeout Migration](./testing/vitest-timeout-migration-pattern.md) | 🟢 Beginner | 100% | ✅ Vitest 4.0 ready | 120 | ⭐ **NEW**
 | [Window Interface Extension](./testing/window-interface-extension.md) | 🟢 Beginner | 100% | ✅ Type-safe globals | 117, 118, 119 |
+| [Act-Wrapped Test Helpers](./testing/test018-act-wrapped-helpers.md) | 🟡 Intermediate | 100% | 🎯 -30-40% warnings | 145-146 | ⭐ **NEW**
+
+### Accessibility Patterns ⭐ **NEW**
+
+| Pattern | Category | Success Rate | Impact | Sessions Used |
+|---------|----------|--------------|--------|---------------|
+| [Nested Interactive Elements](./accessibility/a11y001-nested-interactive-elements.md) | 🟡 Intermediate | 100% | 🎯 WCAG 2.1 AA | 144-146 | ⭐ **NEW**
 
 ### CI/CD Patterns
 
@@ -100,13 +113,14 @@
 | [Input Validation Pattern](./security/input-validation-pattern.md) | 🟢 Beginner | 100% | 🎯 CWE-918 mitigated | 123 | ⭐ **NEW**
 | [Security Implementation](./security/security-implementation.md) | 🟡 Intermediate | 100% | ✅ OWASP compliance | Multiple |
 
-### Debugging Patterns
+### Debugging Patterns ⭐ **EXPANDED**
 
 | Pattern | Category | Success Rate | Impact | Sessions Used |
 |---------|----------|--------------|--------|---------------|
 | [Systematic Root Cause Analysis](./debugging/systematic-root-cause.md) | 🔴 Advanced | 100% (3/3) | 🎯 7 failures → 2 fixes | 33 |
 | [GitHub CLI Investigation](./debugging/github-cli-investigation.md) | 🟡 Intermediate | 100% (10+) | ⚡ Fast debugging | All sessions |
 | [Log Analysis Pattern](./debugging/log-analysis.md) | 🟡 Intermediate | 100% (5+) | ✅ Deep insights | Multiple |
+| [Third-Party Library Warnings](./debugging/debug003-third-party-library-warnings.md) | 🟡 Intermediate | 100% | 🎯 5-10 hrs saved | 145-146 | ⭐ **NEW**
 
 ## 🎯 Pattern Selection Guide
 
