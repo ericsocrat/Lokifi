@@ -59,9 +59,22 @@
    - Applied Black + Ruff formatting to all test files
 
 **Next Priority** (for remaining 1.23pp):
+3. ✅ **Unified Asset Service Error Handling Tests** - 8 tests added
+   - `test_unified_asset_service.py`: Error path testing for asset registry service
+   - Tests: Redis failures (init, caching), crypto API errors, asset lookup edge cases
+   - Coverage impact: Maintained 88.77% (added +6 tests: 4,973 → 4,979)
+   - Strategic approach: Target error handling paths for consistent quality
+
+**Current State:**
+- Coverage: 88.77% (4,979 tests)
+- Gap to 90%: 1.23pp (~177 additional covered lines needed)
+- Progress this session: +19 tests (+13 from previous, +6 new) in 3 test files
+
+**Next Priority** (for remaining 1.23pp):
 - Target modules with 70-85% coverage for high ROI
-- Recommended: `unified_asset_service.py` (67.88%, 161 LOC), `huggingface_provider.py` (67.47%, 114 LOC)
-- Estimated: 10-15 more focused tests needed to reach 90%
+- Recommended: `data_service.py` (81.14%), `ai_provider.py` (82.47%), `data_archival_service.py` (82.76%)
+- Estimated: 8-12 more focused tests needed to reach 90%
+- Strategy: Focus on error handling branches, edge cases, fallback mechanisms
 
 ### Session 149 Progress Summary
 
