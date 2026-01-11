@@ -1,3 +1,136 @@
+import asyncio
+import json
+from datetime import datetime, timezone
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from app.core.advanced_redis_client import (
+    AdvancedRedisClient,
+    CacheMetrics,
+    CacheStrategy,
+    CircuitBreakerState,
+)
+
+
+class FakePipeline:
+    def __init__(self, store):
+        self._ops = []
+        self._store = store
+
+    def get(self, key: str):
+        self._ops.append(("get", key))
+        return self
+
+    async def execute(self):
+        results = []
+        for op, key in self._ops:
+            if op == "get":
+                results.append(self._store.get(key))
+        return results
+
+
+class FakeRedisClient:
+    def __init__(self):
+        self._store: dict[str, bytes | str] = {}
+
+    async def ping(self):
+        return True
+
+    async def get(self, key: str):
+        return self._store.get(key)
+
+    async def set(self, key: str, value: str):
+        self._store[key] = value
+        return True
+
+    async def setex(self, key: str, ttl: int, value: str):
+        # ttl ignored for fake client but stored
+        self._store[key] = value
+        return True
+
+    def pipeline(self):
+        return FakePipeline(self._store)
+
+    async def keys(self, pattern: str):
+        # very simple substring match for tests
+        return [k for k in self._store.keys() if pattern.replace("*", "") in k]
+
+    async def delete(self, *keys):
+        count = 0
+        for k in keys:
+            if k in self._store:
+                del self._store[k]
+                count += 1
+        return count
+
+    async def config_set(self, key: str, value: str):
+        return True
+
+
+@pytest.mark.anyio
+async def test_get_returns_json_and_string():
+    client = AdvancedRedisClient()
+    client.client = FakeRedisClient()
+
+    # JSON value
+    await client.client.set("json_key", json.dumps({"a": 1}))
+    # Plain string value
+    await client.client.set("str_key", "hello")
+
+    v1 = await client.get("json_key")
+    v2 = await client.get("str_key")
+
+    assert v1 == {"a": 1}
+    assert v2 == "hello"
+
+
+@pytest.mark.anyio
+async def test_set_uses_setex_when_expire():
+    client = AdvancedRedisClient()
+    client.client = FakeRedisClient()
+
+    ok = await client.set("k1", {"x": 2}, expire=60)
+    assert ok is True
+    # stored JSON string
+    raw = await client.client.get("k1")
+    assert isinstance(raw, str) and json.loads(raw) == {"x": 2}
+
+
+@pytest.mark.anyio
+async def test_get_with_layers_promotes_from_other_layer():
+    client = AdvancedRedisClient()
+    client.client = FakeRedisClient()
+    # initialize cache layers
+    await client._initialize_cache_layers()
+
+    # value exists in cold layer
+    await client.client.set("cold:abc", "value")
+    # request warm layer
+    v = await client.get_with_layers("abc", layer="warm")
+    assert v == "value"
+    # promoted to warm layer
+    promoted = await client.client.get("warm:abc")
+    assert promoted == "value"
+
+
+@pytest.mark.anyio
+async def test_cache_warm_batch_and_invalidate():
+    client = AdvancedRedisClient()
+    client.client = FakeRedisClient()
+
+    # preload
+    await client.client.set("warm:item1", "v1")
+    await client.client.set("warm:item2", "v2")
+
+    data = await client.cache_warm_batch(["item1", "item2"], layer="warm")
+    assert data == {"item1": "v1", "item2": "v2"}
+
+    # invalidate pattern
+    deleted = await client.invalidate_pattern("item", layer="warm")
+    assert deleted >= 2
+
+
 """
 Comprehensive tests for app.core.advanced_redis_client
 
@@ -12,19 +145,6 @@ Tests cover:
 
 Session 136: Created to improve backend coverage toward 80% target.
 """
-
-import asyncio
-from datetime import datetime, timezone
-from unittest.mock import AsyncMock, MagicMock, patch
-
-import pytest
-
-from app.core.advanced_redis_client import (
-    AdvancedRedisClient,
-    CacheMetrics,
-    CacheStrategy,
-    CircuitBreakerState,
-)
 
 # ============================================================================
 # FIXTURES
