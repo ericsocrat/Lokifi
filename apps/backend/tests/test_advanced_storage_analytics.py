@@ -732,7 +732,7 @@ class TestIntegrationScenarios:
                 ),
             ]
 
-            with pytest.raises(RuntimeError, match=".*"):
+            with pytest.raises(RuntimeError):
                 await storage_analytics.get_comprehensive_metrics()
 
             # Second attempt succeeds
