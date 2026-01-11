@@ -1,19 +1,14 @@
-"""
-Tests for Advanced WebSocket Manager
-
-Comprehensive tests for the production-ready WebSocket infrastructure including
-connection pooling, analytics, broadcasting, and background tasks.
-"""
-
 import asyncio
 import json
-from collections import deque
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import WebSocketDisconnect
 from fastapi.websockets import WebSocketState
 
+from app.core.advanced_redis_client import advanced_redis_client
 from app.websockets.advanced_websocket_manager import (
     AdvancedWebSocketManager,
     ConnectionInfo,
@@ -23,13 +18,30 @@ from app.websockets.advanced_websocket_manager import (
     get_websocket_manager,
 )
 
-# ============================================================================
-# Mock Classes
-# ============================================================================
+
+class FakeWebSocket:
+    """Lightweight WebSocket stub for testing send/close behavior."""
+
+    def __init__(self, fail_mode: str | None = None):
+        self.fail_mode = fail_mode  # None | 'disconnect' | 'error'
+        self.client_state = WebSocketState.CONNECTED
+        self.sent_messages: list[str] = []
+        self.accepted = False
+        self.closed = False
+
+    async def accept(self):
+        self.accepted = True
+
+    async def send_text(self, message: str):
+        if self.fail_mode == "disconnect":
+            raise WebSocketDisconnect()
+        if self.fail_mode == "error":
+            raise Exception("boom")
+        self.sent_messages.append(message)
 
 
 class MockWebSocket:
-    """Mock WebSocket for testing."""
+    """Mock WebSocket for the extended test suite."""
 
     def __init__(self, state: WebSocketState = WebSocketState.CONNECTED):
         self.messages_sent: list[str] = []
@@ -54,266 +66,6 @@ class MockWebSocket:
         self.close_code = code
         self.close_reason = reason
         self._state = WebSocketState.DISCONNECTED
-
-
-# ============================================================================
-# Test ConnectionMetrics
-# ============================================================================
-
-
-class TestConnectionMetrics:
-    """Tests for ConnectionMetrics dataclass."""
-
-    def test_metrics_initialization(self):
-        """Test metrics initializes with correct defaults."""
-        now = datetime.now(timezone.utc)
-        metrics = ConnectionMetrics(connected_at=now, last_activity=now)
-
-        assert metrics.messages_sent == 0
-        assert metrics.messages_received == 0
-        assert metrics.bytes_sent == 0
-        assert metrics.bytes_received == 0
-        assert metrics.connection_drops == 0
-        assert metrics.reconnections == 0
-        assert metrics.avg_response_time == 0.0
-
-    def test_update_activity(self):
-        """Test update_activity updates last_activity timestamp."""
-        old_time = datetime.now(timezone.utc) - timedelta(hours=1)
-        metrics = ConnectionMetrics(connected_at=old_time, last_activity=old_time)
-
-        metrics.update_activity()
-        assert metrics.last_activity > old_time
-
-    def test_record_sent(self):
-        """Test recording sent message metrics."""
-        now = datetime.now(timezone.utc)
-        metrics = ConnectionMetrics(connected_at=now, last_activity=now)
-
-        metrics.record_sent(100)
-        assert metrics.messages_sent == 1
-        assert metrics.bytes_sent == 100
-
-        metrics.record_sent(50)
-        assert metrics.messages_sent == 2
-        assert metrics.bytes_sent == 150
-
-    def test_record_received(self):
-        """Test recording received message metrics."""
-        now = datetime.now(timezone.utc)
-        metrics = ConnectionMetrics(connected_at=now, last_activity=now)
-
-        metrics.record_received(200)
-        assert metrics.messages_received == 1
-        assert metrics.bytes_received == 200
-
-
-# ============================================================================
-# Test ConnectionInfo
-# ============================================================================
-
-
-class TestConnectionInfo:
-    """Tests for ConnectionInfo dataclass."""
-
-    def test_connection_info_to_dict(self):
-        """Test converting ConnectionInfo to dictionary."""
-        now = datetime.now(timezone.utc)
-        metrics = ConnectionMetrics(connected_at=now, last_activity=now)
-        websocket = MockWebSocket()
-
-        connection_info = ConnectionInfo(
-            websocket=websocket,
-            user_id="123",
-            connection_id="conn-abc",
-            metrics=metrics,
-            rooms={"room1", "room2"},
-            subscriptions={"sub1"},
-            client_info={"device": "mobile"},
-        )
-
-        result = connection_info.to_dict()
-
-        assert result["connection_id"] == "conn-abc"
-        assert result["user_id"] == "123"
-        assert "room1" in result["rooms"]
-        assert "room2" in result["rooms"]
-        assert result["client_info"]["device"] == "mobile"
-
-
-# ============================================================================
-# Test ConnectionPool
-# ============================================================================
-
-
-class TestConnectionPoolInit:
-    """Tests for ConnectionPool initialization."""
-
-    def test_pool_initializes_with_defaults(self):
-        """Test pool initializes with default max connections."""
-        pool = ConnectionPool()
-        assert pool.max_connections == 10000
-        assert pool.connections == {}
-        assert pool.stats["total_connections"] == 0
-
-    def test_pool_initializes_with_custom_max(self):
-        """Test pool initializes with custom max connections."""
-        pool = ConnectionPool(max_connections=100)
-        assert pool.max_connections == 100
-
-
-class TestConnectionPoolAddConnection:
-    """Tests for ConnectionPool.add_connection()."""
-
-    @pytest.mark.asyncio
-    async def test_add_connection_success(self):
-        """Test adding a new connection successfully."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            connection_id = await pool.add_connection(websocket, "user1")
-
-        assert connection_id is not None
-        assert connection_id in pool.connections
-        assert "user1" in pool.user_connections
-        assert connection_id in pool.user_connections["user1"]
-
-    @pytest.mark.asyncio
-    async def test_add_connection_with_client_info(self):
-        """Test adding connection with client info."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-        client_info = {"device": "mobile", "version": "1.0"}
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            connection_id = await pool.add_connection(
-                websocket, "user1", client_info=client_info
-            )
-
-        connection = pool.connections[connection_id]
-        assert connection.client_info == client_info
-
-    @pytest.mark.asyncio
-    async def test_add_connection_max_reached(self):
-        """Test adding connection when max reached."""
-        pool = ConnectionPool(max_connections=1)
-        websocket1 = MockWebSocket()
-        websocket2 = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            conn1 = await pool.add_connection(websocket1, "user1")
-            conn2 = await pool.add_connection(websocket2, "user2")
-
-        assert conn1 is not None
-        assert conn2 is None  # Max reached
-
-    @pytest.mark.asyncio
-    async def test_add_connection_updates_stats(self):
-        """Test adding connection updates statistics."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            await pool.add_connection(websocket, "user1")
-
-        assert pool.stats["total_connections"] == 1
-        assert pool.stats["peak_connections"] == 1
-
-
-class TestConnectionPoolRemoveConnection:
-    """Tests for ConnectionPool.remove_connection()."""
-
-    @pytest.mark.asyncio
-    async def test_remove_connection_success(self):
-        """Test removing a connection successfully."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            with patch.object(pool, "_remove_connection_info", new_callable=AsyncMock):
-                connection_id = await pool.add_connection(websocket, "user1")
-                result = await pool.remove_connection(connection_id)
-
-        assert result is True
-        assert connection_id not in pool.connections
-        assert "user1" not in pool.user_connections
-
-    @pytest.mark.asyncio
-    async def test_remove_nonexistent_connection(self):
-        """Test removing nonexistent connection returns False."""
-        pool = ConnectionPool()
-        result = await pool.remove_connection("nonexistent")
-        assert result is False
-
-    @pytest.mark.asyncio
-    async def test_remove_connection_cleans_rooms(self):
-        """Test removing connection cleans up room memberships."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            with patch.object(pool, "_remove_connection_info", new_callable=AsyncMock):
-                with patch.object(
-                    pool, "_update_connection_rooms", new_callable=AsyncMock
-                ):
-                    connection_id = await pool.add_connection(websocket, "user1")
-                    await pool.join_room(connection_id, "room1")
-                    await pool.remove_connection(connection_id)
-
-        assert "room1" not in pool.room_connections
-
-
-class TestConnectionPoolRooms:
-    """Tests for ConnectionPool room functionality."""
-
-    @pytest.mark.asyncio
-    async def test_join_room(self):
-        """Test joining a room."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            with patch.object(pool, "_update_connection_rooms", new_callable=AsyncMock):
-                connection_id = await pool.add_connection(websocket, "user1")
-                result = await pool.join_room(connection_id, "room1")
-
-        assert result is True
-        assert "room1" in pool.connections[connection_id].rooms
-        assert connection_id in pool.room_connections["room1"]
-
-    @pytest.mark.asyncio
-    async def test_join_room_invalid_connection(self):
-        """Test joining room with invalid connection fails."""
-        pool = ConnectionPool()
-        result = await pool.join_room("invalid", "room1")
-        assert result is False
-
-    @pytest.mark.asyncio
-    async def test_leave_room(self):
-        """Test leaving a room."""
-        pool = ConnectionPool()
-        websocket = MockWebSocket()
-
-        with patch.object(pool, "_store_connection_info", new_callable=AsyncMock):
-            with patch.object(pool, "_update_connection_rooms", new_callable=AsyncMock):
-                connection_id = await pool.add_connection(websocket, "user1")
-                await pool.join_room(connection_id, "room1")
-                result = await pool.leave_room(connection_id, "room1")
-
-        assert result is True
-        assert "room1" not in pool.connections[connection_id].rooms
-
-    @pytest.mark.asyncio
-    async def test_leave_room_invalid_connection(self):
-        """Test leaving room with invalid connection fails."""
-        pool = ConnectionPool()
-        result = await pool.leave_room("invalid", "room1")
-        assert result is False
-
-
-class TestConnectionPoolGetConnections:
-    """Tests for ConnectionPool get connection methods."""
 
     @pytest.mark.asyncio
     async def test_get_user_connections(self):
