@@ -1,4 +1,5 @@
 import { listContextActions, registerContextAction, runAction } from '@/lib/plugins/pluginAPI';
+import { useChartStore } from '@/state/store';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the useChartStore
@@ -104,6 +105,17 @@ describe('pluginAPI', () => {
       const call = runFn.mock.calls[0];
       expect(Array.isArray(call[0])).toBe(true);
     });
+
+    it('should pass empty array when selection is undefined', () => {
+      const runFn = vi.fn();
+      registerContextAction('empty-sel', 'Empty Sel', runFn);
+
+      // Next getState call returns undefined selection to hit `selection || []` branch
+      vi.mocked(useChartStore.getState).mockReturnValueOnce({ selection: undefined as any, drawings: [] } as any);
+
+      runAction('empty-sel');
+      expect(runFn).toHaveBeenCalledWith([]);
+    });
   });
 
   describe('global Lokifi object', () => {
@@ -153,6 +165,32 @@ describe('pluginAPI', () => {
       const selection = globalAny.Lokifi?.plugins?.getSelection();
 
       expect(Array.isArray(selection)).toBe(true);
+    });
+
+    it('getSelection should return empty array when store selection is undefined', () => {
+      const globalAny = globalThis as unknown as {
+        Lokifi?: { plugins?: { getSelection: () => string[] } };
+      };
+      // Next getState call returns undefined selection to exercise `|| []` branch
+      vi.mocked(useChartStore.getState).mockReturnValueOnce({ selection: undefined as any, drawings: [] } as any);
+      const selection = globalAny.Lokifi?.plugins?.getSelection();
+      expect(selection).toEqual([]);
+    });
+
+    it('should not replace existing globalThis.Lokifi object on module init', async () => {
+      const g: any = globalThis as any;
+      const original = g.Lokifi;
+      try {
+        g.Lokifi = { pre: true };
+        vi.resetModules();
+        // Re-import to re-run module initialization with pre-existing Lokifi
+        const mod = await import('@/lib/plugins/pluginAPI');
+        expect((globalThis as any).Lokifi.pre).toBe(true);
+        expect(typeof (globalThis as any).Lokifi.plugins?.runAction).toBe('function');
+      } finally {
+        // Restore
+        (globalThis as any).Lokifi = original;
+      }
     });
   });
 });
