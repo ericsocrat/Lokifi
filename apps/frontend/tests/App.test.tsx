@@ -1,5 +1,6 @@
 import App from '@/App';
 import { useGlobalHotkeys } from '@/lib/utils/globalHotkeys';
+import { useChartStore } from '@/state/store';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -170,6 +171,52 @@ describe('App', () => {
       criticalComponents.forEach((componentId) => {
         expect(screen.getByTestId(componentId)).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Indicator Controls Panel', () => {
+    it('should not render IndicatorControlsPanel when indicatorControlsPanelVisible is false', () => {
+      // Default mock has indicatorControlsPanelVisible: false
+      render(<App />);
+      
+      // Query by the floating panel div structure
+      const floatingPanel = document.querySelector('.absolute.top-4.right-4.z-10');
+      expect(floatingPanel).not.toBeInTheDocument();
+    });
+
+    it('should render IndicatorControlsPanel when indicatorControlsPanelVisible is true', () => {
+      // Mock with visible state
+      vi.mocked(useChartStore).mockImplementation((selector) => {
+        const state = {
+          indicatorControlsPanelVisible: true,
+          toggleIndicatorControlsPanel: vi.fn(),
+        };
+        return selector ? selector(state) : state;
+      });
+
+      render(<App />);
+      
+      // The floating panel div should exist
+      const floatingPanel = document.querySelector('.absolute.top-4.right-4.z-10.max-w-md');
+      expect(floatingPanel).toBeInTheDocument();
+    });
+
+    it('should render IndicatorControlsPanel component inside floating panel when visible', () => {
+      // Mock with visible state
+      vi.mocked(useChartStore).mockImplementation((selector) => {
+        const state = {
+          indicatorControlsPanelVisible: true,
+          toggleIndicatorControlsPanel: vi.fn(),
+        };
+        return selector ? selector(state) : state;
+      });
+
+      const { container } = render(<App />);
+      
+      // Verify the floating panel structure exists
+      const floatingPanel = container.querySelector('.absolute.top-4.right-4.z-10.max-w-md');
+      expect(floatingPanel).toBeInTheDocument();
+      expect(floatingPanel?.children.length).toBeGreaterThan(0);
     });
   });
 });
