@@ -80,7 +80,7 @@ services:
           memory: 512M
 
   redis:
-    image: redis:7.4-alpine
+    image: redis:8.4-alpine
     container_name: lokifi-redis-prod
     ports:
       - "6379:6379"

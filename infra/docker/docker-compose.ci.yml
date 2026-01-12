@@ -6,7 +6,7 @@
 services:
   # Redis - Caching Layer
   redis:
-    image: redis:7.4-alpine
+    image: redis:8.4-alpine
     container_name: lokifi-redis-ci
     ports:
       - "6379:6379"
@@ -19,7 +19,7 @@ services:
 
   # PostgreSQL - Database
   postgres:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: lokifi-postgres-ci
     environment:
       POSTGRES_USER: lokifi
