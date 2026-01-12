@@ -97,7 +97,7 @@
 - **Option 2:** Attempt large component (DrawingChart 54.25%, EnhancedChart 59.29% - higher risk/reward)
 - **Recommended:** Hybrid - 1-2 more medium sessions, then attempt one large component to validate feasibility
 
-**Commits:** 
+**Commits:**
 - 0c1de547: collab.ts 100% coverage (Part 1)
 - 942524df: Part 1 documentation
 - 8d393822: pluginSDK.ts 100% coverage (Part 2)
@@ -201,7 +201,7 @@ const globalAny = globalThis as unknown as { Lokifi?: { plugins?: unknown } };
 globalAny.Lokifi = globalAny.Lokifi || {}; // Line 33 - preservation
 globalAny.Lokifi.plugins = {
    // ... API methods including:
-   getSelection: (): string[] => 
+   getSelection: (): string[] =>
       Array.from(useChartStore.getState().selection || []), // Line 38 - fallback
 };
 ```
