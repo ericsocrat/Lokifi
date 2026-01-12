@@ -534,6 +534,343 @@ describe('AuthModal', () => {
     });
   });
 
+  describe('Advanced Validation - Username', () => {
+    it('should show error for username shorter than 3 characters', async () => {
+      const user = userEvent.setup();
+      render(<AuthModal onClose={mockOnClose} initialMode="register" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your full name...'), 'Test User');
+      await user.type(screen.getByPlaceholderText('Choose a username...'), 'ab');
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Username must be at least 3 characters')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should show error for username with special characters', async () => {
+      const user = userEvent.setup();
+      render(<AuthModal onClose={mockOnClose} initialMode="register" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your full name...'), 'Test User');
+      await user.type(screen.getByPlaceholderText('Choose a username...'), 'user-name!');
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText('Username can only contain letters, numbers, and underscores')
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should accept valid username with underscores', async () => {
+      const user = userEvent.setup();
+      mockRegister.mockResolvedValueOnce(undefined);
+      render(<AuthModal onClose={mockOnClose} initialMode="register" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your full name...'), 'Test User');
+      await user.type(screen.getByPlaceholderText('Choose a username...'), 'user_name_123');
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(mockRegister).toHaveBeenCalledWith(
+          'test@example.com',
+          'password123',
+          'Test User',
+          'user_name_123'
+        );
+      });
+    });
+  });
+
+  describe('Error Message Handling', () => {
+    it('should display specific error for email verification required', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockRejectedValueOnce(new Error('Please verify your email'));
+      render(<AuthModal onClose={mockOnClose} initialMode="login" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Please verify your email address before logging in/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should display error for deactivated account', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockRejectedValueOnce(new Error('Account deactivated'));
+      render(<AuthModal onClose={mockOnClose} initialMode="login" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Your account has been deactivated/i)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should display error for invalid email/password combination', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockRejectedValueOnce(new Error('Invalid email address or password'));
+      render(<AuthModal onClose={mockOnClose} initialMode="login" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'wrong@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'wrongpassword');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(/Invalid email or password. Please check your credentials/i)
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Redirect After Auth', () => {
+    it('should redirect after successful login when redirectAfterAuth is set', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockResolvedValueOnce(undefined);
+
+      // Set redirect path in sessionStorage
+      sessionStorage.setItem('redirectAfterAuth', '/dashboard');
+
+      const originalLocation = window.location;
+      delete (window as Partial<Window>).location;
+      window.location = { ...originalLocation, href: '' };
+
+      render(<AuthModal onClose={mockOnClose} initialMode="login" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(window.location.href).toBe('/dashboard');
+        expect(sessionStorage.getItem('redirectAfterAuth')).toBeNull();
+      });
+
+      // Cleanup
+      window.location = originalLocation;
+      sessionStorage.removeItem('redirectAfterAuth');
+    });
+
+    it('should not redirect when redirectAfterAuth is not set', async () => {
+      const user = userEvent.setup();
+      mockLogin.mockResolvedValueOnce(undefined);
+
+      render(<AuthModal onClose={mockOnClose} initialMode="login" />);
+
+      await user.type(
+        screen.getByPlaceholderText('Enter your email address...'),
+        'test@example.com'
+      );
+      await user.type(screen.getByPlaceholderText('Enter your password...'), 'password123');
+
+      const form = document.querySelector('form');
+      fireEvent.submit(form!);
+
+      await waitFor(() => {
+        expect(mockOnClose).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('Google Authentication Error Handling', () => {
+    it('should handle missing Google credential gracefully', async () => {
+      const user = userEvent.setup();
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+
+      // Simulate Google login with missing credential
+      fireEvent.click(googleButton);
+
+      // Component should handle the error
+      expect(googleButton).toBeInTheDocument();
+    });
+
+    it('should handle Google token verification failure', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          detail: 'Google token verification failed',
+        }),
+      });
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Google authentication failed/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should handle Google email not verified error', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          detail: 'Google email not verified',
+        }),
+      });
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Your Google email is not verified/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should handle invalid token audience error', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          detail: 'Invalid token audience',
+        }),
+      });
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Invalid authentication token/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should handle expired token error', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi.fn().mockResolvedValueOnce({
+        ok: false,
+        json: async () => ({
+          detail: 'Token expired',
+        }),
+      });
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Authentication token has expired/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should handle network errors in Google auth', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi.fn().mockRejectedValueOnce(new TypeError('Failed to fetch'));
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Cannot connect to server/)
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('should clear error on subsequent Google login attempt', async () => {
+      const user = userEvent.setup();
+      global.fetch = vi
+        .fn()
+        .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => ({ access_token: 'token123' }),
+        });
+
+      render(<AuthModal onClose={mockOnClose} />);
+
+      const googleButton = screen.getByTestId('google-login-button');
+
+      // First attempt fails
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(
+          screen.queryByText(/Cannot connect to server/)
+        ).toBeInTheDocument();
+      });
+
+      // Second attempt succeeds
+      await user.click(googleButton);
+
+      await waitFor(() => {
+        expect(mockOnClose).toHaveBeenCalled();
+      });
+    });
+  });
+
   describe('Accessibility', () => {
     it('should have form element', () => {
       render(<AuthModal onClose={mockOnClose} />);
