@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-11T02:36:42.364Z",
+  "generated": "2026-01-12T02:00:04.022Z",
   "git": {
     "branch": "main",
-    "commit": "a7eb9933",
+    "commit": "aed7fba2",
     "author": "ericsocrat",
-    "message": "docs(session147): strategic planning - backend coverage expansion identified as next priority"
+    "message": "chore: merge main with renovate updates (ruff v0.14.11, docker images)"
   },
   "current": {
     "tests": {
@@ -18,25 +18,25 @@
     },
     "coverage": {
       "statements": 91.48,
-      "branches": 85.29,
+      "branches": 85.3,
       "functions": 89.26,
       "lines": 91.48
     },
     "totals": {
       "statements": {
-        "covered": 48760,
+        "covered": 48762,
         "total": 53303
       },
       "branches": {
-        "covered": 8019,
-        "total": 9402
+        "covered": 8024,
+        "total": 9407
       },
       "functions": {
         "covered": 1879,
         "total": 2105
       },
       "lines": {
-        "covered": 48760,
+        "covered": 48762,
         "total": 53303
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 91.47702755942441,
-        "branches": 85.2903637523931,
+        "statements": 91.48077969345066,
+        "branches": 85.29818220474115,
         "functions": 89.26365795724466,
-        "lines": 91.47702755942441
+        "lines": 91.48077969345066
       },
       "files": 221,
       "metrics": {
         "totalLines": 53303,
-        "coveredLines": 48760,
-        "uncoveredLines": 4543
+        "coveredLines": 48762,
+        "uncoveredLines": 4541
       },
       "health": "good"
     }
@@ -1914,20 +1914,35 @@
         "branch": "main",
         "commit": "a7eb9933"
       }
+    },
+    {
+      "timestamp": "2026-01-12T02:00:04.022Z",
+      "coverage": {
+        "statements": 91.48077969345066,
+        "branches": 85.29818220474115,
+        "functions": 89.26365795724466,
+        "lines": 91.48077969345066
+      },
+      "tests": 0,
+      "files": 221,
+      "git": {
+        "branch": "main",
+        "commit": "aed7fba2"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↓ 0.01%",
-      "value": -0.007504268052457519,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.00%",
+      "value": 0.0037521340262429703,
+      "direction": "↑",
+      "color": "green"
     },
     "branches": {
-      "text": "↓ 0.00%",
-      "value": -0.00469206897851393,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.01%",
+      "value": 0.007818452348047344,
+      "direction": "↑",
+      "color": "green"
     },
     "functions": {
       "text": "→ 0.00%",
@@ -1936,22 +1951,22 @@
       "color": "gray"
     },
     "lines": {
-      "text": "↓ 0.01%",
-      "value": -0.007504268052457519,
-      "direction": "↓",
-      "color": "red"
+      "text": "↑ 0.00%",
+      "value": 0.0037521340262429703,
+      "direction": "↑",
+      "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 0.24908971057844553,
-    "branches": 0.01796730585559203,
-    "functions": 0.38542209914302816,
-    "lines": 0.24908971057844553
+    "statements": 0.2494328901982641,
+    "branches": 0.05315759528255626,
+    "functions": 0.3907562785875882,
+    "lines": 0.2494328901982641
   },
   "metadata": {
-    "totalRuns": 110,
+    "totalRuns": 111,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-11T02:36:42.364Z",
+    "lastRun": "2026-01-12T02:00:04.022Z",
     "bestCoverage": {
       "statements": 91.48668680689772,
       "branches": 85.34070373126396,
@@ -2107,9 +2122,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-        "complexity": 289,
+        "complexity": 288,
         "coverage": "90.8",
-        "branches": 240,
+        "branches": 239,
         "functions": 49
       },
       {
@@ -2128,10 +2143,17 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-        "complexity": 259,
-        "coverage": "96.1",
-        "branches": 215,
+        "complexity": 257,
+        "coverage": "95.5",
+        "branches": 213,
         "functions": 44
+      },
+      {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
+        "complexity": 244,
+        "coverage": "93.4",
+        "branches": 205,
+        "functions": 39
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
@@ -2139,13 +2161,6 @@
         "coverage": "62.3",
         "branches": 183,
         "functions": 60
-      },
-      {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 242,
-        "coverage": "93.4",
-        "branches": 203,
-        "functions": 39
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
@@ -2156,16 +2171,16 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-        "complexity": 219,
+        "complexity": 220,
         "coverage": "95.2",
-        "branches": 183,
+        "branches": 184,
         "functions": 36
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
-        "complexity": 212,
-        "coverage": "84.3",
-        "branches": 176,
+        "complexity": 214,
+        "coverage": "85.1",
+        "branches": 178,
         "functions": 36
       }
     ]
