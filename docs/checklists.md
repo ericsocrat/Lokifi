@@ -24,9 +24,10 @@
 ---
 
 ### Session 157 – January 13, 2026 ⏳ (IN PROGRESS - 3 parts complete)
-**Focus:** Strategic pivot to medium targets (70-90% range) for better ROI after quick wins showed diminishing returns
+### Session 157 – January 13, 2026 ⏳ (IN PROGRESS - 4 parts complete)
+**Focus:** Strategic pivot to medium targets (70-90% range) for better ROI; branch coverage quality improvements
 **Strategy:** Target utility files (50-100 lines) with manageable scope and subscription callback patterns
-**Overall Impact:** Frontend coverage 91.81% → 91.88% (+0.07pp), 2 new tests added
+**Overall Impact:** Frontend coverage 91.81% → 91.83% (+0.02pp overall), 8 tests added, 4 components to 100%
 
 **Part 1: collab.ts 100% Coverage** ✅
 - **Component:** `src/lib/api/collab.ts` (59 lines, was 89.36% coverage, 17 existing tests)
@@ -91,6 +92,42 @@
 **Commit:** `6db2c8dc` "test(state): cover selection ops (toggleVisibilitySelected/renameSelected/deleteSelected)"
 **Pattern Learnings:**
 - For selection-driven updates, validate both positive and negative sets in the same test to ensure only selected items are mutated
+
+---
+
+### Session 157 – Part 4: pluginAPI branches to 100% ✅
+**Component:** `src/lib/plugins/pluginAPI.ts` (42 lines, was 100% lines but 75% branches)
+**Uncovered Branches:** Selection fallback (`selection || []`) in runAction/getSelection, global Lokifi preservation (`|| {}`)
+**Changes:**
+- Added 3 tests to cover undefined fallback branches (12 → 15 tests total)
+   1. "Should pass empty array when selection is undefined" (runAction `selection || []` branch)
+   2. "Should not replace existing globalThis.Lokifi object on module init" (module re-import with pre-existing Lokifi)
+   3. "getSelection should return empty array when store selection is undefined" (`selection || []` in global API)
+**Key Code Segments:**
+```typescript
+export function runAction(id: string) {
+   const s = useChartStore.getState();
+   const sel = Array.from(s.selection || []); // Line 24 - fallback branch
+   const a = registry.actions.get(id);
+   if (a) a.run(sel);
+}
+
+const globalAny = globalThis as unknown as { Lokifi?: { plugins?: unknown } };
+globalAny.Lokifi = globalAny.Lokifi || {}; // Line 33 - preservation
+globalAny.Lokifi.plugins = {
+   // ... API methods including:
+   getSelection: (): string[] => 
+      Array.from(useChartStore.getState().selection || []), // Line 38 - fallback
+};
+```
+**Result:** pluginAPI.ts → **100%** branches/statements/functions/lines
+**Coverage:** Overall maintains ~91.83%
+**Tests:** All 15 passing (3 new tests added)
+**Commit:** `db35e696` "test(plugins): cover pluginAPI selection and global branches to 100%"
+**Pattern Learnings:**
+- **Undefined fallbacks:** Test `|| []` and `|| {}` branches by mocking state to return undefined, verify fallback values returned
+- **Global object preservation:** Test module re-import with pre-existing `globalThis` properties to cover `|| {}` branch
+- **Branch vs statement coverage:** 100% lines ≠ 100% branches - check all conditional expressions
 
 ---
 
