@@ -48,6 +48,39 @@
   - Strategic decision: Frontend provides 3.5x better return on test investment
 - **Changes:**
   - Created comprehensive App.test.tsx suite (10 tests covering root component layout, hotkeys, store integration)
+
+---
+
+### Session 152 – January 13, 2026 🔍
+**Part 1: Test Infrastructure Discovery**
+- **Focus:** Identify actual frontend coverage gaps for optimization
+- **Discovery:**
+   - Initial assumption incorrect: Found 138 existing component tests (not 1)
+   - Test location: `tests/components/` directory (separate from `src/components/`)
+   - Component test coverage: 138 test files for 71 source components
+- **Data Quality Issues:**
+   - Earlier coverage data (Session 151) referenced non-existent files (BalanceStore.tsx, A11yStore.tsx, NotabilityStore.tsx)
+   - Coverage percentages (82.15%, 60.7%, 62.33%) were misattributed or from different analysis
+   - Needed fresh file-level coverage analysis to identify genuine targets
+- **Methodology Correction:**
+   - Generated HTML coverage report: `file:///C:/Users/ericsocrat/Desktop/lokifi/apps/frontend/coverage/index.html`
+   - Parsed coverage-final.json for programmatic analysis
+   - Filtered components below 80% coverage for optimization targets
+- **Actual Low-Coverage Components Found:**
+   - **Logo.tsx** - 0% coverage → **EMPTY FILE** (dead code)
+   - **dashboard/APIKeyModal.tsx** - 0% → **EMPTY FILE** (dead code)
+   - **dashboard/BillboardModal.tsx** - 0% → **EMPTY FILE** (dead code)
+   - **dashboard/SettingsModal.tsx** - 0% → **EMPTY FILE** (dead code)
+   - **DrawingLayer.tsx** - 20.14% → **483 lines, complex component, existing 530-line test file**
+   - **AuthModal.tsx** - 78.74% → **598 lines, existing 620-line test file**
+- **Strategic Insights:**
+   - Components directory at 79.35% (vs 91.55% overall) due to:
+      - Dead placeholder files dragging down coverage (0% files)
+      - Complex components with partial test coverage (DrawingLayer 20%, AuthModal 79%)
+   - Clean up dead files would artificially boost coverage without adding value
+   - Enhance existing test suites (DrawingLayer, AuthModal) offers genuine quality improvement
+- **Current Coverage:** Frontend 91.55% (verified via npm run test:coverage)
+- **Status:** Paused for strategic planning - complex components need multi-commit approach
   - Tests mock useChartStore with Zustand patterns, verify component structure, CSS classes, accessibility
   - All tests passing; coverage +0.08pp (91.49% → 91.57%)
 - **Coverage Gap Analysis Identified:**
