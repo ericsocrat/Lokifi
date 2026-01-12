@@ -144,6 +144,48 @@ describe('startCollab', () => {
 
       expect(mockChartStore.subscribe).toHaveBeenCalled();
     });
+
+    it('should sync local state changes to Y array when store updates', () => {
+      startCollab('test-room');
+
+      // Get the subscription callback that was passed to subscribe
+      const subscriptionCallback = mockChartStore.subscribe.mock.calls[0][0];
+
+      // Simulate a state update with new drawings
+      const newState = {
+        drawings: [
+          { id: '2', type: 'rect', points: [[0, 0], [10, 10]] },
+          { id: '3', type: 'circle', points: [[5, 5]] },
+        ],
+        setAll: mockSetAll,
+      };
+
+      // Invoke the callback to simulate store update
+      subscriptionCallback(newState);
+
+      // Verify that Y array was updated (delete old, push new)
+      expect(mockDocTransact).toHaveBeenCalled();
+      expect(mockYArrayDelete).toHaveBeenCalledWith(0, mockYArrayLength);
+      expect(mockYArrayPush).toHaveBeenCalledWith([{ id: '2', type: 'rect', points: [[0, 0], [10, 10]] }]);
+      expect(mockYArrayPush).toHaveBeenCalledWith([{ id: '3', type: 'circle', points: [[5, 5]] }]);
+    });
+
+    it('should not update Y array if yDrawings is null', () => {
+      // Start collab, then manually set yDrawings to null to simulate edge case
+      const { stop } = startCollab('test-room');
+      stop(); // This sets yDrawings to null
+
+      // Get the subscription callback
+      const subscriptionCallback = mockChartStore.subscribe.mock.calls[0][0];
+
+      const callsBefore = mockDocTransact.mock.calls.length;
+
+      // Try to invoke callback with null yDrawings
+      subscriptionCallback({ drawings: [{ id: '4', type: 'line' }], setAll: mockSetAll });
+
+      // Should not call transact since yDrawings is null
+      expect(mockDocTransact.mock.calls.length).toBe(callsBefore);
+    });
   });
 
   describe('remote to local sync', () => {
