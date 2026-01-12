@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-12T15:10:15.482Z",
+  "generated": "2026-01-12T15:27:00.474Z",
   "git": {
     "branch": "main",
-    "commit": "89c1351c",
+    "commit": "de29e6bd",
     "author": "ericsocrat",
-    "message": "docs: Session 154 completion - frontend coverage sprint (91.49% → 91.75%, +37 tests)"
+    "message": "test(left-dock): add 6 tests for plugin toggle paths - 100% coverage"
   },
   "current": {
     "tests": {
@@ -17,26 +17,26 @@
       "duration": "-"
     },
     "coverage": {
-      "statements": 91.77,
-      "branches": 85.45,
-      "functions": 89.67,
-      "lines": 91.77
+      "statements": 91.84,
+      "branches": 85.56,
+      "functions": 89.77,
+      "lines": 91.84
     },
     "totals": {
       "statements": {
-        "covered": 48918,
+        "covered": 48952,
         "total": 53303
       },
       "branches": {
-        "covered": 8084,
-        "total": 9460
+        "covered": 8100,
+        "total": 9467
       },
       "functions": {
-        "covered": 1884,
+        "covered": 1886,
         "total": 2101
       },
       "lines": {
-        "covered": 48918,
+        "covered": 48952,
         "total": 53303
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 91.77344614749639,
-        "branches": 85.45454545454545,
-        "functions": 89.67158495954307,
-        "lines": 91.77344614749639
+        "statements": 91.83723242594225,
+        "branches": 85.5603675926904,
+        "functions": 89.7667777248929,
+        "lines": 91.83723242594225
       },
       "files": 217,
       "metrics": {
         "totalLines": 53303,
-        "coveredLines": 48918,
-        "uncoveredLines": 4385
+        "coveredLines": 48952,
+        "uncoveredLines": 4351
       },
       "health": "good"
     }
@@ -2361,50 +2361,95 @@
         "branch": "main",
         "commit": "89c1351c"
       }
+    },
+    {
+      "timestamp": "2026-01-12T15:19:41.646Z",
+      "coverage": {
+        "statements": 91.7884546836013,
+        "branches": 85.42437374484727,
+        "functions": 89.719181342218,
+        "lines": 91.7884546836013
+      },
+      "tests": 0,
+      "files": 217,
+      "git": {
+        "branch": "main",
+        "commit": "de29e6bd"
+      }
+    },
+    {
+      "timestamp": "2026-01-12T15:23:20.208Z",
+      "coverage": {
+        "statements": 91.85599309607339,
+        "branches": 85.58910472972973,
+        "functions": 89.7667777248929,
+        "lines": 91.85599309607339
+      },
+      "tests": 0,
+      "files": 217,
+      "git": {
+        "branch": "main",
+        "commit": "de29e6bd"
+      }
+    },
+    {
+      "timestamp": "2026-01-12T15:27:00.474Z",
+      "coverage": {
+        "statements": 91.83723242594225,
+        "branches": 85.5603675926904,
+        "functions": 89.7667777248929,
+        "lines": 91.83723242594225
+      },
+      "tests": 0,
+      "files": 217,
+      "git": {
+        "branch": "main",
+        "commit": "de29e6bd"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↓ 0.01%",
-      "value": -0.009380335065571899,
+      "text": "↓ 0.02%",
+      "value": -0.018760670131143797,
       "direction": "↓",
       "color": "red"
     },
     "branches": {
-      "text": "↑ 0.03%",
-      "value": 0.029058579016236763,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.03%",
+      "value": -0.028737137039328786,
+      "direction": "↓",
+      "color": "red"
     },
     "functions": {
-      "text": "↑ 0.14%",
-      "value": 0.14278914802474674,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "lines": {
-      "text": "↓ 0.01%",
-      "value": -0.009380335065571899,
+      "text": "↓ 0.02%",
+      "value": -0.018760670131143797,
       "direction": "↓",
       "color": "red"
     }
   },
   "weeklyTrend": {
-    "statements": 0.022512804157358346,
-    "branches": 0.041186716321675476,
-    "functions": 0.14278914802474674,
-    "lines": 0.022512804157358346
+    "statements": 0.07504268052453256,
+    "branches": 0.11967348624663998,
+    "functions": 0.23798191337458263,
+    "lines": 0.07504268052453256
   },
   "metadata": {
-    "totalRuns": 141,
+    "totalRuns": 144,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-12T15:10:15.482Z",
+    "lastRun": "2026-01-12T15:27:00.474Z",
     "bestCoverage": {
-      "statements": 91.8015871526931,
-      "branches": 85.42394410924102,
-      "functions": 89.57639219419325,
-      "lines": 91.8015871526931,
-      "timestamp": "2026-01-12T12:57:18.387Z"
+      "statements": 91.85599309607339,
+      "branches": 85.58910472972973,
+      "functions": 89.7667777248929,
+      "lines": 91.85599309607339,
+      "timestamp": "2026-01-12T15:23:20.208Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -2415,7 +2460,7 @@
     "velocity": {
       "testsPerDay": "NaN",
       "filesPerRun": "1.5",
-      "avgCoverageGain": "0.57"
+      "avgCoverageGain": "0.56"
     }
   },
   "insights": [],
@@ -2562,7 +2607,7 @@
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
         "complexity": 286,
-        "coverage": "86.7",
+        "coverage": "86.8",
         "branches": 232,
         "functions": 54
       },
@@ -2581,18 +2626,18 @@
         "functions": 44
       },
       {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
+        "complexity": 243,
+        "coverage": "93.4",
+        "branches": 204,
+        "functions": 39
+      },
+      {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
         "complexity": 243,
         "coverage": "62.3",
         "branches": 183,
         "functions": 60
-      },
-      {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 242,
-        "coverage": "93.4",
-        "branches": 203,
-        "functions": 39
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",

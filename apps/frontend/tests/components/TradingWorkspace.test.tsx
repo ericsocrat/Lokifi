@@ -79,18 +79,21 @@ describe('TradingWorkspace', () => {
     mockDrawingStore.objects = [];
     mockPaneStore.panes = [{ id: '1', indicators: ['RSI', 'MACD'] }];
 
-    // Mock fullscreen API
+    // Mock fullscreen API with configurable properties
     Object.defineProperty(document.documentElement, 'requestFullscreen', {
       value: vi.fn().mockResolvedValue(undefined),
       writable: true,
+      configurable: true,
     });
     Object.defineProperty(document, 'exitFullscreen', {
       value: vi.fn().mockResolvedValue(undefined),
       writable: true,
+      configurable: true,
     });
     Object.defineProperty(document, 'fullscreenElement', {
       value: null,
       writable: true,
+      configurable: true,
     });
   });
 
@@ -170,6 +173,146 @@ describe('TradingWorkspace', () => {
       });
 
       expect(mockLogger.warn).toHaveBeenCalledWith('Fullscreen API not supported');
+    });
+
+    it('should call exitFullscreen when already in fullscreen', async () => {
+      // Mock being in fullscreen before rendering
+      const mockFullscreenElement = document.documentElement;
+      Object.defineProperty(document, 'fullscreenElement', {
+        get: () => mockFullscreenElement,
+        configurable: true,
+      });
+
+      render(<TradingWorkspace />);
+      
+      // Trigger fullscreen change event to update component state
+      await act(async () => {
+        document.dispatchEvent(new Event('fullscreenchange'));
+      });
+
+      const button = screen.getByTitle('Exit Fullscreen');
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      expect(document.exitFullscreen).toHaveBeenCalled();
+    });
+
+    it('should handle exit fullscreen when exitFullscreen is not available', async () => {
+      // Mock being in fullscreen with no exit function
+      const mockFullscreenElement = document.documentElement;
+      Object.defineProperty(document, 'fullscreenElement', {
+        get: () => mockFullscreenElement,
+        configurable: true,
+      });
+      Object.defineProperty(document, 'exitFullscreen', {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+
+      render(<TradingWorkspace />);
+      
+      // Trigger fullscreen change event to update component state
+      await act(async () => {
+        document.dispatchEvent(new Event('fullscreenchange'));
+      });
+
+      const button = screen.getByTitle('Exit Fullscreen');
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      // Should not throw or log error - just skip the exit
+      expect(mockLogger.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle fullscreen toggle error', async () => {
+      const mockError = new Error('Fullscreen failed');
+      Object.defineProperty(document.documentElement, 'requestFullscreen', {
+        value: vi.fn().mockRejectedValue(mockError),
+        writable: true,
+        configurable: true,
+      });
+
+      render(<TradingWorkspace />);
+      const button = screen.getByTitle('Enter Fullscreen');
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      expect(mockLogger.error).toHaveBeenCalledWith('Fullscreen toggle failed', {
+        error: mockError,
+      });
+    });
+
+    it('should listen for fullscreen change events', async () => {
+      let fullscreenElement: Element | null = null;
+      Object.defineProperty(document, 'fullscreenElement', {
+        get: () => fullscreenElement,
+        configurable: true,
+      });
+
+      render(<TradingWorkspace />);
+
+      // Initially should show Enter Fullscreen
+      expect(screen.getByTitle('Enter Fullscreen')).toBeInTheDocument();
+
+      // Simulate entering fullscreen
+      fullscreenElement = document.documentElement;
+
+      await act(async () => {
+        document.dispatchEvent(new Event('fullscreenchange'));
+      });
+
+      // Button title should update to Exit Fullscreen
+      expect(screen.getByTitle('Exit Fullscreen')).toBeInTheDocument();
+    });
+
+    it('should listen for webkit fullscreen change events', async () => {
+      let fullscreenElement: Element | null = null;
+      Object.defineProperty(document, 'fullscreenElement', {
+        get: () => fullscreenElement,
+        configurable: true,
+      });
+
+      render(<TradingWorkspace />);
+
+      // Simulate entering fullscreen
+      fullscreenElement = document.documentElement;
+
+      await act(async () => {
+        document.dispatchEvent(new Event('webkitfullscreenchange'));
+      });
+
+      expect(screen.getByTitle('Exit Fullscreen')).toBeInTheDocument();
+    });
+
+    it('should cleanup fullscreen event listeners on unmount', () => {
+      const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
+      const { unmount } = render(<TradingWorkspace />);
+
+      unmount();
+
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'fullscreenchange',
+        expect.any(Function)
+      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'webkitfullscreenchange',
+        expect.any(Function)
+      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'mozfullscreenchange',
+        expect.any(Function)
+      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'msfullscreenchange',
+        expect.any(Function)
+      );
     });
   });
 
