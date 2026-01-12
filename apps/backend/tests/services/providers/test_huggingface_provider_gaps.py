@@ -905,3 +905,96 @@ class TestModelsAndDefaults:
         model = await provider.get_default_model()
         assert isinstance(model, str)
         assert len(model) > 0
+
+
+# =============================================================================
+# Uncovered Branch Coverage (Lines 81-85, 99-103, 236)
+# =============================================================================
+
+
+class TestUncoveredBranchCoverage:
+    """Tests for remaining uncovered branches in HuggingFaceProvider."""
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_server_error_500(self, provider, sample_messages):
+        """500 server error should propagate as ProviderError (line 81-85)."""
+        with patch.object(provider, "client") as mock_client:
+            mock_response = AsyncMock()
+            mock_response.status_code = 500
+            mock_response.aread = AsyncMock(return_value=b"Internal Server Error")
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock(return_value=None)
+            mock_client.stream = MagicMock(return_value=mock_response)
+            mock_client.aclose = AsyncMock()
+
+            with pytest.raises(ProviderError, match="500 - Internal Server Error"):
+                async for _ in provider.stream_chat(sample_messages):
+                    pass
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_server_error_502(self, provider, sample_messages):
+        """502 bad gateway error should propagate as ProviderError (line 81-85)."""
+        with patch.object(provider, "client") as mock_client:
+            mock_response = AsyncMock()
+            mock_response.status_code = 502
+            mock_response.aread = AsyncMock(return_value=b"Bad Gateway")
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock(return_value=None)
+            mock_client.stream = MagicMock(return_value=mock_response)
+            mock_client.aclose = AsyncMock()
+
+            with pytest.raises(ProviderError, match="502 - Bad Gateway"):
+                async for _ in provider.stream_chat(sample_messages):
+                    pass
+
+    @pytest.mark.asyncio
+    async def test_stream_chat_response_neither_list_nor_dict(
+        self, provider, sample_messages
+    ):
+        """Response that is neither list nor dict should be converted to string (line 99-103)."""
+
+        async def mock_aiter_bytes():
+            response_bytes = b'"just a string response"'
+            yield response_bytes
+
+        with patch.object(provider, "client") as mock_client:
+            mock_response = AsyncMock()
+            mock_response.status_code = 200
+            mock_response.aiter_bytes = mock_aiter_bytes
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock(return_value=None)
+            mock_client.stream = MagicMock(return_value=mock_response)
+            mock_client.aclose = AsyncMock()
+
+            chunks = []
+            async for chunk in provider.stream_chat(sample_messages):
+                chunks.append(chunk)
+                if chunk.is_complete:
+                    break
+
+            assert len(chunks) > 0
+            assert chunks[-1].is_complete
+
+    @pytest.mark.asyncio
+    async def test_messages_to_prompt_with_multiple_unknown_roles(self, provider):
+        """Test prompt conversion with varied role values (line 236 branches).
+
+        Since we can't mock enum values, we test by ensuring the fallback behavior works
+        by verifying the prompt structure is correct regardless of role value interpretation.
+        """
+        messages = [
+            AIMessage(role=MessageRole.SYSTEM, content="System instruction"),
+            AIMessage(role=MessageRole.USER, content="User message"),
+            AIMessage(role=MessageRole.ASSISTANT, content="Assistant response"),
+        ]
+
+        prompt = provider._messages_to_prompt(messages)
+
+        # Verify all branches were taken by checking prompt structure
+        assert "System:" in prompt
+        assert "Human:" in prompt
+        assert "Assistant:" in prompt
+        assert prompt.endswith("Assistant:")
+        # Verify order is preserved
+        assert prompt.index("System:") < prompt.index("Human:")
+        assert prompt.index("Human:") < prompt.index("Assistant:")

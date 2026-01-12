@@ -9,6 +9,8 @@
     // ===== CODE FORMATTING & QUALITY =====
     "esbenp.prettier-vscode", // Code formatter (JS/TS/JSON/CSS)
     "dbaeumer.vscode-eslint", // JavaScript/TypeScript linter
+    "EditorConfig.EditorConfig", // Cross-tool formatting consistency
+    "SonarSource.sonarlint-vscode", // Local static analysis (TS/Python)
     "streetsidesoftware.code-spell-checker", // Spell checker for code
     "usernamehw.errorlens", // Inline error highlighting
     "YoavBls.pretty-ts-errors", // Better TypeScript errors
@@ -31,6 +33,7 @@
 
     // ===== DOCKER & CONTAINERS =====
     "ms-azuretools.vscode-docker", // Docker support
+    "ms-vscode.makefile-tools", // Makefile IntelliSense & tasks
 
     // ===== DATABASE =====
     "mtxr.sqltools", // SQL query support
@@ -48,6 +51,7 @@
 
     // ===== DEVELOPER EXPERIENCE =====
     "wallabyjs.console-ninja", // Runtime debugging console
+    "timonwong.shellcheck", // Shell script linter
     "wix.vscode-import-cost", // Display import sizes
     "christian-kohler.path-intellisense", // Path autocomplete
     "gruntfuggly.todo-tree", // TODO/FIXME tracker

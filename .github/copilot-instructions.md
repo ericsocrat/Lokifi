@@ -1991,6 +1991,17 @@ Copilot will automatically use these installed extensions:
 - **Database Client** - For SQL query assistance
 - **Console Ninja** - For runtime debugging context
 - **TODO Tree** - For task tracking and code annotation visualization
+ - **YAML (Red Hat)** - Schema-based validation of YAML configs and CI files
+ - **EditorConfig** - Enforces formatting conventions across tools (Prettier/Black)
+ - **SonarLint** - Local TS/Python quality/security analysis surfaced as problems
+ - **Makefile Tools** - IntelliSense and task discovery for `infra/Makefile`
+ - **ShellCheck** - Lints shell snippets used in CI/Docker scripts
+
+### How Copilot leverages these extensions
+- **Diagnostics as guidance**: I treat ESLint, SonarLint, and ShellCheck diagnostics as actionable tasks, proposing fixes directly in files and verifying with the Problems panel.
+- **Workflow authoring**: With YAML + GitHub Actions extensions, I validate workflow changes and recommend corrections (keys, expressions, schema) before commits.
+- **Infra tasks**: Makefile Tools exposes targets from `infra/Makefile`, enabling me to reference or run them and keep instructions aligned with available tasks.
+- **Formatting consistency**: EditorConfig ensures generated code matches repo formatting across languages; I favor Prettier for TS and Black for Python.
 
 ## Project Analysis & Reporting
 

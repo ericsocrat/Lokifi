@@ -8,7 +8,9 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-Command"]
+          "args": [
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -31,7 +33,10 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": [
+            "-NoExit",
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -66,7 +71,10 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": [
+            "-NoExit",
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -101,7 +109,9 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-Command"]
+          "args": [
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -124,7 +134,10 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": [
+            "-NoExit",
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -171,7 +184,10 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": [
+            "-NoExit",
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -191,7 +207,9 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-Command"]
+          "args": [
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -212,7 +230,9 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-Command"]
+          "args": [
+            "-Command"
+          ]
         }
       },
       "presentation": {
@@ -225,6 +245,108 @@
         "close": true
       },
       "problemMatcher": []
+    },
+    {
+      "label": "frontend:typecheck",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "typecheck"
+      ],
+      "options": {
+        "cwd": "/apps/frontend"
+      },
+      "group": "build",
+      "problemMatcher": ""
+    },
+    {
+      "label": "frontend:lint",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "lint"
+      ],
+      "options": {
+        "cwd": "/apps/frontend"
+      },
+      "group": "build",
+      "problemMatcher": "-stylish"
+    },
+    {
+      "label": "frontend:test",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "test"
+      ],
+      "options": {
+        "cwd": "/apps/frontend"
+      },
+      "group": "test"
+    },
+    {
+      "label": "frontend:build",
+      "type": "shell",
+      "command": "npm",
+      "args": [
+        "run",
+        "build"
+      ],
+      "options": {
+        "cwd": "/apps/frontend"
+      },
+      "group": "build"
+    },
+    {
+      "label": "backend:ruff",
+      "type": "shell",
+      "command": "ruff",
+      "args": [
+        "check",
+        "."
+      ],
+      "options": {
+        "cwd": "/apps/backend"
+      },
+      "group": "build"
+    },
+    {
+      "label": "backend:pytest",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "-m",
+        "pytest"
+      ],
+      "options": {
+        "cwd": "/apps/backend"
+      },
+      "group": "test"
+    },
+    {
+      "label": "ci:actionlint",
+      "type": "shell",
+      "command": "actionlint",
+      "args": [],
+      "options": {
+        "cwd": ""
+      },
+      "problemMatcher": {
+        "pattern": {
+          "file": 1,
+          "regexp": "^(.*?):(\\\\d+):(\\\\d+):\\\\s*(.*)$",
+          "line": 2,
+          "message": 4,
+          "column": 3
+        },
+        "owner": "actionlint",
+        "fileLocation": [
+          "absolute"
+        ]
+      },
+      "group": "build"
     }
   ]
 }
