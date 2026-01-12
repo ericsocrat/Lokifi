@@ -697,9 +697,7 @@ describe('NotificationCenter', () => {
     });
 
     it('should render with minimal features', () => {
-      render(
-        <NotificationCenter showHeader={false} showFilters={false} showPreferences={false} />
-      );
+      render(<NotificationCenter showHeader={false} showFilters={false} showPreferences={false} />);
 
       expect(screen.queryByText('Notification Center')).not.toBeInTheDocument();
       expect(screen.queryByTitle('Toggle filters')).not.toBeInTheDocument();

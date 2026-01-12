@@ -176,6 +176,63 @@ describe('LeftDock', () => {
       fireEvent.click(screen.getByTitle('Ruler (R)'));
       expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith(null);
     });
+
+    it('should toggle parallel-channel plugin on click', () => {
+      render(<LeftDock />);
+      fireEvent.click(screen.getByTitle('Channel (C)'));
+
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith('parallel-channel');
+    });
+
+    it('should deactivate parallel-channel when already active', () => {
+      mockPluginManager.activeToolId = 'parallel-channel';
+      render(<LeftDock />);
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      fireEvent.click(screen.getByTitle('Channel (C)'));
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith(null);
+    });
+
+    it('should toggle parallel-channel-3pt plugin on click', () => {
+      render(<LeftDock />);
+      fireEvent.click(screen.getByTitle('Channel 3pt (Shift+C)'));
+
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith('parallel-channel-3pt');
+    });
+
+    it('should deactivate parallel-channel-3pt when already active', () => {
+      mockPluginManager.activeToolId = 'parallel-channel-3pt';
+      render(<LeftDock />);
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      fireEvent.click(screen.getByTitle('Channel 3pt (Shift+C)'));
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith(null);
+    });
+
+    it('should toggle fib-extended plugin on click', () => {
+      render(<LeftDock />);
+      fireEvent.click(screen.getByTitle('Fib+ (F)'));
+
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith('fib-extended');
+    });
+
+    it('should deactivate fib-extended when already active', () => {
+      mockPluginManager.activeToolId = 'fib-extended';
+      render(<LeftDock />);
+
+      act(() => {
+        vi.advanceTimersByTime(300);
+      });
+
+      fireEvent.click(screen.getByTitle('Fib+ (F)'));
+      expect(mockPluginManager.setActiveTool).toHaveBeenCalledWith(null);
+    });
   });
 
   describe('Settings Drawer', () => {

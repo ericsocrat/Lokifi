@@ -1,7 +1,7 @@
 {
-  "totalRuns": 139,
+  "totalRuns": 141,
   "firstRun": "2025-10-19T14:49:34.228Z",
-  "lastRun": "2026-01-12T14:53:31.522Z",
+  "lastRun": "2026-01-12T15:10:15.482Z",
   "bestCoverage": {
     "statements": 91.8015871526931,
     "branches": 85.42394410924102,
@@ -17,7 +17,7 @@
   },
   "velocity": {
     "testsPerDay": "NaN",
-    "filesPerRun": "1.6",
+    "filesPerRun": "1.5",
     "avgCoverageGain": "0.57"
   }
 }
