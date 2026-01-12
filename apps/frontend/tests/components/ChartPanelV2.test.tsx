@@ -1,6 +1,6 @@
-import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // --- Mocks ---
 
@@ -65,7 +65,9 @@ vi.mock('@/components/ChartErrorBoundary', () => ({
   ChartErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 vi.mock('@/components/ChartLoadingState', () => ({
-  ChartLoadingState: ({ message }: { message?: string }) => <div data-testid="loading">{message ?? 'loading'}</div>,
+  ChartLoadingState: ({ message }: { message?: string }) => (
+    <div data-testid="loading">{message ?? 'loading'}</div>
+  ),
 }));
 vi.mock('@/components/ChartSidebar', () => ({ default: () => <div data-testid="sidebar" /> }));
 
@@ -105,13 +107,32 @@ const indicatorState = {
 vi.mock('@/stores/indicatorStore', () => ({
   indicatorStore: {
     get: () => indicatorState,
-    subscribe: (cb: any) => { cb(indicatorState); return vi.fn(); },
+    subscribe: (cb: any) => {
+      cb(indicatorState);
+      return vi.fn();
+    },
     loadForSymbol: vi.fn(),
   },
 }));
 
-vi.mock('@/stores/symbolStore', () => ({ symbolStore: { get: () => 'BTC', subscribe: (cb: any) => { cb('BTC'); return vi.fn(); } } }));
-vi.mock('@/stores/timeframeStore', () => ({ timeframeStore: { get: () => '5m', subscribe: (cb: any) => { cb('5m'); return vi.fn(); } } }));
+vi.mock('@/stores/symbolStore', () => ({
+  symbolStore: {
+    get: () => 'BTC',
+    subscribe: (cb: any) => {
+      cb('BTC');
+      return vi.fn();
+    },
+  },
+}));
+vi.mock('@/stores/timeframeStore', () => ({
+  timeframeStore: {
+    get: () => '5m',
+    subscribe: (cb: any) => {
+      cb('5m');
+      return vi.fn();
+    },
+  },
+}));
 
 // SWR controlled mock
 type SWRData = { data?: any; error?: any; isLoading?: boolean; mutate?: () => void };
@@ -150,10 +171,15 @@ describe('ChartPanelV2', () => {
     const nowMs = Date.now();
     swrMock = {
       data: {
-        symbol: 'BTC', timeframe: '5m',
+        symbol: 'BTC',
+        timeframe: '5m',
         candles: Array.from({ length: 5 }).map((_, i) => ({
           ts: nowMs + i * 60_000,
-          o: 100 + i, h: 101 + i, l: 99 + i, c: 100 + i, v: 1,
+          o: 100 + i,
+          h: 101 + i,
+          l: 99 + i,
+          c: 100 + i,
+          v: 1,
         })),
       },
       isLoading: false,
@@ -163,8 +189,8 @@ describe('ChartPanelV2', () => {
     render(<ChartPanel />);
     await waitFor(() => expect(captured.candleSetData).toBeTruthy());
     // Expect times to be seconds (not > 1e10)
-    const times = (captured.candleSetData || []).map(d => d.time as number);
-    expect(times.every(t => t < 1e10)).toBe(true);
+    const times = (captured.candleSetData || []).map((d) => d.time as number);
+    expect(times.every((t) => t < 1e10)).toBe(true);
   });
 
   it('renders sub chart when RSI indicator is enabled', async () => {
@@ -196,7 +222,12 @@ describe('ChartPanelV2', () => {
 
   it('window __lokifiApplySymbolSettings applies plugin symbol settings', async () => {
     const set = vi.fn();
-    const get = vi.fn(() => ({ channelDefaultWidthPct: 25, channelWidthMode: 'fixed', fibPreset: 'default', fibCustomLevels: [0.382, 0.618] }));
+    const get = vi.fn(() => ({
+      channelDefaultWidthPct: 25,
+      channelWidthMode: 'fixed',
+      fibPreset: 'default',
+      fibCustomLevels: [0.382, 0.618],
+    }));
     (globalThis as any).pluginSettingsStore = { get };
     (globalThis as any).pluginSymbolSettings = { set, clear: vi.fn() };
 
