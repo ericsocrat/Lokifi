@@ -1,5 +1,6 @@
 # J6 Enterprise Notification Service - Core Implementation
 import asyncio
+import inspect
 import logging
 import uuid
 from collections.abc import Callable
@@ -686,7 +687,7 @@ class NotificationService:
 
         for handler in handlers:
             try:
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler(data)
                 else:
                     handler(data)

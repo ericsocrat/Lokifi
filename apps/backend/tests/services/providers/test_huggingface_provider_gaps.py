@@ -191,7 +191,9 @@ class TestStreamChatErrorPaths:
                     pass
 
     @pytest.mark.asyncio
-    async def test_stream_chat_503_fallback_to_non_streaming(self, provider, sample_messages):
+    async def test_stream_chat_503_fallback_to_non_streaming(
+        self, provider, sample_messages
+    ):
         """Test 503 error triggers fallback non-streaming."""
         with patch.object(provider, "client") as mock_client:
             mock_response = AsyncMock()
@@ -249,7 +251,9 @@ class TestJsonParsingEdgeCases:
             mock_response.__aenter__ = AsyncMock(return_value=mock_response)
             mock_response.__aexit__ = AsyncMock(return_value=None)
             # Invalid UTF-8 sequence
-            mock_response.aiter_bytes = AsyncMock(return_value=self._async_iter([b"\xff\xfe"]))
+            mock_response.aiter_bytes = AsyncMock(
+                return_value=self._async_iter([b"\xff\xfe"])
+            )
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
@@ -324,7 +328,9 @@ class TestResponseDataFormats:
             yield item
 
     @pytest.mark.asyncio
-    async def test_response_as_dict_with_generated_text(self, provider, sample_messages):
+    async def test_response_as_dict_with_generated_text(
+        self, provider, sample_messages
+    ):
         """Test response as dict (not list)."""
         with patch.object(provider, "client") as mock_client, patch.object(
             provider, "_simulate_streaming"
@@ -340,7 +346,9 @@ class TestResponseDataFormats:
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
-            chunk = StreamChunk(id="id", content="Dict response", is_complete=True, model="m")
+            chunk = StreamChunk(
+                id="id", content="Dict response", is_complete=True, model="m"
+            )
             mock_stream.return_value = self._async_iter([chunk])
 
             chunks = []
@@ -359,7 +367,9 @@ class TestResponseDataFormats:
             mock_response.__aenter__ = AsyncMock(return_value=mock_response)
             mock_response.__aexit__ = AsyncMock(return_value=None)
             # Empty list response
-            mock_response.aiter_bytes = AsyncMock(return_value=self._async_iter([b"[]"]))
+            mock_response.aiter_bytes = AsyncMock(
+                return_value=self._async_iter([b"[]"])
+            )
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
@@ -386,7 +396,9 @@ class TestResponseDataFormats:
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
-            chunk = StreamChunk(id="id", content="just a string", is_complete=True, model="m")
+            chunk = StreamChunk(
+                id="id", content="just a string", is_complete=True, model="m"
+            )
             mock_stream.return_value = self._async_iter([chunk])
 
             chunks = []
@@ -397,7 +409,9 @@ class TestResponseDataFormats:
         assert any(c.content == "just a string" for c in chunks)
 
     @pytest.mark.asyncio
-    async def test_response_with_missing_generated_text_key(self, provider, sample_messages):
+    async def test_response_with_missing_generated_text_key(
+        self, provider, sample_messages
+    ):
         """Test response without 'generated_text' key."""
         with patch.object(provider, "client") as mock_client:
             mock_response = AsyncMock()
@@ -435,7 +449,9 @@ class TestResponseDataFormats:
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
-            chunk = StreamChunk(id="id", content="plain text chunk", is_complete=True, model="m")
+            chunk = StreamChunk(
+                id="id", content="plain text chunk", is_complete=True, model="m"
+            )
             mock_stream.return_value = self._async_iter([chunk])
 
             chunks = []
@@ -446,7 +462,9 @@ class TestResponseDataFormats:
             assert any(c.content.strip() == "plain text chunk" for c in chunks)
 
     @pytest.mark.asyncio
-    async def test_response_generated_text_streams_immediately(self, provider, sample_messages):
+    async def test_response_generated_text_streams_immediately(
+        self, provider, sample_messages
+    ):
         """JSON with generated_text should stream via helper."""
         with patch.object(provider, "client") as mock_client, patch.object(
             provider, "_simulate_streaming"
@@ -462,7 +480,9 @@ class TestResponseDataFormats:
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
-            chunk = StreamChunk(id="id", content="hello from hf", is_complete=True, model="m")
+            chunk = StreamChunk(
+                id="id", content="hello from hf", is_complete=True, model="m"
+            )
             mock_stream.return_value = self._async_iter([chunk])
 
             chunks = []
@@ -552,7 +572,9 @@ class TestEmptyResponseCases:
             mock_response.__aenter__ = AsyncMock(return_value=mock_response)
             mock_response.__aexit__ = AsyncMock(return_value=None)
             # Only empty bytes
-            mock_response.aiter_bytes = AsyncMock(return_value=self._async_iter([b"", b"", b""]))
+            mock_response.aiter_bytes = AsyncMock(
+                return_value=self._async_iter([b"", b"", b""])
+            )
             mock_client.stream = MagicMock(return_value=mock_response)
             mock_client.aclose = AsyncMock()
 
@@ -568,6 +590,75 @@ class TestEmptyResponseCases:
         """Helper for async iteration."""
         for item in items:
             yield item
+
+
+# =============================================================================
+# Non-streaming paths when generated text is empty
+# =============================================================================
+
+
+class TestGeneratedTextEmptyPaths:
+    """Ensure empty generated_text or decoded text yields no chunks."""
+
+    @staticmethod
+    async def _async_iter(items):
+        for item in items:
+            yield item
+
+    @pytest.mark.asyncio
+    async def test_json_generated_text_empty_yields_no_stream(
+        self, provider, sample_messages
+    ):
+        """Empty generated_text should not call simulate_streaming or yield chunks."""
+
+        with patch.object(provider, "client") as mock_client, patch.object(
+            provider, "_simulate_streaming"
+        ) as mock_stream:
+            mock_response = AsyncMock()
+            mock_response.status_code = 200
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock(return_value=None)
+            mock_response.aiter_bytes = MagicMock(
+                return_value=self._async_iter([b'[{"generated_text": ""}]'])
+            )
+            mock_client.stream = MagicMock(return_value=mock_response)
+            mock_client.aclose = AsyncMock()
+            mock_stream.return_value = self._async_iter([])
+
+            chunks = []
+            async for chunk in provider.stream_chat(sample_messages):
+                chunks.append(chunk)
+
+            mock_stream.assert_not_called()
+            assert chunks == []
+
+    @pytest.mark.asyncio
+    async def test_raw_bytes_decode_empty_text_chunk_is_skipped(
+        self, provider, sample_messages
+    ):
+        """Invalid bytes that decode to empty text should not produce output."""
+
+        with patch.object(provider, "client") as mock_client, patch.object(
+            provider, "_simulate_streaming"
+        ) as mock_stream:
+            mock_response = AsyncMock()
+            mock_response.status_code = 200
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock(return_value=None)
+            # Invalid UTF-8 that becomes empty when errors='ignore'
+            mock_response.aiter_bytes = MagicMock(
+                return_value=self._async_iter([b"\x80\x80"])
+            )
+            mock_client.stream = MagicMock(return_value=mock_response)
+            mock_client.aclose = AsyncMock()
+            mock_stream.return_value = self._async_iter([])
+
+            chunks = []
+            async for chunk in provider.stream_chat(sample_messages):
+                chunks.append(chunk)
+
+            mock_stream.assert_not_called()
+            assert chunks == []
 
 
 # =============================================================================
@@ -588,23 +679,31 @@ class TestFallbackExceptionHandling:
             mock_client.post = AsyncMock(return_value=mock_response)
 
             chunks = []
-            async for chunk in provider._fallback_non_streaming("model", {}, sample_messages):
+            async for chunk in provider._fallback_non_streaming(
+                "model", {}, sample_messages
+            ):
                 chunks.append(chunk)
 
             # Should handle dict gracefully
             assert len(chunks) >= 0
 
     @pytest.mark.asyncio
-    async def test_fallback_with_json_decode_error_in_response(self, provider, sample_messages):
+    async def test_fallback_with_json_decode_error_in_response(
+        self, provider, sample_messages
+    ):
         """Test fallback when response.json() raises error."""
         with patch.object(provider, "client") as mock_client:
             mock_response = MagicMock()
             mock_response.status_code = 200
-            mock_response.json.side_effect = json.JSONDecodeError("Expecting value", '{"bad"', 0)
+            mock_response.json.side_effect = json.JSONDecodeError(
+                "Expecting value", '{"bad"', 0
+            )
             mock_client.post = AsyncMock(return_value=mock_response)
 
             chunks = []
-            async for chunk in provider._fallback_non_streaming("model", {}, sample_messages):
+            async for chunk in provider._fallback_non_streaming(
+                "model", {}, sample_messages
+            ):
                 chunks.append(chunk)
 
             # Should yield error message
@@ -614,10 +713,14 @@ class TestFallbackExceptionHandling:
     async def test_fallback_post_request_error(self, provider, sample_messages):
         """Test fallback when POST request fails."""
         with patch.object(provider, "client") as mock_client:
-            mock_client.post = AsyncMock(side_effect=httpx.RequestError("Network failure"))
+            mock_client.post = AsyncMock(
+                side_effect=httpx.RequestError("Network failure")
+            )
 
             chunks = []
-            async for chunk in provider._fallback_non_streaming("model", {}, sample_messages):
+            async for chunk in provider._fallback_non_streaming(
+                "model", {}, sample_messages
+            ):
                 chunks.append(chunk)
 
             # Should yield error message gracefully
@@ -625,7 +728,9 @@ class TestFallbackExceptionHandling:
             assert "unavailable" in chunks[0].content.lower()
 
     @pytest.mark.asyncio
-    async def test_fallback_non_streaming_non_200_response(self, provider, sample_messages):
+    async def test_fallback_non_streaming_non_200_response(
+        self, provider, sample_messages
+    ):
         """Non-200 fallback should yield loading message."""
         with patch.object(provider, "client") as mock_client:
             mock_response = MagicMock()
@@ -633,21 +738,27 @@ class TestFallbackExceptionHandling:
             mock_client.post = AsyncMock(return_value=mock_response)
 
             chunks = []
-            async for chunk in provider._fallback_non_streaming("model", {}, sample_messages):
+            async for chunk in provider._fallback_non_streaming(
+                "model", {}, sample_messages
+            ):
                 chunks.append(chunk)
 
         assert len(chunks) == 1
         assert "loading" in chunks[0].content.lower()
 
     @pytest.mark.asyncio
-    async def test_fallback_successful_generated_text_list(self, provider, sample_messages):
+    async def test_fallback_successful_generated_text_list(
+        self, provider, sample_messages
+    ):
         """Successful list response should stream generated text."""
         with patch.object(provider, "client") as mock_client, patch.object(
             provider, "_simulate_streaming"
         ) as mock_stream:
             mock_response = MagicMock()
             mock_response.status_code = 200
-            mock_response.json.return_value = [{"generated_text": "fallback text from list"}]
+            mock_response.json.return_value = [
+                {"generated_text": "fallback text from list"}
+            ]
             mock_client.post = AsyncMock(return_value=mock_response)
 
             chunk = StreamChunk(
@@ -656,7 +767,9 @@ class TestFallbackExceptionHandling:
             mock_stream.return_value = TestResponseDataFormats._async_iter([chunk])
 
             chunks = []
-            async for streamed in provider._fallback_non_streaming("model", {}, sample_messages):
+            async for streamed in provider._fallback_non_streaming(
+                "model", {}, sample_messages
+            ):
                 chunks.append(streamed)
 
         assert mock_stream.called
@@ -715,7 +828,9 @@ class TestTokenUsageCalculation:
         ]
 
         chunks = []
-        async for chunk in provider._simulate_streaming(full_text, "id-123", "model", messages):
+        async for chunk in provider._simulate_streaming(
+            full_text, "id-123", "model", messages
+        ):
             chunks.append(chunk)
 
         # Last chunk should have token usage
@@ -755,7 +870,9 @@ class TestMessageRoleHandling:
     def test_messages_with_special_characters(self, provider):
         """Test messages with special characters."""
         messages = [
-            AIMessage(role=MessageRole.USER, content='Message with "quotes" and \\ backslash')
+            AIMessage(
+                role=MessageRole.USER, content='Message with "quotes" and \\ backslash'
+            )
         ]
 
         prompt = provider._messages_to_prompt(messages)
