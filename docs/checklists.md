@@ -23,6 +23,140 @@
 
 ---
 
+### Session 156 – January 13, 2026 ✅ (COMPLETE - 1 part)
+**Focus:** ChartSidebar store subscription coverage - achieving 100% component coverage
+**Strategy:** Target subscription callback and cleanup paths via mock implementation interception
+**Overall Impact:** Frontend coverage 91.79% → 91.81% (+0.02pp), 2 new tests added
+
+**Part 1: ChartSidebar 100% Coverage** ✅
+- **Component:** `components/ChartSidebar.tsx` (198 lines, was 97.97% coverage, 33 existing tests)
+- **Uncovered Lines:** 46-48 (store subscription callback: `setTool`, `setSnap`, `setSelCount`)
+- **Root Cause:** Mock `subscribe` function never invoked the callback, so the subscription handler body was never executed
+- **Changes:** Added 2 store subscription tests (33 → 35 total)
+  - Should unsubscribe from store on unmount (tests cleanup function)
+  - Should update component state when store updates (tests callback invocation by capturing and manually calling it)
+- **Technical Pattern:** Mock implementation interception:
+  ```typescript
+  mockFns.subscribe.mockImplementationOnce((callback) => {
+    subscriptionCallback = callback;
+    return vi.fn(); // unsubscribe function
+  });
+  // Later: manually invoke subscriptionCallback(newState) to test handler
+  ```
+- **Result:** **100% coverage** (97.97% → 100%, +2.03pp component gain)
+- **Coverage:** 91.81% overall (+0.02pp from 91.79%)
+- **Tests:** All 35 passing (act warnings expected for state updates)
+- **Commit:** `b21f882d` "test(chart-sidebar): cover store subscription updates and cleanup"
+- **Quality:** All pre-commit gates passing ✅
+
+**Session 156 Summary:**
+- **Tests Added:** 2 total (ChartSidebar +2 for subscription coverage)
+- **Coverage Progression:** 91.79% → 91.81% (+0.02pp net for session)
+- **Components at 100%:** ChartSidebar ✅ (joins LeftDock, App.tsx from Session 155)
+- **Infrastructure:** All 10,986+ tests passing, 100% pre-commit gate success rate
+- **Gap to 95% Target:** 3.19pp remaining
+- **ChartHeader Analysis:** 96.19% with uncovered auth modal code (lines 136-139) is dead code - `setIsAuthModalOpen(true)` never called, not testable without component refactor
+- **Next Focus:** Session 157 - pivot to medium targets (DrawingChart 54.25%, EnhancedChart 59.29%) for larger coverage gains (0.50-1.00pp potential per component vs 0.02pp quick wins)
+
+**Commits:** b21f882d, 3abec7dd (coverage dashboard) (all pushed to main ✅)
+
+**Key Pattern Learnings:**
+- **Mock callback interception:** Capture callback functions passed to mocks via `mockImplementationOnce`, then manually invoke them to test handler logic
+- **Subscription testing:** Two-part pattern: 1) Test cleanup (unmount → unsubscribe called), 2) Test handler (invoke callback → state updates)
+- **Quick wins diminishing returns:** ChartSidebar +2.03pp component gain = +0.02pp overall. Need medium targets (50-80% range) for meaningful progress to 95%
+
+---
+
+### Session 155 – January 13, 2026 ✅ (COMPLETE - 3 parts)
+**Focus:** Quick-win strategy targeting high-coverage components (90-95%) with few uncovered lines
+**Strategy:** Prioritize components with minimal effort, maximum ROI for incremental sustainable gains
+**Overall Impact:** Frontend coverage 91.75% → 91.79% (+0.04pp), 16 new tests added across 3 components
+
+**Part 1: LeftDock 100% Coverage** ✅
+- **Component:** `components/LeftDock.tsx` (155 lines, was 93.96% coverage, 27 existing tests)
+- **Uncovered Lines:** 117 (parallel-channel activation), 126-128 (parallel-channel-3pt toggle), 137 (fib-extended activation)
+- **Root Cause:** Plugin toggle paths for parallel-channel, parallel-channel-3pt, fib-extended not tested (only ruler-measure had tests)
+- **Changes:** Added 6 plugin toggle tests (27 → 33 total)
+  - Toggle parallel-channel plugin on click
+  - Deactivate parallel-channel when already active
+  - Toggle parallel-channel-3pt plugin on click
+  - Deactivate parallel-channel-3pt when already active
+  - Toggle fib-extended plugin on click
+  - Deactivate fib-extended when already active
+- **Pattern:** Plugin activation/deactivation ternary logic (`activePlugin === 'x' ? null : 'x'`)
+- **Result:** **100% coverage** (93.96% → 100%, +6.04pp component gain)
+- **Coverage:** 91.77% overall (+0.02pp from 91.75%)
+- **Tests:** All 33 passing first try ✅
+- **Commit:** `de29e6bd` "test(left-dock): add 6 tests for plugin toggle logic - 100% coverage"
+- **Quality:** All pre-commit gates passing ✓
+
+**Part 2: TradingWorkspace Fullscreen Testing** ✅
+- **Component:** `components/TradingWorkspace.tsx` (156 lines, was 92.56% coverage, 16 existing tests)
+- **Uncovered Lines:** 54-58 (exit fullscreen with document.exitFullscreen check), 60-61 (error catch block), 67-68 (fullscreen event listeners)
+- **Changes:** Added 7 fullscreen edge case tests (16 → 23 total)
+  - Should call exitFullscreen when already in fullscreen (exit path)
+  - Should handle exit fullscreen when exitFullscreen is not available (graceful degradation)
+  - Should handle fullscreen toggle error (error catch block)
+  - Should listen for fullscreen change events (fullscreenchange event)
+  - Should listen for webkit fullscreen change events (webkitfullscreenchange event)
+  - Event listener cleanup test (already existed, verified)
+- **Technical Challenges & Solutions:**
+  - **Issue 1:** "Cannot redefine property: fullscreenElement" (5 tests failed)
+    - Root Cause: beforeEach defined properties without `configurable: true`
+    - Solution: Added `configurable: true` to all Object.defineProperty calls
+    - Result: Reduced failures from 5 to 2
+  - **Issue 2:** "Unable to find element with title: Exit Fullscreen" (2 tests still failed)
+    - Root Cause: Component's isFullscreen state wasn't updating from mock changes to document.fullscreenElement
+    - Analysis: React doesn't react to direct property changes, needs event triggering
+    - Solution: Added `document.dispatchEvent(new Event('fullscreenchange'))` before assertions to trigger component's useEffect listener
+    - Result: All 23 tests passing ✅
+  - **Issue 3:** Dynamic fullscreen state (technical approach)
+    - Challenge: Need to mock fullscreenElement changing during test execution
+    - Initial Attempt: Static `value` property (didn't work for dynamic changes)
+    - Solution: Used getter function `get: () => mockFullscreenElement` to allow dynamic state
+- **Pattern Established:** Browser API mocking requires configurable properties + getter functions + event simulation for React state updates
+- **Result:** All 23 tests passing in 7.17s (3 iterations to fix)
+- **Coverage:** 91.78% overall (+0.01pp from 91.77%)
+- **Commit:** `7f30f3e6` "test(trading-workspace): add 7 tests for fullscreen functionality"
+- **Quality:** All pre-commit gates passing ✓
+
+**Part 3: App.tsx 100% Coverage** ✅
+- **Component:** `src/App.tsx` (59 lines, was 93.61% coverage, 13 existing tests)
+- **Uncovered Lines:** 36-38 (IndicatorControlsPanel div wrapper when visible=true)
+- **Root Cause:** Mock store always returned `indicatorControlsPanelVisible: false`
+- **Changes:** Added 3 tests for IndicatorControlsPanel visibility scenarios (13 → 16 total)
+  - Should not render IndicatorControlsPanel when indicatorControlsPanelVisible is false
+  - Should render IndicatorControlsPanel when indicatorControlsPanelVisible is true
+  - Should render IndicatorControlsPanel component inside floating panel when visible
+- **Technical Challenge:** Initial approach used `await import()` without `async` keyword (syntax error)
+  - Solution: Imported `useChartStore` at top level, used `vi.mocked(useChartStore).mockImplementation()` to update mock state per-test
+  - Pattern: Dynamic mock state changes via mockImplementation, not dynamic imports
+- **Result:** **100% coverage** (93.61% → 100%, +6.39pp component gain)
+- **Coverage:** 91.79% overall (+0.01pp from 91.78%)
+- **Tests:** All 16 passing in 1.64s
+- **Commit:** `92050e5e` "test(app): add 3 tests for IndicatorControlsPanel visibility - 100% coverage"
+- **Quality:** All pre-commit gates passing ✓
+
+**Session 155 Summary:**
+- **Tests Added:** 16 total (LeftDock +6, TradingWorkspace +7, App.tsx +3)
+- **Coverage Progression:** 91.75% → 91.79% (+0.04pp net for session)
+- **Components at 100%:** LeftDock ✅, App.tsx ✅
+- **Infrastructure:** All 10,986+ tests passing, 100% pre-commit gate success rate
+- **Gap to 95% Target:** 3.21pp remaining
+- **Strategy Validation:** Quick-win approach yielded steady incremental gains (3 components, 4 commits, ~90 min session)
+- **Next Focus:** Session 156 - continue quick wins (ChartHeader 96.19%, ChartSidebar 97.97%) OR pivot to medium targets (DrawingChart 54.25%, EnhancedChart 59.29%) for larger gains
+
+**Commits:** de29e6bd, 7f30f3e6, 92050e5e (all pushed to main ✓)
+
+**Key Pattern Learnings:**
+- **Fullscreen API mocking:** Requires configurable properties + getter functions + event dispatching for React state updates
+- **React state updates:** Components don't react to direct property changes; need event simulation (dispatchEvent)
+- **Dynamic mocks:** Use `vi.mocked(hook).mockImplementation()` for per-test state changes, not dynamic imports
+- **Quick wins strategy:** 0.04pp from 3 components (efficient) but slower path to 95% than medium-target approach
+- **Quality over speed:** TradingWorkspace took 3 iterations to fix properly - marathon debugging sessions acceptable
+
+---
+
 ### Session 154 – January 13, 2026 ✅ (COMPLETE - 3 parts)
 **Focus:** Frontend coverage sprint continuation - technical debt cleanup + multi-component test expansion
 **Overall Impact:** Frontend coverage 91.49% → 91.75% (+0.26pp), 37 new tests added (87 total additions Sessions 151-154)
