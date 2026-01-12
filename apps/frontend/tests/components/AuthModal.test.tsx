@@ -551,9 +551,7 @@ describe('AuthModal', () => {
       fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(
-          screen.getByText('Username must be at least 3 characters')
-        ).toBeInTheDocument();
+        expect(screen.getByText('Username must be at least 3 characters')).toBeInTheDocument();
       });
     });
 
@@ -643,9 +641,7 @@ describe('AuthModal', () => {
       fireEvent.submit(form!);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Your account has been deactivated/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Your account has been deactivated/i)).toBeInTheDocument();
       });
     });
 
@@ -754,9 +750,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Google authentication failed/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Google authentication failed/)).toBeInTheDocument();
       });
     });
 
@@ -775,9 +769,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Your Google email is not verified/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Your Google email is not verified/)).toBeInTheDocument();
       });
     });
 
@@ -796,9 +788,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Invalid authentication token/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Invalid authentication token/)).toBeInTheDocument();
       });
     });
 
@@ -817,9 +807,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Authentication token has expired/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Authentication token has expired/)).toBeInTheDocument();
       });
     });
 
@@ -833,9 +821,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Cannot connect to server/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Cannot connect to server/)).toBeInTheDocument();
       });
     });
 
@@ -857,9 +843,7 @@ describe('AuthModal', () => {
       await user.click(googleButton);
 
       await waitFor(() => {
-        expect(
-          screen.queryByText(/Cannot connect to server/)
-        ).toBeInTheDocument();
+        expect(screen.queryByText(/Cannot connect to server/)).toBeInTheDocument();
       });
 
       // Second attempt succeeds

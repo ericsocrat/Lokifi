@@ -1,8 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import App from '@/App';
 import { useGlobalHotkeys } from '@/lib/utils/globalHotkeys';
-import * as storeModule from '@/state/store';
+import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the hotkeys hook
 vi.mock('@/lib/utils/globalHotkeys', () => ({
@@ -158,7 +157,7 @@ describe('App', () => {
 
     it('should render all critical child components', () => {
       render(<App />);
-      
+
       const criticalComponents = [
         'price-chart',
         'drawing-layer',

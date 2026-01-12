@@ -115,6 +115,27 @@
 - **Key Insight:** Canvas components need Playwright E2E tests, not unit tests
 - **Next Recommendation:** AuthModal.tsx enhancement or clean up dead files
 - **Commits:** d07de91d (Part 1 discovery), 129c7155 (Part 2 tests)
+
+---
+
+### Session 153 – January 13, 2026 ✅
+**AuthModal.tsx Coverage Enhancement**
+- **Focus:** Boost AuthModal from 78.74% to 90%+
+- **Strategy:** Target 30 uncovered lines with specific error handling, validation, and auth flow tests
+- **Changes:**
+   - Added 27 comprehensive tests (33 → 60 total tests)
+   - Advanced validation: username length, character validation (3 tests)
+   - Error message handling: email verification, deactivated account, invalid credentials (4 tests)
+   - Redirect after auth: sessionStorage flow, normal close (2 tests)
+   - Google auth error scenarios: token failures, network errors, error recovery (6 tests)
+- **Results:**
+   - ✅ AuthModal.tsx: **78.74% → 94.79%** (+16.05pp) - MAJOR IMPROVEMENT
+   - ✅ Frontend overall: 91.55% → 91.76% (+0.21pp)
+   - ✅ All 60 tests passing (14.5s execution)
+   - ✅ Uncovered lines: 30 → ~7 remaining
+- **Quality:** Zero TypeScript errors, zero ESLint warnings, all pre-commit gates passing
+- **Status:** Complete, committed 1e9a91c8
+- **Next:** Continue frontend optimization toward 95% target
   - Tests mock useChartStore with Zustand patterns, verify component structure, CSS classes, accessibility
   - All tests passing; coverage +0.08pp (91.49% → 91.57%)
 - **Coverage Gap Analysis Identified:**
