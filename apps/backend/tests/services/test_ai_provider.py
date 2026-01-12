@@ -1,8 +1,9 @@
 import asyncio
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 from unittest.mock import patch
 
 import pytest
+
 from app.services.ai_provider import (
     AIMessage,
     AIProvider,
