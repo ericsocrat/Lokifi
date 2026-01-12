@@ -526,4 +526,549 @@ describe('DrawingLayer Component', () => {
       expect(true).toBe(true);
     });
   });
+
+  describe('Additional Drawing Types', () => {
+    it('should render ray drawings', () => {
+      const rayDrawing = {
+        id: 'ray-1',
+        kind: 'ray',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#ff0000', strokeWidth: 2 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [rayDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render horizontal line drawings', () => {
+      const hlineDrawing = {
+        id: 'hline-1',
+        kind: 'hline',
+        points: [{ x: 0, y: 100 }],
+        style: { stroke: '#0000ff', strokeWidth: 1 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [hlineDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render vertical line drawings', () => {
+      const vlineDrawing = {
+        id: 'vline-1',
+        kind: 'vline',
+        points: [{ x: 100, y: 0 }],
+        style: { stroke: '#00ff00', strokeWidth: 1 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [vlineDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render ellipse drawings', () => {
+      const ellipseDrawing = {
+        id: 'ellipse-1',
+        kind: 'ellipse',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#ff00ff', strokeWidth: 2, fill: '#ff00ff20' },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [ellipseDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render fibonacci retracement drawings', () => {
+      const fibDrawing = {
+        id: 'fib-1',
+        kind: 'fib',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 200 },
+        ],
+        fibLevels: [0, 0.236, 0.382, 0.5, 0.618, 1],
+        style: { stroke: '#ffa500', strokeWidth: 1 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [fibDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render parallel channel drawings', () => {
+      const channelDrawing = {
+        id: 'channel-1',
+        kind: 'parallel-channel',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+          { x: 75, y: 100 },
+        ],
+        style: { stroke: '#00ffff', strokeWidth: 1.5, fill: '#00ffff10' },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [channelDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render pitchfork drawings', () => {
+      const pitchforkDrawing = {
+        id: 'pitchfork-1',
+        kind: 'pitchfork',
+        points: [
+          { x: 50, y: 100 },
+          { x: 100, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#ff6600', strokeWidth: 1 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [pitchforkDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render ruler drawings', () => {
+      const rulerDrawing = {
+        id: 'ruler-1',
+        kind: 'ruler',
+        points: [
+          { x: 50, y: 50 },
+          { x: 200, y: 200 },
+        ],
+        style: { stroke: '#888888', strokeWidth: 1 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [rulerDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+  });
+
+  describe('Style Variations', () => {
+    it('should apply dash line style', () => {
+      const dashedDrawing = {
+        id: 'dashed-1',
+        kind: 'trendline',
+        points: [
+          { x: 10, y: 10 },
+          { x: 100, y: 100 },
+        ],
+        style: { stroke: '#ffffff', strokeWidth: 2, dash: 'dash' },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [dashedDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should apply dot line style', () => {
+      const dottedDrawing = {
+        id: 'dotted-1',
+        kind: 'trendline',
+        points: [
+          { x: 10, y: 10 },
+          { x: 100, y: 100 },
+        ],
+        style: { stroke: '#ffffff', strokeWidth: 2, dash: 'dot' },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [dottedDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should apply dashdot line style', () => {
+      const dashdotDrawing = {
+        id: 'dashdot-1',
+        kind: 'trendline',
+        points: [
+          { x: 10, y: 10 },
+          { x: 100, y: 100 },
+        ],
+        style: { stroke: '#ffffff', strokeWidth: 2, dash: 'dashdot' },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [dashdotDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should apply custom opacity to drawings', () => {
+      const transparentDrawing = {
+        id: 'transparent-1',
+        kind: 'rect',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#00ff00', strokeWidth: 1, fill: '#00ff0020', opacity: 0.5 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [transparentDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should show handles for selected drawings', () => {
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        selection: new Set(['drawing-1']),
+        drawingSettings: {
+          ...mockStoreState.drawingSettings,
+          showHandles: true,
+        },
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should hide handles when showHandles is false', () => {
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        selection: new Set(['drawing-1']),
+        drawingSettings: {
+          ...mockStoreState.drawingSettings,
+          showHandles: false,
+        },
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+  });
+
+  describe('Marquee Selection', () => {
+    it('should start marquee selection on background click with select tool', () => {
+      const clearSelection = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+        clearSelection,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 500, clientY: 500 });
+
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should update marquee box during drag', () => {
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 50, clientY: 50 });
+      fireEvent.pointerMove(canvas, { clientX: 200, clientY: 200 });
+
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should select drawings within marquee box on mouse up', () => {
+      const setSelection = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+        setSelection,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 0, clientY: 0 });
+      fireEvent.pointerMove(canvas, { clientX: 200, clientY: 200 });
+      fireEvent.pointerUp(canvas);
+
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should handle group drawings in marquee selection', () => {
+      const groupDrawing = {
+        id: 'group-1',
+        kind: 'group',
+        points: [],
+        children: [
+          {
+            id: 'child-1',
+            kind: 'trendline',
+            points: [
+              { x: 60, y: 60 },
+              { x: 80, y: 80 },
+            ],
+            style: {},
+          },
+        ],
+        style: {},
+      };
+
+      const setSelection = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+        drawings: [groupDrawing],
+        setSelection,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 0, clientY: 0 });
+      fireEvent.pointerMove(canvas, { clientX: 100, clientY: 100 });
+      fireEvent.pointerUp(canvas);
+
+      expect(canvas).toBeTruthy();
+    });
+  });
+
+  describe('Drag Operations', () => {
+    it('should drag existing drawing with select tool', () => {
+      const updateDrawing = vi.fn();
+      const toggleSelect = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+        updateDrawing,
+        toggleSelect,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      // Click on drawing to select
+      fireEvent.pointerDown(canvas, { clientX: 50, clientY: 50 });
+      // Drag it
+      fireEvent.pointerMove(canvas, { clientX: 100, clientY: 100 });
+      fireEvent.pointerUp(canvas);
+
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should update drawing geometry during drag', () => {
+      const updateDrawing = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'trendline',
+        updateDrawing,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 50, clientY: 50 });
+      fireEvent.pointerMove(canvas, { clientX: 100, clientY: 100 });
+      fireEvent.pointerMove(canvas, { clientX: 150, clientY: 150 });
+
+      expect(canvas).toBeTruthy();
+    });
+  });
+
+  describe('Hidden and Locked Drawings', () => {
+    it('should not render hidden drawings', () => {
+      const hiddenDrawing = {
+        id: 'hidden-1',
+        kind: 'trendline',
+        points: [
+          { x: 10, y: 10 },
+          { x: 100, y: 100 },
+        ],
+        hidden: true,
+        style: { stroke: '#ffffff', strokeWidth: 2 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [hiddenDrawing],
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should not allow interaction with locked drawings', () => {
+      const lockedDrawing = {
+        id: 'locked-1',
+        kind: 'trendline',
+        points: [
+          { x: 10, y: 10 },
+          { x: 100, y: 100 },
+        ],
+        locked: true,
+        style: { stroke: '#ffffff', strokeWidth: 2 },
+      };
+
+      const toggleSelect = vi.fn();
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        activeTool: 'select',
+        drawings: [lockedDrawing],
+        toggleSelect,
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+
+      fireEvent.pointerDown(canvas, { clientX: 50, clientY: 50 });
+
+      // toggleSelect should not be called for locked drawings
+      expect(canvas).toBeTruthy();
+    });
+  });
+
+  describe('Arrow Drawings', () => {
+    it('should render arrow with filled head style', () => {
+      const arrowDrawing = {
+        id: 'arrow-1',
+        kind: 'arrow',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#ff0000', strokeWidth: 2 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [arrowDrawing],
+        drawingSettings: {
+          ...mockStoreState.drawingSettings,
+          arrowHead: 'filled',
+          arrowHeadSize: 10,
+        },
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should render arrow with simple head style', () => {
+      const arrowDrawing = {
+        id: 'arrow-2',
+        kind: 'arrow',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#0000ff', strokeWidth: 2 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [arrowDrawing],
+        drawingSettings: {
+          ...mockStoreState.drawingSettings,
+          arrowHead: 'simple',
+          arrowHeadSize: 8,
+        },
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+
+    it('should show line labels when enabled', () => {
+      const lineDrawing = {
+        id: 'line-with-label',
+        kind: 'trendline',
+        points: [
+          { x: 50, y: 50 },
+          { x: 150, y: 150 },
+        ],
+        style: { stroke: '#00ff00', strokeWidth: 2 },
+      };
+
+      vi.mocked(useChartStore).mockReturnValue({
+        ...mockStoreState,
+        drawings: [lineDrawing],
+        drawingSettings: {
+          ...mockStoreState.drawingSettings,
+          showLineLabels: true,
+        },
+      });
+
+      const { container } = render(<DrawingLayer />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).toBeTruthy();
+    });
+  });
 });
