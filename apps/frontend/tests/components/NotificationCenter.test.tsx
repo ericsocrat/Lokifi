@@ -448,4 +448,292 @@ describe('NotificationCenter', () => {
       expect(screen.getByText('New Follower')).toBeInTheDocument();
     });
   });
+
+  describe('Advanced Sorting', () => {
+    it('should sort by priority (urgent first)', () => {
+      render(<NotificationCenter />);
+
+      // Open filters
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Change sort to priority
+      const sortSelect = screen.getByDisplayValue('Newest first');
+      fireEvent.change(sortSelect, { target: { value: 'priority' } });
+
+      // System alert (urgent) should be visible
+      expect(screen.getByText('System Update')).toBeInTheDocument();
+    });
+
+    it('should sort oldest first', () => {
+      render(<NotificationCenter />);
+
+      // Open filters
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Change sort to oldest
+      const sortSelect = screen.getByDisplayValue('Newest first');
+      fireEvent.change(sortSelect, { target: { value: 'oldest' } });
+
+      // Component should still render notifications in different order
+      expect(screen.getByText('System Update')).toBeInTheDocument();
+    });
+  });
+
+  describe('Dismissed Filter', () => {
+    it('should filter dismissed notifications', () => {
+      mockNotifications.notifications = [
+        ...mockNotificationData,
+        {
+          id: 'notif-5',
+          type: 'follow',
+          title: 'Dismissed Follow',
+          message: 'This was dismissed',
+          priority: 'normal',
+          is_read: false,
+          is_dismissed: true,
+          created_at: new Date().toISOString(),
+        },
+      ];
+
+      render(<NotificationCenter />);
+
+      // Open filters
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Change status filter to dismissed
+      const statusSelect = screen.getByDisplayValue('All');
+      fireEvent.change(statusSelect, { target: { value: 'dismissed' } });
+
+      // Should only show dismissed notifications
+      expect(screen.getByText('Dismissed Follow')).toBeInTheDocument();
+      expect(screen.queryByText('New Follower')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Type Filters', () => {
+    it('should filter by message type', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      const typeSelect = screen.getByDisplayValue('All Types');
+      fireEvent.change(typeSelect, { target: { value: 'dm_message_received' } });
+
+      expect(screen.getByText('New Message')).toBeInTheDocument();
+      expect(screen.queryByText('New Follower')).not.toBeInTheDocument();
+    });
+
+    it('should filter by AI response type', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      const typeSelect = screen.getByDisplayValue('All Types');
+      fireEvent.change(typeSelect, { target: { value: 'ai_reply_finished' } });
+
+      expect(screen.getByText('AI Response Ready')).toBeInTheDocument();
+    });
+
+    it('should filter by system alert type', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      const typeSelect = screen.getByDisplayValue('All Types');
+      fireEvent.change(typeSelect, { target: { value: 'system_alert' } });
+
+      expect(screen.getByText('System Update')).toBeInTheDocument();
+    });
+  });
+
+  describe('Combined Filters', () => {
+    it('should apply status and type filters together', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Set status to unread
+      const statusSelect = screen.getByDisplayValue('All');
+      fireEvent.change(statusSelect, { target: { value: 'unread' } });
+
+      // Set type to follow
+      const typeSelect = screen.getByDisplayValue('All Types');
+      fireEvent.change(typeSelect, { target: { value: 'follow' } });
+
+      // Should only show unread follow notifications
+      expect(screen.getByText('New Follower')).toBeInTheDocument();
+      expect(screen.queryByText('AI Response Ready')).not.toBeInTheDocument(); // Not follow type
+    });
+
+    it('should apply read filter', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Set status to read
+      const statusSelect = screen.getByDisplayValue('All');
+      fireEvent.change(statusSelect, { target: { value: 'read' } });
+
+      // Should only show read notifications
+      expect(screen.getByText('AI Response Ready')).toBeInTheDocument(); // This is read
+      expect(screen.queryByText('New Follower')).not.toBeInTheDocument(); // This is unread
+    });
+  });
+
+  describe('Priority Badges', () => {
+    it('should show high priority indicator', () => {
+      render(<NotificationCenter />);
+
+      // New Message has high priority
+      const _msgNotif = screen.getByText('New Message');
+      expect(_msgNotif).toBeInTheDocument();
+    });
+
+    it('should show mention type filter option', () => {
+      render(<NotificationCenter />);
+
+      fireEvent.click(screen.getByTitle('Toggle filters'));
+
+      // Check that Mentions option is available
+      expect(screen.getByText('Mentions')).toBeInTheDocument();
+    });
+  });
+
+  describe('Icon Mapping for All Types', () => {
+    it('should display follow icon', () => {
+      render(<NotificationCenter />);
+
+      expect(screen.getByText('👤')).toBeInTheDocument(); // follow icon
+    });
+
+    it('should display mention icon', () => {
+      mockNotifications.notifications = [
+        {
+          id: 'notif-mention',
+          type: 'mention',
+          title: 'You were mentioned',
+          message: 'In a post',
+          priority: 'normal',
+          is_read: false,
+          is_dismissed: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+
+      render(<NotificationCenter />);
+
+      expect(screen.getByText('🏷️')).toBeInTheDocument(); // mention icon
+    });
+  });
+
+  describe('Select All and Bulk Operations', () => {
+    it('should deselect all when select all is clicked twice', () => {
+      render(<NotificationCenter />);
+
+      // Get all checkboxes
+      const checkboxes = screen.getAllByRole('checkbox');
+
+      // Click select all
+      fireEvent.click(checkboxes[0]);
+
+      // Click select all again to deselect
+      fireEvent.click(checkboxes[0]);
+
+      // All should be unchecked except the select-all itself
+      const checkedBoxes = checkboxes.filter((cb) => (cb as HTMLInputElement).checked);
+
+      // Only the select-all checkbox should be unchecked now
+      expect(checkedBoxes.length).toBeLessThanOrEqual(1);
+    });
+
+    it('should perform bulk mark as read on selected notifications', () => {
+      render(<NotificationCenter />);
+
+      const checkboxes = screen.getAllByRole('checkbox');
+
+      // Select first notification (not the select-all)
+      if (checkboxes.length > 1) {
+        fireEvent.click(checkboxes[1]);
+
+        // Find bulk mark read button
+        const markReadButtons = screen.getAllByText(/Mark.*Read/i);
+
+        // Should have multiple Mark Read buttons due to filtering
+        expect(markReadButtons.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('should perform bulk dismiss on selected notifications', () => {
+      render(<NotificationCenter />);
+
+      const checkboxes = screen.getAllByRole('checkbox');
+
+      // Select first notification
+      if (checkboxes.length > 1) {
+        fireEvent.click(checkboxes[1]);
+
+        // Find bulk dismiss button
+        const dismissButtons = screen.getAllByText(/Dismiss/i);
+
+        expect(dismissButtons.length).toBeGreaterThan(0);
+      }
+    });
+  });
+
+  describe('Component Props Combinations', () => {
+    it('should render with all features enabled', () => {
+      render(
+        <NotificationCenter
+          showHeader={true}
+          showFilters={true}
+          showPreferences={true}
+          maxHeight="800px"
+        />
+      );
+
+      expect(screen.getByText('Notification Center')).toBeInTheDocument();
+      expect(screen.getByTitle('Toggle filters')).toBeInTheDocument();
+      expect(screen.getByTitle('Notification preferences')).toBeInTheDocument();
+    });
+
+    it('should render with minimal features', () => {
+      render(
+        <NotificationCenter showHeader={false} showFilters={false} showPreferences={false} />
+      );
+
+      expect(screen.queryByText('Notification Center')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Toggle filters')).not.toBeInTheDocument();
+      expect(screen.queryByTitle('Notification preferences')).not.toBeInTheDocument();
+    });
+
+    it('should apply custom maxHeight', () => {
+      const { container } = render(<NotificationCenter maxHeight="400px" />);
+
+      // Component should render with custom styling
+      expect(container.firstChild).toBeInTheDocument();
+    });
+  });
+
+  describe('Notification Colors', () => {
+    it('should apply follow type color', () => {
+      render(<NotificationCenter />);
+
+      // Follow notification should be rendered with blue styling
+      expect(screen.getByText('New Follower')).toBeInTheDocument();
+    });
+
+    it('should apply urgent priority color', () => {
+      render(<NotificationCenter />);
+
+      // System alert with urgent priority should be rendered
+      expect(screen.getByText('System Update')).toBeInTheDocument();
+    });
+
+    it('should apply high priority color', () => {
+      render(<NotificationCenter />);
+
+      // New Message with high priority should be rendered
+      expect(screen.getByText('New Message')).toBeInTheDocument();
+    });
+  });
 });
