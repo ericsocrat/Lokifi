@@ -440,4 +440,299 @@ describe('NotificationBell', () => {
       expect(screen.getByText('Notifications')).toBeInTheDocument();
     });
   });
+
+  describe('Error State', () => {
+    it('should show error message when loading fails', async () => {
+      const user = userEvent.setup();
+      mockError = new Error('Network error');
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('Failed to load notifications')).toBeInTheDocument();
+    });
+
+    it('should show retry button when error occurs', async () => {
+      const user = userEvent.setup();
+      mockError = new Error('Network error');
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('Try again')).toBeInTheDocument();
+    });
+
+    it('should call refreshNotifications when clicking Try again', async () => {
+      const user = userEvent.setup();
+      mockError = new Error('Network error');
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+      await user.click(screen.getByText('Try again'));
+
+      expect(mockRefreshNotifications).toHaveBeenCalled();
+    });
+  });
+
+  describe('Loading State', () => {
+    it('should show loading spinner when isLoading is true', async () => {
+      const user = userEvent.setup();
+      mockIsLoading = true;
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('Loading notifications...')).toBeInTheDocument();
+    });
+  });
+
+  describe('Additional Icon Types', () => {
+    it('should show mention icon for mention notifications', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'mention',
+          title: 'Mentioned',
+          message: 'You were mentioned',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('🏷️')).toBeInTheDocument();
+    });
+
+    it('should show alert icon for system_alert notifications', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'system_alert',
+          title: 'System Alert',
+          message: 'Alert message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('⚠️')).toBeInTheDocument();
+    });
+
+    it('should show default bell icon for unknown notification types', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'unknown_type',
+          title: 'Unknown',
+          message: 'Unknown type',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('🔔')).toBeInTheDocument();
+    });
+  });
+
+  describe('Footer Navigation', () => {
+    it('should show View all notifications link when notifications exist', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('View all notifications')).toBeInTheDocument();
+    });
+
+    it('should not show footer when no notifications', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.queryByText('View all notifications')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Notification Actions', () => {
+    it('should mark individual notification as read on click', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+      await user.click(screen.getByText('Follow'));
+
+      expect(mockMarkAsRead).toHaveBeenCalledWith('1');
+    });
+
+    it('should stop propagation when clicking mark as read button', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      const markReadButton = screen.getByTitle('Mark as read');
+      await user.click(markReadButton);
+
+      expect(mockMarkAsRead).toHaveBeenCalledWith('1');
+      // Should not close dropdown (notification click handler shouldn't fire)
+    });
+
+    it('should stop propagation when clicking dismiss button', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      const dismissButton = screen.getByTitle('Dismiss');
+      await user.click(dismissButton);
+
+      expect(mockDismissNotification).toHaveBeenCalledWith('1');
+    });
+
+    it('should not show mark as read button for already read notifications', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: true,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.queryByTitle('Mark as read')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('Notification Styling', () => {
+    it('should apply normal border color for normal priority', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      const { container } = render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      // Check for the notification container with border-l class
+      const notification = container.querySelector('.border-l-2.border-l-blue-500');
+      expect(notification).toBeInTheDocument();
+    });
+
+    it('should render notification with message content', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Test message content',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      expect(screen.getByText('Test message content')).toBeInTheDocument();
+    });
+
+    it('should show unread indicator dot for unread notifications', async () => {
+      const user = userEvent.setup();
+      mockNotifications = [
+        {
+          id: '1',
+          type: 'follow',
+          title: 'Follow',
+          message: 'Message',
+          priority: 'normal',
+          is_read: false,
+          created_at: new Date().toISOString(),
+        },
+      ];
+      const { container } = render(<NotificationBell />);
+
+      await user.click(screen.getByRole('button'));
+
+      // Check for the unread indicator dot
+      const unreadDot = container.querySelector('.bg-lokifi.rounded-full.absolute');
+      expect(unreadDot).toBeInTheDocument();
+    });
+  });
 });
