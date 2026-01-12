@@ -23,7 +23,7 @@
 
 ---
 
-### Session 157 – January 13, 2026 ⏳ (IN PROGRESS - 1 part complete)
+### Session 157 – January 13, 2026 ⏳ (IN PROGRESS - 2 parts complete)
 **Focus:** Strategic pivot to medium targets (70-90% range) for better ROI after quick wins showed diminishing returns
 **Strategy:** Target utility files (50-100 lines) with manageable scope and subscription callback patterns
 **Overall Impact:** Frontend coverage 91.81% → 91.88% (+0.07pp), 2 new tests added
@@ -61,6 +61,23 @@
 - **Medium target ROI:** 50-100 line utility files in 70-90% range offer 3-5x better gains than 95%+ quick wins
 - **Callback testing pattern:** Proven effective for subscription callbacks in both Zustand stores (ChartSidebar) and external subscriptions (collab.ts Y.js)
 - **Strategic inflection points:** Monitor ROI trends; pivot when diminishing returns detected (0.04pp → 0.02pp → 0.07pp after pivot)
+
+---
+
+### Session 157 – Part 2: pluginSDK 100% Coverage ✅
+**Component:** `src/lib/plugins/pluginSDK.ts` (318 lines, was 97.81% coverage)
+**Uncovered Lines:** Default UI fallback path; final RSI/circle branches
+**Changes:**
+- Added fallback test for unknown parameter type → returns `TextInput`
+- Added RSI mixed-changes test to exercise loop computations
+- Asserted circle `fillStyle` assignment to fully cover fill branch
+**Result:** pluginSDK.ts → **100%** statements/branches/functions/lines
+**Coverage:** 91.83% overall (+0.02pp from 91.81%)
+**Tests:** 36 → 38 (+2 new tests in pluginSDK suite)
+**Commit:** `8d393822` "test(plugins): cover pluginSDK default + RSI/circle branches to reach 100%"
+**Pattern Learnings:**
+- When unions gate types at compile-time, add a runtime-cast test to validate default branches
+- For canvas paths, assert style assignment as well as draw calls to ensure full branch coverage
 
 ---
 
