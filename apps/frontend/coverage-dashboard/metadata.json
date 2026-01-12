@@ -1,13 +1,13 @@
 {
-  "totalRuns": 127,
+  "totalRuns": 139,
   "firstRun": "2025-10-19T14:49:34.228Z",
-  "lastRun": "2026-01-12T11:23:08.869Z",
+  "lastRun": "2026-01-12T14:53:31.522Z",
   "bestCoverage": {
-    "statements": 91.76406581243081,
-    "branches": 85.41159021082741,
-    "functions": 89.40617577197149,
-    "lines": 91.76406581243081,
-    "timestamp": "2026-01-12T11:09:10.718Z"
+    "statements": 91.8015871526931,
+    "branches": 85.42394410924102,
+    "functions": 89.57639219419325,
+    "lines": 91.8015871526931,
+    "timestamp": "2026-01-12T12:57:18.387Z"
   },
   "worstCoverage": {
     "statements": 11.259037646472201,
@@ -17,7 +17,7 @@
   },
   "velocity": {
     "testsPerDay": "NaN",
-    "filesPerRun": "1.7",
-    "avgCoverageGain": "0.63"
+    "filesPerRun": "1.6",
+    "avgCoverageGain": "0.57"
   }
 }
