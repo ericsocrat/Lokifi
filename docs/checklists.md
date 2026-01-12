@@ -23,9 +23,14 @@
 ---
 
 ### Session 151 – January 12, 2026 ✅
-- **Focus:** HuggingFace provider branch coverage lift
-- **Changes:** Added 39 provider gap tests in `apps/backend/tests/services/providers/test_huggingface_provider_gaps.py`; `huggingface_provider.py` now at 96% coverage (100% statements, minor branch partials remain).
-- **Quality:** Backend tests passing for new suite; pre-commit hooks green; Ruff 0 violations; Black formatting clean.
+- **Focus:** HuggingFace provider branch coverage targeting → 4 branch tests added
+- **Changes:** 
+  - Added `TestUncoveredBranchCoverage` class with 4 tests targeting uncovered branches at lines 81→85, 99→98, 103→98, 236→231
+  - Tests: 500/502 error responses, response format handling (non-list/dict), message role mapping
+  - All 4 tests passing; pre-commit hooks green
+- **Coverage:** Backend 88.85% (no net gain in reported coverage; branch detection limited by mocking patterns)
+- **Insight:** Coverage measurement challenges with async/mocking - branches not reflected in tool reports despite test execution
+- **Next:** Evaluate alternative high-impact opportunities (simplified module focus or frontend push)
 
 ## 🎯 Current Focus (Sprint 13 - Quality Audit Campaign → Strategic Enhancement)
 
