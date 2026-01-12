@@ -23,6 +23,47 @@
 
 ---
 
+### Session 157 – January 13, 2026 ⏳ (IN PROGRESS - 1 part complete)
+**Focus:** Strategic pivot to medium targets (70-90% range) for better ROI after quick wins showed diminishing returns
+**Strategy:** Target utility files (50-100 lines) with manageable scope and subscription callback patterns
+**Overall Impact:** Frontend coverage 91.81% → 91.88% (+0.07pp), 2 new tests added
+
+**Part 1: collab.ts 100% Coverage** ✅
+- **Component:** `src/lib/api/collab.ts` (59 lines, was 89.36% coverage, 17 existing tests)
+- **Uncovered Lines:** 27-31 (useChartStore subscription callback: Y.js sync operations + null guard)
+- **Root Cause:** Subscription callback never triggered in tests (similar to Session 156 ChartSidebar pattern)
+- **Changes:** Added 2 subscription callback tests (17 → 19 total)
+  - Should sync local state changes to Y array when store updates (tests callback invocation by capturing from mock and manually calling)
+  - Should not update Y array if yDrawings is null (tests guard clause after stop() called)
+- **Technical Pattern:** Callback interception (reused from Session 156):
+  ```typescript
+  const subscriptionCallback = mockChartStore.subscribe.mock.calls[0][0];
+  subscriptionCallback({ drawings: [...], setAll: mockSetAll });
+  ```
+- **Result:** **100% coverage** (89.36% → 100%, +10.64pp component gain)
+- **Coverage:** 91.88% overall (+0.07pp from 91.81%)
+- **Tests:** All 19 passing (2 new tests added)
+- **Commit:** `0c1de547` "test(collab): add subscription callback tests - 100% coverage"
+- **Quality:** All pre-commit gates passing ✅
+
+**Session 157 Strategic Analysis:**
+- **Diminishing Returns Detected:** Sessions 155 (+0.04pp) → 156 (+0.02pp) quick wins declining
+- **Pivot Decision:** Shift from quick wins (95%+ targets) to medium targets (70-90% range)
+- **ROI Validation:** collab.ts +0.07pp (3.5x better than Session 156's +0.02pp quick win)
+- **Pattern Success:** Callback interception from Session 156 worked perfectly for Y.js subscription
+- **Gap to 95% Target:** 3.12pp remaining (was 3.19pp)
+
+**Next Focus:** Continue medium target strategy OR analyze larger components (DrawingChart 54.25%, EnhancedChart 59.29%) for Session 158
+
+**Commits:** 0c1de547 (pushed to main ✅)
+
+**Key Pattern Learnings:**
+- **Medium target ROI:** 50-100 line utility files in 70-90% range offer 3-5x better gains than 95%+ quick wins
+- **Callback testing pattern:** Proven effective for subscription callbacks in both Zustand stores (ChartSidebar) and external subscriptions (collab.ts Y.js)
+- **Strategic inflection points:** Monitor ROI trends; pivot when diminishing returns detected (0.04pp → 0.02pp → 0.07pp after pivot)
+
+---
+
 ### Session 156 – January 13, 2026 ✅ (COMPLETE - 1 part)
 **Focus:** ChartSidebar store subscription coverage - achieving 100% component coverage
 **Strategy:** Target subscription callback and cleanup paths via mock implementation interception
