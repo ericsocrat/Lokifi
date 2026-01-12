@@ -1531,4 +1531,70 @@ describe('useChartStore', () => {
       });
     });
   });
+
+  // ========================================================================
+  // Selection Operations (medium coverage targets)
+  // ========================================================================
+  describe('selection operations', () => {
+    it('toggleVisibilitySelected toggles hidden for selected drawings', () => {
+      const d1 = createMockDrawing({ id: 'a', hidden: false });
+      const d2 = createMockDrawing({ id: 'b', hidden: false });
+
+      act(() => {
+        useChartStore.setState({ drawings: [d1, d2], selection: new Set(['a']) });
+      });
+
+      // First toggle → selected hidden becomes true
+      act(() => {
+        useChartStore.getState().toggleVisibilitySelected();
+      });
+      let state = useChartStore.getState();
+      expect(state.drawings.find((d) => d.id === 'a')!.hidden).toBe(true);
+      expect(state.drawings.find((d) => d.id === 'b')!.hidden).toBe(false);
+
+      // Second toggle → flips back to false for selected
+      act(() => {
+        useChartStore.getState().toggleVisibilitySelected();
+      });
+      state = useChartStore.getState();
+      expect(state.drawings.find((d) => d.id === 'a')!.hidden).toBe(false);
+    });
+
+    it('renameSelected updates name for all selected drawings', () => {
+      const d1 = createMockDrawing({ id: 'r1', name: 'Old1' });
+      const d2 = createMockDrawing({ id: 'r2', name: 'Old2' });
+      const d3 = createMockDrawing({ id: 'r3', name: 'Old3' });
+
+      act(() => {
+        useChartStore.setState({ drawings: [d1, d2, d3], selection: new Set(['r1', 'r3']) });
+      });
+
+      act(() => {
+        useChartStore.getState().renameSelected('Renamed');
+      });
+
+      const state = useChartStore.getState();
+      expect(state.drawings.find((d) => d.id === 'r1')!.name).toBe('Renamed');
+      expect(state.drawings.find((d) => d.id === 'r2')!.name).toBe('Old2');
+      expect(state.drawings.find((d) => d.id === 'r3')!.name).toBe('Renamed');
+    });
+
+    it('deleteSelected removes selected drawings and clears selection', () => {
+      const d1 = createMockDrawing({ id: 'x1' });
+      const d2 = createMockDrawing({ id: 'x2' });
+      const d3 = createMockDrawing({ id: 'x3' });
+
+      act(() => {
+        useChartStore.setState({ drawings: [d1, d2, d3], selection: new Set(['x2']) });
+      });
+
+      act(() => {
+        useChartStore.getState().deleteSelected();
+      });
+
+      const state = useChartStore.getState();
+      expect(state.drawings.map((d) => d.id)).toEqual(['x1', 'x3']);
+      expect(state.selection.size).toBe(0);
+    });
+  });
 });
