@@ -25,7 +25,6 @@ services:
       POSTGRES_USER: lokifi
       POSTGRES_PASSWORD: lokifi_dev_password
       POSTGRES_DB: lokifi_db
-      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
