@@ -312,6 +312,21 @@ describe('Plugin SDK', () => {
 
       expect(ui[0].validation.required).toBe(true);
     });
+
+    it('should fall back to TextInput for unknown parameter type', () => {
+      // Cast to any to simulate an unknown runtime value
+      const params = [
+        {
+          name: 'mystery',
+          type: 'unknown' as any,
+          label: 'Mystery',
+          defaultValue: 'x',
+        },
+      ] as unknown as PluginParameter[];
+
+      const ui = generateSettingsUI(params);
+      expect(ui[0].component).toBe('TextInput');
+    });
   });
 
   describe('BUILTIN_INDICATORS', () => {
@@ -392,6 +407,31 @@ describe('Plugin SDK', () => {
           expect(r.value).toBeGreaterThanOrEqual(0);
           expect(r.value).toBeLessThanOrEqual(100);
         });
+      });
+
+      it('should compute RSI for mixed up/down changes (loop body executes)', () => {
+        // Build data with alternating gains and losses to exercise both paths
+        const data: OHLCData[] = [];
+        let price = 100;
+        for (let i = 0; i < 40; i++) {
+          const change = i % 2 === 0 ? 2 : -1; // up then down
+          price += change;
+          data.push({
+            timestamp: i + 1,
+            open: price - 1,
+            high: price + 1,
+            low: price - 2,
+            close: price,
+            volume: 1000 + i,
+          });
+        }
+
+        const result = BUILTIN_INDICATORS.rsi(data, { period: 14 });
+        expect(result.length).toBeGreaterThan(0);
+        // Ensure we actually computed successive values
+        if (result.length > 1) {
+          expect(result[1].value).not.toBeNaN();
+        }
       });
     });
   });
@@ -550,6 +590,9 @@ describe('Plugin SDK', () => {
         BUILTIN_DRAWING_TOOLS.circle(ctx, points, { fillColor: 'blue' });
 
         expect(ctx.fill).toHaveBeenCalled();
+        // Validate fillStyle assigned to exercise fill branch fully
+        // @ts-expect-error test double
+        expect(ctx.fillStyle).toBe('blue');
       });
 
       it('should calculate correct radius for diagonal point', () => {
