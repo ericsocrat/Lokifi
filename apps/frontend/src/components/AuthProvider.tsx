@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           created_at: response.user.created_at,
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // Silent fail - user just needs to log in again
       // This is expected when not authenticated, no need to log
       setUser(null);
