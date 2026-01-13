@@ -1,6 +1,6 @@
 'use client';
-import type { DrawingTool} from '@/lib/stores/drawingStore';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
+import type { DrawingTool } from '@/lib/stores/drawingStore';
+import { useDrawingActiveTool, useDrawingIsDrawing, useDrawingMagnetMode, useDrawingActions } from '@/lib/stores/drawingStore';
 import {
   Activity,
   ArrowRight,
@@ -80,7 +80,10 @@ interface DrawingToolbarProps {
 }
 
 export const DrawingToolbar: React.FC<DrawingToolbarProps> = () => {
-  const { activeTool, setActiveTool, isDrawing, magnetMode, toggleMagnetMode } = useDrawingStore();
+  const activeTool = useDrawingActiveTool();
+  const isDrawing = useDrawingIsDrawing();
+  const magnetMode = useDrawingMagnetMode();
+  const { setActiveTool, toggleMagnetMode } = useDrawingActions();
 
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [showMoreTools, setShowMoreTools] = useState(false);

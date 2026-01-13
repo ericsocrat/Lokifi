@@ -1,6 +1,6 @@
 'use client';
 
-import { useDrawingStore, type DrawingObject, type Point } from '@/lib/stores/drawingStore';
+import { useDrawingObjects, useDrawingSelectedObjectId, useDrawingActiveTool, useDrawingActions, type DrawingObject, type Point } from '@/lib/stores/drawingStore';
 import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -28,16 +28,17 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
   chartDataLength = 0,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const objects = useDrawingObjects();
+  const selectedObjectId = useDrawingSelectedObjectId();
+  const activeTool = useDrawingActiveTool();
   const {
-    objects,
     getObjectsByPane,
-    selectedObjectId,
     selectObject,
     setActiveTool,
-    activeTool,
     updateObject,
     getObjectById,
-  } = useDrawingStore();
+    deleteObject,
+  } = useDrawingActions();
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [textInputValue, setTextInputValue] = useState('');
   const [textInputPosition, setTextInputPosition] = useState({ x: 0, y: 0 });
@@ -328,9 +329,8 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
   };
 
   // Handle text input blur/enter
-  const handleTextInputBlur = () => {
+  const handleTextInputBlur = useCallback(() => {
     if (editingTextId) {
-      const { getObjectById, updateObject } = useDrawingStore.getState();
       const existingObj = getObjectById(editingTextId);
       if (existingObj) {
         updateObject(editingTextId, {
@@ -342,7 +342,7 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
       }
       setEditingTextId(null);
     }
-  };
+  }, [editingTextId, textInputValue, getObjectById, updateObject]);
 
   const handleTextInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -769,7 +769,6 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
       // Delete selected object with Delete or Backspace
       if (e.key === 'Delete' || e.key === 'Backspace') {
         e.preventDefault();
-        const { deleteObject } = useDrawingStore.getState();
         deleteObject(selectedObjectId);
       }
 
@@ -781,7 +780,7 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedObjectId, editingTextId, selectObject]);
+  }, [selectedObjectId, editingTextId, selectObject, deleteObject]);
 
   return (
     <>

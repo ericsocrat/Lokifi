@@ -1,5 +1,5 @@
 'use client';
-import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import { useMarketDataActions } from '@/lib/stores/marketDataStore';
 import { logger } from '@/lib/utils/logger';
 import { useEffect, useRef, useState } from 'react';
 
@@ -21,7 +21,7 @@ export default function WebSocketConnection({
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
 
-  const { fetchOHLCData: _fetchOHLCData } = useMarketDataStore();
+  const { fetchOHLCData: _fetchOHLCData } = useMarketDataActions();
 
   // Simulated WebSocket connection for demo
   useEffect(() => {

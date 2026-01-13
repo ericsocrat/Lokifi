@@ -117,13 +117,9 @@ export function classifyError(error: unknown): ErrorCategory {
  * @param retryCount - Current retry attempt number
  * @returns Enhanced APIError object
  */
-export function createAPIError(
-  error: unknown,
-  statusCode?: number,
-  retryCount = 0
-): APIError {
+export function createAPIError(error: unknown, statusCode?: number, retryCount = 0): APIError {
   const category = classifyError(error);
-  
+
   // Create error message, handling Response objects specially
   let message: string;
   if (error instanceof Response) {
@@ -133,7 +129,7 @@ export function createAPIError(
   } else {
     message = String(error);
   }
-  
+
   const originalError = error instanceof Error ? error : new Error(message);
 
   // Determine if error is retryable based on category and status code
@@ -315,9 +311,7 @@ export class CircuitBreaker {
         this.state = 'HALF_OPEN';
         this.successCount = 0;
       } else {
-        throw new Error(
-          `Circuit breaker OPEN for ${this.endpoint}. Service unavailable.`
-        );
+        throw new Error(`Circuit breaker OPEN for ${this.endpoint}. Service unavailable.`);
       }
     }
 

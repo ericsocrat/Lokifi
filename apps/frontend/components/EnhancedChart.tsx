@@ -1,6 +1,10 @@
 'use client';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
-import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore';
+import {
+  useDrawingActiveTool,
+  useDrawingIsDrawing,
+  useDrawingObjects,
+} from '@/lib/stores/drawingStore';
+import { useMarketDataActions, useMarketDataIsLoading, useMarketDataError, type OHLCData } from '@/lib/stores/marketDataStore';
 import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
@@ -25,9 +29,13 @@ export default function EnhancedChart({
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Store hooks
-  const { activeTool, objects, isDrawing } = useDrawingStore();
-  const { fetchOHLCData, isLoading, error } = useMarketDataStore();
+  // Optimized store hooks - each only re-renders when its specific value changes
+  const activeTool = useDrawingActiveTool();
+  const isDrawing = useDrawingIsDrawing();
+  const objects = useDrawingObjects();
+  const { fetchOHLCData } = useMarketDataActions();
+  const isLoading = useMarketDataIsLoading();
+  const error = useMarketDataError();
   const { panes } = usePaneStore();
   const selectedSymbol = symbolStore.get();
   const selectedTimeframe = timeframeStore.get();

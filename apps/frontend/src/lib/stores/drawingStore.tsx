@@ -515,3 +515,50 @@ export const useDrawingStore = create<DrawingState>()(
     }
   )
 );
+
+// Optimized selectors to reduce unnecessary re-renders
+export const useDrawingActiveTool = () => useDrawingStore((state) => state.activeTool);
+export const useDrawingIsDrawing = () => useDrawingStore((state) => state.isDrawing);
+export const useDrawingObjects = () => useDrawingStore((state) => state.objects);
+export const useDrawingSelectedObjectId = () => useDrawingStore((state) => state.selectedObjectId);
+export const useDrawingCurrentDrawing = () => useDrawingStore((state) => state.currentDrawing);
+export const useDrawingDraggedObjectId = () => useDrawingStore((state) => state.draggedObjectId);
+export const useDrawingSnapSettings = () =>
+  useDrawingStore((state) => ({
+    snapToGrid: state.snapToGrid,
+    snapToPrice: state.snapToPrice,
+  }));
+export const useDrawingMagnetMode = () => useDrawingStore((state) => state.magnetMode);
+
+// Action selectors (never change, can be grabbed once)
+export const useDrawingActions = () =>
+  useDrawingStore((state) => ({
+    setActiveTool: state.setActiveTool,
+    startDrawing: state.startDrawing,
+    addPoint: state.addPoint,
+    updateCurrentDrawingPoint: state.updateCurrentDrawingPoint,
+    finishDrawing: state.finishDrawing,
+    cancelDrawing: state.cancelDrawing,
+    addObject: state.addObject,
+    updateObject: state.updateObject,
+    deleteObject: state.deleteObject,
+    duplicateObject: state.duplicateObject,
+    selectObject: state.selectObject,
+    selectObjectsInRect: state.selectObjectsInRect,
+    clearSelection: state.clearSelection,
+    moveObject: state.moveObject,
+    moveObjectToPane: state.moveObjectToPane,
+    setObjectStyle: state.setObjectStyle,
+    setObjectProperties: state.setObjectProperties,
+    deleteSelectedObjects: state.deleteSelectedObjects,
+    duplicateSelectedObjects: state.duplicateSelectedObjects,
+    lockSelectedObjects: state.lockSelectedObjects,
+    setSelectedObjectsVisible: state.setSelectedObjectsVisible,
+    getObjectsByPane: state.getObjectsByPane,
+    getSelectedObjects: state.getSelectedObjects,
+    getObjectById: state.getObjectById,
+    clearAllObjects: state.clearAllObjects,
+    toggleSnapToGrid: state.toggleSnapToGrid,
+    toggleSnapToPrice: state.toggleSnapToPrice,
+    toggleMagnetMode: state.toggleMagnetMode,
+  }));

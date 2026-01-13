@@ -221,9 +221,30 @@ function getTimeframeMilliseconds(timeframe: string): number {
   return mapping[timeframe] || mapping['1D'];
 }
 
+// Optimized selectors to reduce unnecessary re-renders
+export const useMarketDataOHLC = () => useMarketDataStore((state) => state.ohlcData);
+export const useMarketDataIsLoading = () => useMarketDataStore((state) => state.isLoading);
+export const useMarketDataError = () => useMarketDataStore((state) => state.error);
+export const useMarketDataIsConnected = () => useMarketDataStore((state) => state.isConnected);
+export const useMarketDataAutoRefresh = () => useMarketDataStore((state) => state.autoRefresh);
+export const useMarketDataRefreshInterval = () => useMarketDataStore((state) => state.refreshInterval);
+
+// Action selectors (never change, can be grabbed once)
+export const useMarketDataActions = () =>
+  useMarketDataStore((state) => ({
+    fetchOHLCData: state.fetchOHLCData,
+    subscribeToSymbol: state.subscribeToSymbol,
+    unsubscribeFromSymbol: state.unsubscribeFromSymbol,
+    clearCache: state.clearCache,
+    setAutoRefresh: state.setAutoRefresh,
+    setRefreshInterval: state.setRefreshInterval,
+  }));
+
 // Hook for auto-refreshing data
 export function useAutoRefresh() {
-  const { autoRefresh, refreshInterval, fetchOHLCData: _fetchOHLCData } = useMarketDataStore();
+  const autoRefresh = useMarketDataAutoRefresh();
+  const refreshInterval = useMarketDataRefreshInterval();
+  const { fetchOHLCData: _fetchOHLCData } = useMarketDataActions();
 
   React.useEffect(() => {
     if (!autoRefresh) return;

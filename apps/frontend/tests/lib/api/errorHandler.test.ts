@@ -9,16 +9,15 @@
  * - Error recovery callbacks
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
-  withRetry,
+  CircuitBreaker,
   classifyError,
   createAPIError,
-  ErrorCategory,
-  CircuitBreaker,
   createErrorRecovery,
-  type RetryConfig,
+  ErrorCategory,
+  withRetry,
 } from '@/lib/api/errorHandler';
+import { describe, expect, it, vi } from 'vitest';
 
 describe('ErrorHandler - API Error Management', () => {
   describe('classifyError', () => {

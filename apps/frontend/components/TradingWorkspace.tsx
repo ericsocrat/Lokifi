@@ -1,5 +1,5 @@
 'use client';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { useDrawingObjects } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
@@ -23,7 +23,7 @@ export const TradingWorkspace: React.FC = () => {
     currentTimeframe: '1h',
   });
 
-  const { objects } = useDrawingStore();
+  const objects = useDrawingObjects();
   const { panes } = usePaneStore();
 
   // Enable keyboard shortcuts

@@ -1,5 +1,5 @@
 'use client';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { useDrawingObjects, useDrawingSelectedObjectId, useDrawingActions } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import {
   ChevronDown,
@@ -23,9 +23,9 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
   isCollapsed = false,
   onToggleCollapse,
 }) => {
+  const objects = useDrawingObjects();
+  const selectedObjectId = useDrawingSelectedObjectId();
   const {
-    objects,
-    selectedObjectId,
     selectObject,
     deleteObject,
     duplicateObject,
@@ -33,7 +33,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     moveObjectToPane,
     getObjectsByPane,
     clearAllObjects,
-  } = useDrawingStore();
+  } = useDrawingActions();
 
   const { panes } = usePaneStore();
   const [expandedPanes, setExpandedPanes] = useState<Set<string>>(new Set(['price-pane']));
