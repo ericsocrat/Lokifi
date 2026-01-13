@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DrawingOverlay } from '../../components/DrawingOverlay';
 
 // Hoisted mocks
-const { mockDrawingStore } = vi.hoisted(() => ({
-  mockDrawingStore: {
+const { mockDrawingStore, useDrawingStoreMock } = vi.hoisted(() => {
+  const store = {
     objects: [] as DrawingObject[],
     getObjectsByPane: vi.fn(() => []),
     selectedObjectId: null as string | null,
@@ -16,11 +16,16 @@ const { mockDrawingStore } = vi.hoisted(() => ({
     updateObject: vi.fn(),
     getObjectById: vi.fn(),
     deleteObject: vi.fn(),
-  },
-}));
+  };
+
+  const useStore = () => store;
+  (useStore as typeof useStore & { getState: () => typeof store }).getState = () => store;
+
+  return { mockDrawingStore: store, useDrawingStoreMock: useStore };
+});
 
 vi.mock('@/lib/stores/drawingStore', () => ({
-  useDrawingStore: () => mockDrawingStore,
+  useDrawingStore: useDrawingStoreMock,
 }));
 
 // Mock ResizeObserver as a proper class
@@ -1105,6 +1110,90 @@ describe('DrawingOverlay', () => {
 
       const canvas = container.querySelector('canvas');
       expect(canvas).toBeInTheDocument();
+    });
+  });
+
+  // ==========================================================================
+  // Text Note Editing Tests
+  // ==========================================================================
+  describe('Text Note Editing', () => {
+    const textPoint = { time: 10 as Time, price: 100 };
+
+    const setupTextNote = () => {
+      mockDrawingStore.activeTool = 'cursor';
+      const textObject = createMockDrawingObject(
+        'text-1',
+        'textNote',
+        [textPoint],
+        { properties: { name: 'Old Text', visible: true, locked: false, zIndex: 1 } }
+      );
+
+      mockDrawingStore.getObjectsByPane.mockReturnValue([textObject]);
+      mockDrawingStore.getObjectById.mockReturnValue(textObject);
+
+      const renderResult = render(
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={containerRef}
+          paneId="main"
+          isDrawing={false}
+          currentDrawing={null}
+        />
+      );
+
+      const canvas = renderResult.container.querySelector('canvas') as HTMLCanvasElement;
+      vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+        left: 0,
+        top: 0,
+        right: 800,
+        bottom: 600,
+        width: 800,
+        height: 600,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+      });
+
+      return { ...renderResult, canvas };
+    };
+
+    it('opens text input on click and updates name on blur', () => {
+      const { container, canvas } = setupTextNote();
+
+      fireEvent.click(canvas, { clientX: 100, clientY: 500 });
+
+      const input = container.querySelector('input');
+      expect(input).toBeInTheDocument();
+
+      if (input) {
+        fireEvent.change(input, { target: { value: 'New Text' } });
+        fireEvent.blur(input);
+      }
+
+      expect(mockDrawingStore.updateObject).toHaveBeenCalledWith(
+        'text-1',
+        expect.objectContaining({
+          properties: expect.objectContaining({ name: 'New Text' }),
+        })
+      );
+      expect(container.querySelector('input')).not.toBeInTheDocument();
+    });
+
+    it('cancels editing when Escape is pressed', () => {
+      const { container, canvas } = setupTextNote();
+
+      fireEvent.click(canvas, { clientX: 100, clientY: 500 });
+
+      const input = container.querySelector('input');
+      expect(input).toBeInTheDocument();
+
+      if (input) {
+        fireEvent.keyDown(input, { key: 'Escape' });
+      }
+
+      expect(mockDrawingStore.updateObject).not.toHaveBeenCalled();
+      expect(container.querySelector('input')).not.toBeInTheDocument();
     });
   });
 
