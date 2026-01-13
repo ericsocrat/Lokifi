@@ -7,10 +7,10 @@ import {
   type WatchlistItem,
 } from '@/lib/stores/watchlistStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 
 // Watchlist Panel Component
-export const WatchlistPanel: React.FC = () => {
+export const WatchlistPanel = memo(function WatchlistPanelComponent() {
   const [isAddingSymbol, setIsAddingSymbol] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
 
@@ -114,7 +114,7 @@ export const WatchlistPanel: React.FC = () => {
       </div>
     </div>
   );
-};
+});
 
 // Individual Watchlist Item
 interface WatchlistItemProps {

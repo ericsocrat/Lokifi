@@ -1,7 +1,7 @@
 'use client';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { Activity, BarChart3, Search, TrendingUp, Volume, X } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 
 interface Indicator {
   id: string;
@@ -82,7 +82,10 @@ interface IndicatorModalProps {
   onClose: () => void;
 }
 
-export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose }) => {
+export const IndicatorModal = memo(function IndicatorModalComponent({
+  isOpen,
+  onClose,
+}: IndicatorModalProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const { panes, addPane, addIndicatorToPane } = usePaneStore();
@@ -228,4 +231,4 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
       </div>
     </div>
   );
-};
+});
