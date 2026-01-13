@@ -159,16 +159,19 @@ class TestUserEndpoints:
 
     @patch("app.api.routes.social.get_session")
     def test_get_user_success(self, mock_get_session, mock_db_user):
-        """Test successful user profile retrieval"""
+        """Test successful user profile retrieval with aggregation query"""
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user exists
-        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
-
-        # Mock counts (following, followers, posts)
-        mock_session.execute.return_value.scalar_one.side_effect = [5, 10, 20]
+        # Mock the aggregation query result (user + counts as tuple)
+        # New implementation uses single aggregation query instead of N+1
+        mock_session.execute.return_value.first.return_value = (
+            mock_db_user,
+            5,  # following_count
+            10,  # followers_count
+            20,  # posts_count
+        )
 
         # Act
         response = client.get("/api/social/users/testuser")
@@ -190,8 +193,8 @@ class TestUserEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user not found
-        mock_session.execute.return_value.scalar_one_or_none.return_value = None
+        # Mock user not found - aggregation query returns None
+        mock_session.execute.return_value.first.return_value = None
 
         # Act
         response = client.get("/api/social/users/nonexistent")

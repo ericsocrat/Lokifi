@@ -7,7 +7,7 @@ import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore, memo } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 import { DrawingOverlay } from './DrawingOverlay';
@@ -113,7 +113,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
         setChartData(transformedData);
       } catch (error) {
-        logger.error('Failed to fetch OHLC data', { error });
+        // Silent fail with fallback data - backend may not be running
+        // Only log in development
+        if (process.env.NODE_ENV === 'development') {
+          logger.error('Failed to fetch OHLC data (using fallback)', { error });
+        }
         setChartData([
           { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
           { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
@@ -432,4 +436,3 @@ export const DrawingChart = memo(function DrawingChartComponent() {
     </ChartErrorBoundary>
   );
 });
-

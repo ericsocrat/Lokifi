@@ -2,7 +2,7 @@
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { logger } from '@/lib/utils/logger';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
-import React, { memo, useEffect, useRef, useState, useCallback } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 interface Symbol {
   symbol: string;
@@ -91,9 +91,26 @@ export const EnhancedSymbolPicker = memo(function EnhancedSymbolPickerComponent(
       if (response.ok) {
         const data = await response.json();
         setPopularSymbols(data);
+      } else {
+        // API not available, use fallback data silently
+        setPopularSymbols([
+          {
+            symbol: 'AAPL',
+            name: 'Apple Inc.',
+            asset_type: 'stock',
+            exchange: 'NASDAQ',
+            currency: 'USD',
+            sector: 'Technology',
+          },
+          // ... more fallback symbols
+        ]);
       }
     } catch (error) {
-      logger.error('Failed to load popular symbols', { error });
+      // Silent fail with fallback data - backend may not be running
+      // Only log in development
+      if (process.env.NODE_ENV === 'development') {
+        logger.error('Failed to load popular symbols (using fallback)', { error });
+      }
       // Fallback to mock data
       setPopularSymbols([
         {

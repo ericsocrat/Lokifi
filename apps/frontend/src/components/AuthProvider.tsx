@@ -49,8 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           created_at: response.user.created_at,
         });
       }
-    } catch (_error) {
+    } catch (error) {
       // Silent fail - user just needs to log in again
+      // This is expected when not authenticated, no need to log
       setUser(null);
     }
   }, []);
@@ -103,4 +104,3 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
-

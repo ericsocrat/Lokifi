@@ -4,7 +4,7 @@ __all__ = ["router"]
 
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import desc, func, select
+from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import Session
 
 from app.db.db import get_session, init_db
@@ -85,25 +85,41 @@ def create_user(payload: UserCreate):
 
 @router.get("/social/users/{handle}", response_model=UserOut)
 def get_user(handle: str):
+    """Get user with counts using aggregation queries instead of N+1."""
     with get_session() as db:
-        u = _user_by_handle(db, handle)
-        following_ct = db.execute(
-            select(func.count()).select_from(Follow).where(Follow.follower_id == u.id)
-        ).scalar_one()
-        followers_ct = db.execute(
-            select(func.count()).select_from(Follow).where(Follow.followee_id == u.id)
-        ).scalar_one()
-        posts_ct = db.execute(
-            select(func.count()).select_from(Post).where(Post.user_id == u.id)
-        ).scalar_one()
+        # Execute single query with aggregates instead of 3 separate count queries
+        # This eliminates the N+1 pattern: 1 query to fetch user + 3 count queries
+        result = db.execute(
+            select(
+                User,
+                func.coalesce(
+                    func.count(Follow.id).filter(Follow.follower_id == User.id), 0
+                ).label("following_count"),
+                func.coalesce(
+                    func.count(Follow.id).filter(Follow.followee_id == User.id), 0
+                ).label("followers_count"),
+                func.coalesce(
+                    func.count(Post.id).filter(Post.user_id == User.id), 0
+                ).label("posts_count"),
+            )
+            .outerjoin(Follow, Follow.follower_id == User.id)
+            .outerjoin(Post, Post.user_id == User.id)
+            .where(User.handle == handle)
+            .group_by(User.id)
+        ).first()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        u, following_count, followers_count, posts_count = result
         return UserOut(
             handle=u.handle,
             avatar_url=u.avatar_url,
             bio=u.bio,
             created_at=u.created_at.isoformat(),
-            following_count=int(following_ct),
-            followers_count=int(followers_ct),
-            posts_count=int(posts_ct),
+            following_count=int(following_count),
+            followers_count=int(followers_count),
+            posts_count=int(posts_count),
         )
 
 

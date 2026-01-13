@@ -48,4 +48,3 @@ export async function me() {
 export function authToken() {
   return getToken();
 }
-
