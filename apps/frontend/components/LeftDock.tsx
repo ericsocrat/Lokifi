@@ -13,9 +13,9 @@ import {
   Waves,
 } from 'lucide-react';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
-export default function LeftDock() {
+export default memo(function LeftDock() {
   const [activeTool, setActiveTool] = useState(drawStore.get().tool);
   const [activePlugin, setActivePlugin] = useState<string | null>(pluginManager.activeToolId);
   const [open, setOpen] = useState(false);
@@ -150,5 +150,5 @@ export default function LeftDock() {
       <div className="text-[11px] opacity-60 mt-1">Keys: V T H M • R C Shift+C F</div>
     </div>
   );
-}
+});
 

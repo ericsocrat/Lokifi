@@ -1,7 +1,7 @@
 'use client';
 import { timeframeStore, type TF } from '@/lib/stores/timeframeStore';
 import { Clock } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 // TradingView-standard timeframe intervals with labels
 const TIMEFRAMES: { value: TF; label: string }[] = [
@@ -16,7 +16,7 @@ const TIMEFRAMES: { value: TF; label: string }[] = [
   { value: '1M', label: '1M' },
 ];
 
-export default function TimeframePicker() {
+export default memo(function TimeframePicker() {
   const [active, setActive] = useState<TF>(timeframeStore.get());
 
   useEffect(() => {
@@ -51,4 +51,4 @@ export default function TimeframePicker() {
       </div>
     </div>
   );
-}
+});

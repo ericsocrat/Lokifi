@@ -1,8 +1,8 @@
 'use client';
 import { symbolStore } from '@/stores/symbolStore';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
-export default function SymbolPicker() {
+export default memo(function SymbolPicker() {
   const [v, setV] = useState(symbolStore.get());
   useEffect(() => {
     symbolStore.set(v);
@@ -20,5 +20,5 @@ export default function SymbolPicker() {
       className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
     />
   );
-}
+});
 

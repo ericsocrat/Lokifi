@@ -13,7 +13,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 const TOOLS: { key: Tool; label: string; icon: React.ReactNode; shortcut?: string }[] = [
   { key: 'cursor', label: 'Cursor', icon: <MousePointer size={16} />, shortcut: 'V' },
@@ -34,7 +34,7 @@ const PLUGINS = [
   { id: 'fib-extended', label: 'Fib+', icon: <Brackets size={16} />, shortcut: 'F' },
 ];
 
-export default function ChartSidebar() {
+export default memo(function ChartSidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [tool, setTool] = useState<Tool>(drawStore.get().tool);
   const [snap, setSnap] = useState<boolean>(drawStore.get().snap);
@@ -193,5 +193,5 @@ export default function ChartSidebar() {
       )}
     </>
   );
-}
+});
 

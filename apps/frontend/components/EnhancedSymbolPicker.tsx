@@ -2,7 +2,7 @@
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { logger } from '@/lib/utils/logger';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 
 interface Symbol {
   symbol: string;
@@ -30,7 +30,7 @@ const ASSET_TYPE_COLORS = {
   index: 'text-purple-400',
 };
 
-export const EnhancedSymbolPicker: React.FC = () => {
+export const EnhancedSymbolPicker = memo(function EnhancedSymbolPickerComponent() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [symbols, setSymbols] = useState<Symbol[]>([]);
@@ -301,4 +301,4 @@ export const EnhancedSymbolPicker: React.FC = () => {
       )}
     </div>
   );
-};
+});
