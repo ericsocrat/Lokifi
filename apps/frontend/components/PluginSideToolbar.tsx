@@ -2,7 +2,7 @@
 import PluginSettingsDrawer from '@/components/PluginSettingsDrawer';
 import { EXPERIMENTAL_PLUGINS } from '@/constants/flags';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 type Item = { id: string; label: string; icon?: React.ReactNode };
 
@@ -13,7 +13,7 @@ const ITEMS: Item[] = [
   { id: 'fib-extended', label: 'Fib+' },
 ];
 
-export default function PluginSideToolbar() {
+export default memo(function PluginSideToolbar() {
   const [, setTick] = useState(0);
   const [open, setOpen] = useState(false);
   useEffect(() => {
@@ -48,5 +48,4 @@ export default function PluginSideToolbar() {
       <PluginSettingsDrawer open={open} onClose={() => setOpen(false)} />
     </>
   );
-}
-
+});

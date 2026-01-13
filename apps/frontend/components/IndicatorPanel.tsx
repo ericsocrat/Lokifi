@@ -1,8 +1,8 @@
 'use client';
 import { indicatorStore, type IndicatorFlags } from '@/stores/indicatorStore';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
-export default function IndicatorPanel() {
+export default memo(function IndicatorPanel() {
   const [s, setS] = useState(indicatorStore.get());
   useEffect(() => indicatorStore.subscribe(setS), []);
 
@@ -52,5 +52,4 @@ export default function IndicatorPanel() {
       <div className="mt-3" />
     </div>
   );
-}
-
+});

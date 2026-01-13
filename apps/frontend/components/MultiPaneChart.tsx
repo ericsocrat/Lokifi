@@ -7,7 +7,7 @@ import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState, memo } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 

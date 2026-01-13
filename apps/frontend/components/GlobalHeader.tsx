@@ -7,10 +7,10 @@ import type { CryptoAsset } from '@/src/services/backendPriceService';
 import { Bell, Search, User, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { NotificationBell } from './NotificationBell';
 
-export default function GlobalHeader() {
+export default memo(function GlobalHeader() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const [searchQuery, setSearchQuery] = useState('');
@@ -280,6 +280,4 @@ export default function GlobalHeader() {
       {isAuthModalOpen && <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />}
     </>
   );
-}
-
-
+});

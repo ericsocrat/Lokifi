@@ -20,7 +20,7 @@ import {
   Settings,
   Trash2,
 } from 'lucide-react';
-import React, { useState, memo } from 'react';
+import React, { memo, useState } from 'react';
 import type { NotificationData } from '../src/hooks/useNotifications';
 import { useNotifications } from '../src/hooks/useNotifications';
 

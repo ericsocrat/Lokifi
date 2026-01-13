@@ -13,7 +13,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 export default memo(function LeftDock() {
   const [activeTool, setActiveTool] = useState(drawStore.get().tool);
@@ -151,4 +151,3 @@ export default memo(function LeftDock() {
     </div>
   );
 });
-

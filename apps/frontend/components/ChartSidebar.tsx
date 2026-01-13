@@ -13,7 +13,7 @@ import {
   Waves,
 } from 'lucide-react';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 const TOOLS: { key: Tool; label: string; icon: React.ReactNode; shortcut?: string }[] = [
   { key: 'cursor', label: 'Cursor', icon: <MousePointer size={16} />, shortcut: 'V' },
@@ -194,4 +194,3 @@ export default memo(function ChartSidebar() {
     </>
   );
 });
-

@@ -7,7 +7,7 @@ import {
   type WatchlistItem,
 } from '@/lib/stores/watchlistStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import React, { useMemo, useState, memo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 // Watchlist Panel Component
 export const WatchlistPanel = memo(function WatchlistPanelComponent() {
@@ -96,9 +96,7 @@ export const WatchlistPanel = memo(function WatchlistPanelComponent() {
       {/* Watchlist Items */}
       <div className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
-          <div className="p-4 text-center text-surface-300">
-            No symbols in watchlist
-          </div>
+          <div className="p-4 text-center text-surface-300">No symbols in watchlist</div>
         ) : (
           <div className="divide-y divide-surface-300">
             {items.map((item: WatchlistItem) => (
@@ -162,9 +160,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
           {metrics && (
             <div className="mt-1 space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-white font-medium">
-                  ${metrics.price.toFixed(2)}
-                </span>
+                <span className="text-white font-medium">${metrics.price.toFixed(2)}</span>
                 <span className={`${changeColor} font-medium`}>
                   {metrics.change >= 0 ? '+' : ''}
                   {metrics.change.toFixed(2)}({metrics.changePercent >= 0 ? '+' : ''}
@@ -181,11 +177,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
             </div>
           )}
 
-          {item.notes && (
-            <div className="mt-1 text-xs text-surface-300 truncate">
-              {item.notes}
-            </div>
-          )}
+          {item.notes && <div className="mt-1 text-xs text-surface-300 truncate">{item.notes}</div>}
         </div>
       </div>
     </div>
@@ -251,10 +243,7 @@ export const ScreenerPanel: React.FC = () => {
       <div className="p-4 border-b border-surface-300">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-white">Stock Screener</h3>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="text-surface-300 hover:text-white"
-          >
+          <button onClick={() => setIsOpen(!isOpen)} className="text-surface-300 hover:text-white">
             {isOpen ? (
               <ChevronUpIcon className="w-5 h-5" />
             ) : (
@@ -392,9 +381,7 @@ export const ScreenerPanel: React.FC = () => {
                     className="p-3 flex items-center justify-between hover:bg-surface-200"
                   >
                     <div>
-                      <div className="font-medium text-white">
-                        {result.symbol}
-                      </div>
+                      <div className="font-medium text-white">{result.symbol}</div>
                       <div className="text-sm text-surface-300">
                         ${result.price.toFixed(2)} ({result.changePercent >= 0 ? '+' : ''}
                         {result.changePercent.toFixed(2)}%)
@@ -451,4 +438,3 @@ const ChevronDownIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
   </svg>
 );
-

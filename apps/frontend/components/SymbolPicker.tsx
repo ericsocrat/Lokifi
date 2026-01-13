@@ -1,6 +1,6 @@
 'use client';
 import { symbolStore } from '@/stores/symbolStore';
-import { useEffect, useState, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 export default memo(function SymbolPicker() {
   const [v, setV] = useState(symbolStore.get());
@@ -15,10 +15,11 @@ export default memo(function SymbolPicker() {
   return (
     <input
       value={v}
-      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => onChange(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+        onChange(e.target.value)
+      }
       placeholder="Symbol (e.g., BTCUSD, AAPL)"
       className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
     />
   );
 });
-

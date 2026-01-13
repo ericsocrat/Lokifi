@@ -2,7 +2,7 @@
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { logger } from '@/lib/utils/logger';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 
 interface Symbol {
   symbol: string;

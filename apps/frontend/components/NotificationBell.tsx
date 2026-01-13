@@ -7,7 +7,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, Check, CheckCheck, Trash2, X } from 'lucide-react';
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { memo, useEffect, useRef, useState } from 'react';
 import { useNotifications } from '../src/hooks/useNotifications';
 
 interface NotificationBellProps {
@@ -279,4 +279,3 @@ export const NotificationBell = memo(function NotificationBellComponent({
 });
 
 export default NotificationBell;
-

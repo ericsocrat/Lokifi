@@ -3,7 +3,7 @@ import { indicatorStore } from '@/lib/stores/indicatorStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { AuthModal } from '@/src/components/AuthModal';
 import { BarChart3, Layers, RotateCcw, Settings } from 'lucide-react';
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
 import TimeframePicker from './TimeframePicker';
@@ -12,7 +12,7 @@ interface ChartHeaderProps {
   onOpenObjectTree?: () => void;
 }
 
-export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
+export default memo(function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
   const [isIndicatorModalOpen, setIsIndicatorModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, _setAuthModalTab] = useState<'login' | 'signup'>('login');
@@ -140,5 +140,5 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
       )}
     </>
   );
-}
+});
 
