@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Shared type definitions for Zustand stores
  * Created: Sprint 2, Session 14 - TypeScript Type Safety
