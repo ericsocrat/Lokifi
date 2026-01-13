@@ -19,8 +19,8 @@ billiard==4.2.4
 black==25.12.0
 bleach==6.3.0
 boolean.py==5.0
-boto3==1.42.26
-botocore==1.42.26
+boto3==1.42.27
+botocore==1.42.27
 CacheControl==0.14.4
 celery==5.6.2
 certifi==2026.1.4
@@ -40,7 +40,7 @@ dnspython==2.8.0
 docker==7.1.0
 # ecdsa removed - was vulnerable dependency of python-jose (HIGH severity timing attack vulnerability)
 email-validator==2.3.0
-Faker==40.1.0
+Faker==40.1.2
 fastapi==0.128.0
 filelock==3.20.3
 fqdn==1.5.1
