@@ -1752,7 +1752,9 @@ export const useObservabilityStore = create<ObservabilityStore>()(
                   break;
               }
             } catch (error) {
-              console.error(`Failed to execute alert action ${action.type}:`, error);
+              logger.error(`Failed to execute alert action ${action.type}`, {
+                error: error instanceof Error ? error.message : String(error),
+              });
             }
           }
         },
@@ -1770,7 +1772,9 @@ export const useObservabilityStore = create<ObservabilityStore>()(
                 body: JSON.stringify(error),
               });
             } catch (reportError) {
-              console.error('Failed to report critical error:', reportError);
+              logger.error('Failed to report critical error', {
+                error: reportError instanceof Error ? reportError.message : String(reportError),
+              });
             }
           }
         },
@@ -1832,4 +1836,3 @@ if (typeof window !== 'undefined' && FLAGS.observability) {
     store.optimizeStorage();
   }, 60000); // Every minute
 }
-

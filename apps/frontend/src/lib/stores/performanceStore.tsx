@@ -1707,7 +1707,9 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
             longTaskObserver.observe({ entryTypes: ['longtask'] });
           } catch (error) {
-            console.warn('Performance observer setup failed:', error);
+            logger.warn('Performance observer setup failed', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         },
       }))
@@ -1883,4 +1885,3 @@ if (typeof window !== 'undefined' && FLAGS.performance) {
   const store = usePerformanceStore.getState();
   store.initialize();
 }
-

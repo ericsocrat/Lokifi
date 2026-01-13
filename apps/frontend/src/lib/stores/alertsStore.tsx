@@ -1,8 +1,11 @@
+import { createLogger } from '@/lib/utils/logger';
 import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+
+const logger = createLogger('AlertsStore');
 
 // Alert Types
 export interface Alert {
@@ -489,7 +492,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
               await get().executeAlert(alertId);
             }
           } catch (error) {
-            console.error(`Error checking alert ${alertId}:`, error);
+            logger.error(`Error checking alert ${alertId}`, {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         }
 
@@ -971,4 +976,3 @@ if (typeof window !== 'undefined' && FLAGS.alertsV2) {
     Notification.requestPermission();
   }
 }
-

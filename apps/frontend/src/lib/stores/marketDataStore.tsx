@@ -1,7 +1,10 @@
 'use client';
+import { createLogger } from '@/lib/utils/logger';
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+const logger = createLogger('MarketDataStore');
 
 export interface OHLCData {
   symbol: string;
@@ -95,7 +98,9 @@ export const useMarketDataStore = create<MarketDataState>()(
 
           return data;
         } catch (error) {
-          console.error('Failed to fetch OHLC data:', error);
+          logger.error('Failed to fetch OHLC data', {
+            error: error instanceof Error ? error.message : String(error),
+          });
 
           // Generate mock data as fallback
           const mockData = generateMockOHLC(symbol, timeframe, limit);
@@ -231,4 +236,3 @@ export function useAutoRefresh() {
     return () => clearInterval(interval);
   }, [autoRefresh, refreshInterval]);
 }
-

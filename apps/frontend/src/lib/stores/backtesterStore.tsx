@@ -1,8 +1,11 @@
+import { createLogger } from '@/lib/utils/logger';
 import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
+
+const logger = createLogger('BacktesterStore');
 
 // Strategy Types
 export interface TradingStrategy {
@@ -650,7 +653,9 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
                 setTimeout(pollResults, 1000);
               }
             } catch (error) {
-              console.error('Polling error:', error);
+              logger.error('Polling error', {
+                error: error instanceof Error ? error.message : String(error),
+              });
               setTimeout(pollResults, 5000); // Retry with longer delay
             }
           };
@@ -676,7 +681,11 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       stopBacktest: (backtestId: string) => {
         if (!FLAGS.backtester) return;
 
-        fetch(`/api/backtester/stop/${backtestId}`, { method: 'POST' }).catch(console.error);
+        fetch(`/api/backtester/stop/${backtestId}`, { method: 'POST' }).catch((error: unknown) => {
+          logger.error('Failed to stop backtest', {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        });
 
         set((draft: Draft<BacktesterState>) => {
           const backtest = draft.backtests.find((b: Backtest) => b.id === backtestId);
@@ -988,4 +997,3 @@ if (typeof window !== 'undefined' && FLAGS.backtester) {
   const store = useBacktesterStore.getState();
   store.loadPublicStrategies();
 }
-

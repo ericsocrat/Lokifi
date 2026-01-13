@@ -1070,7 +1070,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
             };
 
             recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
-              console.error('Voice recognition error:', event.error);
+              logger.error('Voice recognition error', { error: event.error });
             };
 
             recognition.start();
@@ -1204,7 +1204,9 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
               draft.orientationLocked = true;
             });
           } catch (error) {
-            console.warn('Failed to lock orientation:', error);
+            logger.warn('Failed to lock orientation', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         },
 
@@ -1224,7 +1226,9 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
               draft.orientationLocked = false;
             });
           } catch (error) {
-            console.warn('Failed to unlock orientation:', error);
+            logger.warn('Failed to unlock orientation', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         },
 
@@ -1691,4 +1695,3 @@ if (typeof window !== 'undefined' && FLAGS.mobileA11y) {
   const store = useMobileAccessibilityStore.getState();
   store.initialize();
 }
-

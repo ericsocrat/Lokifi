@@ -1,7 +1,10 @@
 'use client';
+import { createLogger } from '@/lib/utils/logger';
 import type { Time } from 'lightweight-charts';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+const logger = createLogger('DrawingStore');
 
 export type DrawingTool =
   | 'cursor'
@@ -171,7 +174,7 @@ export const useDrawingStore = create<DrawingState>()(
 
         // Validate that we have price/time coordinates (preferred for Primitives API)
         if (point.time === undefined || point.price === undefined) {
-          console.warn(
+          logger.warn(
             'startDrawing called without time/price coordinates. Drawing may not work correctly.'
           );
         }
@@ -196,7 +199,7 @@ export const useDrawingStore = create<DrawingState>()(
 
         // Validate that we have price/time coordinates (preferred for Primitives API)
         if (point.time === undefined || point.price === undefined) {
-          console.warn(
+          logger.warn(
             'addPoint called without time/price coordinates. Drawing may not work correctly.'
           );
         }
@@ -247,7 +250,7 @@ export const useDrawingStore = create<DrawingState>()(
           );
 
           if (!hasValidCoordinates) {
-            console.error(
+            logger.error(
               'finishDrawing: Some points missing time/price coordinates. Cannot create primitive.'
             );
             get().cancelDrawing();
@@ -512,4 +515,3 @@ export const useDrawingStore = create<DrawingState>()(
     }
   )
 );
-
