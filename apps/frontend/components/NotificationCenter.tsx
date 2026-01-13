@@ -20,7 +20,7 @@ import {
   Settings,
   Trash2,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import type { NotificationData } from '../src/hooks/useNotifications';
 import { useNotifications } from '../src/hooks/useNotifications';
 
@@ -42,13 +42,13 @@ interface NotificationCenterProps {
   maxHeight?: string;
 }
 
-export const NotificationCenter: React.FC<NotificationCenterProps> = ({
+export const NotificationCenter = memo(function NotificationCenterComponent({
   className = '',
   showHeader = true,
   showFilters = true,
   showPreferences = true,
   maxHeight = '600px',
-}) => {
+}: NotificationCenterProps) {
   const [filter, setFilter] = useState<FilterType>('all');
   const [typeFilter, setTypeFilter] = useState<NotificationType>('all');
   const [sortBy, setSortBy] = useState<SortType>('newest');
@@ -613,6 +613,6 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       </div>
     </div>
   );
-};
+});
 
 export default NotificationCenter;

@@ -7,7 +7,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { Bell, Check, CheckCheck, Trash2, X } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import { useNotifications } from '../src/hooks/useNotifications';
 
 interface NotificationBellProps {
@@ -16,11 +16,11 @@ interface NotificationBellProps {
   maxNotifications?: number;
 }
 
-export const NotificationBell: React.FC<NotificationBellProps> = ({
+export const NotificationBell = memo(function NotificationBellComponent({
   className = '',
   showDropdown = true,
   maxNotifications = 5,
-}) => {
+}: NotificationBellProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -276,7 +276,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
       )}
     </div>
   );
-};
+});
 
 export default NotificationBell;
 

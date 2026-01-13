@@ -7,7 +7,7 @@ import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, memo } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
@@ -245,7 +245,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
 
 const MIN_CHART_WIDTH = 400;
 
-export const MultiPaneChart: React.FC = () => {
+export const MultiPaneChart = memo(function MultiPaneChartComponent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [_containerWidth, setContainerWidth] = useState(MIN_CHART_WIDTH);
   const { panes, updatePaneHeight } = usePaneStore();
@@ -287,4 +287,4 @@ export const MultiPaneChart: React.FC = () => {
       </div>
     </ChartErrorBoundary>
   );
-};
+});
