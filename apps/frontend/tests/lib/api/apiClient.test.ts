@@ -136,6 +136,48 @@ describe('APIClient', () => {
       await expect(client.getSymbols()).rejects.toThrow(APIError);
       await expect(client.getSymbols()).rejects.toThrow('Database connection failed');
     });
+
+    it('falls back to status text when backend error is empty', async () => {
+      server.use(
+        http.get(`${API_URL}/api/symbols`, () => {
+          return HttpResponse.json(
+            {
+              success: false,
+              timestamp: '2024-01-01',
+              version: '1.0.0',
+              error: '',
+              code: '',
+              details: { info: 'missing message' },
+            },
+            { status: 500, statusText: 'Internal Server Error' }
+          );
+        })
+      );
+
+      await expect(client.getSymbols()).rejects.toBeInstanceOf(APIError);
+      await expect(client.getSymbols()).rejects.toThrow('HTTP 500: Internal Server Error');
+    });
+
+    it('falls back to default code when backend code missing', async () => {
+      server.use(
+        http.get(`${API_URL}/api/symbols`, () => {
+          return HttpResponse.json(
+            {
+              success: false,
+              timestamp: '2024-01-01',
+              version: '1.0.0',
+              error: 'Partial error info',
+              code: '',
+            },
+            { status: 502, statusText: 'Bad Gateway' }
+          );
+        })
+      );
+
+      await expect(client.getSymbols()).rejects.toThrow(APIError);
+      // Should use provided error message but fallback HTTP_ERROR code internally
+      await expect(client.getSymbols()).rejects.toThrow('Partial error info');
+    });
   });
 
   describe('getOHLC', () => {
