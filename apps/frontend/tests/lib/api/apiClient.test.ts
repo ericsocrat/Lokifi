@@ -621,6 +621,31 @@ describe('APIClient', () => {
       }
     });
 
+    it('falls back to status text when error body is not JSON', async () => {
+      server.use(
+        http.get(`${API_URL}/api/health`, () => {
+          return new HttpResponse('Upstream error<html>', {
+            status: 502,
+            statusText: 'Bad Gateway',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        })
+      );
+
+      await expect(client.getHealth()).rejects.toThrowError(/HTTP 502: Bad Gateway/);
+
+      try {
+        await client.getHealth();
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect(error).toBeInstanceOf(APIError);
+        expect((error as APIError).code).toBe('HTTP_ERROR');
+        expect((error as APIError).status).toBe(502);
+      }
+    });
+
     it('handles rate limiting', async () => {
       server.use(
         http.get(`${API_URL}/api/ticker/:symbol`, () => {

@@ -330,6 +330,15 @@ describe('AlertDescription', () => {
     expect(screen.getByText('Description')).toHaveClass('custom-class');
   });
 
+  it('applies destructive text styling', () => {
+    render(
+      <Alert variant="destructive">
+        <AlertDescription>Danger</AlertDescription>
+      </Alert>
+    );
+    expect(screen.getByText('Danger')).toHaveClass('text-white/90');
+  });
+
   it('forwards ref', () => {
     const ref = vi.fn();
     render(
@@ -729,6 +738,23 @@ describe('FinancialAlert', () => {
       render(<FinancialAlert type="price-down" symbol="ETH" valueChange="-3.1%" />);
       expect(screen.getByText('ETH')).toBeInTheDocument();
       expect(screen.getByText('-3.1%')).toBeInTheDocument();
+    });
+
+    it('applies green styling for price-up value change', () => {
+      render(<FinancialAlert type="price-up" valueChange="+1.0%" />);
+      expect(screen.getByText('+1.0%')).toHaveClass('text-green-400');
+    });
+
+    it('applies red styling for price-down value change', () => {
+      render(<FinancialAlert type="price-down" valueChange="-2.5%" />);
+      expect(screen.getByText('-2.5%')).toHaveClass('text-red-400');
+    });
+
+    it('does not apply price color styling for neutral value change', () => {
+      render(<FinancialAlert type="trade-executed" valueChange="n/a" />);
+      const valueEl = screen.getByText('n/a');
+      expect(valueEl).not.toHaveClass('text-green-400');
+      expect(valueEl).not.toHaveClass('text-red-400');
     });
   });
 
