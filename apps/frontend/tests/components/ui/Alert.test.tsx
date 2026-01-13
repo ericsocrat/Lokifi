@@ -466,6 +466,26 @@ describe('AlertLink', () => {
     );
     expect(ref).toHaveBeenCalled();
   });
+
+  it('applies default styling in non-destructive alert', () => {
+    render(
+      <Alert variant="default">
+        <AlertLink href="/test">Link</AlertLink>
+      </Alert>
+    );
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('hover:opacity-80');
+  });
+
+  it('applies destructive styling when inside destructive alert', () => {
+    render(
+      <Alert variant="destructive">
+        <AlertLink href="/test">Link</AlertLink>
+      </Alert>
+    );
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('text-white');
+  });
 });
 
 // ============================================================================

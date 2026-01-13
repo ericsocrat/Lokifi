@@ -403,6 +403,38 @@ describe('APIClient', () => {
     // Tests work in browser environment, skip in Node test environment
     // TODO: Fix with proper AbortController polyfill or test strategy
 
+    it('cancelRequests does not throw when no request pending', () => {
+      // When abortController is null, cancelRequests should silently return
+      expect(() => client.cancelRequests()).not.toThrow();
+    });
+
+    it('cancelRequests can be called safely after a request completes', async () => {
+      server.use(
+        http.get(`${API_URL}/api/health`, () => {
+          return HttpResponse.json({
+            success: true,
+            timestamp: '2024-01-01T00:00:00Z',
+            version: '1.0.0',
+            status: 'healthy',
+            uptime: 3600,
+            api_version: '1.0.0',
+            dependencies: {},
+          });
+        })
+      );
+
+      // Make a request that completes successfully
+      const result = await client.getHealth();
+      expect(result.status).toBe('healthy');
+
+      // AbortController was created during request, now call cancelRequests
+      // This should execute the abort logic without throwing
+      expect(() => client.cancelRequests()).not.toThrow();
+
+      // Can be called again safely (now null again)
+      expect(() => client.cancelRequests()).not.toThrow();
+    });
+
     it.skip('cancels pending requests', async () => {
       let requestStarted = false;
       let requestCompleted = false;
