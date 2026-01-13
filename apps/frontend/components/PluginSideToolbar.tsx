@@ -2,7 +2,7 @@
 import PluginSettingsDrawer from '@/components/PluginSettingsDrawer';
 import { EXPERIMENTAL_PLUGINS } from '@/constants/flags';
 import { pluginManager } from 'plugins/registry';
-import { useEffect, useState, memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 type Item = { id: string; label: string; icon?: React.ReactNode };
 

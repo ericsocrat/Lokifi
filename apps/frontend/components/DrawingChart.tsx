@@ -7,7 +7,7 @@ import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { logger } from '@/lib/utils/logger';
 import type { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore, memo } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 import { DrawingOverlay } from './DrawingOverlay';
@@ -391,7 +391,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
 const MIN_CHART_WIDTH = 400;
 
-export const DrawingChart: React.FC = () => {
+export const DrawingChart = memo(function DrawingChartComponent() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { panes, updatePaneHeight } = usePaneStore();
 
@@ -431,5 +431,5 @@ export const DrawingChart: React.FC = () => {
       </div>
     </ChartErrorBoundary>
   );
-};
+});
 

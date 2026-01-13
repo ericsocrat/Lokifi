@@ -8,7 +8,11 @@ interface LoadingStateProps {
   message?: string;
 }
 
-export const ChartLoadingState = memo(function ChartLoadingStateComponent({ symbol, timeframe, message }: LoadingStateProps) {
+export const ChartLoadingState = memo(function ChartLoadingStateComponent({
+  symbol,
+  timeframe,
+  message,
+}: LoadingStateProps) {
   return (
     <div className="flex flex-col items-center justify-center h-96 bg-neutral-900 rounded-2xl border border-neutral-800 p-8">
       <div className="relative mb-4">
@@ -22,4 +26,3 @@ export const ChartLoadingState = memo(function ChartLoadingStateComponent({ symb
     </div>
   );
 });
-

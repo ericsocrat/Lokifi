@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Type,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 
 type DrawingToolConfig = {
   id: DrawingTool;
@@ -84,7 +84,7 @@ interface DrawingToolbarProps {
   onToggleCollapse?: () => void;
 }
 
-export const DrawingToolbar: React.FC<DrawingToolbarProps> = () => {
+export const DrawingToolbar = memo(function DrawingToolbarComponent() {
   const activeTool = useDrawingActiveTool();
   const isDrawing = useDrawingIsDrawing();
   const magnetMode = useDrawingMagnetMode();
@@ -239,7 +239,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = () => {
       )}
     </div>
   );
-};
+});
 
 // Helper component for dropdown items
 const MoreToolItem: React.FC<{

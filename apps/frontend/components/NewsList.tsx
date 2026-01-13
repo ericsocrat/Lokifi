@@ -1,7 +1,7 @@
 'use client';
 import { API } from '@/lib/api';
-import useSWR from 'swr';
 import { memo } from 'react';
+import useSWR from 'swr';
 
 interface NewsItem {
   id: string | number;
@@ -32,4 +32,3 @@ export default memo(function NewsList({ symbol = 'BTC' }: { symbol?: string }) {
     </div>
   );
 });
-

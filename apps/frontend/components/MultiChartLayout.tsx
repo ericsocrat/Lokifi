@@ -1,13 +1,13 @@
 'use client';
 import { LayoutSelector, LinkingControls, useMultiChart } from '@/lib/stores/multiChartStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import React from 'react';
+import React, { memo } from 'react';
 
 interface MultiChartLayoutProps {
   children: React.ReactNode;
 }
 
-export const MultiChartLayout: React.FC<MultiChartLayoutProps> = ({ children }) => {
+export const MultiChartLayout = memo(function MultiChartLayoutComponent({ children }: MultiChartLayoutProps) {
   const { isMultiChartEnabled, currentLayout, charts } = useMultiChart();
 
   // If multi-chart is disabled, render single chart
@@ -56,10 +56,10 @@ export const MultiChartLayout: React.FC<MultiChartLayoutProps> = ({ children }) 
       </div>
     </div>
   );
-};
+});
 
 // Multi-chart controls component for header
-export const MultiChartControls: React.FC = () => {
+export const MultiChartControls = memo(function MultiChartControlsComponent() {
   if (!FLAGS.multiChart) {
     return null;
   }
@@ -70,4 +70,4 @@ export const MultiChartControls: React.FC = () => {
       <LinkingControls />
     </div>
   );
-};
+});
