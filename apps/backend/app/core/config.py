@@ -19,8 +19,8 @@ class Settings(BaseSettings):
 
     # Production Database Settings
     DATABASE_REPLICA_URL: str | None = Field(default=None, alias="DATABASE_REPLICA_URL")
-    DATABASE_POOL_SIZE: int = Field(default=5, alias="DATABASE_POOL_SIZE")
-    DATABASE_MAX_OVERFLOW: int = Field(default=10, alias="DATABASE_MAX_OVERFLOW")
+    DATABASE_POOL_SIZE: int = Field(default=20, alias="DATABASE_POOL_SIZE")
+    DATABASE_MAX_OVERFLOW: int = Field(default=30, alias="DATABASE_MAX_OVERFLOW")
     DATABASE_POOL_TIMEOUT: int = Field(default=30, alias="DATABASE_POOL_TIMEOUT")
     DATABASE_POOL_RECYCLE: int = Field(default=3600, alias="DATABASE_POOL_RECYCLE")
     DATABASE_SSL_REQUIRED: bool = Field(
