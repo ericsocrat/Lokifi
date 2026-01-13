@@ -1,7 +1,7 @@
 'use client';
 import { LayoutSelector, LinkingControls, useMultiChart } from '@/lib/stores/multiChartStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
 interface MultiChartLayoutProps {
   children: React.ReactNode;
@@ -10,12 +10,8 @@ interface MultiChartLayoutProps {
 export const MultiChartLayout = memo(function MultiChartLayoutComponent({ children }: MultiChartLayoutProps) {
   const { isMultiChartEnabled, currentLayout, charts } = useMultiChart();
 
-  // If multi-chart is disabled, render single chart
-  if (!isMultiChartEnabled || !FLAGS.multiChart) {
-    return <>{children}</>;
-  }
-
-  const getGridClass = () => {
+  // Memoize grid class calculation to avoid recreating on every render
+  const getGridClass = useCallback(() => {
     switch (currentLayout) {
       case '1x1':
         return 'grid-cols-1 grid-rows-1';
@@ -26,7 +22,15 @@ export const MultiChartLayout = memo(function MultiChartLayoutComponent({ childr
       default:
         return 'grid-cols-1 grid-rows-1';
     }
-  };
+  }, [currentLayout]);
+
+  // Memoize grid class string to use in render
+  const gridClass = useMemo(() => getGridClass(), [getGridClass]);
+
+  // If multi-chart is disabled, render single chart
+  if (!isMultiChartEnabled || !FLAGS.multiChart) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -37,7 +41,7 @@ export const MultiChartLayout = memo(function MultiChartLayoutComponent({ childr
       </div>
 
       {/* Chart grid */}
-      <div className={`flex-1 grid ${getGridClass()} gap-1 p-1`}>
+      <div className={`flex-1 grid ${gridClass} gap-1 p-1`}>
         {charts.map((chart) => (
           <div
             key={chart.id}

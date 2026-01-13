@@ -18,7 +18,7 @@ import {
   TrendingUp,
   Type,
 } from 'lucide-react';
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 
 type DrawingToolConfig = {
   id: DrawingTool;
@@ -93,10 +93,11 @@ export const DrawingToolbar = memo(function DrawingToolbarComponent() {
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [showMoreTools, setShowMoreTools] = useState(false);
 
-  const handleToolSelect = (tool: DrawingTool) => {
+  // Wrap event handler with useCallback to prevent re-creation on every render
+  const handleToolSelect = useCallback((tool: DrawingTool) => {
     if (isDrawing) return;
     setActiveTool(tool);
-  };
+  }, [isDrawing, setActiveTool]);
 
   return (
     <div className="w-12 bg-[#1e222d] border-r border-[#2a2e39] flex flex-col items-center py-2">
