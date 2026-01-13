@@ -324,9 +324,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['v1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes vline branch
+      rafSpy.mockRestore();
     });
 
     it('renders rect (rectangle) with handles when selected', () => {
@@ -343,9 +353,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['rect1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes rect branch with handles
+      rafSpy.mockRestore();
     });
 
     it('renders ellipse with handles when selected', () => {
@@ -362,9 +382,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['e1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ellipse branch
+      rafSpy.mockRestore();
     });
 
     it('renders fibonacci retracement with default levels', () => {
@@ -380,9 +410,19 @@ describe('DrawingLayer interactions', () => {
         },
       ];
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes fib branch with drawingSettings.fibDefaultLevels
+      rafSpy.mockRestore();
     });
 
     it('renders parallel channel with three anchor points', () => {
@@ -400,9 +440,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['pc1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes parallel-channel branch with 3-point handles
+      rafSpy.mockRestore();
     });
 
     it('renders pitchfork with three anchor points', () => {
@@ -420,9 +470,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['pf1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes pitchfork branch with 3 handles
+      rafSpy.mockRestore();
     });
 
     it('renders text annotation with handle when selected', () => {
@@ -437,9 +497,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['txt1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes text branch with text content
+      rafSpy.mockRestore();
     });
 
     it('renders ruler measurement with handles when selected', () => {
@@ -456,9 +526,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['ruler1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ruler branch with distance display
+      rafSpy.mockRestore();
     });
   });
 });
