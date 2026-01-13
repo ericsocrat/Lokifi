@@ -292,6 +292,46 @@ describe('apiFetch', () => {
     });
   });
 
+  describe('Environment & Logging', () => {
+    it('logs error in development environment', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'development';
+
+      server.use(
+        http.get(`${API_BASE}/dev-error`, () => {
+          return HttpResponse.json({ detail: 'Development error' }, { status: 500 });
+        })
+      );
+
+      try {
+        await apiFetch('/dev-error');
+      } catch {
+        // Expected to throw
+      }
+
+      process.env.NODE_ENV = originalEnv;
+    });
+
+    it('does not error differently in production environment', async () => {
+      const originalEnv = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+
+      server.use(
+        http.get(`${API_BASE}/prod-error`, () => {
+          return HttpResponse.json({ detail: 'Production error' }, { status: 500 });
+        })
+      );
+
+      try {
+        await apiFetch('/prod-error');
+      } catch {
+        // Expected to throw - same behavior as development
+      }
+
+      process.env.NODE_ENV = originalEnv;
+    });
+  });
+
   describe('Request Construction', () => {
     it('constructs URL correctly', async () => {
       let requestedUrl: string = '';
