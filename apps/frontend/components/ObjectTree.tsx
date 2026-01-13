@@ -1,5 +1,9 @@
 'use client';
-import { useDrawingObjects, useDrawingSelectedObjectId, useDrawingActions } from '@/lib/stores/drawingStore';
+import {
+  useDrawingActions,
+  useDrawingObjects,
+  useDrawingSelectedObjectId,
+} from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import {
   ChevronDown,
@@ -12,17 +16,17 @@ import {
   Trash2,
   Unlock,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 
 interface ObjectTreeProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
 
-export const ObjectTree: React.FC<ObjectTreeProps> = ({
+export const ObjectTree = memo(function ObjectTreeComponent({
   isCollapsed = false,
   onToggleCollapse,
-}) => {
+}: ObjectTreeProps) {
   const objects = useDrawingObjects();
   const selectedObjectId = useDrawingSelectedObjectId();
   const {
@@ -323,5 +327,4 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
       )}
     </div>
   );
-};
-
+});

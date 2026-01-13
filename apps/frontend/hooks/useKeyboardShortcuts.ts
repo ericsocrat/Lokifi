@@ -1,6 +1,6 @@
 'use client';
 import type { DrawingTool } from '@/lib/stores/drawingStore';
-import { useDrawingIsDrawing, useDrawingActions } from '@/lib/stores/drawingStore';
+import { useDrawingActions, useDrawingIsDrawing } from '@/lib/stores/drawingStore';
 import { useEffect } from 'react';
 
 const TOOL_SHORTCUTS: Record<string, DrawingTool> = {
@@ -67,7 +67,12 @@ export const useKeyboardShortcuts = () => {
 
 // Context menu hook for right-click interactions
 export const useContextMenu = () => {
-  const { selectObject, duplicateObject: _duplicateObject, deleteObject: _deleteObject, setObjectProperties: _setObjectProperties } = useDrawingActions();
+  const {
+    selectObject,
+    duplicateObject: _duplicateObject,
+    deleteObject: _deleteObject,
+    setObjectProperties: _setObjectProperties,
+  } = useDrawingActions();
   // TODO: These functions will be used when context menu is fully implemented
   // Keeping them to show the planned API surface
   void [_duplicateObject, _deleteObject, _setObjectProperties];
@@ -80,4 +85,3 @@ export const useContextMenu = () => {
 
   return { showContextMenu };
 };
-

@@ -4,14 +4,19 @@ import {
   useDrawingIsDrawing,
   useDrawingObjects,
 } from '@/lib/stores/drawingStore';
-import { useMarketDataActions, useMarketDataIsLoading, useMarketDataError, type OHLCData } from '@/lib/stores/marketDataStore';
+import {
+  useMarketDataActions,
+  useMarketDataError,
+  useMarketDataIsLoading,
+  type OHLCData,
+} from '@/lib/stores/marketDataStore';
 import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { logger } from '@/lib/utils/logger';
 import type { IChartApi, ISeriesApi, MouseEventParams, Time } from 'lightweight-charts';
 import { CandlestickSeries, ColorType, createChart } from 'lightweight-charts';
-import { useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 interface EnhancedChartProps {
   paneId: string;
@@ -19,11 +24,7 @@ interface EnhancedChartProps {
   className?: string;
 }
 
-export default function EnhancedChart({
-  paneId,
-  height = 400,
-  className = '',
-}: EnhancedChartProps) {
+function EnhancedChartComponent({ paneId, height = 400, className = '' }: EnhancedChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -237,6 +238,12 @@ export default function EnhancedChart({
     </div>
   );
 }
+
+/**
+ * Memoized chart component to prevent re-renders when parent re-renders.
+ * Only re-renders when paneId, height, or className props change.
+ */
+export default memo(EnhancedChartComponent);
 
 // Helper function to create drawing objects
 function _createDrawingObject(

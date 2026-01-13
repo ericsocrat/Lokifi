@@ -1,6 +1,11 @@
 'use client';
 import type { DrawingTool } from '@/lib/stores/drawingStore';
-import { useDrawingActiveTool, useDrawingIsDrawing, useDrawingMagnetMode, useDrawingActions } from '@/lib/stores/drawingStore';
+import {
+  useDrawingActions,
+  useDrawingActiveTool,
+  useDrawingIsDrawing,
+  useDrawingMagnetMode,
+} from '@/lib/stores/drawingStore';
 import {
   Activity,
   ArrowRight,
@@ -253,4 +258,3 @@ const MoreToolItem: React.FC<{
     <span className="text-xs text-[#787b86]">{shortcut}</span>
   </button>
 );
-

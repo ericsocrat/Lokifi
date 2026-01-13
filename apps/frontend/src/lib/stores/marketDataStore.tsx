@@ -227,7 +227,8 @@ export const useMarketDataIsLoading = () => useMarketDataStore((state) => state.
 export const useMarketDataError = () => useMarketDataStore((state) => state.error);
 export const useMarketDataIsConnected = () => useMarketDataStore((state) => state.isConnected);
 export const useMarketDataAutoRefresh = () => useMarketDataStore((state) => state.autoRefresh);
-export const useMarketDataRefreshInterval = () => useMarketDataStore((state) => state.refreshInterval);
+export const useMarketDataRefreshInterval = () =>
+  useMarketDataStore((state) => state.refreshInterval);
 
 // Action selectors (never change, can be grabbed once)
 export const useMarketDataActions = () =>

@@ -152,4 +152,3 @@ export const TradingWorkspace: React.FC = () => {
     </div>
   );
 };
-

@@ -1,8 +1,15 @@
 'use client';
 
-import { useDrawingObjects, useDrawingSelectedObjectId, useDrawingActiveTool, useDrawingActions, type DrawingObject, type Point } from '@/lib/stores/drawingStore';
+import {
+  useDrawingActions,
+  useDrawingActiveTool,
+  useDrawingObjects,
+  useDrawingSelectedObjectId,
+  type DrawingObject,
+  type Point,
+} from '@/lib/stores/drawingStore';
 import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 interface DrawingOverlayProps {
   chartRef: React.RefObject<IChartApi | null>;
@@ -17,8 +24,9 @@ interface DrawingOverlayProps {
 /**
  * Canvas overlay for drawing objects on top of the chart.
  * This approach is simpler and more reliable than using Primitives API.
+ * Memoized to prevent re-renders when parent component re-renders.
  */
-export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
+export const DrawingOverlay = memo(function DrawingOverlayComponent({
   chartRef,
   seriesRef,
   containerRef,
@@ -26,7 +34,7 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
   isDrawing,
   currentDrawing,
   chartDataLength = 0,
-}) => {
+}: DrawingOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const objects = useDrawingObjects();
   const selectedObjectId = useDrawingSelectedObjectId();
@@ -827,5 +835,4 @@ export const DrawingOverlay: React.FC<DrawingOverlayProps> = ({
       )}
     </>
   );
-};
-
+});
