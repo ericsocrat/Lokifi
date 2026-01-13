@@ -31,7 +31,8 @@
     "test:performance": "playwright test tests/performance",
     "test:performance:lhci": "lhci autorun",
     "test:all": "npm run typecheck && npm run test:ci && npm run test:e2e",
-    "test:coverage": "vitest run --coverage && node scripts/update-coverage-dashboard.js",
+    "test:coverage": "vitest run --coverage",
+    "update-dashboard": "node scripts/update-coverage-dashboard.js",
     "clean": "rimraf .next node_modules",
     "prepare": "husky"
   },
