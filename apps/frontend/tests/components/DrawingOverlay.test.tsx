@@ -1121,12 +1121,9 @@ describe('DrawingOverlay', () => {
 
     const setupTextNote = () => {
       mockDrawingStore.activeTool = 'cursor';
-      const textObject = createMockDrawingObject(
-        'text-1',
-        'textNote',
-        [textPoint],
-        { properties: { name: 'Old Text', visible: true, locked: false, zIndex: 1 } }
-      );
+      const textObject = createMockDrawingObject('text-1', 'textNote', [textPoint], {
+        properties: { name: 'Old Text', visible: true, locked: false, zIndex: 1 },
+      });
 
       mockDrawingStore.getObjectsByPane.mockReturnValue([textObject]);
       mockDrawingStore.getObjectById.mockReturnValue(textObject);
