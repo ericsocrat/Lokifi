@@ -173,10 +173,17 @@ def follow(handle: str, authorization: str | None = Header(None)):
         db.commit()
 
         # Phase 3c-1: Invalidate both users' caches
+        # Phase 3c-2: Invalidate follower's feed cache
         try:
             if hasattr(cache, "_redis") and cache._redis:
                 cache._redis.delete(f"user:profile:{handle}")
                 cache._redis.delete(f"user:profile:{me}")
+
+                # Invalidate follower's personal feed cache
+                # (their feed will now include target's posts)
+                for limit_val in [50, 100, 200]:
+                    cache._redis.delete(f"feed:{me}:global:p1:l{limit_val}")
+                    # Note: Symbol-specific feeds will expire via TTL
         except Exception:
             pass
 
@@ -201,10 +208,17 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
         db.commit()
 
         # Phase 3c-1: Invalidate both users' caches
+        # Phase 3c-2: Invalidate follower's feed cache
         try:
             if hasattr(cache, "_redis") and cache._redis:
                 cache._redis.delete(f"user:profile:{handle}")
                 cache._redis.delete(f"user:profile:{me}")
+
+                # Invalidate follower's personal feed cache
+                # (their feed will no longer include target's posts)
+                for limit_val in [50, 100, 200]:
+                    cache._redis.delete(f"feed:{me}:global:p1:l{limit_val}")
+                    # Note: Symbol-specific feeds will expire via TTL
         except Exception:
             pass
 
@@ -221,7 +235,8 @@ def create_post(payload: PostCreate, authorization: str | None = Header(None)):
         db.add(p)
         db.commit()  # Commit to get id and trigger default values
         db.refresh(p)  # Refresh to ensure created_at is populated
-        return PostOut(
+
+        post_out = PostOut(
             id=p.id,
             handle=u.handle,
             content=p.content,
@@ -230,10 +245,70 @@ def create_post(payload: PostCreate, authorization: str | None = Header(None)):
             avatar_url=u.avatar_url,
         )
 
+        # Invalidate list_posts caches (first page for common limits)
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                for limit_val in [50, 100, 200]:
+                    # Global feed first page
+                    cache._redis.delete(f"posts:list:global:p1:l{limit_val}")
+
+                    # Symbol-specific feed first page (if applicable)
+                    if payload.symbol:
+                        cache._redis.delete(
+                            f"posts:list:{payload.symbol}:p1:l{limit_val}"
+                        )
+
+                # Invalidate follower feeds (get author's followers)
+                follower_handles = [
+                    row[0]
+                    for row in db.execute(
+                        select(User.handle)
+                        .join(Follow, Follow.follower_id == User.id)
+                        .where(Follow.followee_id == u.id)
+                    ).all()
+                ]
+
+                # Only invalidate if follower count is reasonable (<= 100 for sync)
+                # For high-follower-count users, rely on TTL expiration (2 minutes)
+                if len(follower_handles) <= 100:
+                    for follower_handle in follower_handles:
+                        for limit_val in [50, 100, 200]:
+                            # Invalidate global personal feed
+                            cache._redis.delete(
+                                f"feed:{follower_handle}:global:p1:l{limit_val}"
+                            )
+
+                            # Invalidate symbol-specific personal feed (if applicable)
+                            if payload.symbol:
+                                cache._redis.delete(
+                                    f"feed:{follower_handle}:{payload.symbol}:p1:l{limit_val}"
+                                )
+        except Exception:
+            pass  # Cache invalidation failure shouldn't block responses
+
+        return post_out
+
 
 @router.get("/social/posts", response_model=list[PostOut])
 def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None = None):
     limit = max(1, min(200, limit))
+
+    # Build cache key
+    symbol_key = symbol if symbol else "global"
+    cursor_key = "p1" if not after_id else f"after{after_id}"
+    cache_key = f"posts:list:{symbol_key}:{cursor_key}:l{limit}"
+
+    # Check cache
+    try:
+        if hasattr(cache, "_redis") and cache._redis:
+            cached = cache._redis.get(cache_key)
+            if cached:
+                posts_data = json.loads(cached)
+                return [PostOut(**post) for post in posts_data]
+    except Exception:
+        pass  # Cache failure shouldn't block responses
+
+    # Cache miss - query database
     with get_session() as db:
         stmt = select(Post, User).join(User, User.id == Post.user_id)
         if symbol:
@@ -254,6 +329,17 @@ def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None 
                     avatar_url=u.avatar_url,
                 )
             )
+
+        # Cache result with TTL
+        # 60s for symbol-specific (more volatile), 120s for global (less volatile)
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                ttl = 60 if symbol else 120
+                posts_json = json.dumps([p.dict() for p in out])
+                cache._redis.setex(cache_key, ttl, posts_json)
+        except Exception:
+            pass  # Cache write failure shouldn't block responses
+
         return out
 
 
@@ -263,6 +349,23 @@ def feed(
     handle: str, symbol: str | None = None, limit: int = 50, after_id: int | None = None
 ):
     limit = max(1, min(200, limit))
+
+    # Build cache key
+    symbol_key = symbol if symbol else "global"
+    cursor_key = "p1" if not after_id else f"after{after_id}"
+    cache_key = f"feed:{handle}:{symbol_key}:{cursor_key}:l{limit}"
+
+    # Check cache
+    try:
+        if hasattr(cache, "_redis") and cache._redis:
+            cached = cache._redis.get(cache_key)
+            if cached:
+                posts_data = json.loads(cached)
+                return [PostOut(**post) for post in posts_data]
+    except Exception:
+        pass  # Cache failure shouldn't block responses
+
+    # Cache miss - query database
     with get_session() as db:
         me = _user_by_handle(db, handle)
 
@@ -302,4 +405,15 @@ def feed(
                     avatar_url=u.avatar_url,
                 )
             )
+
+        # Cache result with TTL
+        # 60s for symbol-specific (more volatile), 120s for global (less volatile)
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                ttl = 60 if symbol else 120
+                posts_json = json.dumps([p.dict() for p in out])
+                cache._redis.setex(cache_key, ttl, posts_json)
+        except Exception:
+            pass  # Cache write failure shouldn't block responses
+
         return out
