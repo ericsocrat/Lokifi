@@ -16,7 +16,7 @@ import {
   Trash2,
   Unlock,
 } from 'lucide-react';
-import React, { memo, useState } from 'react';
+import React, { memo, useState, useCallback } from 'react';
 
 interface ObjectTreeProps {
   isCollapsed?: boolean;
@@ -57,11 +57,11 @@ export const ObjectTree = memo(function ObjectTreeComponent({
     setExpandedPanes(newExpanded);
   };
 
-  const handleObjectSelect = (objectId: string) => {
+  const handleObjectSelect = useCallback((objectId: string) => {
     selectObject(objectId === selectedObjectId ? null : objectId);
-  };
+  }, [selectedObjectId, selectObject]);
 
-  const handleContextMenu = (e: React.MouseEvent, objectId: string) => {
+  const handleContextMenu = useCallback((e: React.MouseEvent, objectId: string) => {
     e.preventDefault();
     e.stopPropagation();
     setContextMenu({
@@ -69,31 +69,31 @@ export const ObjectTree = memo(function ObjectTreeComponent({
       x: e.clientX,
       y: e.clientY,
     });
-  };
+  }, []);
 
-  const handleToggleVisibility = (objectId: string, visible: boolean) => {
+  const handleToggleVisibility = useCallback((objectId: string, visible: boolean) => {
     setObjectProperties(objectId, { visible: !visible });
-  };
+  }, [setObjectProperties]);
 
-  const handleToggleLock = (objectId: string, locked: boolean) => {
+  const handleToggleLock = useCallback((objectId: string, locked: boolean) => {
     setObjectProperties(objectId, { locked: !locked });
-  };
+  }, [setObjectProperties]);
 
-  const handleDelete = (objectId: string) => {
+  const handleDelete = useCallback((objectId: string) => {
     deleteObject(objectId);
     setContextMenu(null);
-  };
+  }, [deleteObject]);
 
-  const handleDuplicate = (objectId: string) => {
+  const handleDuplicate = useCallback((objectId: string) => {
     const newId = duplicateObject(objectId);
     selectObject(newId);
     setContextMenu(null);
-  };
+  }, [duplicateObject, selectObject]);
 
-  const handleMoveToPane = (objectId: string, targetPaneId: string) => {
+  const handleMoveToPane = useCallback((objectId: string, targetPaneId: string) => {
     moveObjectToPane(objectId, targetPaneId);
     setContextMenu(null);
-  };
+  }, [moveObjectToPane]);
 
   // Close context menu on click outside
   React.useEffect(() => {
