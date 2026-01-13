@@ -7,7 +7,7 @@ import {
   type WatchlistItem,
 } from '@/lib/stores/watchlistStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 
 // Watchlist Panel Component
 export const WatchlistPanel = memo(function WatchlistPanelComponent() {
@@ -19,21 +19,22 @@ export const WatchlistPanel = memo(function WatchlistPanelComponent() {
   const { addToWatchlist, removeFromWatchlist, getSymbolMetrics, refreshSymbolDirectory } =
     useWatchlistStore();
 
-  if (!FLAGS.watchlist) return null;
-
-  const handleAddSymbol = () => {
+  // Move hooks before conditional return
+  const handleAddSymbol = useCallback(() => {
     if (newSymbol.trim() && activeWatchlist) {
       addToWatchlist(activeWatchlist.id, newSymbol.trim().toUpperCase());
       setNewSymbol('');
       setIsAddingSymbol(false);
     }
-  };
+  }, [newSymbol, activeWatchlist, addToWatchlist]);
 
-  const handleRemoveSymbol = (symbol: string) => {
+  const handleRemoveSymbol = useCallback((symbol: string) => {
     if (activeWatchlist) {
       removeFromWatchlist(activeWatchlist.id, symbol);
     }
-  };
+  }, [activeWatchlist, removeFromWatchlist]);
+
+  if (!FLAGS.watchlist) return null;
 
   return (
     <div className="bg-surface-0 border-r border-surface-300 w-80 flex flex-col">
@@ -201,9 +202,8 @@ export const ScreenerPanel: React.FC = () => {
     isLoading,
   } = useWatchlistStore();
 
-  if (!FLAGS.watchlist) return null;
-
-  const handleAddFilter = () => {
+  // Move hooks before conditional return
+  const handleAddFilter = useCallback(() => {
     if (newFilterValue.trim()) {
       const value =
         newFilterOperator === 'between'
@@ -219,7 +219,9 @@ export const ScreenerPanel: React.FC = () => {
 
       setNewFilterValue('');
     }
-  };
+  }, [newFilterValue, newFilterOperator, newFilterField, addScreenerFilter]);
+
+  if (!FLAGS.watchlist) return null;
 
   const fieldLabels: Record<keyof SymbolMetrics, string> = {
     symbol: 'Symbol',

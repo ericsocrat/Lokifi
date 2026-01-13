@@ -2,7 +2,7 @@
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { logger } from '@/lib/utils/logger';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useRef, useState, useCallback } from 'react';
 
 interface Symbol {
   symbol: string;
@@ -157,19 +157,19 @@ export const EnhancedSymbolPicker = memo(function EnhancedSymbolPickerComponent(
     }
   };
 
-  const handleSymbolSelect = (symbol: string) => {
+  const handleSymbolSelect = useCallback((symbol: string) => {
     symbolStore.set(symbol);
     setSelectedSymbol(symbol);
     setIsOpen(false);
     setSearchQuery('');
-  };
+  }, []);
 
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setIsOpen(true);
     setTimeout(() => {
       searchRef.current?.focus();
     }, 100);
-  };
+  }, []);
 
   const renderSymbolList = (symbolList: Symbol[]) => (
     <div className="max-h-80 overflow-y-auto">
