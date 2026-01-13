@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { flushRafCallbacks } from '../setup/canvas';
 
 // Stub ContextMenu to a simple element for visibility checks
 vi.mock('@/components/ContextMenu', () => ({
@@ -236,9 +237,10 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['t1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       const canvas = container.querySelector('canvas')!;
       expect(canvas).toBeTruthy();
-      // Component renders without errors (draw loop executes trendline branch)
+      // Draw loop executes trendline branch with handles
     });
 
     it('renders arrow with arrowhead and handles when selected', () => {
@@ -256,6 +258,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['a1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       const canvas = container.querySelector('canvas')!;
       expect(canvas).toBeTruthy();
       // Draw loop executes arrow branch with arrowhead rendering
@@ -276,6 +279,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['r1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ray branch with extension calculation
     });
@@ -292,6 +296,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['v1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes vline branch
     });
@@ -311,6 +316,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['rect1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes rect branch with handles
     });
@@ -330,6 +336,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['e1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ellipse branch
     });
@@ -348,6 +355,7 @@ describe('DrawingLayer interactions', () => {
       ];
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes fib branch with drawingSettings.fibDefaultLevels
     });
@@ -368,6 +376,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['pc1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes parallel-channel branch with 3-point handles
     });
@@ -388,6 +397,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['pf1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes pitchfork branch with 3 handles
     });
@@ -405,6 +415,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['txt1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes text branch with text content
     });
@@ -424,6 +435,7 @@ describe('DrawingLayer interactions', () => {
       storeRef.selection = new Set(['ruler1']);
 
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      flushRafCallbacks(); // Execute draw loop
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ruler branch with distance display
     });
