@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 interface ContextMenuProps {
   children?: React.ReactNode;
@@ -7,7 +7,7 @@ interface ContextMenuProps {
   onClose: () => void;
 }
 
-export default function ContextMenu({ children, x, y, onClose }: ContextMenuProps) {
+export default memo(function ContextMenu({ children, x, y, onClose }: ContextMenuProps) {
   React.useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!(e.target as HTMLElement).closest('.context-menu')) {
@@ -26,4 +26,4 @@ export default function ContextMenu({ children, x, y, onClose }: ContextMenuProp
       {children}
     </div>
   );
-}
+});
