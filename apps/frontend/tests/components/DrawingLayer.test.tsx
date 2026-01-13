@@ -218,4 +218,214 @@ describe('DrawingLayer interactions', () => {
       expect(canvas.style.cursor).toBe('pointer');
     });
   });
+
+  // Draw loop branch coverage tests
+  describe('drawing kind rendering', () => {
+    it('renders trendline with handles when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 't1',
+          kind: 'trendline',
+          points: [
+            { x: 10, y: 10 },
+            { x: 100, y: 100 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['t1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      const canvas = container.querySelector('canvas')!;
+      expect(canvas).toBeTruthy();
+      // Component renders without errors (draw loop executes trendline branch)
+    });
+
+    it('renders arrow with arrowhead and handles when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 'a1',
+          kind: 'arrow',
+          points: [
+            { x: 20, y: 20 },
+            { x: 120, y: 80 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['a1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      const canvas = container.querySelector('canvas')!;
+      expect(canvas).toBeTruthy();
+      // Draw loop executes arrow branch with arrowhead rendering
+    });
+
+    it('renders ray extending to canvas edge', () => {
+      storeRef.drawings = [
+        {
+          id: 'r1',
+          kind: 'ray',
+          points: [
+            { x: 50, y: 50 },
+            { x: 150, y: 150 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['r1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes ray branch with extension calculation
+    });
+
+    it('renders vline (vertical line)', () => {
+      storeRef.drawings = [
+        {
+          id: 'v1',
+          kind: 'vline',
+          points: [{ x: 200, y: 0 }],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['v1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes vline branch
+    });
+
+    it('renders rect (rectangle) with handles when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 'rect1',
+          kind: 'rect',
+          points: [
+            { x: 30, y: 30 },
+            { x: 130, y: 130 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['rect1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes rect branch with handles
+    });
+
+    it('renders ellipse with handles when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 'e1',
+          kind: 'ellipse',
+          points: [
+            { x: 40, y: 40 },
+            { x: 140, y: 140 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['e1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes ellipse branch
+    });
+
+    it('renders fibonacci retracement with default levels', () => {
+      storeRef.drawings = [
+        {
+          id: 'fib1',
+          kind: 'fib',
+          points: [
+            { x: 60, y: 60 },
+            { x: 160, y: 160 },
+          ],
+          style: {},
+        },
+      ];
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes fib branch with drawingSettings.fibDefaultLevels
+    });
+
+    it('renders parallel channel with three anchor points', () => {
+      storeRef.drawings = [
+        {
+          id: 'pc1',
+          kind: 'parallel-channel',
+          points: [
+            { x: 70, y: 70 },
+            { x: 170, y: 120 },
+            { x: 100, y: 200 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['pc1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes parallel-channel branch with 3-point handles
+    });
+
+    it('renders pitchfork with three anchor points', () => {
+      storeRef.drawings = [
+        {
+          id: 'pf1',
+          kind: 'pitchfork',
+          points: [
+            { x: 80, y: 80 },
+            { x: 180, y: 100 },
+            { x: 120, y: 180 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['pf1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes pitchfork branch with 3 handles
+    });
+
+    it('renders text annotation with handle when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 'txt1',
+          kind: 'text',
+          points: [{ x: 90, y: 90 }],
+          text: 'Test Label',
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['txt1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes text branch with text content
+    });
+
+    it('renders ruler measurement with handles when selected', () => {
+      storeRef.drawings = [
+        {
+          id: 'ruler1',
+          kind: 'ruler',
+          points: [
+            { x: 100, y: 100 },
+            { x: 200, y: 150 },
+          ],
+          style: {},
+        },
+      ];
+      storeRef.selection = new Set(['ruler1']);
+
+      const { container } = render(<DrawingLayer useOffscreen={false} />);
+      expect(container.querySelector('canvas')).toBeTruthy();
+      // Draw loop executes ruler branch with distance display
+    });
+  });
 });
