@@ -1,8 +1,8 @@
 ## Phase 3c: Cache Layer Expansion - Strategic Plan
 
-**Date:** January 14, 2026  
-**Priority:** HIGH - Synergizes with Phase 3a (indexes) + 3b (queries)  
-**Expected Impact:** 50-100x improvement on cache-hit scenarios  
+**Date:** January 14, 2026
+**Priority:** HIGH - Synergizes with Phase 3a (indexes) + 3b (queries)
+**Expected Impact:** 50-100x improvement on cache-hit scenarios
 **Status:** PLANNING → IN PROGRESS
 
 ---
@@ -253,7 +253,7 @@ alerts:triggered:{user_id}     # Recently triggered alerts
 
 ### Phase 3c-1: User Profile Caching (2-3 hours)
 - [ ] Create cache decorator/utility
-- [ ] Apply to `get_user()` 
+- [ ] Apply to `get_user()`
 - [ ] Add invalidation on follow/unfollow
 - [ ] Update tests to validate cache behavior
 - [ ] Benchmark: 100-500x improvement expected

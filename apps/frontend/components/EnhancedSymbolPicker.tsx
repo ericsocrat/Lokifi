@@ -107,10 +107,6 @@ export const EnhancedSymbolPicker = memo(function EnhancedSymbolPickerComponent(
       }
     } catch (error) {
       // Silent fail with fallback data - backend may not be running
-      // Only log in development
-      if (process.env.NODE_ENV === 'development') {
-        logger.error('Failed to load popular symbols (using fallback)', { error });
-      }
       // Fallback to mock data
       setPopularSymbols([
         {

@@ -114,10 +114,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         setChartData(transformedData);
       } catch (error) {
         // Silent fail with fallback data - backend may not be running
-        // Only log in development
-        if (process.env.NODE_ENV === 'development') {
-          logger.error('Failed to fetch OHLC data (using fallback)', { error });
-        }
         setChartData([
           { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
           { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },

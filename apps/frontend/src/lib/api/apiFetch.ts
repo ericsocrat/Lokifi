@@ -48,13 +48,14 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
     return res;
   } catch (error) {
     // Development-only error logging
-    // Skip logging expected authentication errors (user not logged in)
-    const isAuthError =
+    // Skip logging expected errors (backend down, auth failures)
+    const isExpectedError =
       error instanceof Error &&
       (error.message.includes('Could not validate credentials') ||
-        error.message.includes('Not authenticated'));
+        error.message.includes('Not authenticated') ||
+        error.message.includes('Failed to fetch'));
 
-    if (process.env.NODE_ENV === 'development' && !isAuthError) {
+    if (process.env.NODE_ENV === 'development' && !isExpectedError) {
       logger.error('apiFetch failed', { url: input, error: sanitizeLogInput(error) });
     }
     throw error;
