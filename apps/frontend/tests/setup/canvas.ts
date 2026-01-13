@@ -15,31 +15,6 @@ if (!global.ResizeObserver) {
   } as any;
 }
 
-// Mock requestAnimationFrame to execute callbacks synchronously
-// This enables testing RAF-based components (DrawingLayer draw loops)
-// Without this mock, RAF callbacks are queued but never executed in sync tests
-let rafCallbacks: Array<() => void> = [];
-let rafId = 0;
-
-global.requestAnimationFrame = vi.fn((callback: () => void) => {
-  rafCallbacks.push(callback);
-  return ++rafId;
-}) as any;
-
-global.cancelAnimationFrame = vi.fn((id: number) => {
-  // Simple mock - real implementation would remove specific callback
-  // For testing, we just clear all pending callbacks
-  if (id) rafCallbacks = [];
-}) as any;
-
-// Helper function to flush all pending RAF callbacks
-// Call this after rendering RAF-based components to execute draw loops
-export function flushRafCallbacks() {
-  const callbacks = [...rafCallbacks];
-  rafCallbacks = [];
-  callbacks.forEach((cb) => cb());
-}
-
 // Polyfill HTMLCanvasElement.getContext for tests
 // Override unconditionally since jsdom has a stub that returns null
 HTMLCanvasElement.prototype.getContext = function (contextType: string) {
