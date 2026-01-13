@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-13T13:37:17.892Z",
+  "generated": "2026-01-13T14:30:05.977Z",
   "git": {
     "branch": "main",
-    "commit": "3525fdca",
+    "commit": "9c6d920c",
     "author": "ericsocrat",
-    "message": "test(coverage): cover stores barrel exports"
+    "message": "test(DrawingLayer): add draw loop branch coverage for 11 drawing kinds"
   },
   "current": {
     "tests": {
@@ -17,26 +17,26 @@
       "duration": "-"
     },
     "coverage": {
-      "statements": 92.81,
-      "branches": 85.43,
+      "statements": 92.79,
+      "branches": 85.39,
       "functions": 90.46,
-      "lines": 92.81
+      "lines": 92.79
     },
     "totals": {
       "statements": {
-        "covered": 49468,
+        "covered": 49462,
         "total": 53303
       },
       "branches": {
-        "covered": 8239,
-        "total": 9644
+        "covered": 8231,
+        "total": 9639
       },
       "functions": {
         "covered": 1905,
         "total": 2106
       },
       "lines": {
-        "covered": 49468,
+        "covered": 49462,
         "total": 53303
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 92.80528300470893,
-        "branches": 85.43135628369971,
+        "statements": 92.79402660263024,
+        "branches": 85.39267558875402,
         "functions": 90.45584045584046,
-        "lines": 92.80528300470893
+        "lines": 92.79402660263024
       },
       "files": 217,
       "metrics": {
         "totalLines": 53303,
-        "coveredLines": 49468,
-        "uncoveredLines": 3835
+        "coveredLines": 49462,
+        "uncoveredLines": 3841
       },
       "health": "good"
     }
@@ -2716,44 +2716,59 @@
         "branch": "main",
         "commit": "3525fdca"
       }
+    },
+    {
+      "timestamp": "2026-01-13T14:30:05.977Z",
+      "coverage": {
+        "statements": 92.79402660263024,
+        "branches": 85.39267558875402,
+        "functions": 90.45584045584046,
+        "lines": 92.79402660263024
+      },
+      "tests": 0,
+      "files": 217,
+      "git": {
+        "branch": "main",
+        "commit": "9c6d920c"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.29%",
-      "value": 0.2907903870326294,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.01%",
+      "value": -0.011256402078686278,
+      "direction": "↓",
+      "color": "red"
     },
     "branches": {
-      "text": "↓ 0.10%",
-      "value": -0.10264455067658673,
+      "text": "↓ 0.04%",
+      "value": -0.038680694945696814,
       "direction": "↓",
       "color": "red"
     },
     "functions": {
-      "text": "↑ 0.43%",
-      "value": 0.42735042735043294,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "lines": {
-      "text": "↑ 0.29%",
-      "value": 0.2907903870326294,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.01%",
+      "value": -0.011256402078686278,
+      "direction": "↓",
+      "color": "red"
     }
   },
   "weeklyTrend": {
-    "statements": 0.3057989231375302,
-    "branches": -0.019014241297668377,
+    "statements": 0.30392285612441583,
+    "branches": -0.08614769520175969,
     "functions": 0.42735042735043294,
-    "lines": 0.3057989231375302
+    "lines": 0.30392285612441583
   },
   "metadata": {
-    "totalRuns": 169,
+    "totalRuns": 170,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-13T13:37:17.892Z",
+    "lastRun": "2026-01-13T14:30:05.977Z",
     "bestCoverage": {
       "statements": 92.80528300470893,
       "branches": 85.43135628369971,
@@ -2916,9 +2931,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-        "complexity": 288,
-        "coverage": "87.2",
-        "branches": 234,
+        "complexity": 286,
+        "coverage": "86.8",
+        "branches": 232,
         "functions": 54
       },
       {
@@ -2930,9 +2945,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-        "complexity": 260,
+        "complexity": 259,
         "coverage": "96.1",
-        "branches": 216,
+        "branches": 215,
         "functions": 44
       },
       {
@@ -2944,9 +2959,9 @@
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-        "complexity": 239,
-        "coverage": "93.4",
-        "branches": 200,
+        "complexity": 238,
+        "coverage": "93.2",
+        "branches": 199,
         "functions": 39
       },
       {

@@ -1,7 +1,7 @@
 # Session 168 - RAF Discovery & Test Infrastructure Challenge
 
-**Date:** January 13, 2026  
-**Focus:** Implement RAF mock to enable DrawingLayer draw loop coverage  
+**Date:** January 13, 2026
+**Focus:** Implement RAF mock to enable DrawingLayer draw loop coverage
 **Outcome:** Discovered critical RAF testing issue, reverted broken mock
 
 ## Critical Discovery: RAF Not Mocked in Tests
@@ -14,7 +14,7 @@
 3. Tests render component successfully but draw loop never runs
 4. **Result:** All 16 tests pass ✓ but 0 code coverage gained ✗
 
-**Proof:** 
+**Proof:**
 - Before RAF mock: DrawingLayer 40.73% (11 rendering tests added, 0 improvement)
 - After RAF mock: DrawingLayer 75.74% (+35.01pp!)
 - But RAF mock broke 35 other tests (global side effects)
@@ -91,7 +91,7 @@ afterEach(() => {
 });
 ```
 
-**Pros:** Standard Vitest pattern, used in official docs  
+**Pros:** Standard Vitest pattern, used in official docs
 **Cons:** Fake timers affect entire test, must verify no side effects
 
 ### Option 2: waitFor() Pattern
@@ -104,7 +104,7 @@ it('executes draw loop', async () => {
 });
 ```
 
-**Pros:** Less intrusive than global RAF mock  
+**Pros:** Less intrusive than global RAF mock
 **Cons:** Requires async/await, longer test duration
 
 ### Option 3: Test-Only RAF Utility
@@ -112,14 +112,14 @@ it('executes draw loop', async () => {
 // Custom hook specifically for RAF testing
 export function useRafMock() {
   let callbacks: Array<() => void> = [];
-  
+
   beforeEach(() => {
     // Mock RAF to queue callbacks
     global.requestAnimationFrame = vi.fn((cb) => {
       callbacks.push(cb);
     });
   });
-  
+
   return {
     flushCallbacks: () => {
       callbacks.forEach(cb => cb());
@@ -129,7 +129,7 @@ export function useRafMock() {
 }
 ```
 
-**Pros:** Isolated, explicit, reusable  
+**Pros:** Isolated, explicit, reusable
 **Cons:** More setup code
 
 ## Recommended Path Forward

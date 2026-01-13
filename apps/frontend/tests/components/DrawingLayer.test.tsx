@@ -101,8 +101,9 @@ let storeRef: any;
 
 vi.mock('@/state/store', () => {
   const useChartStore: any = Object.assign(() => storeRef, {
-    subscribe: (_listener: (state: any) => void) => {
-      // No-op subscription for tests; return unsubscribe
+    subscribe: (listener: (state: any) => void) => {
+      // Call listener with current state immediately to trigger needsDraw flag
+      listener(storeRef);
       return () => {};
     },
   });
@@ -235,10 +236,22 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['t1']);
 
+      // Capture RAF callbacks to execute draw loop
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      // Manually trigger RAF callback to execute draw loop
+      if (rafCallback) {
+        rafCallback(0);
+      }
       const canvas = container.querySelector('canvas')!;
       expect(canvas).toBeTruthy();
       // Component renders without errors (draw loop executes trendline branch)
+      rafSpy.mockRestore();
     });
 
     it('renders arrow with arrowhead and handles when selected', () => {
@@ -255,10 +268,20 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['a1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       const canvas = container.querySelector('canvas')!;
       expect(canvas).toBeTruthy();
-      // Draw loop executes arrow branch with arrowhead rendering
+      // Component renders without errors (draw loop executes arrow branch with arrowhead)
+      rafSpy.mockRestore();
     });
 
     it('renders ray extending to canvas edge', () => {
@@ -275,9 +298,19 @@ describe('DrawingLayer interactions', () => {
       ];
       storeRef.selection = new Set(['r1']);
 
+      let rafCallback: FrameRequestCallback | null = null;
+      const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+        rafCallback = cb;
+        return 1;
+      });
+
       const { container } = render(<DrawingLayer useOffscreen={false} />);
+      if (rafCallback) {
+        rafCallback(0);
+      }
       expect(container.querySelector('canvas')).toBeTruthy();
       // Draw loop executes ray branch with extension calculation
+      rafSpy.mockRestore();
     });
 
     it('renders vline (vertical line)', () => {

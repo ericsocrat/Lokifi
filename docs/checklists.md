@@ -44,9 +44,9 @@ Implement vi.useFakeTimers() in DrawingLayer test setup (Vitest standard approac
 - 7d847ea8: docs(Session 168): RAF testing pattern discovery and recommendations
 
 **Status:**
-✅ RAF testing issue identified and documented  
-✅ Global RAF mock approach evaluated (achieved goal but broke other tests)  
-✅ Clear path forward for Session 169  
+✅ RAF testing issue identified and documented
+✅ Global RAF mock approach evaluated (achieved goal but broke other tests)
+✅ Clear path forward for Session 169
 ✅ All 11,016 tests passing, repository stable
 
 ---
