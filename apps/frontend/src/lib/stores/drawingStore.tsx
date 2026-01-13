@@ -3,6 +3,7 @@ import { createLogger } from '@/lib/utils/logger';
 import type { Time } from 'lightweight-charts';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { useShallow } from 'zustand/shallow';
 
 const logger = createLogger('DrawingStore');
 
@@ -563,4 +564,4 @@ const selectDrawingActions = (state: ReturnType<typeof useDrawingStore.getState>
   toggleMagnetMode: state.toggleMagnetMode,
 });
 
-export const useDrawingActions = () => useDrawingStore(selectDrawingActions);
+export const useDrawingActions = () => useDrawingStore(useShallow(selectDrawingActions));

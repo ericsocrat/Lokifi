@@ -48,10 +48,15 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
     return res;
   } catch (error) {
     // Development-only error logging
-    if (process.env.NODE_ENV === 'development') {
+    // Skip logging expected authentication errors (user not logged in)
+    const isAuthError =
+      error instanceof Error &&
+      (error.message.includes('Could not validate credentials') ||
+        error.message.includes('Not authenticated'));
+
+    if (process.env.NODE_ENV === 'development' && !isAuthError) {
       logger.error('apiFetch failed', { url: input, error: sanitizeLogInput(error) });
     }
     throw error;
   }
 }
-

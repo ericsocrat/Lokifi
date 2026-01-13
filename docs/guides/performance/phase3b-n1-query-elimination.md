@@ -1,7 +1,7 @@
 # Phase 3b: N+1 Query Elimination (Backend Database Optimization)
 
-**Objective:** Eliminate N+1 query patterns using SQLAlchemy's relationship loading strategies  
-**Expected Improvement:** 10-20x faster on complex queries (conversations with participants, posts with user data)  
+**Objective:** Eliminate N+1 query patterns using SQLAlchemy's relationship loading strategies
+**Expected Improvement:** 10-20x faster on complex queries (conversations with participants, posts with user data)
 **Target Coverage:** Message, Conversation, User, Portfolio, Follow routes
 
 ---
@@ -11,7 +11,7 @@
 ### 1. **Social Routes** (`apps/backend/app/api/routes/social.py`)
 
 #### Issue 1a: User Statistics (3 Separate Queries)
-**Function:** `get_user()` (line 89-99)  
+**Function:** `get_user()` (line 89-99)
 **Problem:** Counts 3 separate relationships one-at-a-time
 ```python
 # ❌ BAD - 3 queries for one user
@@ -48,7 +48,7 @@ result = db.execute(
 ### 2. **Portfolio Routes** (`apps/backend/app/api/routes/portfolio.py`)
 
 #### Issue 2a: Position Loop Processing
-**Function:** `list_positions()` (line 163-181)  
+**Function:** `list_positions()` (line 163-181)
 **Problem:** Fetches all positions, then processes each with `_compute_fields()` (price lookup)
 ```python
 # ❌ BAD - Position query + potential N price lookups

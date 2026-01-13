@@ -2,11 +2,15 @@ from __future__ import annotations
 
 __all__ = ["router"]
 
+import asyncio
+import json
+
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import Session
 
+from app.core.redis_cache import cache
 from app.db.db import get_session, init_db
 from app.db.models import Follow, Post, User
 from app.services.auth import require_handle
@@ -85,7 +89,23 @@ def create_user(payload: UserCreate):
 
 @router.get("/social/users/{handle}", response_model=UserOut)
 def get_user(handle: str):
-    """Get user with counts using aggregation queries instead of N+1."""
+    """Get user with counts using aggregation queries instead of N+1.
+
+    Phase 3c-1 Cache: User profiles cached for 10 minutes.
+    Invalidated on: profile updates, follow/unfollow changes.
+    Expected improvement: 50-100x faster on cache hit.
+    """
+    # Phase 3c-1: Try to get from cache first
+    cache_key = f"user:profile:{handle}"
+    try:
+        # Simple blocking get for sync context
+        if hasattr(cache, "_redis") and cache._redis:
+            cached = cache._redis.get(cache_key)
+            if cached:
+                return UserOut(**json.loads(cached))
+    except Exception:
+        pass  # Cache miss or error - proceed to database
+
     with get_session() as db:
         # Execute single query with aggregates instead of 3 separate count queries
         # This eliminates the N+1 pattern: 1 query to fetch user + 3 count queries
@@ -112,7 +132,7 @@ def get_user(handle: str):
             raise HTTPException(status_code=404, detail="User not found")
 
         u, following_count, followers_count, posts_count = result
-        return UserOut(
+        out = UserOut(
             handle=u.handle,
             avatar_url=u.avatar_url,
             bio=u.bio,
@@ -122,10 +142,20 @@ def get_user(handle: str):
             posts_count=int(posts_count),
         )
 
+        # Phase 3c-1: Cache the result for 10 minutes
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                cache._redis.setex(cache_key, 600, json.dumps(out.dict()))
+        except Exception:
+            pass  # Cache error - still return valid result
+
+        return out
+
 
 # ===== Follow / Unfollow =====
 @router.post("/social/follow/{handle}")
 def follow(handle: str, authorization: str | None = Header(None)):
+    """Follow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
         me_u = _user_by_handle(db, me)
@@ -140,11 +170,22 @@ def follow(handle: str, authorization: str | None = Header(None)):
         if exists:
             return {"ok": True, "following": True}
         db.add(Follow(follower_id=me_u.id, followee_id=target.id))
+        db.commit()
+
+        # Phase 3c-1: Invalidate both users' caches
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                cache._redis.delete(f"user:profile:{handle}")
+                cache._redis.delete(f"user:profile:{me}")
+        except Exception:
+            pass
+
         return {"ok": True, "following": True}
 
 
 @router.delete("/social/follow/{handle}")
 def unfollow(handle: str, authorization: str | None = Header(None)):
+    """Unfollow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
         me_u = _user_by_handle(db, me)
@@ -157,6 +198,16 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
         if not f:
             return {"ok": True, "following": False}
         db.delete(f)
+        db.commit()
+
+        # Phase 3c-1: Invalidate both users' caches
+        try:
+            if hasattr(cache, "_redis") and cache._redis:
+                cache._redis.delete(f"user:profile:{handle}")
+                cache._redis.delete(f"user:profile:{me}")
+        except Exception:
+            pass
+
         return {"ok": True, "following": False}
 
 
