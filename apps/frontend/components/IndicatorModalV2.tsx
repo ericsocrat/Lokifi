@@ -1,7 +1,7 @@
 'use client';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { Activity, BarChart3, Search, TrendingUp, Volume, X } from 'lucide-react';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState, useCallback } from 'react';
 
 interface Indicator {
   id: string;
@@ -106,7 +106,7 @@ export const IndicatorModal = memo(function IndicatorModalComponent({
     return panes.some((pane: { indicators: string[] }) => pane.indicators.includes(indicatorId));
   };
 
-  const handleAddIndicator = (indicator: Indicator) => {
+  const handleAddIndicator = useCallback((indicator: Indicator) => {
     if (indicator.paneType === 'overlay') {
       // Find the price pane and add the indicator to it
       const pricePane = panes.find((pane: { type: string }) => pane.type === 'price');
@@ -119,7 +119,7 @@ export const IndicatorModal = memo(function IndicatorModalComponent({
     }
 
     onClose();
-  };
+  }, [panes, addIndicatorToPane, addPane, onClose]);
 
   if (!isOpen) return null;
 
