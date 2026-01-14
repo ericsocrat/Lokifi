@@ -2256,21 +2256,23 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 ## 🤖 MCP Tooling Ecosystem
 
-> **⚡ 4 ACTIVE MCP SERVERS**: 25 tools provide instant access to patterns, docs, git history, and coverage.
+> **⚡ 5 ACTIVE MCP SERVERS**: 32 tools provide instant access to CI/CD, patterns, docs, git history, and coverage.
 
 **Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
-**MCP Servers** (4 servers, 25 tools):
-1. **Pattern Library** - 44 patterns from `/docs/architecture/patterns/` (6 tools)
-2. **Documentation Search** - 109 markdown files indexed (6 tools)
-3. **Git History** - 900+ commits searchable (6 tools)
-4. **Coverage** - Real-time test metrics (7 tools)
+**MCP Servers** (5 servers, 32 tools):
+1. **CI/CD Workflows** - GitHub Actions debugging & monitoring (7 tools) 🆕
+2. **Pattern Library** - 44 patterns from `/docs/architecture/patterns/` (6 tools)
+3. **Documentation Search** - 109 markdown files indexed (6 tools)
+4. **Git History** - 900+ commits searchable (6 tools)
+5. **Coverage** - Real-time test metrics (7 tools)
 
 **Quick Example Queries**:
-- Patterns: "Show me the AsyncMock pattern" | "List testing patterns" | "Compare AsyncMock vs Pure Functions" 🆕 | "Recommend patterns for API testing" 🆕
-- Docs: "Search docs for deployment" | "Show testing best practices" | "What changed in the last 7 days?" 🆕 | "Find docs related to mcp-coverage-server.md" 🆕
-- Git: "What was done in Session 75?" | "Search commits for 'MCP'" | "Show commits that modified portfolioStore.tsx" 🆕 | "Compare main vs feature/mcp-enhancements" 🆕
-- Coverage: "What's my coverage?" | "Which files need tests?" | "Show coverage by directory" 🆕 | "Prioritize my testing work" 🆕
+- CI/CD: "Check recent CI workflow runs" | "Get logs from run 123456" | "Analyze CI performance" | "Recommend workflow improvements" 🆕
+- Patterns: "Show me the AsyncMock pattern" | "List testing patterns" | "Compare AsyncMock vs Pure Functions" | "Recommend patterns for API testing"
+- Docs: "Search docs for deployment" | "Show testing best practices" | "What changed in the last 7 days?" | "Find docs related to mcp-coverage-server.md"
+- Git: "What was done in Session 75?" | "Search commits for 'MCP'" | "Show commits that modified portfolioStore.tsx" | "Compare main vs feature/mcp-enhancements"
+- Coverage: "What's my coverage?" | "Which files need tests?" | "Show coverage by directory" | "Prioritize my testing work"
 
 **Benefits**:
 - ✅ Instant access - No manual file searching
@@ -2286,6 +2288,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 - **SDK**: Check `cd tools && npm list @modelcontextprotocol/sdk`
 
 **Documentation**:
+- CI/CD Workflows: `/docs/development/tooling/mcp-ci-server.md` 🆕
 - Pattern Library: `/docs/development/tooling/mcp-pattern-library.md`
 - Docs Search: `/docs/development/tooling/mcp-docs-search.md`
 - Git History: `/docs/development/tooling/mcp-git-history.md`
@@ -2312,7 +2315,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 ## 📚 Comprehensive MCP Server Guide
 
-> **⚡ 6 ACTIVE MCP SERVERS**: 43 tools provide instant access to security, patterns, docs, git history, coverage, and codebase analysis.
+> **⚡ 7 ACTIVE MCP SERVERS**: 50 tools provide instant access to CI/CD, security, patterns, docs, git history, coverage, and codebase analysis.
 
 **Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
@@ -2320,11 +2323,18 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 **In Copilot Chat**:
 1. Use natural language queries - Copilot automatically routes to appropriate MCP
-2. Examples: "What's my coverage?", "Find the AsyncMock pattern", "Search docs for deployment", "Find circular dependencies"
+2. Examples: "What's my coverage?", "Find the AsyncMock pattern", "Search docs for deployment", "Check CI workflow status", "Find circular dependencies"
 3. MCP tools are available as suggestions - look for tool recommendations in chat
 
 **Tool Selection Workflow**:
-1. **For code quality & testing**: Use `lokifi-coverage` MCP
+1. **For CI/CD workflow analysis & debugging**: Use `lokifi-ci` MCP 🆕
+   - Check status: Get recent workflow runs with `get_workflow_status`
+   - Debug failures: Extract error logs with `get_workflow_logs`
+   - Analyze performance: Track job durations with `analyze_job_performance`
+   - Find patterns: Detect recurring issues with `identify_failure_patterns`
+   - Get recommendations: AI-powered suggestions with `get_workflow_recommendations`
+
+2. **For code quality & testing**: Use `lokifi-coverage` MCP
    - Before committing: Check thresholds with `check_coverage_thresholds`
    - When testing: Get priorities with `suggest_test_priorities`
    - When analyzing: Use `get_detailed_comparison` for frontend/backend gaps
