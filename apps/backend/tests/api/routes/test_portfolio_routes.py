@@ -35,9 +35,10 @@ from app.api.routes.portfolio import (
     _latest_price,
     _tags_to_list,
     _tags_to_str,
-    _user_by_handle,
     router,
 )
+
+# Phase 4b-2: Removed _user_by_handle tests - now using cached get_user_by_handle
 
 # ============================================================================
 # FIXTURES
@@ -253,31 +254,9 @@ class TestComputeFields:
 # ============================================================================
 
 
-class TestUserByHandle:
-    """Test suite for _user_by_handle function"""
-
-    def test_user_by_handle_found(self, mock_db_session, mock_user):
-        """Test successful user lookup by handle"""
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db_session.execute.return_value = mock_result
-
-        result = _user_by_handle(mock_db_session, "testuser")
-
-        assert result == mock_user
-        mock_db_session.execute.assert_called_once()
-
-    def test_user_by_handle_not_found(self, mock_db_session):
-        """Test 404 when user not found"""
-        mock_result = MagicMock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db_session.execute.return_value = mock_result
-
-        with pytest.raises(HTTPException) as exc_info:
-            _user_by_handle(mock_db_session, "nonexistent")
-
-        assert exc_info.value.status_code == 404
-        assert exc_info.value.detail == "User not found"
+# Phase 4b-2: Removed TestUserByHandle class - _user_by_handle function removed
+# Now using cached get_user_by_handle from app.core.cached_queries
+# These tests are covered by test_auth.py (user lookup functionality)
 
 
 # ============================================================================
