@@ -10,6 +10,12 @@ from pydantic import BaseModel, Field
 from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import Session
 
+from app.core.cached_queries import (
+    get_follower_count,
+    get_following_count,
+    get_user_by_handle,
+    is_following,
+)
 from app.core.redis_cache import cache
 from app.db.db import get_session, init_db
 from app.db.models import Follow, Post, User
@@ -54,11 +60,7 @@ class PostOut(BaseModel):
 
 
 # ===== Helpers =====
-def _user_by_handle(db: Session, handle: str) -> User:
-    u = db.execute(select(User).where(User.handle == handle)).scalar_one_or_none()
-    if not u:
-        raise HTTPException(status_code=404, detail="User not found")
-    return u
+# Phase 4b-3: Removed _user_by_handle - now using cached get_user_by_handle
 
 
 # ===== Users =====
@@ -158,16 +160,13 @@ def follow(handle: str, authorization: str | None = Header(None)):
     """Follow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
-        me_u = _user_by_handle(db, me)
-        target = _user_by_handle(db, handle)
+        # Phase 4b-3: Use cached queries (MEDIUM_TERM, 300s)
+        me_u = get_user_by_handle(db, me)
+        target = get_user_by_handle(db, handle)
         if me_u.id == target.id:
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
-        exists = db.execute(
-            select(Follow).where(
-                Follow.follower_id == me_u.id, Follow.followee_id == target.id
-            )
-        ).scalar_one_or_none()
-        if exists:
+        # Phase 4b-3: Use cached is_following check (SHORT_TERM, 60s)
+        if is_following(db, me_u.id, target.id):
             return {"ok": True, "following": True}
         db.add(Follow(follower_id=me_u.id, followee_id=target.id))
         db.commit()
@@ -195,8 +194,9 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
     """Unfollow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
-        me_u = _user_by_handle(db, me)
-        target = _user_by_handle(db, handle)
+        # Phase 4b-3: Use cached queries (MEDIUM_TERM, 300s)
+        me_u = get_user_by_handle(db, me)
+        target = get_user_by_handle(db, handle)
         f = db.execute(
             select(Follow).where(
                 Follow.follower_id == me_u.id, Follow.followee_id == target.id
@@ -230,7 +230,8 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
 def create_post(payload: PostCreate, authorization: str | None = Header(None)):
     with get_session() as db:
         require_handle(authorization, payload.handle)
-        u = _user_by_handle(db, payload.handle)
+        # Phase 4b-3: Use cached query (MEDIUM_TERM, 300s)
+        u = get_user_by_handle(db, payload.handle)
         p = Post(user_id=u.id, content=payload.content, symbol=payload.symbol)
         db.add(p)
         db.commit()  # Commit to get id and trigger default values
@@ -367,7 +368,8 @@ def feed(
 
     # Cache miss - query database
     with get_session() as db:
-        me = _user_by_handle(db, handle)
+        # Phase 4b-3: Use cached query (MEDIUM_TERM, 300s)
+        me = get_user_by_handle(db, handle)
 
         # get followee ids
         followee_ids = [
