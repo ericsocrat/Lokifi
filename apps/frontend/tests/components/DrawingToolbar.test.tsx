@@ -16,13 +16,13 @@ const { mockDrawingStore } = vi.hoisted(() => ({
 vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingStore: () => mockDrawingStore,
   useDrawingObjects: () => [],
-  useDrawingActiveTool: () => 'cursor',
-  useDrawingIsDrawing: () => false,
+  useDrawingActiveTool: () => mockDrawingStore.activeTool,
+  useDrawingIsDrawing: () => mockDrawingStore.isDrawing,
   useDrawingSelectedObjectId: () => null,
   useDrawingCurrentDrawing: () => null,
   useDrawingDraggedObjectId: () => null,
   useDrawingSnapSettings: () => ({ snap: false }),
-  useDrawingMagnetMode: () => false,
+  useDrawingMagnetMode: () => mockDrawingStore.magnetMode,
   useDrawingActions: () => ({
     setActiveTool: mockDrawingStore.setActiveTool,
     toggleMagnetMode: mockDrawingStore.toggleMagnetMode,
