@@ -81,6 +81,7 @@ interface Asset {
 }
 
 import { usePortfolioPrices } from '@/src/hooks/useMarketData';
+import { PortfolioAnalytics } from '@/src/components/dashboard/PortfolioAnalytics';
 import dynamic from 'next/dynamic';
 
 // Lazy load AddAssetModal - only loads when user clicks "Add Asset" button
@@ -807,6 +808,13 @@ function PortfolioPageContent() {
             </div>
           );
         })}
+
+        {/* Portfolio Analytics Section */}
+        {hasAnyAssets && (
+          <div className="mt-8">
+            <PortfolioAnalytics />
+          </div>
+        )}
 
         {/* Empty State or Add Section */}
         {!hasAnyAssets && connectingBanks.length === 0 ? (

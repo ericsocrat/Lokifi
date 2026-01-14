@@ -35,6 +35,44 @@ export interface PortfolioSummary {
   >;
 }
 
+export interface AllocationEntry {
+  symbol: string;
+  weight_pct: number;
+  market_value: number;
+  cost_value: number;
+  qty: number;
+  current_price: number | null;
+  unrealized_pl: number | null;
+  pl_pct: number | null;
+}
+
+export interface MoverEntry {
+  symbol: string;
+  pl_pct: number | null;
+}
+
+export interface Movers {
+  gainers: MoverEntry[];
+  losers: MoverEntry[];
+}
+
+export interface Concentration {
+  top3_weight_pct: number;
+  position_count: number;
+  priced_positions: number;
+}
+
+export interface PortfolioAnalytics {
+  handle: string;
+  total_cost: number;
+  total_value: number;
+  total_pl: number;
+  total_pl_pct: number;
+  allocations: AllocationEntry[];
+  movers: Movers;
+  concentration: Concentration;
+}
+
 export async function listPortfolio(): Promise<Position[]> {
   const res = await apiFetch(`/portfolio`, { method: 'GET' });
   return res.json();
@@ -81,3 +119,7 @@ export async function getPortfolioSummary(): Promise<PortfolioSummary> {
   return res.json();
 }
 
+export async function getPortfolioAnalytics(): Promise<PortfolioAnalytics> {
+  const res = await apiFetch(`/portfolio/analytics`, { method: 'GET' });
+  return res.json();
+}
