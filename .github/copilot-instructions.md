@@ -2400,7 +2400,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 **Complexity Ratings**:
 - **Low**: <200 lines, <10 functions
-- **Medium**: 200-500 lines, 10-20 functions  
+- **Medium**: 200-500 lines, 10-20 functions
 - **High**: >500 lines, >20 functions
 
 **Impact Ratings**:
