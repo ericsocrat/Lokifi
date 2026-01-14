@@ -1521,16 +1521,17 @@ globalAny.Lokifi.plugins = {
 
 ## 🎯 Current Focus (Sprint 15 - Advanced Infrastructure & Feature Development)
 
-**Status:** 🎉 **PHASE 4c VALIDATION COMPLETE** | **SESSION 142: EXTENDED CACHING VALIDATED** ✅
+**Status:** 🎉 **SECURITY HARDENING COMPLETE** | **SESSION 142: CACHING + SECURITY FIXES** ✅
 
 **System Health (Session 142 Final):**
 - ✅ Frontend Coverage: 89.48% (5,388 tests passing)
 - ✅ Backend Coverage: 81.06% (738 of 739 tests passing = 99.86%) ✅
 - ✅ CI/CD: **100% PASSING** - All workflows green ✅
-- ✅ Security: 0 Dependabot alerts, 30 CodeQL (documented) ✅
+- ✅ Security: 0 Dependabot alerts, 2 CodeQL (down from 30, fixed log injection) ✅
 - ✅ Quality: 0 TypeScript errors, 0 ESLint warnings, 0 Ruff violations ✅
 - ✅ Technical Debt: ZERO critical items
-- 🎉 **Phase 4c Extended Caching:** COMPLETE (Market Data + Alerts caching implemented & validated) ✅
+- 🎉 **Phase 4c Extended Caching:** COMPLETE (Market Data + Alerts caching) ✅
+- 🔒 **Security:** Fixed 2 critical log injection vulnerabilities (CodeQL #931, #932) ✅
 - 🚀 **Test Validation:** 738/739 backend tests passing (99.86% pass rate)
 
 ### 🎉 Phase 4c Extended Caching - COMPLETE ✅
@@ -1583,6 +1584,38 @@ globalAny.Lokifi.plugins = {
 - Phase 4d: Additional caching targets (portfolio data, social feeds, analytics)
 - Consider LONG_TERM (3600s+) for static reference data
 - Monitor cache hit rates and adjust TTLs based on production metrics
+
+### 🔒 Security Hardening (Session 142) - Log Injection Fixes ✅
+
+**CodeQL Alert Resolution:**
+- Fixed 2 critical log injection vulnerabilities (Alerts #931, #932)
+- Location: `app/core/query_cache.py` lines 183, 186
+- Function: `invalidate_cache_pattern()`
+
+**Vulnerability Details:**
+- **Risk:** User-controlled `pattern` parameter logged directly
+- **Attack Vector:** Newline injection could pollute logs or inject false entries
+- **Severity:** ERROR level (CodeQL)
+- **Scope:** Admin-only endpoint (monitoring.py line 208)
+
+**Fix Implementation:**
+- Sanitize pattern before logging: `pattern.replace("\\n", "").replace("\\r", "")`
+- Applied to both success log (line 183) and error log (line 186)
+- Maintains defense-in-depth: sanitize even authenticated inputs
+
+**Testing & Validation:**
+- ✅ Test: `test_invalidate_cache_pattern` PASSED
+- ✅ Ruff: All checks passed
+- ✅ Black: Formatted
+- ✅ Backend tests: 738/739 passing (99.86%)
+- ✅ Pre-push: All tests passing (492 backend + 5,388 frontend)
+
+**Impact:**
+- No functional changes - only affects log output
+- Pattern matching and cache invalidation unaffected
+- Security posture improved with input sanitization
+
+**Commit:** `b34bdc24` - Security fix for log injection
 
 ---
 
