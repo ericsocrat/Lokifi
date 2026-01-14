@@ -14,6 +14,10 @@ from app.core.cached_queries import (
     get_follower_count,
     get_following_count,
     get_user_by_handle,
+    invalidate_all_feeds_for_followees,
+    invalidate_feed_cache,
+    invalidate_follow_cache,
+    invalidate_post_cache,
     is_following,
 )
 from app.core.redis_cache import cache
@@ -173,6 +177,9 @@ def follow(handle: str, authorization: str | None = Header(None)):
 
         # Phase 3c-1: Invalidate both users' caches
         # Phase 3c-2: Invalidate follower's feed cache
+        # Phase 4d-2: Add dogpile + Redis cache invalidation
+        invalidate_follow_cache(me_u.id, target.id)
+        invalidate_feed_cache(me_u.id)
         try:
             if hasattr(cache, "_redis") and cache._redis:
                 cache._redis.delete(f"user:profile:{handle}")
@@ -209,6 +216,9 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
 
         # Phase 3c-1: Invalidate both users' caches
         # Phase 3c-2: Invalidate follower's feed cache
+        # Phase 4d-2: Add dogpile + Redis cache invalidation
+        invalidate_follow_cache(me_u.id, target.id)
+        invalidate_feed_cache(me_u.id)
         try:
             if hasattr(cache, "_redis") and cache._redis:
                 cache._redis.delete(f"user:profile:{handle}")
@@ -245,6 +255,10 @@ def create_post(payload: PostCreate, authorization: str | None = Header(None)):
             created_at=p.created_at.isoformat(),
             avatar_url=u.avatar_url,
         )
+
+        # Phase 4d-2: Invalidate dogpile caches for posts and feeds
+        invalidate_post_cache(p.id, u.id, payload.symbol)
+        invalidate_all_feeds_for_followees(db, u.id)
 
         # Invalidate list_posts caches (first page for common limits)
         try:
