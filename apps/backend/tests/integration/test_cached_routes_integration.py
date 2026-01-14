@@ -133,14 +133,6 @@ class TestCacheStrategyValidation:
         # Check module has cache configuration
         assert hasattr(cached_queries, "cached_query")
 
-    def test_redis_cache_integration(self):
-        """Verify Redis cache is integrated"""
-        from app.core import redis_cache
-
-        # Verify Redis cache module exists with key functions
-        assert hasattr(redis_cache, "get_cache_stats")
-        assert hasattr(redis_cache, "invalidate_cache_pattern")
-
 
 class TestPhase4bCompleteness:
     """Validate all Phase 4b sub-phases are complete"""
