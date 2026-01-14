@@ -26,7 +26,7 @@ from app.core.query_cache import (
     medium_term_cache,
     short_term_cache,
 )
-from app.db.models import Follow, PortfolioPosition, User
+from app.db.models import Follow, PortfolioPosition, Post, User
 
 logger = logging.getLogger(__name__)
 
@@ -270,16 +270,233 @@ def invalidate_follow_cache(follower_id: int, followee_id: int) -> None:
     logger.info(f"Invalidated follow cache: {follower_id} -> {followee_id}")
 
 
+# ============================================================================
+# FEED & POST QUERIES (Phase 4a-3)
+# ============================================================================
+
+
+@cached_query(region=short_term_cache)
+def get_feed_posts(
+    db: Session, user_id: int, limit: int = 20, cursor: int | None = None
+) -> list[Post]:
+    """
+    Get paginated feed posts for a user with caching.
+
+    Returns posts from users the current user follows, ordered by created_at DESC.
+    Uses cursor-based pagination for efficient page traversal.
+
+    Cache key: feed:user:{user_id}:limit:{limit}:cursor:{cursor}
+    TTL: 60 seconds (SHORT_TERM) - feeds are highly volatile
+    Invalidation: On new post, follow/unfollow
+
+    Args:
+        db: Database session
+        user_id: Current user ID viewing the feed
+        limit: Number of posts to return (default 20)
+        cursor: Cursor for pagination (post ID to start after)
+
+    Returns:
+        List of Post objects ordered by created_at DESC
+    """
+    query = (
+        db.query(Post)
+        .join(Follow, Post.user_id == Follow.followee_id)
+        .filter(Follow.follower_id == user_id)
+        .order_by(Post.created_at.desc())
+    )
+
+    if cursor:
+        # Cursor pagination: get posts created before cursor post
+        cursor_post = db.query(Post).filter(Post.id == cursor).first()
+        if cursor_post:
+            query = query.filter(Post.created_at < cursor_post.created_at)
+
+    posts = query.limit(limit).all()
+    logger.debug(f"Feed query for user {user_id}: {len(posts)} posts (cursor={cursor})")
+    return posts
+
+
+@cached_query(region=short_term_cache)
+def get_post_by_id(db: Session, post_id: int) -> Post | None:
+    """
+    Get single post by ID with caching.
+
+    Cache key: post:id:{post_id}
+    TTL: 60 seconds (SHORT_TERM) - posts may be edited/deleted
+    Invalidation: On post edit, post delete
+
+    Args:
+        db: Database session
+        post_id: Post ID
+
+    Returns:
+        Post object or None if not found
+    """
+    return db.query(Post).filter(Post.id == post_id).first()
+
+
+@cached_query(region=short_term_cache)
+def get_user_posts(
+    db: Session, user_id: int, limit: int = 20, cursor: int | None = None
+) -> list[Post]:
+    """
+    Get paginated posts by a specific user with caching.
+
+    Cache key: posts:user:{user_id}:limit:{limit}:cursor:{cursor}
+    TTL: 60 seconds (SHORT_TERM)
+    Invalidation: On new post, post delete
+
+    Args:
+        db: Database session
+        user_id: User ID whose posts to retrieve
+        limit: Number of posts to return (default 20)
+        cursor: Cursor for pagination (post ID to start after)
+
+    Returns:
+        List of Post objects ordered by created_at DESC
+    """
+    query = (
+        db.query(Post).filter(Post.user_id == user_id).order_by(Post.created_at.desc())
+    )
+
+    if cursor:
+        cursor_post = db.query(Post).filter(Post.id == cursor).first()
+        if cursor_post:
+            query = query.filter(Post.created_at < cursor_post.created_at)
+
+    posts = query.limit(limit).all()
+    logger.debug(f"User posts query for user {user_id}: {len(posts)} posts")
+    return posts
+
+
+@cached_query(region=short_term_cache)
+def get_posts_by_symbol(
+    db: Session, symbol: str, limit: int = 20, cursor: int | None = None
+) -> list[Post]:
+    """
+    Get posts tagged with a specific symbol with caching.
+
+    Cache key: posts:symbol:{symbol}:limit:{limit}:cursor:{cursor}
+    TTL: 60 seconds (SHORT_TERM)
+    Invalidation: On new post with symbol, post delete
+
+    Args:
+        db: Database session
+        symbol: Stock symbol (e.g., "AAPL")
+        limit: Number of posts to return (default 20)
+        cursor: Cursor for pagination (post ID to start after)
+
+    Returns:
+        List of Post objects ordered by created_at DESC
+    """
+    query = (
+        db.query(Post).filter(Post.symbol == symbol).order_by(Post.created_at.desc())
+    )
+
+    if cursor:
+        cursor_post = db.query(Post).filter(Post.id == cursor).first()
+        if cursor_post:
+            query = query.filter(Post.created_at < cursor_post.created_at)
+
+    posts = query.limit(limit).all()
+    logger.debug(f"Symbol posts query for {symbol}: {len(posts)} posts")
+    return posts
+
+
+# ============================================================================
+# FEED & POST CACHE INVALIDATION
+# ============================================================================
+
+
+def invalidate_feed_cache(user_id: int) -> None:
+    """
+    Invalidate feed caches for a specific user.
+
+    Called when:
+    - User follows/unfollows someone
+    - User's followed users post new content
+
+    Args:
+        user_id: User ID whose feed to invalidate
+    """
+    invalidate_cache_pattern(f"feed:user:{user_id}*")
+    logger.info(f"Invalidated feed cache for user {user_id}")
+
+
+def invalidate_post_cache(
+    post_id: int, user_id: int, symbol: str | None = None
+) -> None:
+    """
+    Invalidate post-related caches.
+
+    Called when:
+    - Post is created, edited, or deleted
+    - Affects: individual post cache, user posts, symbol posts, feeds
+
+    Args:
+        post_id: Post ID
+        user_id: Author user ID
+        symbol: Optional symbol tag
+    """
+    # Individual post cache
+    invalidate_cache_pattern(f"post:id:{post_id}*")
+
+    # User's posts cache
+    invalidate_cache_pattern(f"posts:user:{user_id}*")
+
+    # Symbol posts cache (if tagged)
+    if symbol:
+        invalidate_cache_pattern(f"posts:symbol:{symbol}*")
+
+    # Feeds of all followers (when new post created)
+    # Note: This could be optimized by invalidating only specific followers' feeds
+    # For now, we'll handle this in the service layer when post is created
+
+    logger.info(
+        f"Invalidated post cache: post_id={post_id}, user={user_id}, symbol={symbol}"
+    )
+
+
+def invalidate_all_feeds_for_followees(db: Session, followee_id: int) -> None:
+    """
+    Invalidate feeds for all users following the specified user.
+
+    Called when a user posts new content - all their followers' feeds need refresh.
+
+    Args:
+        db: Database session
+        followee_id: User ID who created new content
+    """
+    # Get all follower IDs
+    followers = (
+        db.query(Follow.follower_id).filter(Follow.followee_id == followee_id).all()
+    )
+
+    for (follower_id,) in followers:
+        invalidate_cache_pattern(f"feed:user:{follower_id}*")
+
+    logger.info(
+        f"Invalidated feeds for {len(followers)} followers of user {followee_id}"
+    )
+
+
 __all__ = [
+    "get_feed_posts",
     "get_follower_count",
     "get_following_count",
     "get_portfolio_positions",
     "get_position_by_symbol",
+    "get_post_by_id",
+    "get_posts_by_symbol",
     "get_user_by_email",
     "get_user_by_handle",
     "get_user_by_id",
+    "get_user_posts",
+    "invalidate_all_feeds_for_followees",
+    "invalidate_feed_cache",
     "invalidate_follow_cache",
     "invalidate_portfolio_cache",
+    "invalidate_post_cache",
     "invalidate_user_cache",
     "is_following",
 ]

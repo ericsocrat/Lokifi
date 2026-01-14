@@ -1,10 +1,11 @@
 """
-Test suite for cached query layer (Phase 4a-2).
+Test suite for cached query layer (Phase 4a-2 & 4a-3).
 
 Tests caching behavior for:
 - User queries (by_handle, by_id, by_email)
 - Portfolio queries (positions, holdings)
 - Follow relationship queries
+- Feed and post queries (Phase 4a-3)
 - Cache invalidation on mutations
 """
 
@@ -13,15 +14,22 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from app.core.cached_queries import (
+    get_feed_posts,
     get_follower_count,
     get_following_count,
     get_portfolio_positions,
     get_position_by_symbol,
+    get_post_by_id,
+    get_posts_by_symbol,
     get_user_by_email,
     get_user_by_handle,
     get_user_by_id,
+    get_user_posts,
+    invalidate_all_feeds_for_followees,
+    invalidate_feed_cache,
     invalidate_follow_cache,
     invalidate_portfolio_cache,
+    invalidate_post_cache,
     invalidate_user_cache,
     is_following,
 )
@@ -299,11 +307,251 @@ class TestIntegrationScenarios:
         # In unit tests, we verify invalidation was called properly
 
 
+# ============================================================================
+# PHASE 4a-3: FEED & POST QUERIES TESTS
+# ============================================================================
+
+
+class TestFeedQueries:
+    """Test cached feed query functions (Phase 4a-3)"""
+
+    def test_get_feed_posts_cached(self) -> None:
+        """Feed posts should be cached with short TTL"""
+        db = MagicMock()
+        mock_post = MagicMock(id=1, content="Test post", user_id=123)
+        db.query.return_value.join.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = [
+            mock_post
+        ]
+
+        # First call
+        posts1 = get_feed_posts(db, user_id=1, limit=20)
+        assert len(posts1) == 1
+        assert posts1[0].content == "Test post"
+        call_count_1 = db.query.call_count
+
+        # Second call - should be cached
+        posts2 = get_feed_posts(db, user_id=1, limit=20)
+        call_count_2 = db.query.call_count
+
+        # Cache hit: no additional DB query
+        assert call_count_2 == call_count_1
+
+    def test_get_feed_posts_with_cursor(self) -> None:
+        """Feed pagination with cursor should work correctly"""
+        db = MagicMock()
+        cursor_post = MagicMock(id=50, created_at="2024-01-01")
+        db.query.return_value.filter.return_value.first.return_value = cursor_post
+        db.query.return_value.join.return_value.filter.return_value.order_by.return_value.filter.return_value.limit.return_value.all.return_value = (
+            []
+        )
+
+        posts = get_feed_posts(db, user_id=1, limit=20, cursor=50)
+        assert posts == []
+
+    def test_get_feed_posts_different_users(self) -> None:
+        """Different users should have separate feed caches"""
+        db = MagicMock()
+        db.query.return_value.join.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+            []
+        )
+
+        # User 1 feed
+        posts1 = get_feed_posts(db, user_id=1)
+        call_count_1 = db.query.call_count
+
+        # User 2 feed - different cache key
+        posts2 = get_feed_posts(db, user_id=2)
+        call_count_2 = db.query.call_count
+
+        # Should trigger new query (different user)
+        assert call_count_2 > call_count_1
+
+
+class TestPostQueries:
+    """Test cached post query functions (Phase 4a-3)"""
+
+    def test_get_post_by_id_cached(self) -> None:
+        """Single post lookup should be cached"""
+        db = MagicMock()
+        mock_post = MagicMock(id=123, content="Test", user_id=1)
+        db.query.return_value.filter.return_value.first.return_value = mock_post
+
+        # First call
+        post1 = get_post_by_id(db, 123)
+        assert post1 is not None
+        assert post1.id == 123
+        call_count_1 = db.query.call_count
+
+        # Second call - cached
+        post2 = get_post_by_id(db, 123)
+        call_count_2 = db.query.call_count
+        assert call_count_2 == call_count_1
+
+    def test_get_post_by_id_not_found(self) -> None:
+        """Post not found should also be cached"""
+        db = MagicMock()
+        db.query.return_value.filter.return_value.first.return_value = None
+
+        post = get_post_by_id(db, 999)
+        assert post is None
+
+    def test_get_user_posts_cached(self) -> None:
+        """User posts should be cached"""
+        db = MagicMock()
+        mock_posts = [MagicMock(id=i, user_id=123) for i in range(5)]
+        db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+            mock_posts
+        )
+
+        # First call
+        posts1 = get_user_posts(db, user_id=123, limit=20)
+        assert len(posts1) == 5
+        call_count_1 = db.query.call_count
+
+        # Cached call
+        posts2 = get_user_posts(db, user_id=123, limit=20)
+        call_count_2 = db.query.call_count
+        assert call_count_2 == call_count_1
+
+    def test_get_user_posts_with_cursor(self) -> None:
+        """User posts pagination should work"""
+        db = MagicMock()
+        cursor_post = MagicMock(id=10, created_at="2024-01-01")
+        db.query.return_value.filter.return_value.first.return_value = cursor_post
+        db.query.return_value.filter.return_value.order_by.return_value.filter.return_value.limit.return_value.all.return_value = (
+            []
+        )
+
+        posts = get_user_posts(db, user_id=123, limit=20, cursor=10)
+        assert posts == []
+
+    def test_get_posts_by_symbol_cached(self) -> None:
+        """Symbol posts should be cached"""
+        db = MagicMock()
+        mock_posts = [MagicMock(id=i, symbol="AAPL") for i in range(3)]
+        db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+            mock_posts
+        )
+
+        # First call
+        posts1 = get_posts_by_symbol(db, "AAPL", limit=20)
+        assert len(posts1) == 3
+        call_count_1 = db.query.call_count
+
+        # Cached call
+        posts2 = get_posts_by_symbol(db, "AAPL", limit=20)
+        call_count_2 = db.query.call_count
+        assert call_count_2 == call_count_1
+
+    def test_get_posts_by_symbol_different_symbols(self) -> None:
+        """Different symbols should have separate caches"""
+        db = MagicMock()
+        db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+            []
+        )
+
+        # AAPL posts
+        posts1 = get_posts_by_symbol(db, "AAPL")
+        call_count_1 = db.query.call_count
+
+        # TSLA posts - different cache
+        posts2 = get_posts_by_symbol(db, "TSLA")
+        call_count_2 = db.query.call_count
+        assert call_count_2 > call_count_1
+
+
+class TestFeedCacheInvalidation:
+    """Test feed and post cache invalidation (Phase 4a-3)"""
+
+    def test_invalidate_feed_cache(self) -> None:
+        """Feed cache invalidation should clear user feed"""
+        with patch(
+            "app.core.cached_queries.invalidate_cache_pattern"
+        ) as mock_invalidate:
+            invalidate_feed_cache(user_id=123)
+            mock_invalidate.assert_called_once_with("feed:user:123*")
+
+    def test_invalidate_post_cache_without_symbol(self) -> None:
+        """Post cache invalidation should clear post and user posts"""
+        with patch(
+            "app.core.cached_queries.invalidate_cache_pattern"
+        ) as mock_invalidate:
+            invalidate_post_cache(post_id=456, user_id=123, symbol=None)
+            # Should invalidate: post:id:*, posts:user:*
+            assert mock_invalidate.call_count == 2
+
+    def test_invalidate_post_cache_with_symbol(self) -> None:
+        """Post cache invalidation with symbol should clear symbol posts too"""
+        with patch(
+            "app.core.cached_queries.invalidate_cache_pattern"
+        ) as mock_invalidate:
+            invalidate_post_cache(post_id=456, user_id=123, symbol="AAPL")
+            # Should invalidate: post:id:*, posts:user:*, posts:symbol:*
+            assert mock_invalidate.call_count == 3
+
+    def test_invalidate_all_feeds_for_followees(self) -> None:
+        """Invalidate all followers' feeds when user posts"""
+        db = MagicMock()
+        # Mock 3 followers
+        db.query.return_value.filter.return_value.all.return_value = [
+            (1,),
+            (2,),
+            (3,),
+        ]
+
+        with patch(
+            "app.core.cached_queries.invalidate_cache_pattern"
+        ) as mock_invalidate:
+            invalidate_all_feeds_for_followees(db, followee_id=123)
+            # Should invalidate feeds for 3 followers
+            assert mock_invalidate.call_count == 3
+
+
+class TestFeedIntegrationScenarios:
+    """Test feed workflow integration scenarios (Phase 4a-3)"""
+
+    def test_new_post_workflow(self) -> None:
+        """Test cache invalidation when new post is created"""
+        db = MagicMock()
+        db.query.return_value.filter.return_value.all.return_value = [(10,), (20,)]
+
+        # 1. User creates new post
+        post_id = 999
+        user_id = 123
+        symbol = "AAPL"
+
+        # 2. Invalidate post caches
+        with patch("app.core.cached_queries.invalidate_cache_pattern"):
+            invalidate_post_cache(post_id, user_id, symbol)
+
+        # 3. Invalidate all followers' feeds
+        with patch("app.core.cached_queries.invalidate_cache_pattern"):
+            invalidate_all_feeds_for_followees(db, user_id)
+
+    def test_follow_user_workflow(self) -> None:
+        """Test cache invalidation when user follows someone"""
+        # 1. User follows someone
+        follower_id = 1
+        followee_id = 2
+
+        # 2. Invalidate follow relationship cache
+        with patch("app.core.cached_queries.invalidate_cache_pattern"):
+            invalidate_follow_cache(follower_id, followee_id)
+
+        # 3. Invalidate follower's feed (now includes followee's posts)
+        with patch("app.core.cached_queries.invalidate_cache_pattern"):
+            invalidate_feed_cache(follower_id)
+
+
 __all__ = [
     "TestCacheInvalidation",
     "TestCacheRegionSelection",
+    "TestFeedCacheInvalidation",
+    "TestFeedIntegrationScenarios",
+    "TestFeedQueries",
     "TestFollowQueries",
     "TestIntegrationScenarios",
     "TestPortfolioQueries",
+    "TestPostQueries",
     "TestUserQueries",
 ]
