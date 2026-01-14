@@ -1535,6 +1535,32 @@ globalAny.Lokifi.plugins = {
 - 🚀 **Test Validation:** 738/739 backend tests passing (99.86% pass rate)
 - 🧭 **Phase 4d Kickoff:** Portfolio cache invalidation added on mutations (Redis + dogpile) ✅
 
+### 🎉 Phase 4d Mutation Cache Invalidation - IN PROGRESS
+
+**Focus: Ensure all entity mutations invalidate cached queries properly**
+
+- ✅ **Phase 4d-1:** Portfolio Mutations (Session 143)
+  - Added `_upsert_position()` helper to centralize add/update logic
+  - Implemented dogpile + Redis invalidation for: add/update/delete/import endpoints
+  - Invalidation: `invalidate_portfolio_cache(user_id)` + `cache.clear_pattern("cache:portfolio:*")`
+  - Expected impact: Ensures portfolio list/summary always fresh after mutations
+  - Commit: `df273ce9`
+
+- ✅ **Phase 4d-2:** Social Mutations (Session 143)
+  - Follow/Unfollow: Added `invalidate_follow_cache()` + `invalidate_feed_cache()` calls
+  - Post Creation: Added `invalidate_post_cache()` + `invalidate_all_feeds_for_followees()` calls
+  - Ensures: Follower/following counts and feeds stay fresh after mutations
+  - Expected impact: Prevents stale feed data in cached list_posts/get_feed_posts queries
+  - Commit: `6789d541`
+
+- ✅ **Phase 4d-3:** Route Audit Complete
+  - Crypto: Placeholder (no mutations)
+  - Market: Read-only (get_ohlc already cached in Phase 4c)
+  - Chat: Stateless assistant (no entity mutations with caches)
+  - Auth: register/login use cached queries but no invalidation needed (new records/reads)
+  - Security: In-memory only (no cached queries)
+  - Conclusion: Portfolio + Social + Alerts cover all mutation-heavy routes with caching
+
 ### 🎉 Phase 4c Extended Caching - COMPLETE ✅
 
 **All 3 Phases Complete (Sessions 141-142):**
