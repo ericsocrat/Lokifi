@@ -180,10 +180,10 @@ async def invalidate_cache_pattern(pattern: str) -> int:
     try:
         deleted = await redis_cache.clear_pattern(f"dogpile:*{pattern}*")
         _cache_manager.record_invalidation(pattern)
-        logger.info(f"Invalidated {deleted} cache keys matching: {pattern}")
+        logger.info(f"Invalidated {deleted} cache keys matching: {pattern!r}")
         return deleted
     except Exception as e:
-        logger.error(f"Failed to invalidate cache pattern {pattern}: {e}")
+        logger.error(f"Failed to invalidate cache pattern {pattern!r}: {e}")
         return 0
 
 
