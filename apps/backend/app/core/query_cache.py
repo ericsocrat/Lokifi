@@ -93,15 +93,17 @@ class QueryCacheManager:
             "misses": 0,
             "invalidations": 0,
             "regions": {
-                "short_term": {"hits": 0, "misses": 0},
-                "medium_term": {"hits": 0, "misses": 0},
-                "long_term": {"hits": 0, "misses": 0},
+                "short_term": {"hits": 0, "misses": 0, "requests": 0},
+                "medium_term": {"hits": 0, "misses": 0, "requests": 0},
+                "long_term": {"hits": 0, "misses": 0, "requests": 0},
             },
         }
         self.invalidation_patterns: dict[str, list[str]] = {}
+        self.function_stats: dict[str, dict[str, int]] = {}  # Per-function metrics
+        self.start_time = time.time()  # Track uptime for rate calculations
 
     def get_stats(self) -> dict[str, Any]:
-        """Get cache statistics"""
+        """Get comprehensive cache statistics"""
         total_hits = self.cache_stats["hits"]
         total_misses = self.cache_stats["misses"]
         total_requests = total_hits + total_misses
@@ -110,27 +112,89 @@ class QueryCacheManager:
         if total_requests > 0:
             hit_rate = (total_hits / total_requests) * 100
 
+        # Calculate uptime and request rates
+        uptime_seconds = time.time() - self.start_time
+        requests_per_minute = (
+            (total_requests / uptime_seconds * 60) if uptime_seconds > 0 else 0
+        )
+
+        # Calculate per-region hit rates
+        region_stats_enhanced = {}
+        for region_name, region_data in self.cache_stats["regions"].items():
+            region_requests = region_data["hits"] + region_data["misses"]
+            region_hit_rate = (
+                (region_data["hits"] / region_requests * 100)
+                if region_requests > 0
+                else 0.0
+            )
+            region_stats_enhanced[region_name] = {
+                "hits": region_data["hits"],
+                "misses": region_data["misses"],
+                "requests": region_requests,
+                "hit_rate": f"{region_hit_rate:.2f}%",
+            }
+
+        # Top functions by cache effectiveness
+        top_functions = sorted(
+            self.function_stats.items(),
+            key=lambda x: x[1].get("hits", 0),
+            reverse=True,
+        )[:10]
+
         return {
             "total_hits": total_hits,
             "total_misses": total_misses,
             "total_requests": total_requests,
             "hit_rate": f"{hit_rate:.2f}%",
             "invalidations": self.cache_stats["invalidations"],
-            "by_region": self.cache_stats["regions"],
+            "by_region": region_stats_enhanced,
             "invalidation_patterns": len(self.invalidation_patterns),
+            "uptime_seconds": int(uptime_seconds),
+            "requests_per_minute": f"{requests_per_minute:.2f}",
+            "top_cached_functions": [
+                {"function": func, "stats": stats} for func, stats in top_functions
+            ],
         }
 
-    def record_hit(self, region: str = "unknown") -> None:
+    def record_hit(
+        self, region: str = "unknown", function_name: str | None = None
+    ) -> None:
         """Record cache hit"""
         self.cache_stats["hits"] += 1
         if region in self.cache_stats["regions"]:
             self.cache_stats["regions"][region]["hits"] += 1
+            self.cache_stats["regions"][region]["requests"] += 1
 
-    def record_miss(self, region: str = "unknown") -> None:
+        # Track per-function stats
+        if function_name:
+            if function_name not in self.function_stats:
+                self.function_stats[function_name] = {
+                    "hits": 0,
+                    "misses": 0,
+                    "requests": 0,
+                }
+            self.function_stats[function_name]["hits"] += 1
+            self.function_stats[function_name]["requests"] += 1
+
+    def record_miss(
+        self, region: str = "unknown", function_name: str | None = None
+    ) -> None:
         """Record cache miss"""
         self.cache_stats["misses"] += 1
         if region in self.cache_stats["regions"]:
             self.cache_stats["regions"][region]["misses"] += 1
+            self.cache_stats["regions"][region]["requests"] += 1
+
+        # Track per-function stats
+        if function_name:
+            if function_name not in self.function_stats:
+                self.function_stats[function_name] = {
+                    "hits": 0,
+                    "misses": 0,
+                    "requests": 0,
+                }
+            self.function_stats[function_name]["misses"] += 1
+            self.function_stats[function_name]["requests"] += 1
 
     def record_invalidation(self, pattern: str) -> None:
         """Record cache invalidation"""
