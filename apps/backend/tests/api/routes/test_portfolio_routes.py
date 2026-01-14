@@ -31,6 +31,7 @@ from app.api.routes.portfolio import (
     PositionIn,
     PositionOut,
     SummaryOut,
+    _build_analytics,
     _compute_fields,
     _latest_price,
     _tags_to_list,
@@ -175,20 +176,31 @@ class TestTagSerialization:
 class TestLatestPrice:
     """Test suite for _latest_price function"""
 
-    def test_latest_price_returns_none(self):
-        """Test that _latest_price returns None (simplified implementation)"""
-        # Current implementation returns None to avoid async complexity
-        result = _latest_price("BTCUSDT")
-        assert result is None
+    @pytest.mark.asyncio
+    @patch(
+        "app.api.routes.portfolio._get_price_map",
+        AsyncMock(return_value={"BTCUSDT": 101.0}),
+    )
+    async def test_latest_price_returns_price(self):
+        """Latest price returns fetched value"""
+        result = await _latest_price("BTCUSDT")
+        assert result == 101.0
 
-    def test_latest_price_with_timeframe(self):
-        """Test _latest_price with different timeframes"""
-        result = _latest_price("ETHUSDT", timeframe="1d")
-        assert result is None
+    @pytest.mark.asyncio
+    @patch(
+        "app.api.routes.portfolio._get_price_map",
+        AsyncMock(return_value={"ETHUSDT": 55.0}),
+    )
+    async def test_latest_price_with_timeframe(self):
+        """Latest price respects timeframe signature"""
+        result = await _latest_price("ETHUSDT", timeframe="1d")
+        assert result == 55.0
 
-    def test_latest_price_with_invalid_symbol(self):
-        """Test _latest_price with invalid symbol"""
-        result = _latest_price("INVALID_SYMBOL_12345")
+    @pytest.mark.asyncio
+    @patch("app.api.routes.portfolio._get_price_map", AsyncMock(return_value={}))
+    async def test_latest_price_with_invalid_symbol(self):
+        """Invalid symbol yields None"""
+        result = await _latest_price("INVALID_SYMBOL_12345")
         assert result is None
 
 
@@ -200,9 +212,10 @@ class TestLatestPrice:
 class TestComputeFields:
     """Test suite for _compute_fields function"""
 
-    def test_compute_fields_without_price(self, mock_position):
-        """Test computed fields when current price is unavailable"""
-        result = _compute_fields(mock_position)
+    @pytest.mark.asyncio
+    async def test_compute_fields_without_price(self, mock_position):
+        """Computed fields handle missing price"""
+        result = await _compute_fields(mock_position, {})
 
         assert result["current_price"] is None
         assert result["market_value"] is None
@@ -210,19 +223,16 @@ class TestComputeFields:
         assert result["unrealized_pl"] is None
         assert result["pl_pct"] is None
 
-    def test_compute_fields_cost_value_calculation(self, mock_position):
-        """Test that cost_value is calculated correctly"""
-        # Position: qty=1.5, cost_basis=50000
-        # Expected cost_value = 1.5 * 50000 = 75000
-        result = _compute_fields(mock_position)
+    @pytest.mark.asyncio
+    async def test_compute_fields_cost_value_calculation(self, mock_position):
+        """Cost value uses qty * cost_basis"""
+        result = await _compute_fields(mock_position, {"BTCUSDT": None})
         assert result["cost_value"] == 75000.0
 
-    @patch("app.api.routes.portfolio._latest_price")
-    def test_compute_fields_with_price(self, mock_price, mock_position):
-        """Test computed fields when current price is available"""
-        mock_price.return_value = 60000.0  # Current price higher than cost basis
-
-        result = _compute_fields(mock_position)
+    @pytest.mark.asyncio
+    async def test_compute_fields_with_price(self, mock_position):
+        """Computed fields when price available"""
+        result = await _compute_fields(mock_position, {"BTCUSDT": 60000.0})
 
         # With price available:
         # market_value = 1.5 * 60000 = 90000
@@ -235,12 +245,10 @@ class TestComputeFields:
         assert result["unrealized_pl"] == 15000.0
         assert result["pl_pct"] == 20.0
 
-    @patch("app.api.routes.portfolio._latest_price")
-    def test_compute_fields_with_loss(self, mock_price, mock_position):
-        """Test computed fields when position is at a loss"""
-        mock_price.return_value = 40000.0  # Price dropped below cost basis
-
-        result = _compute_fields(mock_position)
+    @pytest.mark.asyncio
+    async def test_compute_fields_with_loss(self, mock_position):
+        """Computed fields when position is at a loss"""
+        result = await _compute_fields(mock_position, {"BTCUSDT": 40000.0})
 
         # unrealized_pl should be negative
         # (40000 * 1.5) - (50000 * 1.5) = 60000 - 75000 = -15000
@@ -451,42 +459,90 @@ class TestEdgeCases:
         assert result is not None
         assert "比特币" in result or "hodl" in result
 
-    def test_compute_fields_zero_cost_basis(self):
-        """Test _compute_fields with zero cost basis (edge case)"""
+    @pytest.mark.asyncio
+    async def test_compute_fields_zero_cost_basis(self):
+        """_compute_fields handles zero cost basis"""
         position = MagicMock()
         position.symbol = "BTCUSDT"
         position.qty = 1.0
-        position.cost_basis = 0.0  # Edge case
+        position.cost_basis = 0.0
 
-        result = _compute_fields(position)
+        result = await _compute_fields(position, {"BTCUSDT": 10.0})
 
-        # With zero cost basis, pl_pct should handle division gracefully
         assert result["cost_value"] == 0.0
-        assert result["pl_pct"] is None  # Can't calculate % with zero basis
+        assert result["pl_pct"] is None
 
-    def test_compute_fields_very_small_qty(self):
-        """Test _compute_fields with very small quantity"""
+    @pytest.mark.asyncio
+    async def test_compute_fields_very_small_qty(self):
+        """_compute_fields handles very small quantity"""
         position = MagicMock()
         position.symbol = "BTCUSDT"
-        position.qty = 0.00000001  # Very small (like satoshi)
+        position.qty = 0.00000001
         position.cost_basis = 50000.0
 
-        result = _compute_fields(position)
+        result = await _compute_fields(position, {})
 
-        # Should handle small numbers without floating point issues
         assert result["cost_value"] == pytest.approx(0.0005, rel=1e-6)
 
-    def test_compute_fields_very_large_qty(self):
-        """Test _compute_fields with very large quantity"""
+    @pytest.mark.asyncio
+    async def test_compute_fields_very_large_qty(self):
+        """_compute_fields handles very large quantity"""
         position = MagicMock()
         position.symbol = "BTCUSDT"
-        position.qty = 1000000.0  # Very large
+        position.qty = 1000000.0
         position.cost_basis = 50000.0
 
-        result = _compute_fields(position)
+        result = await _compute_fields(position, {})
 
-        # Should handle large numbers without overflow
         assert result["cost_value"] == 50000000000.0
+
+
+# ============================================================================
+# ANALYTICS BUILD TESTS
+# ============================================================================
+
+
+class TestAnalyticsBuild:
+    """Tests for analytics helper"""
+
+    def _make_position(self, symbol: str, qty: float, cost_basis: float):
+        position = MagicMock()
+        position.symbol = symbol
+        position.qty = qty
+        position.cost_basis = cost_basis
+        position.tags = None
+        position.created_at = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        position.updated_at = datetime(2024, 1, 2, tzinfo=timezone.utc)
+        return position
+
+    def test_build_analytics_weights_and_movers(self):
+        rows = [
+            self._make_position("AAA", 1.0, 10.0),
+            self._make_position("BBB", 2.0, 20.0),
+        ]
+        prices = {"AAA": 15.0, "BBB": 12.0}
+
+        result = _build_analytics("me", rows, prices)
+
+        assert result.total_cost == 50.0
+        assert result.total_value == 39.0
+        assert result.total_pl == -11.0
+        assert result.movers.gainers[0].symbol == "AAA"
+        assert result.movers.losers[0].symbol == "BBB"
+        assert result.concentration.position_count == 2
+
+    def test_build_analytics_handles_missing_prices(self):
+        rows = [
+            self._make_position("AAA", 1.0, 10.0),
+            self._make_position("BBB", 1.0, 20.0),
+        ]
+        prices = {"AAA": None, "BBB": None}
+
+        result = _build_analytics("me", rows, prices)
+
+        assert result.total_value == 0.0
+        assert result.total_pl == 0.0
+        assert result.allocations[0].weight_pct > 0
 
 
 # ============================================================================
@@ -573,15 +629,9 @@ BTCUSDT,abc,50000,hodl"""
 class TestRouteIntegration:
     """Integration-style tests for route handlers with mocked deps"""
 
-    def test_list_positions_returns_coroutine(self):
-        """Test that list_positions is decorated and returns expected type.
+    def test_router_has_paths(self):
+        """Router exposes expected paths"""
 
-        Note: Full integration testing requires FastAPI test client with
-        proper database fixtures. This test validates the route exists
-        and follows expected patterns.
-        """
-
-        # Verify the route is registered
         routes = [r for r in router.routes if hasattr(r, "path")]
         paths = [r.path for r in routes]
 
@@ -589,6 +639,7 @@ class TestRouteIntegration:
         assert "/portfolio/position" in paths
         assert "/portfolio/summary" in paths
         assert "/portfolio/import_text" in paths
+        assert "/portfolio/analytics" in paths
 
     def test_router_has_expected_methods(self):
         """Test that router has expected HTTP methods"""

@@ -22,6 +22,23 @@
 
 ---
 
+### Session 177 – January 14, 2026 ✅ (Portfolio analytics + live pricing)
+**Focus**: Portfolio analytics API + live pricing in portfolio routes
+**Objective**: Provide valuation-rich portfolio responses and analytics (allocations, movers, concentration)
+**Status**: COMPLETE ✅
+
+**Changes:**
+- Added SmartPriceService batch pricing to portfolio routes (`list_positions`, `portfolio_summary`, mutations) with async flows and cached price maps (5m TTL on routes; 3m TTL for analytics).
+- New `/portfolio/analytics` endpoint returning allocations, movers, and concentration metrics with Pydantic models; weighted allocation computation uses market or cost fallback.
+- Updated portfolio route tests to async price helpers and analytics coverage; movers now typed via `MoverEntry` models; ruff clean on portfolio routes.
+
+**Quality:**
+- Tests: `python -m pytest apps/backend/tests/api/routes/test_portfolio_routes.py` (LOKIFI_JWT_SECRET=dev-secret) ✅
+- Lint: `ruff check apps/backend/app/api/routes/portfolio.py` ✅
+- Coverage: backend suite unchanged (route file now returning live valuations; analytics covered)
+
+---
+
 ### Session 143 – January 14, 2026 ✅ (COMPLETE - Phase 4d + 4e)
 **Focus**: Phase 4d Mutation Cache Invalidation + Phase 4e Cache Observability
 **Objective**: Complete Phase 4 caching infrastructure with invalidation & monitoring
