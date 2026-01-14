@@ -22,7 +22,67 @@
 
 ---
 
-### Session 176 – January 14, 2026 ✅ (COMPLETE)
+### Session 176 – January 14, 2026 ⏳ (IN PROGRESS)
+**Focus:** Phase 4b: Route Integration & Production Deployment (after completing Phase 4a)
+**Objective:** Integrate Phase 4a cached queries into actual API routes across auth, portfolio, social
+**Status:** IN PROGRESS ⏳
+
+**Phase 4b-1: Auth Route Integration (50% COMPLETE)**
+
+**1. Auth Routes Updated (COMPLETE ✅)**
+- Modified `app/api/routes/auth.py` (120 lines):
+  - **register()**: Uses `get_user_by_handle(db, payload.handle)` for duplicate check (MEDIUM_TERM cache, 300s)
+  - **login()**: Uses `get_user_by_handle(db, payload.handle)` for authentication (MEDIUM_TERM cache, 300s)
+  - **me()**: Uses `get_user_by_handle(db, handle)` for profile retrieval (MEDIUM_TERM cache, 300s)
+  - Removed `_user_by_handle()` helper function (replaced with cached query)
+  - Added import: `from app.core.cached_queries import get_user_by_handle`
+- Impact: All auth routes now leverage caching, reducing database load
+- Code Quality: Ruff + Black passing ✅
+
+**2. Test Mock Updates (IN PROGRESS ⏳)**
+- Updated `tests/api/test_auth.py` (463 lines):
+  - Pattern change: Mock at cached_queries level, not database layer
+  - Old pattern: `@patch("app.api.routes.auth.get_session")` + `mock_db.execute().scalar_one_or_none()`
+  - New pattern: `@patch("app.core.cached_queries.get_user_by_handle")` + `mock_get_user.return_value = None`
+  - TestIssueToken: 8/8 passing ✅ (no changes needed)
+  - TestAuthHandle: 8/8 passing ✅ (no DB dependency)
+  - TestRegisterEndpoint: 2/6 tests patched ⏳
+    - test_successful_registration: ✅ Updated with @patch decorator
+    - test_duplicate_handle_raises_409: ✅ Updated with @patch decorator
+    - 4 remaining tests need patches
+  - TestLoginEndpoint: 0/4 tests patched ⏳
+  - TestMeEndpoint: 0/2 tests patched ⏳
+- Remaining: 17 test functions need @patch("app.core.cached_queries.get_user_by_handle")
+- Grep identified 19 locations at lines: 191, 222, 258, 280, 310, 336, 384, 412, etc.
+
+**3. Commit Status**
+- Commit: `6d700ba1` - "feat(cache): Phase 4b-1 auth route integration (routes complete, tests WIP)"
+- Changes: auth.py routes updated, test mocks partially updated, import ordering fixed
+- Quality: Pre-commit hooks passing ✅
+
+**Phase 4b Roadmap:**
+| Phase | Routes | Status | Tests Expected |
+|-------|--------|--------|---------------|
+| 4b-1: Auth | auth.py (3 endpoints) | 50% | ~20 |
+| 4b-2: Portfolio | portfolio.py | 0% | ~15 |
+| 4b-3: Social | social.py | 0% | ~25 |
+| 4b-4: Production | Deployment | 0% | ~10 |
+| **Total** | **3 route files** | **12%** | **~70** |
+
+**Next Steps (Phase 4b-1 Completion):**
+- [ ] Complete remaining 17 auth test mock updates
+- [ ] Run full test suite validation (20/20 auth tests)
+- [ ] Update documentation (mark Phase 4b-1 complete)
+- [ ] Proceed to Phase 4b-2 (portfolio routes)
+
+**Quality Metrics:**
+- Code Quality: Ruff + Black passing ✅
+- Import Ordering: Fixed with ruff --fix ✅
+- Pre-commit Hooks: All gates passing ✅
+
+---
+
+### Session 176 – January 14, 2026 ✅ (COMPLETE - Phase 4a)
 **Focus:** Phase 4a-4: Caching Validation & Performance Monitoring - Complete Phase 4a
 **Objective:** Complete Phase 4a (4 sub-phases) with performance benchmarks and monitoring enhancements
 **Status:** COMPLETE ✅
