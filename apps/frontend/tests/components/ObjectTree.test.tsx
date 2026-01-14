@@ -40,7 +40,18 @@ vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingDraggedObjectId: () => null,
   useDrawingSnapSettings: () => ({ snap: false }),
   useDrawingMagnetMode: () => false,
-  useDrawingActions: () => ({\n    selectObject: mockDrawingStore.selectObject,\n    deselectObject: vi.fn(),\n    addObject: vi.fn(),\n    deleteObject: mockDrawingStore.deleteObject,\n    duplicateObject: mockDrawingStore.duplicateObject,\n    setObjectProperties: mockDrawingStore.setObjectProperties,\n    moveObjectToPane: mockDrawingStore.moveObjectToPane,\n    getObjectsByPane: mockDrawingStore.getObjectsByPane,\n    clearAllObjects: mockDrawingStore.clearAllObjects,\n  }),\n}));
+  useDrawingActions: () => ({
+    selectObject: mockDrawingStore.selectObject,
+    deselectObject: vi.fn(),
+    addObject: vi.fn(),
+    deleteObject: mockDrawingStore.deleteObject,
+    duplicateObject: mockDrawingStore.duplicateObject,
+    setObjectProperties: mockDrawingStore.setObjectProperties,
+    moveObjectToPane: mockDrawingStore.moveObjectToPane,
+    getObjectsByPane: mockDrawingStore.getObjectsByPane,
+    clearAllObjects: mockDrawingStore.clearAllObjects,
+  }),
+}));
 
 vi.mock('@/lib/stores/paneStore', () => ({
   usePaneStore: () => mockPaneStore,

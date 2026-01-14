@@ -212,10 +212,18 @@ class TestUserEndpoints:
 class TestFollowEndpoints:
     """Tests for follow/unfollow endpoints"""
 
+    @patch("app.api.routes.social.get_user_by_handle")
+    @patch("app.api.routes.social.is_following")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_follow_success(
-        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_is_following,
+        mock_get_user_by_handle,
+        mock_db_user,
+        mock_db_user_2,
     ):
         """Test successful follow operation"""
         # Arrange
@@ -223,12 +231,12 @@ class TestFollowEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user lookups
-        mock_session.execute.return_value.scalar_one_or_none.side_effect = [
+        # Mock cached query functions (Phase 4b-3)
+        mock_get_user_by_handle.side_effect = [
             mock_db_user,  # Me
             mock_db_user_2,  # Target
-            None,  # No existing follow
         ]
+        mock_is_following.return_value = False  # Not already following
 
         # Act
         response = client.post(
@@ -243,12 +251,16 @@ class TestFollowEndpoints:
         assert data["following"] is True
         mock_session.add.assert_called_once()
 
+    @patch("app.api.routes.social.get_user_by_handle")
+    @patch("app.api.routes.social.is_following")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_follow_already_following(
         self,
         mock_get_session,
         mock_require_handle,
+        mock_is_following,
+        mock_get_user_by_handle,
         mock_db_user,
         mock_db_user_2,
         mock_db_follow,
@@ -259,12 +271,12 @@ class TestFollowEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user lookups + existing follow
-        mock_session.execute.return_value.scalar_one_or_none.side_effect = [
+        # Mock cached query functions (Phase 4b-3)
+        mock_get_user_by_handle.side_effect = [
             mock_db_user,  # Me
             mock_db_user_2,  # Target
-            mock_db_follow,  # Existing follow
         ]
+        mock_is_following.return_value = True  # Already following
 
         # Act
         response = client.post(
@@ -279,10 +291,15 @@ class TestFollowEndpoints:
         assert data["following"] is True
         mock_session.add.assert_not_called()  # Should not create duplicate
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_follow_self_error(
-        self, mock_get_session, mock_require_handle, mock_db_user
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_get_user_by_handle,
+        mock_db_user,
     ):
         """Test follow self returns error"""
         # Arrange
@@ -290,8 +307,8 @@ class TestFollowEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock same user for both lookups
-        mock_session.execute.return_value.scalar_one_or_none.side_effect = [
+        # Mock cached query functions (Phase 4b-3) - same user for both
+        mock_get_user_by_handle.side_effect = [
             mock_db_user,  # Me
             mock_db_user,  # Target (same user)
         ]
@@ -306,12 +323,14 @@ class TestFollowEndpoints:
         assert response.status_code == 400
         assert "Cannot follow yourself" in response.json()["detail"]
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_unfollow_success(
         self,
         mock_get_session,
         mock_require_handle,
+        mock_get_user_by_handle,
         mock_db_user,
         mock_db_user_2,
         mock_db_follow,
@@ -322,12 +341,16 @@ class TestFollowEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user lookups + existing follow
-        mock_session.execute.return_value.scalar_one_or_none.side_effect = [
+        # Mock cached query functions (Phase 4b-3)
+        mock_get_user_by_handle.side_effect = [
             mock_db_user,  # Me
             mock_db_user_2,  # Target
-            mock_db_follow,  # Existing follow to delete
         ]
+
+        # Mock the existing follow for deletion
+        mock_session.execute.return_value.scalar_one_or_none.return_value = (
+            mock_db_follow
+        )
 
         # Act
         response = client.delete(
@@ -342,10 +365,16 @@ class TestFollowEndpoints:
         assert data["following"] is False
         mock_session.delete.assert_called_once_with(mock_db_follow)
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_unfollow_not_following(
-        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_get_user_by_handle,
+        mock_db_user,
+        mock_db_user_2,
     ):
         """Test unfollow when not following"""
         # Arrange
@@ -353,12 +382,14 @@ class TestFollowEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user lookups + no existing follow
-        mock_session.execute.return_value.scalar_one_or_none.side_effect = [
+        # Mock cached query functions (Phase 4b-3)
+        mock_get_user_by_handle.side_effect = [
             mock_db_user,  # Me
             mock_db_user_2,  # Target
-            None,  # No follow to delete
         ]
+
+        # Mock no existing follow
+        mock_session.execute.return_value.scalar_one_or_none.return_value = None
 
         # Act
         response = client.delete(
@@ -382,10 +413,16 @@ class TestFollowEndpoints:
 class TestPostEndpoints:
     """Tests for post creation and listing endpoints"""
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_create_post_success(
-        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_post
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_get_user_by_handle,
+        mock_db_user,
+        mock_db_post,
     ):
         """Test successful post creation"""
         # Arrange
@@ -393,8 +430,8 @@ class TestPostEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user lookup
-        mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
+        # Mock cached query function (Phase 4b-3)
+        mock_get_user_by_handle.return_value = mock_db_user
 
         # Mock the Post object that will be created
         mock_new_post = MagicMock()
@@ -518,32 +555,37 @@ class TestPostEndpoints:
 class TestFeedEndpoint:
     """Tests for personalized feed endpoint"""
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.get_session")
     def test_feed_with_follows(
-        self, mock_get_session, mock_db_user, mock_db_user_2, mock_db_post
+        self,
+        mock_get_session,
+        mock_get_user_by_handle,
+        mock_db_user,
+        mock_db_user_2,
+        mock_db_post,
     ):
         """Test feed for user with follows"""
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
+        # Mock cached query function (Phase 4b-3)
+        mock_get_user_by_handle.return_value = mock_db_user
+
         # Mock user lookup
         execute_mock = MagicMock()
         mock_get_session.return_value.__enter__.return_value.execute = execute_mock
 
-        # First call: user lookup
-        user_result = MagicMock()
-        user_result.scalar_one_or_none.return_value = mock_db_user
-
-        # Second call: followee IDs
+        # First call: followee IDs (user lookup now handled by cached query)
         followee_result = MagicMock()
         followee_result.all.return_value = [(2,), (3,)]
 
-        # Third call: posts
+        # Second call: posts
         posts_result = MagicMock()
         posts_result.all.return_value = [(mock_db_post, mock_db_user_2)]
 
-        execute_mock.side_effect = [user_result, followee_result, posts_result]
+        execute_mock.side_effect = [followee_result, posts_result]
 
         # Act
         response = client.get("/api/social/feed?handle=testuser")
@@ -553,30 +595,32 @@ class TestFeedEndpoint:
         data = response.json()
         assert isinstance(data, list)
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.get_session")
-    def test_feed_no_follows(self, mock_get_session, mock_db_user, mock_db_post):
+    def test_feed_no_follows(
+        self, mock_get_session, mock_get_user_by_handle, mock_db_user, mock_db_post
+    ):
         """Test feed for user with no follows (global feed)"""
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
+        # Mock cached query function (Phase 4b-3)
+        mock_get_user_by_handle.return_value = mock_db_user
+
         # Mock user lookup
         execute_mock = MagicMock()
         mock_get_session.return_value.__enter__.return_value.execute = execute_mock
 
-        # First call: user lookup
-        user_result = MagicMock()
-        user_result.scalar_one_or_none.return_value = mock_db_user
-
-        # Second call: no followees
+        # First call: no followees (user lookup now handled by cached query)
         followee_result = MagicMock()
         followee_result.all.return_value = []
 
-        # Third call: global posts
+        # Second call: global posts
         posts_result = MagicMock()
         posts_result.all.return_value = [(mock_db_post, mock_db_user)]
 
-        execute_mock.side_effect = [user_result, followee_result, posts_result]
+        execute_mock.side_effect = [followee_result, posts_result]
 
         # Act
         response = client.get("/api/social/feed?handle=testuser")
@@ -586,15 +630,20 @@ class TestFeedEndpoint:
         data = response.json()
         assert isinstance(data, list)
 
+    @patch("app.api.routes.social.get_user_by_handle")
     @patch("app.api.routes.social.get_session")
-    def test_feed_user_not_found(self, mock_get_session):
+    def test_feed_user_not_found(self, mock_get_session, mock_get_user_by_handle):
         """Test feed for non-existent user"""
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock user not found
-        mock_session.execute.return_value.scalar_one_or_none.return_value = None
+        # Mock cached query function (Phase 4b-3) - user not found
+        from fastapi import HTTPException
+
+        mock_get_user_by_handle.side_effect = HTTPException(
+            status_code=404, detail="User not found"
+        )
 
         # Act
         response = client.get("/api/social/feed?handle=nonexistent")
