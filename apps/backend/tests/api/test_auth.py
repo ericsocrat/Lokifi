@@ -134,7 +134,7 @@ class TestAuthHandle:
 class TestRegisterEndpoint:
     """Tests for POST /auth/register endpoint."""
 
-    @patch("app.api.routes.auth.get_user_by_handle")  # Phase 4b-1: Mock cached query
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
     def test_successful_registration(self, mock_get_session, mock_get_user):
         """Should create user and return valid token on successful registration."""
@@ -165,7 +165,7 @@ class TestRegisterEndpoint:
         assert mock_db.add.called
         assert mock_db.flush.called
 
-    @patch("app.api.routes.auth.get_user_by_handle")  # Phase 4b-1: Mock cached query
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
     def test_duplicate_handle_raises_409(self, mock_get_session, mock_get_user):
         """Should raise 409 Conflict when handle already exists."""
@@ -187,8 +187,9 @@ class TestRegisterEndpoint:
         assert exc_info.value.status_code == 409
         assert "Handle already exists" in exc_info.value.detail
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_password_is_hashed(self, mock_get_session):
+    def test_password_is_hashed(self, mock_get_session, mock_get_user):
         """Should hash password before storing in database."""
         # Mock database session
         mock_db = Mock()
@@ -197,9 +198,7 @@ class TestRegisterEndpoint:
         mock_get_session.return_value = mock_db
 
         # Mock no existing user
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = None
 
         payload = RegisterPayload(handle="newuser", password="password123")
 
@@ -218,8 +217,9 @@ class TestRegisterEndpoint:
 class TestLoginEndpoint:
     """Tests for POST /auth/login endpoint."""
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_successful_login(self, mock_get_session):
+    def test_successful_login(self, mock_get_session, mock_get_user):
         """Should return valid token on successful login."""
         from argon2 import PasswordHasher
 
@@ -235,9 +235,7 @@ class TestLoginEndpoint:
 
         # Mock existing user with real password hash
         mock_user = Mock(handle="testuser", password_hash=real_hash)
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = mock_user
 
         payload = LoginPayload(handle="testuser", password="correct_password")
 
@@ -254,8 +252,9 @@ class TestLoginEndpoint:
         )
         assert token_payload["sub"] == "testuser"
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_nonexistent_user_raises_401(self, mock_get_session):
+    def test_nonexistent_user_raises_401(self, mock_get_session, mock_get_user):
         """Should raise 401 Unauthorized when user doesn't exist."""
         # Mock database session
         mock_db = Mock()
@@ -264,9 +263,7 @@ class TestLoginEndpoint:
         mock_get_session.return_value = mock_db
 
         # Mock no user found
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = None
 
         payload = LoginPayload(handle="nonexistent", password="password123")
 
@@ -276,8 +273,9 @@ class TestLoginEndpoint:
         assert exc_info.value.status_code == 401
         assert "Invalid credentials" in exc_info.value.detail
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_wrong_password_raises_401(self, mock_get_session):
+    def test_wrong_password_raises_401(self, mock_get_session, mock_get_user):
         """Should raise 401 Unauthorized when password is incorrect."""
         from argon2 import PasswordHasher
 
@@ -293,9 +291,7 @@ class TestLoginEndpoint:
 
         # Mock existing user with real hash
         mock_user = Mock(handle="testuser", password_hash=real_hash)
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = mock_user
 
         # Try to login with wrong password
         payload = LoginPayload(handle="testuser", password="wrong_password")
@@ -306,8 +302,11 @@ class TestLoginEndpoint:
         assert exc_info.value.status_code == 401
         assert "Invalid credentials" in exc_info.value.detail
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_user_without_password_hash_raises_401(self, mock_get_session):
+    def test_user_without_password_hash_raises_401(
+        self, mock_get_session, mock_get_user
+    ):
         """Should raise 401 when user has no password hash."""
         # Mock database session
         mock_db = Mock()
@@ -317,9 +316,7 @@ class TestLoginEndpoint:
 
         # Mock user without password hash
         mock_user = Mock(handle="testuser", password_hash=None)
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = mock_user
 
         payload = LoginPayload(handle="testuser", password="password123")
 
@@ -332,8 +329,9 @@ class TestLoginEndpoint:
 class TestMeEndpoint:
     """Tests for GET /auth/me endpoint."""
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_returns_user_info_for_valid_token(self, mock_get_session):
+    def test_returns_user_info_for_valid_token(self, mock_get_session, mock_get_user):
         """Should return user information when valid token is provided."""
         # Mock database session
         mock_db = Mock()
@@ -349,9 +347,7 @@ class TestMeEndpoint:
             bio="Test bio",
             created_at=created_at,
         )
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = mock_user
 
         # Create valid token
         token_out = _issue_token("testuser")
@@ -380,8 +376,9 @@ class TestMeEndpoint:
 
         assert exc_info.value.status_code == 401
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_raises_404_for_deleted_user(self, mock_get_session):
+    def test_raises_404_for_deleted_user(self, mock_get_session, mock_get_user):
         """Should raise 404 when token is valid but user no longer exists."""
         # Mock database session
         mock_db = Mock()
@@ -390,9 +387,7 @@ class TestMeEndpoint:
         mock_get_session.return_value = mock_db
 
         # Mock user not found
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = None
 
         # Create valid token
         token_out = _issue_token("deleteduser")
@@ -408,8 +403,9 @@ class TestMeEndpoint:
 class TestAuthIntegration:
     """Integration tests for complete authentication flows."""
 
+    @patch("app.api.routes.auth.get_user_by_handle")
     @patch("app.api.routes.auth.get_session")
-    def test_complete_register_login_me_flow(self, mock_get_session):
+    def test_complete_register_login_me_flow(self, mock_get_session, mock_get_user):
         """Should handle complete auth flow: register → login → /me."""
         from argon2 import PasswordHasher
 
@@ -419,21 +415,8 @@ class TestAuthIntegration:
         mock_db.__exit__ = Mock(return_value=None)
         mock_get_session.return_value = mock_db
 
-        # Step 1: Register (no existing user)
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
-
-        register_payload = RegisterPayload(
-            handle="integrationuser",
-            password="password123",
-            avatar_url="https://example.com/avatar.jpg",
-            bio="Integration test user",
-        )
-        register_result = register(register_payload)
-        assert register_result.access_token is not None
-
-        # Step 2: Login (user exists now with real Argon2 hash)
+        # Step 1: Register (no existing user for first call)
+        # Step 2: Login & Me (user exists for subsequent calls)
         ph = PasswordHasher()
         real_hash = ph.hash("password123")
 
@@ -445,7 +428,18 @@ class TestAuthIntegration:
             bio="Integration test user",
             created_at=created_at,
         )
-        mock_result.scalar_one_or_none.return_value = mock_user
+
+        # Use side_effect for multiple calls: None (register), user (login), user (me)
+        mock_get_user.side_effect = [None, mock_user, mock_user]
+
+        register_payload = RegisterPayload(
+            handle="integrationuser",
+            password="password123",
+            avatar_url="https://example.com/avatar.jpg",
+            bio="Integration test user",
+        )
+        register_result = register(register_payload)
+        assert register_result.access_token is not None
 
         login_payload = LoginPayload(handle="integrationuser", password="password123")
         login_result = login(login_payload)

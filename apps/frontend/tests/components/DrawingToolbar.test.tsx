@@ -23,7 +23,19 @@ vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingDraggedObjectId: () => null,
   useDrawingSnapSettings: () => ({ snap: false }),
   useDrawingMagnetMode: () => false,
-  useDrawingActions: () => ({}),
+  useDrawingActions: () => ({
+    setActiveTool: mockDrawingStore.setActiveTool,
+    toggleMagnetMode: mockDrawingStore.toggleMagnetMode,
+    selectObject: vi.fn(),
+    deselectObject: vi.fn(),
+    addObject: vi.fn(),
+    deleteObject: vi.fn(),
+    duplicateObject: vi.fn(),
+    setObjectProperties: vi.fn(),
+    moveObjectToPane: vi.fn(),
+    getObjectsByPane: vi.fn(() => []),
+    clearAllObjects: vi.fn(),
+  }),
 }));
 
 describe('DrawingToolbar', () => {

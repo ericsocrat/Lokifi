@@ -16,6 +16,18 @@ vi.mock('@/lib/stores/marketDataStore', () => ({
   useMarketDataStore: () => ({
     fetchOHLCData: vi.fn(),
   }),
+  useMarketDataOHLC: () => ({}),
+  useMarketDataIsLoading: () => false,
+  useMarketDataError: () => null,
+  useMarketDataIsConnected: () => true,
+  useMarketDataAutoRefresh: () => true,
+  useMarketDataRefreshInterval: () => 30,
+  useMarketDataActions: () => ({
+    fetchOHLCData: vi.fn(() => Promise.resolve([])),
+    setAutoRefresh: vi.fn(),
+    setRefreshInterval: vi.fn(),
+    clearCache: vi.fn(),
+  }),
 }));
 
 // Import after mocks

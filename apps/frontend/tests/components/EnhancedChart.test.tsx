@@ -97,6 +97,18 @@ vi.mock('@/lib/stores/marketDataStore', () => ({
     isLoading: false,
     error: null,
   })),
+  useMarketDataOHLC: () => ({}),
+  useMarketDataIsLoading: () => false,
+  useMarketDataError: () => null,
+  useMarketDataIsConnected: () => true,
+  useMarketDataAutoRefresh: () => true,
+  useMarketDataRefreshInterval: () => 30,
+  useMarketDataActions: () => ({
+    fetchOHLCData: vi.fn(() => Promise.resolve([])),
+    setAutoRefresh: vi.fn(),
+    setRefreshInterval: vi.fn(),
+    clearCache: vi.fn(),
+  }),
 }));
 
 vi.mock('@/lib/stores/paneStore', () => ({
