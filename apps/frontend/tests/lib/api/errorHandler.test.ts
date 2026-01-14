@@ -234,11 +234,11 @@ describe('ErrorHandler - API Error Management', () => {
       // After one successful call in HALF_OPEN, we need 2 total to reach CLOSED
       // So we should still be in HALF_OPEN with successCount=1
       expect(breaker.getState()).toBe('HALF_OPEN');
-      
+
       // One more success should transition to CLOSED
       const fn3 = vi.fn(async () => 'recovered again');
       await breaker.call(fn3);
-      
+
       expect(breaker.getState()).toBe('CLOSED');
       vi.useRealTimers();
     });
@@ -273,7 +273,7 @@ describe('ErrorHandler - API Error Management', () => {
       // Next calls should succeed and transition to CLOSED
       const testFn = vi.fn(async () => 'ok');
       await breaker.call(testFn);
-      
+
       const testFn2 = vi.fn(async () => 'ok');
       await breaker.call(testFn2);
 
