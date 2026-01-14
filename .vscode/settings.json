@@ -881,6 +881,14 @@
       "command": "node",
       "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
     },
+    "lokifi-codebase": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-codebase-server.js"]
+    },
+    "lokifi-security": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-security-server.js"]
+    },
     "lokifi-patterns": {
       "command": "node",
       "args": ["${workspaceFolder}/tools/mcp-pattern-library-server.js"]
