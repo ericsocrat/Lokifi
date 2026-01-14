@@ -26,39 +26,16 @@ from app.api.routes.auth import (
     RegisterPayload,
     _auth_handle,
     _issue_token,
-    _user_by_handle,
     login,
     me,
     register,
 )
+from app.core.cached_queries import get_user_by_handle  # Phase 4b-1: Use cached query
 
-
-class TestUserByHandle:
-    """Tests for _user_by_handle helper function."""
-
-    def test_finds_existing_user(self):
-        """Should return user when handle exists."""
-        mock_user = Mock(handle="testuser", password_hash="hash123")
-        mock_db = Mock()
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = mock_user
-        mock_db.execute.return_value = mock_result
-
-        result = _user_by_handle(mock_db, "testuser")
-
-        assert result == mock_user
-        assert mock_db.execute.called
-
-    def test_returns_none_for_nonexistent_user(self):
-        """Should return None when handle doesn't exist."""
-        mock_db = Mock()
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
-
-        result = _user_by_handle(mock_db, "nonexistent")
-
-        assert result is None
+# Phase 4b-1: Removed _user_by_handle tests - now using cached get_user_by_handle
+# class TestUserByHandle:
+#     """Tests for _user_by_handle helper function."""
+#     ... tests removed
 
 
 class TestIssueToken:
@@ -157,8 +134,9 @@ class TestAuthHandle:
 class TestRegisterEndpoint:
     """Tests for POST /auth/register endpoint."""
 
+    @patch("app.api.routes.auth.get_user_by_handle")  # Phase 4b-1: Mock cached query
     @patch("app.api.routes.auth.get_session")
-    def test_successful_registration(self, mock_get_session):
+    def test_successful_registration(self, mock_get_session, mock_get_user):
         """Should create user and return valid token on successful registration."""
         # Mock database session
         mock_db = Mock()
@@ -166,10 +144,8 @@ class TestRegisterEndpoint:
         mock_db.__exit__ = Mock(return_value=None)
         mock_get_session.return_value = mock_db
 
-        # Mock no existing user
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = None
-        mock_db.execute.return_value = mock_result
+        # Phase 4b-1: Mock cached query to return None (no existing user)
+        mock_get_user.return_value = None
 
         payload = RegisterPayload(
             handle="newuser",
@@ -189,8 +165,9 @@ class TestRegisterEndpoint:
         assert mock_db.add.called
         assert mock_db.flush.called
 
+    @patch("app.api.routes.auth.get_user_by_handle")  # Phase 4b-1: Mock cached query
     @patch("app.api.routes.auth.get_session")
-    def test_duplicate_handle_raises_409(self, mock_get_session):
+    def test_duplicate_handle_raises_409(self, mock_get_session, mock_get_user):
         """Should raise 409 Conflict when handle already exists."""
         # Mock database session
         mock_db = Mock()
@@ -198,11 +175,9 @@ class TestRegisterEndpoint:
         mock_db.__exit__ = Mock(return_value=None)
         mock_get_session.return_value = mock_db
 
-        # Mock existing user
+        # Phase 4b-1: Mock cached query to return existing user
         existing_user = Mock(handle="existinguser")
-        mock_result = Mock()
-        mock_result.scalar_one_or_none.return_value = existing_user
-        mock_db.execute.return_value = mock_result
+        mock_get_user.return_value = existing_user
 
         payload = RegisterPayload(handle="existinguser", password="password123")
 
