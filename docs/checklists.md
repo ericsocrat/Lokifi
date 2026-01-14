@@ -10,14 +10,13 @@
 > - **[Workflow Optimization](./ci-cd/workflows/optimization.md)** - CI/CD optimization results
 > - **[Pattern Library](./architecture/patterns/)** - 44 battle-tested patterns from 151 sessions
 >
-> **📊 Quick Stats**:
-> - **CI/CD**: 100% pass rate (all workflows green) ✅
+> **📊 Quick Stats** (Authoritative Source: [config/coverage.config.json](../../config/coverage.config.json) | Last Updated: 2026-01-08):
+> - **Test Coverage**: Frontend **89.48%** | Backend **81.06%** | Overall **85%** ✅
+> - **Tests**: 12,113 passing (7,846 frontend + 4,267 backend) ✅
+> - **CI/CD**: 100% pass rate (all workflows green) ✅ - Session 174 infrastructure fixes deployed
 > - **Type Safety**: Backend 100% (MyPy 0 errors) ✅, Frontend 0 errors ✅
 > - **Backend Quality**: 0 Ruff violations, 0 pytest warnings ✅ 🎉
 > - **ESLint**: 0 errors, 0 warnings (100% clean) ✅ 🎉
-> - **Store Testing**: 25/25 stores tested (100% coverage) ✅ 🎉
-> - **Test Coverage**: Frontend 92.81% statements ✅ (Session 166) | Backend 89% ✅ | **DrawingLayer**: 78.57% functions ✅ (Session 169!)
-> - **Tests**: 11,016 passing (4,162 backend + 6,854 frontend) ✅ | **All DrawingLayer**: 16/16 passing ✅
 > - **Pre-commit Hooks**: Active (quality + security gates) ✅
 > - **GitHub Issues**: 0 open ✅ | **Security Alerts**: 0 Dependabot, 30 CodeQL (documented) ✅
 
@@ -31,7 +30,7 @@
 **Root Cause Identified:**
 - **Problem:** Renovate PR #167 (backend-deps update) triggered 3 CI workflow failures
 - **Root Cause:** postgres:18-alpine was used across all CI workflows (non-standard, breaking changes)
-- **Impact:** 
+- **Impact:**
   - Coverage Tracking failed (Issue #170 - priority-critical)
   - Integration Tests failed (Issue #171 - priority-high)
   - Fast Feedback CI failed (Issue #169 - priority-critical)
@@ -151,7 +150,7 @@ Sprint 14 Performance Optimization Campaign - All 4 Phases Complete:
 // Before
 "test:coverage": "vitest run --coverage && node scripts/update-coverage-dashboard.js"
 
-// After  
+// After
 "test:coverage": "vitest run --coverage",
 "update-dashboard": "node scripts/update-coverage-dashboard.js"
 ```
@@ -1204,7 +1203,7 @@ globalAny.Lokifi.plugins = {
 
 **All 4 Phases Complete:**
 - ✅ **Phase 3a:** Database Indexing (8 indexes) - 5-10x improvement
-- ✅ **Phase 3b:** N+1 Query Elimination - 4x improvement  
+- ✅ **Phase 3b:** N+1 Query Elimination - 4x improvement
 - ✅ **Phase 3c-1:** User Profile Caching - 50-100x improvement on cache hits
 - ✅ **Phase 3c-2:** Feed/Post Caching - 100-300x improvement on cache hits
 - ✅ **Phase 3d:** Connection Pool Optimization - 10-20% base improvement
@@ -1261,7 +1260,7 @@ globalAny.Lokifi.plugins = {
 - **Security Audit** - Penetration testing, OWASP compliance
 - **Documentation** - User guides, API documentation
 
-**Autonomous Decision:** 
+**Autonomous Decision:**
 **🎯 Phase 4 Advanced Optimization** is the recommended Sprint 15 focus because:
 1. **Infrastructure foundation**: Session 174 fixed critical CI/infrastructure issues, system is stable
 2. **Proven success pattern**: Phase 3 delivered 100-500x improvements, team expertise demonstrated

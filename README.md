@@ -12,7 +12,7 @@ A comprehensive financial platform combining advanced market analysis with socia
 
 > 🔐 **Security Status**: CodeQL scanning enabled | Renovate bot active | Branch protection configured
 >
-> ✅ **Test Coverage**: Frontend 11.61% | Backend 51.09% | Overall 31.35% | **6,368 tests passing**
+> ✅ **Test Coverage**: Frontend 89.48% | Backend 81.06% | Overall 85% | **12,113 tests passing** (Authoritative: [config/coverage.config.json](config/coverage.config.json))
 >
 > ⚡ **CI/CD**: 91.3% pass rate (42/46 workflows) | Optimized pipeline saves 11-16 min/PR | 30 automated checks
 
@@ -223,9 +223,10 @@ npm run dev
 ## 🧪 Testing
 
 **Status:** ✅ Production Ready
-**Frontend:** 4,588 tests passing (11.61% line coverage, 88.7% branch coverage)
-**Backend:** 1,780 tests passing (51.09% line coverage)
+**Frontend:** 7,846 tests passing (89.48% line coverage, 83.62% branch coverage)
+**Backend:** 4,267 tests passing (81.06% line coverage)
 **Documentation:** [docs/testing/](docs/testing/)
+**Source:** [config/coverage.config.json](config/coverage.config.json) | **Last Measured:** 2026-01-08
 
 ### Quick Commands
 
@@ -255,11 +256,13 @@ npx playwright test       # Run E2E tests
 - 📄 [Master Testing Index](docs/testing/MASTER_TESTING_INDEX.md) - Complete guide (10 min)
 - 📄 [Test Improvement Journey](docs/testing/FRONTEND_TEST_IMPROVEMENT_COMPLETE.md) - Full story (30 min)
 
-**Current Metrics:**
-- ✅ **6,368 tests passing** (4,588 frontend + 1,780 backend)
-- ✅ 51.09% backend coverage (exceeds 20% threshold)
-- ✅ 88.7% frontend branch coverage (excellent)
-- ✅ 0 test failures
+**Curr12,113 tests passing** (7,846 frontend + 4,267 backend)
+- ✅ 89.48% frontend coverage (exceeds 80% threshold)
+- ✅ 81.06% backend coverage (exceeds 20% threshold)
+- ✅ 85% overall coverage
+- ✅ 0 test failures (12,009 passing, 104 skipped)
+- ✅ ~162s frontend / ~119s backend test runtime
+- **Authoritative Source:** [config/coverage.config.json](config/coverage.config.json)
 - ✅ ~135s frontend / ~216s backend test runtime
 
 **Test Infrastructure:**
