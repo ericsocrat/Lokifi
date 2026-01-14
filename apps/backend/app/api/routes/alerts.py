@@ -11,6 +11,7 @@ from fastapi import APIRouter, Header, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
+from app.core.cached_queries import get_user_alerts, invalidate_alerts_cache
 from app.services.alerts import Alert, hub, store
 from app.services.auth import auth_handle_from_header, require_handle
 
@@ -43,14 +44,9 @@ class CreateAlert(BaseModel):
 
 @router.get("/alerts")
 async def list_alerts(authorization: str | None = Header(None)) -> list[dict[str, Any]]:
+    """List alerts for the authenticated user (cached 60s)"""
     me = require_handle(authorization)
-    alerts = await store.list()
-    # Only return my alerts (owner_handle==me) or legacy entries with None owner (treat as visible)
-    visible = []
-    for a in alerts:
-        if a.owner_handle is None or a.owner_handle == me:
-            visible.append(a.__dict__)
-    return visible
+    return await get_user_alerts(me)
 
 
 @router.post("/alerts")
@@ -82,6 +78,10 @@ async def create_alert(
         owner_handle=me,
     )
     await store.add(a)
+
+    # Invalidate cache for this user
+    invalidate_alerts_cache(me)
+
     return a.__dict__
 
 
@@ -97,6 +97,10 @@ async def delete_alert(
     if target.owner_handle not in (None, me):
         raise HTTPException(status_code=403, detail="Forbidden")
     ok = await store.remove(alert_id)
+
+    # Invalidate cache for this user
+    invalidate_alerts_cache(me)
+
     return {"deleted": ok, "id": alert_id}
 
 
@@ -114,6 +118,10 @@ async def toggle_alert(
     a = await store.set_active(alert_id, active)
     if not a:
         raise HTTPException(status_code=404, detail="Alert not found")
+
+    # Invalidate cache for this user (only after successful toggle)
+    invalidate_alerts_cache(me)
+
     return {"id": a.id, "active": a.active}
 
 

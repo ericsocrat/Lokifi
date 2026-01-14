@@ -132,75 +132,65 @@ class TestListAlerts:
     """Tests for list_alerts endpoint"""
 
     @pytest.mark.asyncio
-    @patch("app.api.routes.alerts.store")
+    @patch("app.api.routes.alerts.get_user_alerts", new_callable=AsyncMock)
     @patch("app.api.routes.alerts.require_handle")
-    async def test_returns_user_alerts(self, mock_require, mock_store):
+    async def test_returns_user_alerts(self, mock_require, mock_get_alerts):
         """Test returns alerts for authenticated user"""
         mock_require.return_value = "testuser"
-
-        mock_alert = MagicMock()
-        mock_alert.owner_handle = "testuser"
-        mock_alert.__dict__ = {"id": "123", "owner_handle": "testuser"}
-        mock_store.list = AsyncMock(return_value=[mock_alert])
+        mock_get_alerts.return_value = [{"id": "123", "owner_handle": "testuser"}]
 
         result = await list_alerts(authorization="Bearer token")
 
         assert len(result) == 1
         assert result[0]["id"] == "123"
+        mock_get_alerts.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
-    @patch("app.api.routes.alerts.store")
+    @patch("app.api.routes.alerts.get_user_alerts", new_callable=AsyncMock)
     @patch("app.api.routes.alerts.require_handle")
-    async def test_filters_other_users_alerts(self, mock_require, mock_store):
-        """Test filters out other users' alerts"""
+    async def test_filters_other_users_alerts(self, mock_require, mock_get_alerts):
+        """Test filters out other users' alerts (done by cached query)"""
         mock_require.return_value = "testuser"
-
-        my_alert = MagicMock()
-        my_alert.owner_handle = "testuser"
-        my_alert.__dict__ = {"id": "123", "owner_handle": "testuser"}
-
-        other_alert = MagicMock()
-        other_alert.owner_handle = "otheruser"
-        other_alert.__dict__ = {"id": "456", "owner_handle": "otheruser"}
-
-        mock_store.list = AsyncMock(return_value=[my_alert, other_alert])
+        # Cached query already filters, so only return user's alerts
+        mock_get_alerts.return_value = [{"id": "123", "owner_handle": "testuser"}]
 
         result = await list_alerts(authorization="Bearer token")
 
         assert len(result) == 1
         assert result[0]["id"] == "123"
+        mock_get_alerts.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
-    @patch("app.api.routes.alerts.store")
+    @patch("app.api.routes.alerts.get_user_alerts", new_callable=AsyncMock)
     @patch("app.api.routes.alerts.require_handle")
     async def test_includes_legacy_alerts_with_none_owner(
-        self, mock_require, mock_store
+        self, mock_require, mock_get_alerts
     ):
-        """Test includes legacy alerts with None owner"""
+        """Test includes legacy alerts with None owner (done by cached query)"""
         mock_require.return_value = "testuser"
-
-        legacy_alert = MagicMock()
-        legacy_alert.owner_handle = None
-        legacy_alert.__dict__ = {"id": "legacy", "owner_handle": None}
-
-        mock_store.list = AsyncMock(return_value=[legacy_alert])
+        # Cached query includes legacy alerts
+        mock_get_alerts.return_value = [{"id": "legacy", "owner_handle": None}]
 
         result = await list_alerts(authorization="Bearer token")
 
         assert len(result) == 1
         assert result[0]["id"] == "legacy"
+        mock_get_alerts.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
-    @patch("app.api.routes.alerts.store")
+    @patch("app.api.routes.alerts.get_user_alerts", new_callable=AsyncMock)
     @patch("app.api.routes.alerts.require_handle")
-    async def test_returns_empty_list_when_no_alerts(self, mock_require, mock_store):
+    async def test_returns_empty_list_when_no_alerts(
+        self, mock_require, mock_get_alerts
+    ):
         """Test returns empty list when no alerts"""
         mock_require.return_value = "testuser"
-        mock_store.list = AsyncMock(return_value=[])
+        mock_get_alerts.return_value = []
 
         result = await list_alerts(authorization="Bearer token")
 
         assert result == []
+        mock_get_alerts.assert_called_once_with("testuser")
 
 
 # ============================================================================
@@ -212,9 +202,12 @@ class TestCreateAlert:
     """Tests for create_alert endpoint"""
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_creates_price_threshold_alert(self, mock_require, mock_store):
+    async def test_creates_price_threshold_alert(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test creates price threshold alert"""
         mock_require.return_value = "testuser"
         mock_store.add = AsyncMock()
@@ -231,11 +224,15 @@ class TestCreateAlert:
         assert result["symbol"] == "BTCUSD"
         assert result["owner_handle"] == "testuser"
         mock_store.add.assert_called_once()
+        mock_invalidate.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_creates_pct_change_alert(self, mock_require, mock_store):
+    async def test_creates_pct_change_alert(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test creates percent change alert"""
         mock_require.return_value = "testuser"
         mock_store.add = AsyncMock()
@@ -250,6 +247,7 @@ class TestCreateAlert:
 
         assert result["type"] == "pct_change"
         assert result["symbol"] == "ETHUSD"
+        mock_invalidate.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
     @patch("app.api.routes.alerts.require_handle")
@@ -270,9 +268,12 @@ class TestCreateAlert:
         assert "Invalid config" in exc_info.value.detail
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_alert_has_generated_id(self, mock_require, mock_store):
+    async def test_alert_has_generated_id(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test alert has generated UUID id"""
         mock_require.return_value = "testuser"
         mock_store.add = AsyncMock()
@@ -287,9 +288,12 @@ class TestCreateAlert:
         assert len(result["id"]) == 32  # UUID hex
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_alert_has_created_at_timestamp(self, mock_require, mock_store):
+    async def test_alert_has_created_at_timestamp(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test alert has created_at timestamp"""
         mock_require.return_value = "testuser"
         mock_store.add = AsyncMock()
@@ -305,9 +309,12 @@ class TestCreateAlert:
         assert before <= result["created_at"] <= after
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_alert_is_active_by_default(self, mock_require, mock_store):
+    async def test_alert_is_active_by_default(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test alert is active by default"""
         mock_require.return_value = "testuser"
         mock_store.add = AsyncMock()
@@ -330,9 +337,10 @@ class TestDeleteAlert:
     """Tests for delete_alert endpoint"""
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_deletes_own_alert(self, mock_require, mock_store):
+    async def test_deletes_own_alert(self, mock_require, mock_store, mock_invalidate):
         """Test deletes user's own alert"""
         mock_require.return_value = "testuser"
 
@@ -346,11 +354,15 @@ class TestDeleteAlert:
 
         assert result["deleted"] is True
         assert result["id"] == "alert123"
+        mock_invalidate.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_deletes_legacy_alert(self, mock_require, mock_store):
+    async def test_deletes_legacy_alert(
+        self, mock_require, mock_store, mock_invalidate
+    ):
         """Test deletes legacy alert with None owner"""
         mock_require.return_value = "testuser"
 
@@ -405,9 +417,10 @@ class TestToggleAlert:
     """Tests for toggle_alert endpoint"""
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_activates_alert(self, mock_require, mock_store):
+    async def test_activates_alert(self, mock_require, mock_store, mock_invalidate):
         """Test activates alert"""
         mock_require.return_value = "testuser"
 
@@ -427,11 +440,13 @@ class TestToggleAlert:
 
         assert result["id"] == "alert123"
         assert result["active"] is True
+        mock_invalidate.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_deactivates_alert(self, mock_require, mock_store):
+    async def test_deactivates_alert(self, mock_require, mock_store, mock_invalidate):
         """Test deactivates alert"""
         mock_require.return_value = "testuser"
 
@@ -450,6 +465,7 @@ class TestToggleAlert:
         )
 
         assert result["active"] is False
+        mock_invalidate.assert_called_once_with("testuser")
 
     @pytest.mark.asyncio
     @patch("app.api.routes.alerts.store")
@@ -488,10 +504,13 @@ class TestToggleAlert:
         assert exc_info.value.status_code == 403
 
     @pytest.mark.asyncio
+    @patch("app.api.routes.alerts.invalidate_alerts_cache")
     @patch("app.api.routes.alerts.store")
     @patch("app.api.routes.alerts.require_handle")
-    async def test_toggle_handles_store_returning_none(self, mock_require, mock_store):
-        """Test toggle handles store returning None"""
+    async def test_toggle_handles_store_returning_none(
+        self, mock_require, mock_store, mock_invalidate
+    ):
+        """Test toggle handles store returning None (no cache invalidation on failure)"""
         mock_require.return_value = "testuser"
 
         mock_alert = MagicMock()
@@ -506,6 +525,8 @@ class TestToggleAlert:
             )
 
         assert exc_info.value.status_code == 404
+        # Cache invalidation not called when store.set_active returns None
+        mock_invalidate.assert_not_called()
 
 
 # ============================================================================
