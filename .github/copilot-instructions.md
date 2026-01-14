@@ -73,7 +73,7 @@ cd apps/backend && ruff check . && cd ../..
 
 ## 🔧 MCP Servers (USE THESE FIRST!)
 
-You have access to **4 custom MCP servers** with **29 tools** for instant context. **Always query these before manual file searches.**
+You have access to **5 custom MCP servers** with **37 tools** for instant context. **Always query these before manual file searches.**
 
 ### 📊 lokifi-coverage (9 tools) - Real-time test coverage from config/coverage.config.json
 **Status**: ✅ Reads authoritative source (config/coverage.config.json)
@@ -97,6 +97,27 @@ You have access to **4 custom MCP servers** with **29 tools** for instant contex
 - "Show trends" → `get_coverage_trends_detailed`
 - "What should I test?" → `suggest_test_priorities`
 - "Which files need tests?" → `get_low_coverage_files`
+
+### 🏗️ lokifi-codebase (8 tools) 🆕 - Codebase structure & quality analysis
+**Status**: ✅ Production-Ready | **Documentation**: `/docs/development/tooling/mcp-codebase-server.md`
+
+| Tool | Purpose | Example |
+|------|---------|---------|
+| `get_project_structure` | File counts, lines of code, directory organization | Query when: Understanding codebase size/scope |
+| `analyze_frontend_dependencies` | External packages, internal imports, import graph | Query when: Dependency audits, refactoring planning |
+| `analyze_backend_dependencies` | Python packages, module imports, dependency tree | Query when: Security audits, upgrade planning |
+| `get_file_complexity` | Lines, functions, classes, complexity rating | Query when: Refactoring decisions, code review |
+| `find_circular_dependencies` | Detect import cycles in frontend/backend | Query when: Pre-merge checks, architecture reviews ⚠️ |
+| `get_code_quality_metrics` | ESLint/Ruff errors and warnings | Query when: Pre-commit validation, quality tracking |
+| `analyze_test_organization` | Test counts, file structure, distribution | Query when: Test planning, sprint estimation |
+| `get_dependency_impact` | Which files depend on target file (blast radius) | Query when: Refactoring, breaking change assessment 🎯 |
+
+**Quick Queries**:
+- "How big is the codebase?" → `get_project_structure`
+- "Find circular dependencies" → `find_circular_dependencies`
+- "Get complexity for portfolioStore" → `get_file_complexity`
+- "What depends on this file?" → `get_dependency_impact`
+- "Show code quality metrics" → `get_code_quality_metrics`
 
 ### 🎯 lokifi-patterns (6 tools) - 44 battle-tested patterns
 **Status**: ✅ Patterns in `/docs/architecture/patterns/`
@@ -2271,7 +2292,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 ## 📚 Comprehensive MCP Server Guide
 
-> **⚡ 4 ACTIVE MCP SERVERS**: 29 tools provide instant access to patterns, docs, git history, and coverage.
+> **⚡ 5 ACTIVE MCP SERVERS**: 37 tools provide instant access to patterns, docs, git history, coverage, and codebase analysis.
 
 **Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
@@ -2279,24 +2300,30 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 **In Copilot Chat**:
 1. Use natural language queries - Copilot automatically routes to appropriate MCP
-2. Examples: "What's my coverage?", "Find the AsyncMock pattern", "Search docs for deployment"
+2. Examples: "What's my coverage?", "Find the AsyncMock pattern", "Search docs for deployment", "Find circular dependencies"
 3. MCP tools are available as suggestions - look for tool recommendations in chat
 
 **Tool Selection Workflow**:
-1. **For code quality**: Use `lokifi-coverage` MCP
+1. **For code quality & testing**: Use `lokifi-coverage` MCP
    - Before committing: Check thresholds with `check_coverage_thresholds`
    - When testing: Get priorities with `suggest_test_priorities`
    - When analyzing: Use `get_detailed_comparison` for frontend/backend gaps
 
-2. **For architecture/design decisions**: Use `lokifi-patterns` MCP
+2. **For codebase architecture & structure**: Use `lokifi-codebase` MCP 🆕
+   - Refactoring: Check complexity with `get_file_complexity`
+   - Architecture reviews: Find cycles with `find_circular_dependencies`
+   - Impact analysis: Get blast radius with `get_dependency_impact`
+   - Quality tracking: Get metrics with `get_code_quality_metrics`
+
+3. **For architecture/design decisions**: Use `lokifi-patterns` MCP
    - Ask: "Recommend patterns for [use case]"
    - Get: Battle-tested solutions with examples and metrics
 
-3. **For project knowledge**: Use `lokifi-docs` MCP
+4. **For project knowledge**: Use `lokifi-docs` MCP
    - Search: "Search docs for [topic]"
    - Find: Related documentation, checklists, guides
 
-4. **For context recovery/history**: Use `lokifi-git` MCP
+5. **For context recovery/history**: Use `lokifi-git` MCP
    - Recover: "What was done in Session [N]?"
    - Analyze: "Show commits about [keyword]"
 
@@ -2335,6 +2362,51 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 "Get coverage trends"
 → Returns: Historical milestones, current vs previous, projection to 80%
 ```
+
+### Codebase Analysis MCP Server (8 tools) 🆕 - Structure & Quality Insights
+
+**Data Source**: Real-time file system analysis + ESLint/Ruff output
+
+**Tool Reference**:
+
+| Tool | Input | Output | When To Use |
+|------|-------|--------|-------------|
+| `get_project_structure` | None | File counts, lines by extension, directory org | Understanding codebase size |
+| `analyze_frontend_dependencies` | None | External packages, internal imports, import graph | Dependency audits, refactoring |
+| `analyze_backend_dependencies` | None | Python packages, module imports, dependency tree | Security audits, upgrades |
+| `get_file_complexity` | filePath | Lines, functions, classes, complexity rating | Refactoring decisions |
+| `find_circular_dependencies` | None | Circular import cycles (frontend + backend) | Pre-merge checks ⚠️ |
+| `get_code_quality_metrics` | None | ESLint/Ruff error and warning counts | Quality tracking |
+| `analyze_test_organization` | None | Test counts, file structure, distribution | Test planning |
+| `get_dependency_impact` | filePath | Which files depend on target (blast radius) | Impact analysis 🎯 |
+
+**Example Queries**:
+```
+"How big is the codebase?"
+→ Returns: 403 files, 78,039 lines (247 frontend, 156 backend)
+
+"Find circular dependencies"
+→ Returns: Frontend: 2 cycles, Backend: 0 cycles (with file paths)
+
+"Get complexity for portfolioStore.tsx"
+→ Returns: High complexity (458 lines, 23 functions, 12 imports)
+
+"What depends on auth.ts?"
+→ Returns: 14 files impacted, recommendation: ⚠️ High-impact file
+
+"Get code quality metrics"
+→ Returns: ESLint: 0 errors, 0 warnings; Ruff: 0 issues
+```
+
+**Complexity Ratings**:
+- **Low**: <200 lines, <10 functions
+- **Medium**: 200-500 lines, 10-20 functions  
+- **High**: >500 lines, >20 functions
+
+**Impact Ratings**:
+- **Low**: 0-10 files (✅ Changes isolated)
+- **Medium**: 11-30 files (⚠️ Moderate testing needed)
+- **High**: 31+ files (🚨 Extensive testing required)
 
 ### Pattern Library MCP Server (6 tools) - 44 Battle-Tested Solutions
 
