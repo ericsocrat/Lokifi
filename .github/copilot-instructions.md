@@ -73,20 +73,34 @@ cd apps/backend && ruff check . && cd ../..
 
 ## 🔧 MCP Servers (USE THESE FIRST!)
 
-You have access to **4 custom MCP servers** with **25 tools** for instant context. **Always query these before manual file searches.**
+You have access to **4 custom MCP servers** with **29 tools** for instant context. **Always query these before manual file searches.**
 
-### lokifi-coverage (7 tools) - Real-time test coverage
-| Tool | Purpose |
-|------|---------|
-| `get_coverage_summary` | Overall metrics, test counts, threshold status |
-| `get_low_coverage_files` | Top 20 files needing tests (sorted by %) |
-| `get_coverage_trends` | Historical comparison over time |
-| `get_file_coverage` | Line-by-line analysis for specific files |
-| `check_coverage_thresholds` | Pre-merge pass/fail validation |
-| `get_coverage_by_category` | Breakdown by directory |
-| `suggest_test_priorities` | Smart recommendations with scoring |
+### 📊 lokifi-coverage (9 tools) - Real-time test coverage from config/coverage.config.json
+**Status**: ✅ Reads authoritative source (config/coverage.config.json)
 
-### lokifi-patterns (6 tools) - 44 battle-tested patterns
+| Tool | Purpose | Example |
+|------|---------|---------|
+| `get_coverage_summary` | Frontend/backend breakdown, thresholds, test counts | Query when: Checking overall coverage status |
+| `get_detailed_comparison` | Side-by-side frontend vs backend with gap analysis | Query when: Analyzing frontend/backend differences |
+| `check_coverage_thresholds` | Pre-merge validation - passes/fails by metric | Query when: Ready to merge - need validation ✅ |
+| `get_coverage_trends_detailed` | Historical data, milestones, projections | Query when: Tracking improvement over time |
+| `get_low_coverage_files` | Top 20 files below threshold (default 80%) | Query when: Finding testing priorities |
+| `get_coverage_by_category` | Breakdown by directory (components/, lib/, hooks/) | Query when: Identifying weak areas by category |
+| `suggest_test_priorities` | Multi-factor scoring (coverage + complexity + criticality) | Query when: Deciding what to test next 🎯 |
+| `get_file_coverage` | Line-by-line analysis for specific file | Query when: Deep-diving into one file |
+| `get_coverage_trends` | Historical comparison (legacy) | Legacy tool - use get_coverage_trends_detailed |
+
+**Quick Queries**:
+- "What's my coverage?" → `get_coverage_summary`
+- "Am I ready to merge?" → `check_coverage_thresholds`
+- "Frontend vs backend?" → `get_detailed_comparison`
+- "Show trends" → `get_coverage_trends_detailed`
+- "What should I test?" → `suggest_test_priorities`
+- "Which files need tests?" → `get_low_coverage_files`
+
+### 🎯 lokifi-patterns (6 tools) - 44 battle-tested patterns
+**Status**: ✅ Patterns in `/docs/architecture/patterns/`
+
 | Tool | Purpose |
 |------|---------|
 | `list_patterns` | All patterns with categories and success rates |
@@ -96,7 +110,14 @@ You have access to **4 custom MCP servers** with **25 tools** for instant contex
 | `compare_patterns` | Side-by-side comparison |
 | `recommend_patterns` | Context-aware suggestions |
 
-### lokifi-docs (6 tools) - 109+ markdown files indexed
+**Quick Queries**:
+- "Show me AsyncMock" → `get_pattern("AsyncMock")`
+- "Patterns for testing?" → `recommend_patterns("testing async API calls")`
+- "Compare AsyncMock vs Pure Functions?" → `compare_patterns`
+
+### 📚 lokifi-docs (6 tools) - 109+ markdown files indexed
+**Status**: ✅ All docs in `/docs/` searchable
+
 | Tool | Purpose |
 |------|---------|
 | `search_docs` | Full-text search across all documentation |
@@ -106,7 +127,14 @@ You have access to **4 custom MCP servers** with **25 tools** for instant contex
 | `find_related_docs` | Related documents by topic |
 | `get_doc_stats` | Documentation coverage metrics |
 
-### lokifi-git (6 tools) - 900+ commits searchable
+**Quick Queries**:
+- "Search docs for deployment" → `search_docs("deployment")`
+- "Show testing guide" → `get_doc("testing")`
+- "What changed recently?" → `get_recent_changes(7)`
+
+### 📜 lokifi-git (6 tools) - 900+ commits searchable
+**Status**: ✅ Full git history indexed
+
 | Tool | Purpose |
 |------|---------|
 | `search_commits` | Find commits by message/content |
@@ -115,6 +143,11 @@ You have access to **4 custom MCP servers** with **25 tools** for instant contex
 | `get_file_history` | All commits affecting a file |
 | `compare_branches` | Diff between branches |
 | `get_session_commits` | Commits from specific session |
+
+**Quick Queries**:
+- "What was done in Session 140?" → `get_session_commits(140)`
+- "Show commits about MCP" → `search_commits("MCP")`
+- "History of portfolioStore.tsx" → `get_file_history("portfolioStore")`
 
 ---
 
@@ -280,14 +313,23 @@ gh api /repos/ericsocrat/Lokifi/dependabot/alerts --jq '[.[] | select(.state=="o
 | Run all tests | `cd apps/frontend && npm test` / `cd apps/backend && pytest --cov` |
 | Push changes | `git push origin main` |
 
-### MCP Quick Queries
-| Need | Query |
-|------|-------|
-| Coverage status | "What's my test coverage?" |
-| Low coverage files | "Which files need more tests?" |
-| Find pattern | "Show me the AsyncMock pattern" |
-| Search docs | "Search docs for deployment" |
-| Recent commits | "What was done in Session 135?" |
+### MCP Quick Queries (Use These Every Session!)
+| Need | Quick Query | Detailed Query |
+|------|------------|--------|
+| Coverage overview | "What's my test coverage?" | "Get me a detailed comparison of frontend vs backend coverage" |
+| Pre-merge check | "Am I ready to merge?" | "Check coverage thresholds and tell me what's failing" |
+| Testing priorities | "What should I test next?" | "Suggest test priorities with reasoning" |
+| Low coverage | "Which files need tests?" | "Show files below 80% coverage sorted by impact" |
+| Coverage trends | "Show coverage progress" | "Get historical trends with projections" |
+| Find pattern | "Show me the AsyncMock pattern" | "Recommend patterns for [specific use case]" |
+| Search docs | "Search docs for deployment" | "Find docs related to [topic]" |
+| Recent work | "What was done in Session 140?" | "Show commits in the last week" |
+
+**MCP Power Moves**:
+- ✅ Before committing: `check_coverage_thresholds` → validates merge readiness
+- ✅ When stuck: `suggest_test_priorities` → ML-scored recommendations
+- ✅ Architecture decisions: `recommend_patterns` → battle-tested approaches
+- ✅ Context recovery: `get_session_commits` → reconstruct lost progress
 
 ---
 
@@ -2224,6 +2266,205 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 - Copilot knows the project structure from this file
 - It can suggest code following existing patterns
 - It will use the correct testing framework automatically
+
+---
+
+## 📚 Comprehensive MCP Server Guide
+
+> **⚡ 4 ACTIVE MCP SERVERS**: 29 tools provide instant access to patterns, docs, git history, and coverage.
+
+**Status**: ✅ Production-Ready - Node.js v18.0.0+ required
+
+### How to Use MCP Servers
+
+**In Copilot Chat**:
+1. Use natural language queries - Copilot automatically routes to appropriate MCP
+2. Examples: "What's my coverage?", "Find the AsyncMock pattern", "Search docs for deployment"
+3. MCP tools are available as suggestions - look for tool recommendations in chat
+
+**Tool Selection Workflow**:
+1. **For code quality**: Use `lokifi-coverage` MCP
+   - Before committing: Check thresholds with `check_coverage_thresholds`
+   - When testing: Get priorities with `suggest_test_priorities`
+   - When analyzing: Use `get_detailed_comparison` for frontend/backend gaps
+
+2. **For architecture/design decisions**: Use `lokifi-patterns` MCP
+   - Ask: "Recommend patterns for [use case]"
+   - Get: Battle-tested solutions with examples and metrics
+
+3. **For project knowledge**: Use `lokifi-docs` MCP
+   - Search: "Search docs for [topic]"
+   - Find: Related documentation, checklists, guides
+
+4. **For context recovery/history**: Use `lokifi-git` MCP
+   - Recover: "What was done in Session [N]?"
+   - Analyze: "Show commits about [keyword]"
+
+### Coverage MCP Server (9 tools) - Real-Time Authoritative Metrics
+
+**Data Source**: `config/coverage.config.json` (single source of truth)
+
+**Tool Reference**:
+
+| Tool | Input | Output | When To Use |
+|------|-------|--------|-------------|
+| `get_coverage_summary` | None | Frontend/backend breakdown, thresholds, test counts | Status check, start of session |
+| `get_detailed_comparison` | None | Side-by-side metrics with gaps and recommendations | Analyzing coverage differences |
+| `check_coverage_thresholds` | None | Pass/fail validation for each metric | Pre-merge quality gate ✅ |
+| `get_coverage_trends_detailed` | None | Historical data with milestones and projections | Tracking improvement |
+| `get_low_coverage_files` | threshold (default 80) | Top 20 files by coverage deficit | Finding test targets |
+| `get_coverage_by_category` | None | Breakdown by directory/component | Identifying weak areas |
+| `suggest_test_priorities` | maxResults (default 10) | Ranked files with priority scoring | Planning test work |
+| `get_file_coverage` | filePath | Line-by-line analysis | Deep-diving specific file |
+| `get_coverage_trends` | None | Historical comparison (legacy) | Use get_coverage_trends_detailed |
+
+**Example Queries**:
+```
+"Get me the coverage summary"
+→ Returns: Frontend 89.48%, Backend 81.06%, Overall 85%, with threshold status
+
+"Am I ready to merge?"
+→ Returns: Threshold validation showing which metrics pass/fail
+
+"Show me the gap between frontend and backend"
+→ Returns: Side-by-side comparison with analysis and recommendations
+
+"What should I test next?"
+→ Returns: Top 10 priority files ranked by coverage + complexity + criticality
+
+"Get coverage trends"
+→ Returns: Historical milestones, current vs previous, projection to 80%
+```
+
+### Pattern Library MCP Server (6 tools) - 44 Battle-Tested Solutions
+
+**Data Source**: `/docs/architecture/patterns/` (indexed patterns)
+
+**Tool Reference**:
+
+| Tool | Input | Output | When To Use |
+|------|-------|--------|-------------|
+| `list_patterns` | None | All 44 patterns with categories | Exploration, finding options |
+| `get_pattern` | pattern_name | Full details, code examples, anti-patterns | Implementing solution |
+| `search_patterns` | keyword | Matching patterns ranked by relevance | Searching by topic |
+| `get_pattern_stats` | None | Success metrics, top patterns | Understanding effectiveness |
+| `compare_patterns` | pattern1, pattern2 | Side-by-side comparison | Making design decisions |
+| `recommend_patterns` | problem_description | AI-suggested patterns ranked | When stuck on approach |
+
+**Example Queries**:
+```
+"Show me the AsyncMock pattern"
+→ Returns: Problem context, solution with code, anti-patterns, success rate
+
+"Patterns for testing async API calls"
+→ Returns: Top 3 recommendations (AsyncMock, Pure Functions, Fixtures) with rankings
+
+"Compare AsyncMock vs Pure Functions"
+→ Returns: Side-by-side feature comparison, use case differences, when to use each
+```
+
+**Key Patterns by Category**:
+- **Testing (18)**: AsyncMock, Pure Functions, Mathematical Indicator Testing, Fixtures, Branch Coverage
+- **Type Safety (6)**: Draft<T>, TypeScript Any Elimination, Zustand+Immer
+- **Python (7)**: arg-type, attr-defined, UTC Imports, Python 3.10 compatibility
+- **CI/CD (5)**: Workflow Health Check, Service Config Standards, GitHub CLI debugging
+- **Dependencies (4)**: Conflict Resolution, Renovate Migration, Pin vs Replace
+
+### Documentation Search MCP Server (6 tools) - 109+ Files Indexed
+
+**Data Source**: `/docs/` (all markdown files)
+
+**Tool Reference**:
+
+| Tool | Input | Output | When To Use |
+|------|-------|--------|-------------|
+| `search_docs` | keyword | Matching docs ranked by relevance | Finding information |
+| `get_doc` | doc_name | Full document content | Reading specific guide |
+| `list_docs` | None | All docs organized by category | Browsing structure |
+| `get_recent_changes` | days (default 7) | Recently modified docs | Finding latest updates |
+| `find_related_docs` | keyword | Related documents by topic | Discovering connections |
+| `get_doc_stats` | None | Coverage metrics, total docs | Understanding scope |
+
+**Example Queries**:
+```
+"Search docs for deployment"
+→ Returns: deployment.md, pre-deployment.md, ci-cd docs ranked by relevance
+
+"Show me the testing guide"
+→ Returns: Full testing.md with all sections, patterns, best practices
+
+"What's in checklists?"
+→ Returns: All current focus items, workflow checklists, standard processes
+```
+
+**Key Documentation**:
+- **Checklists** (`/docs/checklists.md`): Session tracking, current focus, all workflows
+- **Testing** (`/docs/testing/`): Patterns, best practices, coverage guides
+- **Architecture** (`/docs/architecture/`): Patterns library, design decisions
+- **Development** (`/docs/development/`): Setup, guidelines, tools documentation
+- **Deployment** (`/docs/deployment/`): Production deployment, monitoring, DNS
+
+### Git History MCP Server (6 tools) - 900+ Commits Indexed
+
+**Data Source**: Git commit history (.git folder)
+
+**Tool Reference**:
+
+| Tool | Input | Output | When To Use |
+|------|-------|--------|-------------|
+| `search_commits` | keyword, filters | Matching commits with details | Finding specific work |
+| `get_commit` | commit_hash | Full details, diff, statistics | Analyzing specific change |
+| `get_recent_commits` | count | Latest N commits | Recent activity overview |
+| `get_file_history` | file_path | All commits affecting file | Tracking file evolution |
+| `compare_branches` | base, compare | Diff, ahead/behind count | Branch analysis |
+| `get_session_commits` | session_number | All commits from session | Context recovery |
+
+**Example Queries**:
+```
+"What was done in Session 140?"
+→ Returns: All commits from that session with messages and impact
+
+"Show commits about coverage"
+→ Returns: All commits mentioning coverage with diffs
+
+"History of portfolioStore.tsx"
+→ Returns: Timeline of changes to that file with authors and reasons
+
+"Compare main vs feature-branch"
+→ Returns: Diff summary, files changed, commits ahead/behind
+```
+
+### MCP Server Configuration
+
+**VS Code Setup** (`.vscode/settings.json`):
+```json
+{
+  "github.copilot.chat.mcpServers": {
+    "lokifi-coverage": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
+    },
+    "lokifi-patterns": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-pattern-library-server.js"]
+    },
+    "lokifi-docs": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-docs-search-server.js"]
+    },
+    "lokifi-git": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-git-history-server.js"]
+    }
+  }
+}
+```
+
+**Troubleshooting**:
+- **Not responding**: Restart VS Code (MCP servers initialize on startup)
+- **Node.js**: Verify `node --version` ≥18.0.0
+- **SDK**: Check `cd tools && npm list @modelcontextprotocol/sdk`
+- **Permissions**: Ensure git repository is accessible
 
 ---
 

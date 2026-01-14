@@ -34,28 +34,31 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Path to coverage data
-const COVERAGE_DATA_PATH = path.join(
+// Path to authoritative coverage config
+const COVERAGE_CONFIG_PATH = path.join(
+  __dirname,
+  '../config/coverage.config.json'
+);
+
+// Fallback to dashboard data if config not available
+const COVERAGE_DASHBOARD_PATH = path.join(
   __dirname,
   '../apps/frontend/coverage-dashboard/data.json'
 );
 
-// Coverage thresholds from config
-const THRESHOLDS = {
-  frontend: {
-    statements: 10,
-    branches: 10,
-    functions: 10,
-    lines: 10,
-  },
-  backend: {
-    statements: 80,
-    branches: 80,
-    functions: 80,
-    lines: 80,
-  },
-  overall: 20,
-};
+/**
+ * Load coverage configuration from authoritative source
+ */
+function loadCoverageConfig() {
+  try {
+    if (fs.existsSync(COVERAGE_CONFIG_PATH)) {
+      return JSON.parse(fs.readFileSync(COVERAGE_CONFIG_PATH, 'utf-8'));
+    }
+  } catch (error) {
+    console.error('Failed to load coverage.config.json:', error.message);
+  }
+  return null;
+}
 
 /**
  * Enhanced error helper
@@ -69,58 +72,139 @@ function createError(message, context = {}) {
 }
 
 /**
- * Read and parse coverage data
+ * Read and parse coverage data from config or dashboard
  */
 function getCoverageData() {
   try {
-    if (!fs.existsSync(COVERAGE_DATA_PATH)) {
-      return createError('Coverage data not found. Run: npm run test:coverage', {
-        path: COVERAGE_DATA_PATH,
-        suggestion: 'Generate coverage with: cd apps/frontend && npm run test:coverage',
-      });
+    // Try config first (authoritative source)
+    const config = loadCoverageConfig();
+    if (config && config.current) {
+      return {
+        source: 'config',
+        config,
+        current: config.current,
+        thresholds: config.thresholds,
+        history: config.history || [],
+        goals: config.goals || {},
+      };
     }
 
-    const data = JSON.parse(fs.readFileSync(COVERAGE_DATA_PATH, 'utf-8'));
-    return data;
+    // Fall back to dashboard data
+    if (fs.existsSync(COVERAGE_DASHBOARD_PATH)) {
+      const data = JSON.parse(fs.readFileSync(COVERAGE_DASHBOARD_PATH, 'utf-8'));
+      return {
+        source: 'dashboard',
+        data,
+        current: data.current,
+        history: data.history || [],
+      };
+    }
+
+    return createError('Coverage data not found', {
+      paths: [COVERAGE_CONFIG_PATH, COVERAGE_DASHBOARD_PATH],
+      suggestion: 'Generate coverage with: cd apps/frontend && npm run test:coverage',
+    });
   } catch (error) {
     return createError('Failed to read coverage data', {
-      path: COVERAGE_DATA_PATH,
       details: error.message,
-      suggestion: 'Ensure coverage data is valid JSON',
+      suggestion: 'Ensure coverage files are valid JSON',
     });
   }
 }
 
 /**
- * Get current coverage summary
+ * Get current coverage summary with authoritative config data
  */
 function getCoverageSummary() {
   const data = getCoverageData();
   if (data.error) return data;
 
-  const { current, git } = data;
+  const { current, thresholds, source } = data;
 
-  return {
-    summary: {
-      statements: current.coverage.statements,
-      branches: current.coverage.branches,
-      functions: current.coverage.functions,
-      lines: current.coverage.lines,
+  // Support both config and dashboard formats
+  const frontend = current.frontend || current.coverage;
+  const backend = current.backend || {};
+  const overall = current.overall || {};
+
+  const frontendThresholds = thresholds?.frontend || {};
+  const backendThresholds = thresholds?.backend || {};
+  const overallThresholds = thresholds?.overall || {};
+
+  const summary = {
+    source,
+    timestamp: new Date().toISOString(),
+    frontend: {
+      current: {
+        lines: frontend.lines,
+        branches: frontend.branches,
+        functions: frontend.functions,
+        statements: frontend.statements,
+      },
+      thresholds: frontendThresholds,
+      tests: {
+        total: frontend.totalTests || 0,
+        passing: frontend.passingTests || 0,
+        skipped: frontend.skippedTests || 0,
+        files: frontend.testFiles || 0,
+      },
+      status: frontend.status || 'unknown',
     },
-    tests: current.tests,
-    thresholds: THRESHOLDS,
-    passingThresholds: {
-      frontend: current.coverage.statements >= THRESHOLDS.frontend.statements,
-      backend: false, // Backend data not in this file
-      overall: current.coverage.statements >= THRESHOLDS.overall,
+    backend: {
+      current: {
+        lines: backend.lines,
+        branches: backend.branches,
+        functions: backend.functions,
+        statements: backend.statements,
+      },
+      thresholds: backendThresholds,
+      tests: {
+        total: backend.totalTests || 0,
+        passing: backend.passingTests || 0,
+        skipped: backend.skippedTests || 0,
+        files: backend.testFiles || 0,
+      },
+      status: backend.status || 'unknown',
     },
-    git: {
-      branch: git.branch,
-      commit: git.commit,
-      author: git.author,
+    overall: {
+      current: {
+        lines: overall.lines,
+        branches: overall.branches,
+        functions: overall.functions,
+        statements: overall.statements,
+      },
+      thresholds: overallThresholds,
+      tests: {
+        total: overall.totalTests || 0,
+        passing: overall.passingTests || 0,
+        skipped: overall.skippedTests || 0,
+      },
+      status: overall.status || 'unknown',
     },
-    generated: current.generated || data.generated,
   };
+
+  // Calculate threshold status
+  summary.frontend.thresholdStatus = {
+    lines: frontend.lines >= (frontendThresholds.lines || 0),
+    branches: frontend.branches >= (frontendThresholds.branches || 0),
+    functions: frontend.functions >= (frontendThresholds.functions || 0),
+    statements: frontend.statements >= (frontendThresholds.statements || 0),
+  };
+
+  summary.backend.thresholdStatus = {
+    lines: backend.lines >= (backendThresholds.lines || 0),
+    branches: backend.branches >= (backendThresholds.branches || 0),
+    functions: backend.functions >= (backendThresholds.functions || 0),
+    statements: backend.statements >= (backendThresholds.statements || 0),
+  };
+
+  summary.overall.thresholdStatus = {
+    lines: overall.lines >= (overallThresholds.lines || 0),
+    branches: overall.branches >= (overallThresholds.branches || 0),
+    functions: overall.functions >= (overallThresholds.functions || 0),
+    statements: overall.statements >= (overallThresholds.statements || 0),
+  };
+
+  return summary;
 }
 
 /**
@@ -338,6 +422,157 @@ function getCoverageByCategory() {
 }
 
 /**
+ * Get detailed comparison between frontend and backend coverage
+ */
+function getDetailedComparison() {
+  const data = getCoverageData();
+  if (data.error) return data;
+
+  const { current, thresholds } = data;
+  const frontend = current.frontend || {};
+  const backend = current.backend || {};
+  const overall = current.overall || {};
+
+  const frontendThresholds = thresholds?.frontend || {};
+  const backendThresholds = thresholds?.backend || {};
+
+  const metrics = ['lines', 'branches', 'functions', 'statements'];
+
+  const comparison = {
+    timestamp: new Date().toISOString(),
+    frontend: {
+      coverage: metrics.reduce((acc, m) => ({
+        ...acc,
+        [m]: {
+          current: frontend[m],
+          threshold: frontendThresholds[m],
+          gap: Math.max(0, (frontendThresholds[m] || 0) - (frontend[m] || 0)),
+          status: frontend[m] >= (frontendThresholds[m] || 0) ? '✅' : '⚠️',
+        },
+      }), {}),
+      tests: {
+        total: frontend.totalTests || 0,
+        passing: frontend.passingTests || 0,
+        failing: frontend.failingTests || 0,
+        skipped: frontend.skippedTests || 0,
+        files: frontend.testFiles || 0,
+        passRate: frontend.totalTests
+          ? Math.round((frontend.passingTests / frontend.totalTests) * 100)
+          : 0,
+      },
+      status: frontend.status || 'unknown',
+      lastMeasured: frontend.lastMeasured,
+      notes: frontend.notes,
+    },
+    backend: {
+      coverage: metrics.reduce((acc, m) => ({
+        ...acc,
+        [m]: {
+          current: backend[m],
+          threshold: backendThresholds[m],
+          gap: Math.max(0, (backendThresholds[m] || 0) - (backend[m] || 0)),
+          status: backend[m] >= (backendThresholds[m] || 0) ? '✅' : '⚠️',
+        },
+      }), {}),
+      tests: {
+        total: backend.totalTests || 0,
+        passing: backend.passingTests || 0,
+        failing: backend.failingTests || 0,
+        skipped: backend.skippedTests || 0,
+        files: backend.testFiles || 0,
+        passRate: backend.totalTests
+          ? Math.round((backend.passingTests / backend.totalTests) * 100)
+          : 0,
+      },
+      status: backend.status || 'unknown',
+      lastMeasured: backend.lastMeasured,
+      notes: backend.notes,
+    },
+    overall: {
+      coverage: metrics.reduce((acc, m) => ({
+        ...acc,
+        [m]: overall[m],
+      }), {}),
+      tests: {
+        total: overall.totalTests || 0,
+        passing: overall.passingTests || 0,
+        failing: overall.failingTests || 0,
+        skipped: overall.skippedTests || 0,
+      },
+      status: overall.status || 'unknown',
+      lastMeasured: overall.lastMeasured,
+    },
+    analysis: {
+      frontendLeading: frontend.lines > backend.lines,
+      frontendGap: Math.round((frontend.lines || 0) - (backend.lines || 0) * 10) / 10,
+      strongestArea: 'frontend',
+      needsAttention: backend.lines < (backendThresholds.lines || 80) ? 'backend' : 'none',
+      recommendation: backend.lines < (backendThresholds.lines || 80)
+        ? '⚠️ Backend coverage below threshold - prioritize backend test improvements'
+        : '✅ All areas meeting thresholds',
+    },
+  };
+
+  return comparison;
+}
+
+/**
+ * Get historical trends and projections
+ */
+function getCoverageTrendsDetailed() {
+  const data = getCoverageData();
+  if (data.error) return data;
+
+  const { current, history } = data;
+  if (!history || history.length === 0) {
+    return {
+      message: 'No historical data available',
+      current: current.frontend || current.coverage,
+      suggestion: 'Historical tracking starts after multiple test runs',
+    };
+  }
+
+  // Sort history by date (newest first)
+  const sorted = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Get recent and older entries
+  const recent = sorted[0];
+  const older = sorted[sorted.length - 1];
+
+  const frontend = current.frontend || {};
+  const recentFrontend = recent.frontend || {};
+
+  const trends = {
+    timeline: {
+      earliest: older.date,
+      latest: recent.date,
+      current: new Date().toISOString().split('T')[0],
+      recordsAvailable: history.length,
+    },
+    frontend: {
+      current: frontend.lines,
+      previousRecord: recentFrontend.lines,
+      change: Math.round((frontend.lines - (recentFrontend.lines || 0)) * 100) / 100,
+      trend: frontend.lines > (recentFrontend.lines || 0) ? '📈 improving' : '📉 declining',
+      historicalMin: Math.min(...sorted.map((h) => h.frontend?.lines || Infinity)),
+      historicalMax: Math.max(...sorted.map((h) => h.frontend?.lines || -Infinity)),
+    },
+    milestones: history.slice(0, 5).map((h) => ({
+      date: h.date,
+      frontend: h.frontend,
+      backend: h.backend,
+      milestone: h.milestone,
+    })),
+    projection: {
+      weeksAt80: frontend.lines >= 80 ? 'achieved' : 'target',
+      estimatedWeeks: frontend.lines >= 80 ? 0 : Math.ceil((80 - frontend.lines) / 5),
+    },
+  };
+
+  return trends;
+}
+
+/**
  * Suggest test priorities based on coverage + complexity + recency
  */
 function suggestTestPriorities(maxResults = 10) {
@@ -448,53 +683,109 @@ function suggestTestPriorities(maxResults = 10) {
 }
 
 /**
- * Check if coverage meets thresholds
+ * Check if coverage meets thresholds (using config as authoritative source)
  */
 function checkThresholds() {
   const data = getCoverageData();
   if (data.error) return data;
 
-  const { current } = data;
-  const coverage = current.coverage;
+  const { current, thresholds } = data;
+
+  const frontend = current.frontend || {};
+  const backend = current.backend || {};
+  const overall = current.overall || {};
+
+  const frontendThresholds = thresholds?.frontend || {};
+  const backendThresholds = thresholds?.backend || {};
+  const overallThresholds = thresholds?.overall || {};
 
   const results = {
+    timestamp: new Date().toISOString(),
     frontend: {
-      statements: {
-        current: coverage.statements,
-        threshold: THRESHOLDS.frontend.statements,
-        passing: coverage.statements >= THRESHOLDS.frontend.statements,
+      lines: {
+        current: frontend.lines,
+        threshold: frontendThresholds.lines,
+        passing: frontend.lines >= (frontendThresholds.lines || 0),
       },
       branches: {
-        current: coverage.branches,
-        threshold: THRESHOLDS.frontend.branches,
-        passing: coverage.branches >= THRESHOLDS.frontend.branches,
+        current: frontend.branches,
+        threshold: frontendThresholds.branches,
+        passing: frontend.branches >= (frontendThresholds.branches || 0),
       },
       functions: {
-        current: coverage.functions,
-        threshold: THRESHOLDS.frontend.functions,
-        passing: coverage.functions >= THRESHOLDS.frontend.functions,
+        current: frontend.functions,
+        threshold: frontendThresholds.functions,
+        passing: frontend.functions >= (frontendThresholds.functions || 0),
       },
+      statements: {
+        current: frontend.statements,
+        threshold: frontendThresholds.statements,
+        passing: frontend.statements >= (frontendThresholds.statements || 0),
+      },
+    },
+    backend: {
       lines: {
-        current: coverage.lines,
-        threshold: THRESHOLDS.frontend.lines,
-        passing: coverage.lines >= THRESHOLDS.frontend.lines,
+        current: backend.lines,
+        threshold: backendThresholds.lines,
+        passing: backend.lines >= (backendThresholds.lines || 0),
+      },
+      branches: {
+        current: backend.branches,
+        threshold: backendThresholds.branches,
+        passing: backend.branches >= (backendThresholds.branches || 0),
+      },
+      functions: {
+        current: backend.functions,
+        threshold: backendThresholds.functions,
+        passing: backend.functions >= (backendThresholds.functions || 0),
+      },
+      statements: {
+        current: backend.statements,
+        threshold: backendThresholds.statements,
+        passing: backend.statements >= (backendThresholds.statements || 0),
       },
     },
     overall: {
-      current: coverage.statements,
-      threshold: THRESHOLDS.overall,
-      passing: coverage.statements >= THRESHOLDS.overall,
+      lines: {
+        current: overall.lines,
+        threshold: overallThresholds.lines,
+        passing: overall.lines >= (overallThresholds.lines || 0),
+      },
+      branches: {
+        current: overall.branches,
+        threshold: overallThresholds.branches,
+        passing: overall.branches >= (overallThresholds.branches || 0),
+      },
+      functions: {
+        current: overall.functions,
+        threshold: overallThresholds.functions,
+        passing: overall.functions >= (overallThresholds.functions || 0),
+      },
+      statements: {
+        current: overall.statements,
+        threshold: overallThresholds.statements,
+        passing: overall.statements >= (overallThresholds.statements || 0),
+      },
     },
   };
 
-  const allPassing = Object.values(results.frontend).every((r) => r.passing);
+  // Calculate overall pass status
+  const frontendPassing = Object.values(results.frontend).every((m) => m.passing);
+  const backendPassing = Object.values(results.backend).every((m) => m.passing);
+  const overallPassing = Object.values(results.overall).every((m) => m.passing);
 
   return {
     ...results,
-    allPassing,
-    summary: allPassing
-      ? '✅ All coverage thresholds met'
-      : '⚠️ Some coverage thresholds not met',
+    summary: {
+      frontendPassing,
+      backendPassing,
+      overallPassing,
+      allPassing: frontendPassing && backendPassing && overallPassing,
+    },
+    recommendation:
+      frontendPassing && backendPassing && overallPassing
+        ? '✅ All coverage thresholds met - ready to merge'
+        : '⚠️ Some coverage thresholds not met - review before merging',
   };
 }
 
@@ -518,7 +809,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'get_coverage_summary',
         description:
-          'Get current test coverage summary with overall metrics, test counts, and threshold status',
+          'Get current test coverage summary with frontend/backend breakdown, thresholds, and test counts',
         inputSchema: {
           type: 'object',
           properties: {},
@@ -542,7 +833,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'get_coverage_trends',
         description:
-          'Get coverage trends comparing current vs historical data',
+          'Get coverage trends comparing current vs historical data with projections',
         inputSchema: {
           type: 'object',
           properties: {},
@@ -567,7 +858,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'check_coverage_thresholds',
         description:
-          'Check if current coverage meets configured thresholds for frontend, backend, and overall',
+          'Check if current coverage meets configured thresholds for frontend, backend, and overall - uses config/coverage.config.json as authoritative source',
         inputSchema: {
           type: 'object',
           properties: {},
@@ -597,6 +888,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_detailed_comparison',
+        description:
+          'Get detailed side-by-side comparison of frontend vs backend coverage with gap analysis and recommendations',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
+      {
+        name: 'get_coverage_trends_detailed',
+        description:
+          'Get historical coverage trends with milestones, projections, and improvement tracking',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -618,7 +927,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         break;
 
       case 'get_coverage_trends':
-        result = getCoverageTrends();
+        result = getCoverageTrendsDetailed();
         break;
 
       case 'get_file_coverage':
@@ -641,6 +950,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = suggestTestPriorities(args?.maxResults || 10);
         break;
 
+      case 'get_detailed_comparison':
+        result = getDetailedComparison();
+        break;
+
+      case 'get_coverage_trends_detailed':
+        result = getCoverageTrendsDetailed();
+        break;
+
       default:
         result = createError(`Unknown tool: ${name}`, {
           availableTools: [
@@ -651,6 +968,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             'check_coverage_thresholds',
             'get_coverage_by_category',
             'suggest_test_priorities',
+            'get_detailed_comparison',
+            'get_coverage_trends_detailed',
           ],
         });
     }
@@ -672,6 +991,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               error: `Tool execution failed: ${error.message}`,
               tool: name,
+              stack: error.stack,
             },
             null,
             2
@@ -690,7 +1010,8 @@ async function main() {
 
   // Log to stderr (stdout is for MCP protocol)
   console.error('Lokifi Coverage MCP Server running');
-  console.error(`Coverage data: ${COVERAGE_DATA_PATH}`);
+  console.error(`Authoritative config: ${COVERAGE_CONFIG_PATH}`);
+  console.error(`Fallback dashboard: ${COVERAGE_DASHBOARD_PATH}`);
 }
 
 main().catch((error) => {
