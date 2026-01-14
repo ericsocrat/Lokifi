@@ -12,6 +12,11 @@ from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.cached_queries import (
+    get_portfolio_positions,
+    get_position_by_symbol,
+    get_user_by_handle,
+)
 from app.core.redis_cache import cache_portfolio_data
 from app.db.db import get_session, init_db
 from app.db.models import PortfolioPosition, User
@@ -66,11 +71,7 @@ class ImportTextPayload(BaseModel):
     csv_text: str = Field(..., description="CSV headers: symbol,qty,cost_basis,tags")
 
 
-def _user_by_handle(db: Session, handle: str) -> User:
-    u = db.execute(select(User).where(User.handle == handle)).scalar_one_or_none()
-    if not u:
-        raise HTTPException(status_code=404, detail="User not found")
-    return u
+# Phase 4b-2: Removed _user_by_handle - now using cached get_user_by_handle
 
 
 def _tags_to_str(tags: list[str] | None) -> str | None:
@@ -159,14 +160,9 @@ def list_positions(
 ):
     me = require_handle(authorization, handle)
     with get_session() as db:
-        u = _user_by_handle(db, me)
-        rows = (
-            db.execute(
-                select(PortfolioPosition).where(PortfolioPosition.user_id == u.id)
-            )
-            .scalars()
-            .all()
-        )
+        # Phase 4b-2: Use cached queries (MEDIUM_TERM, 300s)
+        u = get_user_by_handle(db, me)
+        rows = get_portfolio_positions(db, u.id)
         out: list[PositionOut] = []
         for r in rows:
             comp = _compute_fields(r)
@@ -193,13 +189,9 @@ async def add_or_update_position(
 ):
     me = require_handle(authorization, payload.handle)
     with get_session() as db:
-        u = _user_by_handle(db, me)
-        existing = db.execute(
-            select(PortfolioPosition).where(
-                PortfolioPosition.user_id == u.id,
-                PortfolioPosition.symbol == payload.symbol,
-            )
-        ).scalar_one_or_none()
+        # Phase 4b-2: Use cached queries (MEDIUM_TERM, 300s)
+        u = get_user_by_handle(db, me)
+        existing = get_position_by_symbol(db, u.id, payload.symbol)
         now = datetime.now(timezone.utc)
         if existing:
             existing.qty = payload.qty
@@ -242,7 +234,9 @@ def delete_position(
 ):
     me = require_handle(authorization, handle)
     with get_session() as db:
-        u = _user_by_handle(db, me)
+        # Phase 4b-2: Use cached query for user lookup (MEDIUM_TERM, 300s)
+        u = get_user_by_handle(db, me)
+        # Note: Position deletion still uses direct query (no cache for delete operations)
         row = db.execute(
             select(PortfolioPosition).where(
                 PortfolioPosition.id == position_id, PortfolioPosition.user_id == u.id
@@ -297,14 +291,9 @@ def portfolio_summary(
 ):
     me = require_handle(authorization, handle)
     with get_session() as db:
-        u = _user_by_handle(db, me)
-        rows = (
-            db.execute(
-                select(PortfolioPosition).where(PortfolioPosition.user_id == u.id)
-            )
-            .scalars()
-            .all()
-        )
+        # Phase 4b-2: Use cached queries (MEDIUM_TERM, 300s)
+        u = get_user_by_handle(db, me)
+        rows = get_portfolio_positions(db, u.id)
 
     total_cost = 0.0
     total_value = 0.0
