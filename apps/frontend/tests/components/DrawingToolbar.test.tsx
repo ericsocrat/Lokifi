@@ -15,6 +15,15 @@ const { mockDrawingStore } = vi.hoisted(() => ({
 
 vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingStore: () => mockDrawingStore,
+  useDrawingObjects: () => [],
+  useDrawingActiveTool: () => 'cursor',
+  useDrawingIsDrawing: () => false,
+  useDrawingSelectedObjectId: () => null,
+  useDrawingCurrentDrawing: () => null,
+  useDrawingDraggedObjectId: () => null,
+  useDrawingSnapSettings: () => ({ snap: false }),
+  useDrawingMagnetMode: () => false,
+  useDrawingActions: () => ({}),
 }));
 
 describe('DrawingToolbar', () => {

@@ -26,6 +26,15 @@ const { mockDrawingStore, useDrawingStoreMock } = vi.hoisted(() => {
 
 vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingStore: useDrawingStoreMock,
+  useDrawingObjects: () => useDrawingStoreMock().objects,
+  useDrawingActiveTool: () => useDrawingStoreMock().activeTool,
+  useDrawingIsDrawing: () => useDrawingStoreMock().isDrawing,
+  useDrawingSelectedObjectId: () => useDrawingStoreMock().selectedObjectId,
+  useDrawingCurrentDrawing: () => useDrawingStoreMock().currentDrawing,
+  useDrawingDraggedObjectId: () => useDrawingStoreMock().draggedObjectId,
+  useDrawingSnapSettings: () => useDrawingStoreMock().snapSettings,
+  useDrawingMagnetMode: () => useDrawingStoreMock().magnetMode,
+  useDrawingActions: () => useDrawingStoreMock(),
 }));
 
 // Mock ResizeObserver as a proper class

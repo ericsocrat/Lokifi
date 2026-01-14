@@ -32,6 +32,15 @@ const mockPaneStore = {
 
 vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingStore: () => mockDrawingStore,
+  useDrawingObjects: () => [],
+  useDrawingActiveTool: () => 'cursor',
+  useDrawingIsDrawing: () => false,
+  useDrawingSelectedObjectId: () => null,
+  useDrawingCurrentDrawing: () => null,
+  useDrawingDraggedObjectId: () => null,
+  useDrawingSnapSettings: () => ({ snap: false }),
+  useDrawingMagnetMode: () => false,
+  useDrawingActions: () => ({}),
 }));
 
 vi.mock('@/lib/stores/paneStore', () => ({

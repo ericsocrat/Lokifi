@@ -37,6 +37,15 @@ vi.mock('@/lib/stores/drawingStore', () => ({
     updateCurrentDrawingPoint: vi.fn(),
     finishDrawing: vi.fn(),
   }),
+  useDrawingObjects: () => [],
+  useDrawingActiveTool: () => 'cursor',
+  useDrawingIsDrawing: () => false,
+  useDrawingSelectedObjectId: () => null,
+  useDrawingCurrentDrawing: () => null,
+  useDrawingDraggedObjectId: () => null,
+  useDrawingSnapSettings: () => ({ snap: false }),
+  useDrawingMagnetMode: () => false,
+  useDrawingActions: () => ({}),
 }));
 
 vi.mock('@/lib/stores/paneStore', () => ({

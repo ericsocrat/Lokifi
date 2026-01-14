@@ -49,13 +49,33 @@ vi.mock('lightweight-charts', () => {
 });
 
 // Mock the stores with proper paths
-vi.mock('@/lib/stores/drawingStore', () => ({
-  useDrawingStore: vi.fn(() => ({
+vi.mock('@/lib/stores/drawingStore', () => {
+  const mockStore = {
     activeTool: 'cursor',
     objects: [],
     isDrawing: false,
-  })),
-}));
+    selectedObjectId: null,
+    currentDrawing: null,
+    draggedObjectId: null,
+    snapSettings: { snap: false },
+    magnetMode: false,
+  };
+
+  const useStore = () => mockStore;
+
+  return {
+    useDrawingStore: useStore,
+    useDrawingObjects: () => mockStore.objects,
+    useDrawingActiveTool: () => mockStore.activeTool,
+    useDrawingIsDrawing: () => mockStore.isDrawing,
+    useDrawingSelectedObjectId: () => mockStore.selectedObjectId,
+    useDrawingCurrentDrawing: () => mockStore.currentDrawing,
+    useDrawingDraggedObjectId: () => mockStore.draggedObjectId,
+    useDrawingSnapSettings: () => mockStore.snapSettings,
+    useDrawingMagnetMode: () => mockStore.magnetMode,
+    useDrawingActions: () => mockStore,
+  };
+});
 
 vi.mock('@/lib/stores/marketDataStore', () => ({
   useMarketDataStore: vi.fn(() => ({

@@ -25,6 +25,15 @@ const { mockDrawingStore, mockPaneStore, mockSymbolStore, mockTimeframeStore, mo
 
 vi.mock('@/lib/stores/drawingStore', () => ({
   useDrawingStore: () => mockDrawingStore,
+  useDrawingObjects: () => [],
+  useDrawingActiveTool: () => 'cursor',
+  useDrawingIsDrawing: () => false,
+  useDrawingSelectedObjectId: () => null,
+  useDrawingCurrentDrawing: () => null,
+  useDrawingDraggedObjectId: () => null,
+  useDrawingSnapSettings: () => ({ snap: false }),
+  useDrawingMagnetMode: () => false,
+  useDrawingActions: () => ({}),
 }));
 
 vi.mock('@/lib/stores/paneStore', () => ({
@@ -184,7 +193,7 @@ describe('TradingWorkspace', () => {
       });
 
       render(<TradingWorkspace />);
-      
+
       // Trigger fullscreen change event to update component state
       await act(async () => {
         document.dispatchEvent(new Event('fullscreenchange'));
@@ -213,7 +222,7 @@ describe('TradingWorkspace', () => {
       });
 
       render(<TradingWorkspace />);
-      
+
       // Trigger fullscreen change event to update component state
       await act(async () => {
         document.dispatchEvent(new Event('fullscreenchange'));
@@ -297,10 +306,7 @@ describe('TradingWorkspace', () => {
 
       unmount();
 
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'fullscreenchange',
-        expect.any(Function)
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalledWith('fullscreenchange', expect.any(Function));
       expect(removeEventListenerSpy).toHaveBeenCalledWith(
         'webkitfullscreenchange',
         expect.any(Function)
