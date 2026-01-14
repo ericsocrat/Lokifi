@@ -13,6 +13,7 @@ __all__ = ["router"]
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.advanced_redis_client import advanced_redis_client
+from app.core.query_cache import get_cache_stats, invalidate_cache_pattern  # Phase 4a-4
 from app.core.security import get_current_user
 from app.services.advanced_monitoring import monitoring_system
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
@@ -135,37 +136,85 @@ async def get_active_connections(current_user: dict = Depends(get_current_user))
 
 @router.get("/cache/metrics")
 async def get_cache_metrics():
-    """Get Redis cache performance metrics"""
+    """Get comprehensive cache performance metrics (Redis + Query Cache)"""
     try:
-        metrics = await advanced_redis_client.get_metrics()
+        # Get Redis cache metrics
+        redis_metrics = await advanced_redis_client.get_metrics()
 
-        return {"status": "success", "data": metrics}
+        # Get dogpile query cache metrics (Phase 4a-4) - ASYNC!
+        query_cache_stats = await get_cache_stats()
+
+        # Calculate cache hit rates (using correct keys from get_cache_stats)
+        query_total = (
+            query_cache_stats["total_hits"] + query_cache_stats["total_misses"]
+        )
+        query_hit_rate = (
+            (query_cache_stats["total_hits"] / query_total * 100)
+            if query_total > 0
+            else 0.0
+        )
+
+        # Per-region hit rates
+        region_hit_rates = {}
+        for region_name, region_stats in query_cache_stats.get("by_region", {}).items():
+            region_total = region_stats["hits"] + region_stats["misses"]
+            region_hit_rates[region_name] = (
+                (region_stats["hits"] / region_total * 100) if region_total > 0 else 0.0
+            )
+
+        # Combine metrics
+        combined_metrics = {
+            "redis": redis_metrics,
+            "query_cache": {
+                "stats": query_cache_stats,
+                "hit_rate_percentage": round(query_hit_rate, 2),
+                "region_hit_rates": {
+                    k: round(v, 2) for k, v in region_hit_rates.items()
+                },
+                "total_queries": query_total,
+                "cache_effectiveness": (
+                    "excellent"
+                    if query_hit_rate >= 80
+                    else (
+                        "good"
+                        if query_hit_rate >= 60
+                        else "moderate" if query_hit_rate >= 40 else "needs_improvement"
+                    )
+                ),
+            },
+        }
+
+        return {"status": "success", "data": combined_metrics}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get cache metrics: {e}")
 
 
 @router.post("/cache/invalidate")
-async def invalidate_cache_pattern(
+async def invalidate_cache(
     pattern: str = Query(..., description="Cache key pattern to invalidate"),
     layer: str | None = Query(None, description="Specific cache layer"),
     current_user: dict = Depends(get_current_user),
 ):
-    """Invalidate cache keys matching pattern (admin only)"""
+    """Invalidate cache keys matching pattern (admin only) - Both Redis & Query Cache"""
     try:
         # Check if user is admin
         if current_user.get("handle") != "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
 
-        invalidated_count = await advanced_redis_client.invalidate_pattern(
-            pattern, layer
-        )
+        # Invalidate Redis cache
+        redis_count = await advanced_redis_client.invalidate_pattern(pattern, layer)
+
+        # Invalidate dogpile query cache (Phase 4a-4) - ASYNC!
+        query_cache_result = await invalidate_cache_pattern(pattern)
 
         return {
             "status": "success",
             "data": {
                 "pattern": pattern,
                 "layer": layer,
-                "invalidated_count": invalidated_count,
+                "redis_invalidated_count": redis_count,
+                "query_cache_result": query_cache_result,
+                "message": f"Invalidated {redis_count} Redis keys and query cache pattern '{pattern}'",
             },
         }
     except HTTPException:

@@ -26,7 +26,7 @@ from app.api.routes.monitoring import (
     get_system_health,
     get_system_metrics,
     get_websocket_analytics,
-    invalidate_cache_pattern,
+    invalidate_cache,  # Function renamed in Phase 4a-4
     start_monitoring,
     stop_monitoring,
     websocket_load_test,
@@ -330,26 +330,44 @@ class TestGetCacheMetrics:
 
     @pytest.mark.asyncio
     async def test_returns_cache_metrics_successfully(self) -> None:
-        """Should return Redis cache metrics"""
+        """Should return combined Redis + Query cache metrics"""
         # Arrange
-        mock_metrics = {
+        mock_redis_metrics = {
             "hit_ratio": 85.5,
             "total_keys": 1000,
             "memory_usage": "2.5MB",
             "operations_per_second": 500,
         }
+        mock_query_cache_stats = {
+            "total_hits": 100,
+            "total_misses": 20,
+            "invalidations": 5,
+            "by_region": {
+                "short_term": {"hits": 30, "misses": 5},
+                "medium_term": {"hits": 50, "misses": 10},
+                "long_term": {"hits": 20, "misses": 5},
+            },
+        }
 
         with patch("app.api.routes.monitoring.advanced_redis_client") as mock_client:
-            mock_client.get_metrics = AsyncMock(return_value=mock_metrics)
+            with patch("app.api.routes.monitoring.get_cache_stats") as mock_cache_stats:
+                mock_client.get_metrics = AsyncMock(return_value=mock_redis_metrics)
+                mock_cache_stats.return_value = mock_query_cache_stats
 
-            # Act
-            result = await get_cache_metrics()
+                # Act
+                result = await get_cache_metrics()
 
-            # Assert
-            assert result["status"] == "success"
-            assert result["data"]["hit_ratio"] == 85.5
-            assert result["data"]["total_keys"] == 1000
-            mock_client.get_metrics.assert_called_once()
+                # Assert
+                assert result["status"] == "success"
+                # Redis metrics
+                assert result["data"]["redis"]["hit_ratio"] == 85.5
+                assert result["data"]["redis"]["total_keys"] == 1000
+                # Query cache metrics
+                assert "query_cache" in result["data"]
+                assert result["data"]["query_cache"]["total_queries"] == 120
+                assert "hit_rate_percentage" in result["data"]["query_cache"]
+                mock_client.get_metrics.assert_called_once()
+                mock_cache_stats.assert_called_once()
 
 
 # ============================================================================
@@ -370,14 +388,23 @@ class TestInvalidateCachePattern:
             mock_client.invalidate_pattern = AsyncMock(return_value=15)
 
             # Act
-            result = await invalidate_cache_pattern(
-                pattern="user:*", current_user=mock_admin_user
-            )
+            # Phase 4a-4: Also mock invalidate_cache_pattern from query_cache (ASYNC!)
+            with patch(
+                "app.api.routes.monitoring.invalidate_cache_pattern"
+            ) as mock_query_cache:
+                mock_query_cache.return_value = AsyncMock(
+                    return_value=3
+                )()  # Returns count of invalidations
 
-            # Assert
-            assert result["status"] == "success"
-            assert result["data"]["pattern"] == "user:*"
-            assert result["data"]["invalidated_count"] == 15
+                result = await invalidate_cache(
+                    pattern="user:*", current_user=mock_admin_user
+                )
+
+                # Assert
+                assert result["status"] == "success"
+                assert result["data"]["pattern"] == "user:*"
+                assert result["data"]["redis_invalidated_count"] == 15
+                mock_query_cache.assert_called_once_with("user:*")
             # FastAPI Query(None) wraps None in Query object, check positional args
             call_args = mock_client.invalidate_pattern.call_args
             assert call_args[0][0] == "user:*"  # pattern argument
@@ -390,9 +417,7 @@ class TestInvalidateCachePattern:
         """Should deny non-admin access to cache invalidation"""
         # Act & Assert
         with pytest.raises(HTTPException) as exc_info:
-            await invalidate_cache_pattern(
-                pattern="test:*", current_user=mock_regular_user
-            )
+            await invalidate_cache(pattern="test:*", current_user=mock_regular_user)
 
         assert exc_info.value.status_code == 403
         assert "Admin access required" in str(exc_info.value.detail)
@@ -407,13 +432,18 @@ class TestInvalidateCachePattern:
             mock_client.invalidate_pattern = AsyncMock(return_value=5)
 
             # Act
-            result = await invalidate_cache_pattern(
-                pattern="api:*", layer="L1", current_user=mock_admin_user
-            )
+            with patch(
+                "app.api.routes.monitoring.invalidate_cache_pattern"
+            ) as mock_query_cache:
+                mock_query_cache.return_value = AsyncMock(return_value=2)()
 
-            # Assert
-            assert result["data"]["layer"] == "L1"
-            mock_client.invalidate_pattern.assert_called_once_with("api:*", "L1")
+                result = await invalidate_cache(
+                    pattern="api:*", layer="L1", current_user=mock_admin_user
+                )
+
+                # Assert
+                assert result["data"]["layer"] == "L1"
+                mock_client.invalidate_pattern.assert_called_once_with("api:*", "L1")
 
 
 # ============================================================================
@@ -738,10 +768,15 @@ class TestMonitoringIntegration:
             mock_system.alert_manager = mock_alert_manager
 
             # Act - Invalidate cache
-            cache_result = await invalidate_cache_pattern(
-                pattern="test:*", current_user=mock_admin_user
-            )
-            assert cache_result["data"]["invalidated_count"] == 10
+            with patch(
+                "app.api.routes.monitoring.invalidate_cache_pattern"
+            ) as mock_query_cache:
+                mock_query_cache.return_value = AsyncMock(return_value=3)()
+
+                cache_result = await invalidate_cache(
+                    pattern="test:*", current_user=mock_admin_user
+                )
+                assert cache_result["data"]["redis_invalidated_count"] == 10
 
             # Act - View alerts
             alerts_result = await get_alerts(current_user=mock_admin_user)
@@ -786,12 +821,17 @@ class TestMonitoringEdgeCases:
             mock_client.invalidate_pattern = AsyncMock(return_value=0)
 
             # Act
-            result = await invalidate_cache_pattern(
-                pattern="nonexistent:*", current_user=mock_admin_user
-            )
+            with patch(
+                "app.api.routes.monitoring.invalidate_cache_pattern"
+            ) as mock_query_cache:
+                mock_query_cache.return_value = AsyncMock(return_value=0)()
 
-            # Assert
-            assert result["data"]["invalidated_count"] == 0
+                result = await invalidate_cache(
+                    pattern="nonexistent:*", current_user=mock_admin_user
+                )
+
+                # Assert
+                assert result["data"]["redis_invalidated_count"] == 0
 
     @pytest.mark.asyncio
     async def test_respects_alert_limit_parameter(
