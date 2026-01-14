@@ -11,12 +11,11 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
+    CallToolRequestSchema,
+    ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { execSync } from 'child_process';
-import { existsSync, readFileSync } from 'fs';
-import { join, dirname } from 'path';
+import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -103,7 +102,7 @@ function getWorkflowLogs({ run_id, job_name, failed_only = true }) {
         logs = execGH(`run view ${run_id} --log --job=${job.databaseId}`, {
           maxBuffer: 50 * 1024 * 1024, // 50MB for logs
         });
-        
+
         // Extract error patterns
         const errorLines = logs
           .split('\n')

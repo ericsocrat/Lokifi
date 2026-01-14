@@ -6,8 +6,8 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
+from app.core.cached_queries import get_market_ohlc
 from app.services.errors import NotFoundError, ProviderError
-from app.services.prices import get_ohlc as fetch_ohlc
 
 router = APIRouter()
 
@@ -24,7 +24,7 @@ async def get_ohlc(
     limit: int = Query(500, ge=1, le=5000, description="Number of bars"),
 ) -> list[dict[str, Any]]:
     try:
-        return await fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=limit)
+        return await get_market_ohlc(symbol=symbol, timeframe=timeframe, limit=limit)
     except NotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except ProviderError as e:

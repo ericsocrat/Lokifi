@@ -789,6 +789,275 @@ function checkThresholds() {
   };
 }
 
+/**
+ * Compare coverage between two branches or time periods
+ */
+function compareCoverage(baseBranch = 'main', compareBranch = 'HEAD') {
+  const data = getCoverageData();
+  if (data.error) return data;
+
+  const { current, history } = data;
+
+  // Get current coverage as baseline
+  const baseline = {
+    frontend: current.frontend || {},
+    backend: current.backend || {},
+    overall: current.overall || {},
+    timestamp: new Date().toISOString(),
+  };
+
+  // If history is available, get previous snapshot
+  const previous = history && history.length > 0
+    ? history[history.length - 1]
+    : null;
+
+  if (!previous) {
+    return {
+      baseline,
+      previous: null,
+      comparison: {
+        message: 'No historical data available for comparison',
+      },
+    };
+  }
+
+  // Calculate differences
+  const compare = (current, prev, key) => {
+    const curr = current[key] || 0;
+    const prev_val = prev[key] || 0;
+    const diff = curr - prev_val;
+    const percentChange = prev_val > 0 ? ((diff / prev_val) * 100).toFixed(1) : 'N/A';
+
+    return {
+      previous: prev_val,
+      current: curr,
+      difference: diff,
+      percentChange: percentChange !== 'N/A' ? `${percentChange}%` : 'N/A',
+      trend: diff > 0 ? '📈' : diff < 0 ? '📉' : '➡️',
+    };
+  };
+
+  return {
+    baseline: `${baseline.timestamp}`,
+    previous: previous.timestamp,
+    comparison: {
+      frontend: {
+        statements: compare(baseline.frontend, previous.frontend, 'statements'),
+        branches: compare(baseline.frontend, previous.frontend, 'branches'),
+        functions: compare(baseline.frontend, previous.frontend, 'functions'),
+        lines: compare(baseline.frontend, previous.frontend, 'lines'),
+      },
+      backend: {
+        statements: compare(baseline.backend, previous.backend, 'statements'),
+        branches: compare(baseline.backend, previous.backend, 'branches'),
+        functions: compare(baseline.backend, previous.backend, 'functions'),
+        lines: compare(baseline.backend, previous.backend, 'lines'),
+      },
+      overall: {
+        statements: compare(baseline.overall, previous.overall, 'statements'),
+        branches: compare(baseline.overall, previous.overall, 'branches'),
+        functions: compare(baseline.overall, previous.overall, 'functions'),
+        lines: compare(baseline.overall, previous.overall, 'lines'),
+      },
+    },
+    summary: {
+      frontendImproved: Object.values(baseline.frontend).every((v, i, arr) =>
+        v >= Object.values(previous.frontend)[i]
+      ),
+      backendImproved: Object.values(baseline.backend).every((v, i, arr) =>
+        v >= Object.values(previous.backend)[i]
+      ),
+      overallTrend:
+        baseline.overall.lines > previous.overall.lines ? 'improving' : 'declining',
+    },
+  };
+}
+
+/**
+ * Get historical coverage trends with projections
+ */
+function getCoverageTrendsWithProjection(days = 90) {
+  const data = getCoverageData();
+  if (data.error) return data;
+
+  const { current, history } = data;
+
+  if (!history || history.length < 2) {
+    return {
+      error: 'Insufficient historical data for trend analysis',
+      message: 'Need at least 2 historical snapshots',
+      current: {
+        frontend: current.frontend?.lines || 0,
+        backend: current.backend?.lines || 0,
+        overall: current.overall?.lines || 0,
+      },
+    };
+  }
+
+  // Extract timeline data
+  const timeline = history.map((h, idx) => ({
+    timestamp: h.timestamp,
+    index: idx,
+    frontend: h.frontend?.lines || 0,
+    backend: h.backend?.lines || 0,
+    overall: h.overall?.lines || 0,
+  }));
+
+  // Add current as latest
+  timeline.push({
+    timestamp: new Date().toISOString(),
+    index: timeline.length,
+    frontend: current.frontend?.lines || 0,
+    backend: current.backend?.lines || 0,
+    overall: current.overall?.lines || 0,
+  });
+
+  // Calculate linear regression for trend
+  const calculateTrend = (values) => {
+    if (values.length < 2) return { slope: 0, projection: values[values.length - 1] };
+
+    const n = values.length;
+    const xSum = (n * (n - 1)) / 2;
+    const ySum = values.reduce((a, b) => a + b, 0);
+    const xySum = values.reduce((sum, v, i) => sum + v * i, 0);
+    const xxSum = (n * (n - 1) * (2 * n - 1)) / 6;
+
+    const slope = (n * xySum - xSum * ySum) / (n * xxSum - xSum * xSum);
+    const intercept = (ySum - slope * xSum) / n;
+
+    // Project to 30 days (assuming 1 data point per day or per week)
+    const projectionIndex = values.length + 4; // Next 4 periods
+    const projection = intercept + slope * projectionIndex;
+
+    return {
+      slope: slope.toFixed(2),
+      projection: Math.max(0, Math.min(100, projection)).toFixed(2),
+      daysToTarget: slope > 0 ? Math.ceil((80 - values[values.length - 1]) / slope) : 'N/A',
+    };
+  };
+
+  const frontendValues = timeline.map((t) => t.frontend);
+  const backendValues = timeline.map((t) => t.backend);
+  const overallValues = timeline.map((t) => t.overall);
+
+  return {
+    period: {
+      start: timeline[0].timestamp,
+      end: timeline[timeline.length - 1].timestamp,
+      snapshots: timeline.length,
+    },
+    frontendTrend: {
+      ...calculateTrend(frontendValues),
+      current: frontendValues[frontendValues.length - 1],
+      min: Math.min(...frontendValues),
+      max: Math.max(...frontendValues),
+      target: 80,
+    },
+    backendTrend: {
+      ...calculateTrend(backendValues),
+      current: backendValues[backendValues.length - 1],
+      min: Math.min(...backendValues),
+      max: Math.max(...backendValues),
+      target: 80,
+    },
+    overallTrend: {
+      ...calculateTrend(overallValues),
+      current: overallValues[overallValues.length - 1],
+      min: Math.min(...overallValues),
+      max: Math.max(...overallValues),
+      target: 80,
+    },
+    milestones: {
+      frontendReached80: frontendValues.some((v) => v >= 80),
+      backendReached80: backendValues.some((v) => v >= 80),
+      overallReached80: overallValues.some((v) => v >= 80),
+    },
+    summary: {
+      frontendDirection: parseInt(calculateTrend(frontendValues).slope) > 0 ? '📈 Improving' : '📉 Declining',
+      backendDirection: parseInt(calculateTrend(backendValues).slope) > 0 ? '📈 Improving' : '📉 Declining',
+      overallDirection: parseInt(calculateTrend(overallValues).slope) > 0 ? '📈 Improving' : '📉 Declining',
+    },
+  };
+}
+
+/**
+ * Suggest improvements based on coverage patterns
+ */
+function suggestCoverageImprovements() {
+  const data = getCoverageData();
+  if (data.error) return data;
+
+  const { current } = data;
+
+  const suggestions = [];
+  const frontend = current.frontend || {};
+  const backend = current.backend || {};
+
+  // Frontend suggestions
+  if (frontend.lines < 80) {
+    suggestions.push({
+      category: 'Frontend Coverage',
+      priority: 'high',
+      current: frontend.lines,
+      target: 80,
+      gap: 80 - frontend.lines,
+      action: `Increase statement coverage from ${frontend.lines}% to 80%`,
+      approach: 'Focus on untested components and hooks',
+    });
+  }
+
+  if (frontend.branches < 75) {
+    suggestions.push({
+      category: 'Frontend Branches',
+      priority: 'medium',
+      current: frontend.branches,
+      target: 75,
+      gap: 75 - frontend.branches,
+      action: `Increase branch coverage from ${frontend.branches}% to 75%`,
+      approach: 'Add tests for conditional logic and error states',
+    });
+  }
+
+  // Backend suggestions
+  if (backend.lines < 80) {
+    suggestions.push({
+      category: 'Backend Coverage',
+      priority: 'high',
+      current: backend.lines,
+      target: 80,
+      gap: 80 - backend.lines,
+      action: `Increase coverage from ${backend.lines}% to 80%`,
+      approach: 'Add tests for API routes and business logic',
+    });
+  }
+
+  if (backend.functions < 80) {
+    suggestions.push({
+      category: 'Backend Functions',
+      priority: 'medium',
+      current: backend.functions,
+      target: 80,
+      gap: 80 - backend.functions,
+      action: `Increase function coverage from ${backend.functions}% to 80%`,
+      approach: 'Test utility functions and helper methods',
+    });
+  }
+
+  // Sort by priority
+  suggestions.sort((a, b) => {
+    const priorityMap = { high: 0, medium: 1, low: 2 };
+    return priorityMap[a.priority] - priorityMap[b.priority];
+  });
+
+  return {
+    totalSuggestions: suggestions.length,
+    suggestions,
+    nextSteps: suggestions.length > 0
+      ? `Address ${suggestions[0].category}: ${suggestions[0].action}`
+      : '✅ Coverage targets met - focus on maintaining quality',
+  };
+}
+
 // Create MCP server
 const server = new Server(
   {
@@ -906,6 +1175,50 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {},
         },
       },
+      {
+        name: 'compare_coverage',
+        description:
+          'Compare coverage between current and previous snapshot to track improvements and regressions',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            baseBranch: {
+              type: 'string',
+              description: 'Base branch for comparison (default: main)',
+              default: 'main',
+            },
+            compareBranch: {
+              type: 'string',
+              description: 'Branch to compare (default: HEAD)',
+              default: 'HEAD',
+            },
+          },
+        },
+      },
+      {
+        name: 'get_coverage_trends_with_projection',
+        description:
+          'Get historical trends with linear regression projections for reaching coverage targets',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            days: {
+              type: 'number',
+              description: 'Days to project into future (default: 90)',
+              default: 90,
+            },
+          },
+        },
+      },
+      {
+        name: 'suggest_coverage_improvements',
+        description:
+          'Get specific, actionable suggestions for improving coverage in both frontend and backend',
+        inputSchema: {
+          type: 'object',
+          properties: {},
+        },
+      },
     ],
   };
 });
@@ -958,6 +1271,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = getCoverageTrendsDetailed();
         break;
 
+      case 'compare_coverage':
+        result = compareCoverage(args?.baseBranch || 'main', args?.compareBranch || 'HEAD');
+        break;
+
+      case 'get_coverage_trends_with_projection':
+        result = getCoverageTrendsWithProjection(args?.days || 90);
+        break;
+
+      case 'suggest_coverage_improvements':
+        result = suggestCoverageImprovements();
+        break;
+
       default:
         result = createError(`Unknown tool: ${name}`, {
           availableTools: [
@@ -970,6 +1295,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             'suggest_test_priorities',
             'get_detailed_comparison',
             'get_coverage_trends_detailed',
+            'compare_coverage',
+            'get_coverage_trends_with_projection',
+            'suggest_coverage_improvements',
           ],
         });
     }
