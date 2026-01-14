@@ -22,6 +22,46 @@
 
 ---
 
+### Session 143 – January 14, 2026 ✅ (COMPLETE - Phase 4d + 4e)
+**Focus**: Phase 4d Mutation Cache Invalidation + Phase 4e Cache Observability
+**Objective**: Complete Phase 4 caching infrastructure with invalidation & monitoring
+**Status**: COMPLETE ✅
+
+**Phase 4d: Mutation Cache Invalidation (COMPLETE ✅)**
+- ✅ Phase 4d-1: Portfolio mutations cache invalidation (add/update/delete/import)
+- ✅ Phase 4d-2: Social mutations cache invalidation (follow/unfollow/post creation)
+- ✅ Phase 4d-3: Route audit (confirmed crypto/market/chat/auth/security require no additional invalidation)
+- ✅ Documentation: Phase 4d marked complete in checklists.md
+
+**Phase 4e: Cache Observability & Monitoring (COMPLETE ✅)**
+- ✅ Enhanced cache statistics with per-function metrics
+- ✅ Added uptime tracking and request rate calculations
+- ✅ Top 10 most effective cached functions tracking
+- ✅ Enhanced per-region statistics with request counts
+- ✅ Monitoring endpoint `/api/v1/monitoring/cache/metrics` enhanced
+
+**Commits Pushed:**
+- `df273ce9`: Phase 4d-1 Portfolio mutation cache invalidation
+- `6789d541`: Phase 4d-2 Social mutation cache invalidation
+- `a36d2f24`: Phase 4d-3 Route audit + documentation
+- `cf860ec2`: Mark Phase 4d complete in checklists.md
+- `af3bac74`: Phase 4e-1 Enhanced cache statistics + formatting fixes
+
+**Quality:**
+- Tests: 738/739 backend passed (99.86%), 5,388 frontend passed
+- Coverage: Frontend 89.48%, Backend 81.06% (both above 80% ✅)
+- Lint: 0 Ruff violations, 0 ESLint warnings
+- Pre-commit: All quality gates passing ✅
+
+**Phase 4 Status: ALL COMPLETE 🎉**
+- Phase 4a: Dogpile query caching infrastructure ✅
+- Phase 4b: Core cached queries (user, portfolio, social, feed) ✅
+- Phase 4c: Extended caching (market data, alerts) ✅
+- Phase 4d: Mutation cache invalidation (portfolio, social, alerts) ✅
+- Phase 4e: Cache observability & monitoring ✅
+
+---
+
 ### Session 176 – January 14, 2026 ✅ (COMPLETE - Phase 4b)
 **Focus:** Phase 4b: Route Integration & Production Validation - Complete caching rollout
 **Objective:** Integrate Phase 4a cached queries into all routes (auth, portfolio, social) + production validation
@@ -1533,7 +1573,34 @@ globalAny.Lokifi.plugins = {
 - 🎉 **Phase 4c Extended Caching:** COMPLETE (Market Data + Alerts caching) ✅
 - 🔒 **Security:** Fixed 2 critical log injection vulnerabilities (CodeQL #931, #932) ✅
 - 🚀 **Test Validation:** 738/739 backend tests passing (99.86% pass rate)
-- 🧭 **Phase 4d Kickoff:** Portfolio cache invalidation added on mutations (Redis + dogpile) ✅
+- 🧭 **Phase 4d:** Portfolio + Social cache invalidation complete ✅
+- 📊 **Phase 4e:** Cache observability & monitoring - Enhanced metrics ✅
+
+### 🎉 Phase 4e Cache Observability & Monitoring - COMPLETE ✅
+
+**Focus: Measure Phase 4 caching effectiveness and enable data-driven optimization**
+
+**Phase 4e-1 Complete (Session 143):**
+- ✅ **Enhanced Cache Statistics** (Commit: `af3bac74`)
+  - **Per-function metrics**: Track hits/misses/requests for each cached function
+  - **Uptime tracking**: Calculate cache system uptime and request rates
+  - **Requests per minute**: Real-time throughput metrics
+  - **Enhanced per-region stats**: Added request counts to short/medium/long-term regions
+  - **Top 10 functions**: Identify most/least effective cached queries
+  - **Monitoring endpoint**: `/api/v1/monitoring/cache/metrics` enhanced with new stats
+
+**Benefits:**
+- 🎯 **Identify effectiveness**: See which cached queries provide best ROI
+- 🎯 **Track trends**: Monitor cache performance over time (uptime, request rates)
+- 🎯 **Data-driven decisions**: Optimize cache TTLs based on actual hit rates
+- 🎯 **Measure Phase 4 ROI**: Quantify speedup and database load reduction
+- 🎯 **Backward compatible**: Existing code unaffected, metrics collection automatic
+
+**Quality:**
+- Tests: 738/739 backend (99.86%), 5,388 frontend passing
+- Ruff: 0 violations ✅
+- Black: Formatted ✅
+- Pre-commit: All gates passing ✅
 
 ### 🎉 Phase 4d Mutation Cache Invalidation - COMPLETE ✅
 
