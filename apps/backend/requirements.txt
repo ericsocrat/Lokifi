@@ -144,7 +144,7 @@ sortedcontainers==2.4.0
 SQLAlchemy==2.0.45
 sse-starlette==3.1.2
 starlette-testclient==0.4.1
-starlette>=0.51.0,<0.52.0  # FastAPI 0.128.0 compatibility: requires <0.51.0
+starlette>=0.40.0,<0.51.0  # FastAPI 0.128.0 compatibility
 toml==0.10.2
 tomli==2.4.0
 tqdm==4.67.1
