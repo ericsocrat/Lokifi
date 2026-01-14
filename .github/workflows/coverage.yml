@@ -127,7 +127,7 @@ jobs:
         working-directory: apps/backend
     services:
       postgres:
-        image: postgres:18-alpine
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
