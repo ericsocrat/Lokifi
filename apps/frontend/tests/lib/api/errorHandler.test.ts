@@ -206,7 +206,7 @@ describe('ErrorHandler - API Error Management', () => {
     });
 
     it('should transition to HALF_OPEN after reset timeout', async () => {
-      vi.useFakeTimers();
+      vi.useFakeTimers({ shouldAdvanceTime: true });
 
       const breaker = new CircuitBreaker('test-endpoint', 3, 2, 5000); // 5 second timeout
       const fn = vi.fn(async () => {
@@ -215,26 +215,37 @@ describe('ErrorHandler - API Error Management', () => {
 
       // Trigger OPEN state
       for (let i = 0; i < 3; i++) {
-        await expect(breaker.call(fn)).rejects.toThrow();
+        try {
+          await breaker.call(fn);
+        } catch {
+          // Expected to fail
+        }
       }
 
       expect(breaker.getState()).toBe('OPEN');
 
       // Advance past reset timeout
-      await vi.advanceTimersByTimeAsync(5100);
+      vi.advanceTimersByTime(5100);
 
-      // Next call should attempt (HALF_OPEN state)
-      vi.useRealTimers();
-
-      vi.useFakeTimers();
+      // Next call should attempt and reach HALF_OPEN state
       const fn2 = vi.fn(async () => 'recovered');
       await breaker.call(fn2);
 
-      expect(fn2).toHaveBeenCalled();
+      // After one successful call in HALF_OPEN, we need 2 total to reach CLOSED
+      // So we should still be in HALF_OPEN with successCount=1
+      expect(breaker.getState()).toBe('HALF_OPEN');
+      
+      // One more success should transition to CLOSED
+      const fn3 = vi.fn(async () => 'recovered again');
+      await breaker.call(fn3);
+      
+      expect(breaker.getState()).toBe('CLOSED');
       vi.useRealTimers();
     });
 
     it('should transition to CLOSED after success threshold in HALF_OPEN', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+
       const breaker = new CircuitBreaker('test-endpoint', 2, 2, 1000);
       let callCount = 0;
       const fn = vi.fn(async () => {
@@ -244,22 +255,30 @@ describe('ErrorHandler - API Error Management', () => {
       });
 
       // Trigger OPEN
-      await expect(breaker.call(fn)).rejects.toThrow();
-      await expect(breaker.call(fn)).rejects.toThrow();
+      try {
+        await breaker.call(fn);
+      } catch {
+        // Expected
+      }
+      try {
+        await breaker.call(fn);
+      } catch {
+        // Expected
+      }
       expect(breaker.getState()).toBe('OPEN');
 
-      // Mock time passage
-      vi.useFakeTimers();
-      await vi.advanceTimersByTimeAsync(1100);
+      // Advance past timeout
+      vi.advanceTimersByTime(1100);
 
-      // Next calls should succeed
-      vi.useRealTimers();
-      let testFn = vi.fn(async () => 'ok');
+      // Next calls should succeed and transition to CLOSED
+      const testFn = vi.fn(async () => 'ok');
       await breaker.call(testFn);
-      testFn = vi.fn(async () => 'ok');
-      await breaker.call(testFn);
+      
+      const testFn2 = vi.fn(async () => 'ok');
+      await breaker.call(testFn2);
 
       expect(breaker.getState()).toBe('CLOSED');
+      vi.useRealTimers();
     });
 
     it('should reset circuit breaker', async () => {

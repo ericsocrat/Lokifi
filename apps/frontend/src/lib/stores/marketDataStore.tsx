@@ -245,7 +245,6 @@ export const useMarketDataActions = () =>
 export function useAutoRefresh() {
   const autoRefresh = useMarketDataAutoRefresh();
   const refreshInterval = useMarketDataRefreshInterval();
-  const { fetchOHLCData: _fetchOHLCData } = useMarketDataActions();
 
   React.useEffect(() => {
     if (!autoRefresh) return;
