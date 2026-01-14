@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
 from app.api.routes import (
+    market,
     security,
     social,  # Use comprehensive social router from api/routes
 )
@@ -217,6 +218,7 @@ app.include_router(
     j6_2_router, prefix=settings.API_PREFIX
 )  # Phase J6.2 Advanced Features
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
+app.include_router(market.router, prefix=settings.API_PREFIX)  # Phase 4c Market caching
 app.include_router(news.router, prefix=settings.API_PREFIX)
 app.include_router(social.router, prefix=settings.API_PREFIX)
 app.include_router(portfolio.router, prefix=settings.API_PREFIX)

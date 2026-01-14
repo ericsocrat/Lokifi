@@ -27,6 +27,7 @@ from app.core.query_cache import (
     short_term_cache,
 )
 from app.db.models import Follow, PortfolioPosition, Post, User
+from app.services.prices import get_ohlc as fetch_ohlc
 
 logger = logging.getLogger(__name__)
 
@@ -513,12 +514,11 @@ async def get_market_ohlc(
         - Invalidation: Automatic on TTL expiry
         - Hit Rate: 95%+ for active trading symbols
     """
-    from app.services.prices import get_ohlc as fetch_ohlc
-
     return await fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=limit)
 
 
 __all__ = [
+    "fetch_ohlc",
     "get_feed_posts",
     "get_follower_count",
     "get_following_count",

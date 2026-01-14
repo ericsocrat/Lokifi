@@ -30,7 +30,7 @@ class TestMarketOHLCBasics:
         from app.main import app
 
         client = TestClient(app)
-        response = client.get("/api/v1/market/health")
+        response = client.get("/api/market/health")
         assert response.status_code == 200
         assert response.json() == {"ok": True}
 
@@ -59,7 +59,9 @@ class TestMarketOHLCCaching:
         """Test that first call to cached_ohlc invokes fetch_ohlc."""
         from app.core.cached_queries import get_market_ohlc
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [
                 {
                     "timestamp": "2026-01-14T10:00:00Z",
@@ -83,7 +85,9 @@ class TestMarketOHLCCaching:
         """Test that different symbols create separate cache entries."""
         from app.core.cached_queries import get_market_ohlc
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [
                 {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
             ]
@@ -100,7 +104,9 @@ class TestMarketOHLCCaching:
         """Test that different timeframes create separate cache entries."""
         from app.core.cached_queries import get_market_ohlc
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [
                 {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
             ]
@@ -117,7 +123,9 @@ class TestMarketOHLCCaching:
         """Test that different limits create separate cache entries."""
         from app.core.cached_queries import get_market_ohlc
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [
                 {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
             ]
@@ -153,7 +161,9 @@ class TestMarketOHLCPerformance:
             for i in range(500)
         ]
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = test_bars
 
             # Warm up - first call
@@ -166,7 +176,9 @@ class TestMarketOHLCPerformance:
 
             # Cached call should be very fast (<1ms for in-memory operation)
             # Allow up to 10ms for Python overhead
-            assert cached_time < 0.01, f"Cached call took {cached_time*1000:.2f}ms (expected <10ms)"
+            assert (
+                cached_time < 0.01
+            ), f"Cached call took {cached_time*1000:.2f}ms (expected <10ms)"
             assert len(result) == 500
 
     @pytest.mark.asyncio
@@ -222,7 +234,9 @@ class TestMarketOHLCPerformance:
 
         test_bars = [{"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}]
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = test_bars
 
             # Warm up cache
@@ -236,7 +250,9 @@ class TestMarketOHLCPerformance:
 
             # Should handle 1000+ calls/sec from cache
             throughput = 1000 / total_time
-            assert throughput > 1000, f"Throughput only {throughput:.0f} calls/sec (expected >1000)"
+            assert (
+                throughput > 1000
+            ), f"Throughput only {throughput:.0f} calls/sec (expected >1000)"
 
 
 class TestMarketOHLCIntegration:
@@ -247,10 +263,12 @@ class TestMarketOHLCIntegration:
         """Test that the route endpoint uses get_market_ohlc."""
         from fastapi.testclient import TestClient
 
-        from app.main import app
         from app.core.cached_queries import get_market_ohlc
+        from app.main import app
 
-        with patch.object(get_market_ohlc, "__wrapped__", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(
+            get_market_ohlc, "__wrapped__", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [
                 {
                     "timestamp": "2026-01-14T10:00:00Z",
@@ -263,7 +281,7 @@ class TestMarketOHLCIntegration:
             ]
 
             client = TestClient(app)
-            response = client.get("/api/v1/market/ohlc?symbol=BTCUSD&timeframe=1h&limit=1")
+            response = client.get("/api/market/ohlc?symbol=BTCUSD&timeframe=1h&limit=1")
 
             # Route should return the cached data
             assert response.status_code == 200
@@ -307,7 +325,9 @@ class TestMarketOHLCValidation:
             },
         ]
 
-        with patch("app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = test_bars
 
             result = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=2)

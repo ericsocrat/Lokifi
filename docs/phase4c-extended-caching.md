@@ -1,8 +1,8 @@
 # Phase 4c: Extended Caching Initiative
 
-**Status:** In Progress 🚀  
-**Objective:** Apply proven caching patterns from Phase 4b (auth, portfolio, social) to additional high-impact routes  
-**Target Completion:** 80+ new tests, 50x+ speedup on market/alerts routes  
+**Status:** In Progress 🚀
+**Objective:** Apply proven caching patterns from Phase 4b (auth, portfolio, social) to additional high-impact routes
+**Target Completion:** 80+ new tests, 50x+ speedup on market/alerts routes
 **Performance Goal:** 70%+ database load reduction across extended routes
 
 ## Overview
@@ -24,7 +24,7 @@ Phase 4b successfully established caching patterns for core user routes (auth, p
 ### Endpoints to Cache
 
 #### 1. GET /ohlc (get_ohlc)
-**Current:** Fetches from external provider each time  
+**Current:** Fetches from external provider each time
 **Cache Opportunity:** OHLC data is immutable (historical) + slowly updated (latest bars)
 
 ```python
@@ -66,7 +66,7 @@ async def get_market_ohlc(
 ### Endpoints to Cache
 
 #### 1. GET /alerts (list_alerts)
-**Current:** Fetches all alerts from store  
+**Current:** Fetches all alerts from store
 **Cache Opportunity:** User's alert list changes infrequently
 
 ```python
@@ -108,16 +108,16 @@ These functions call other cached endpoints:
 ```python
 async def tool_get_price(symbol: str, timeframe: str = "1h"):
     # Calls fetch_ohlc → will use Phase 4c-1 cache
-    
+
 async def tool_portfolio_summary(authorization: str | None):
     # Calls _portfolio_summary → already cached from Phase 4b
-    
+
 async def tool_create_price_alert(...):
     # Mutation - no cache, invalidates alerts cache
 ```
 
 ### Main Endpoint: POST /chat (chat)
-**Current:** Calls OpenAI API + tools  
+**Current:** Calls OpenAI API + tools
 **Cache Opportunity:** Tool responses are deterministic for same inputs
 
 ```python
@@ -146,7 +146,7 @@ async def get_market_ohlc(
 ) -> list[dict[str, Any]]:
     """
     Get OHLC data for symbol with caching.
-    
+
     Cache strategy: MEDIUM_TERM (300s) - OHLC data is immutable
     Expected speedup: 100x+ (eliminates external API call)
     """
@@ -326,5 +326,5 @@ Each phase uses proven pattern:
 
 ---
 
-**Phase 4c Status:** Ready to begin ✅  
+**Phase 4c Status:** Ready to begin ✅
 **Next Action:** Start Phase 4c-1 market data caching

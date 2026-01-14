@@ -148,12 +148,10 @@ class TestPhase4c1Completeness:
 
     def test_phase_4c1_documentation_exists(self):
         """Test that Phase 4c planning document exists."""
-        import os
+        from pathlib import Path
 
-        doc_path = "docs/phase4c-extended-caching.md"
-        assert os.path.exists(
-            doc_path
-        ), f"Phase 4c documentation not found at {doc_path}"
+        doc_path = Path("docs/phase4c-extended-caching.md")
+        assert doc_path.exists(), f"Phase 4c documentation not found at {doc_path}"
 
     def test_phase_4c1_routes_integrated(self):
         """Test that market routes are properly integrated."""
@@ -170,7 +168,7 @@ class TestPhase4c1Completeness:
     def test_get_market_ohlc_is_exported_from_cached_queries(self):
         """Test that get_market_ohlc can be imported directly."""
         # Should not raise ImportError
-        from app.core.cached_queries import get_market_ohlc  # noqa: F401
+        from app.core.cached_queries import get_market_ohlc
 
         assert get_market_ohlc is not None
 
@@ -187,10 +185,10 @@ class TestMarketCacheIntegration:
 
     def test_cached_queries_module_has_market_section(self):
         """Test that cached_queries.py has market section."""
-        from app.core.cached_queries import __doc__
+        import app.core.cached_queries as cached_queries_module
 
         # Should have market data queries documented
-        assert __doc__ is not None
+        assert cached_queries_module.__doc__ is not None
 
 
 class TestMarketPerformanceTargets:
@@ -244,17 +242,15 @@ class TestPhase4c1ValidationSummary:
 
     def test_phase_4c1_test_files_exist(self):
         """Test that Phase 4c-1 test files exist."""
-        import os
-
         test_files = [
             "apps/backend/tests/routes/test_market_cached.py",
             "apps/backend/tests/integration/test_market_cached_integration.py",
         ]
 
+        from pathlib import Path
+
         for test_file in test_files:
-            assert os.path.exists(
-                test_file
-            ), f"Test file not found: {test_file}"
+            assert Path(test_file).exists(), f"Test file not found: {test_file}"
 
 
 # ============================================================================

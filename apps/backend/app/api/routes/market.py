@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Query
 from app.core.cached_queries import get_market_ohlc
 from app.services.errors import NotFoundError, ProviderError
 
-router = APIRouter()
+router = APIRouter(prefix="/market", tags=["market"])
 
 
 @router.get("/health")
