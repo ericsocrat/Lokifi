@@ -1533,6 +1533,7 @@ globalAny.Lokifi.plugins = {
 - 🎉 **Phase 4c Extended Caching:** COMPLETE (Market Data + Alerts caching) ✅
 - 🔒 **Security:** Fixed 2 critical log injection vulnerabilities (CodeQL #931, #932) ✅
 - 🚀 **Test Validation:** 738/739 backend tests passing (99.86% pass rate)
+- 🧭 **Phase 4d Kickoff:** Portfolio cache invalidation added on mutations (Redis + dogpile) ✅
 
 ### 🎉 Phase 4c Extended Caching - COMPLETE ✅
 

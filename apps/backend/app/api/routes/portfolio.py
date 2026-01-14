@@ -16,8 +16,9 @@ from app.core.cached_queries import (
     get_portfolio_positions,
     get_position_by_symbol,
     get_user_by_handle,
+    invalidate_portfolio_cache,
 )
-from app.core.redis_cache import cache_portfolio_data
+from app.core.redis_cache import cache, cache_portfolio_data
 from app.db.db import get_session, init_db
 from app.db.models import PortfolioPosition, User
 from app.services.auth import require_handle
@@ -114,6 +115,33 @@ def _compute_fields(p: PortfolioPosition) -> dict[str, Any]:
     )
 
 
+def _upsert_position(
+    db: Session, user_id: int, payload: PositionIn
+) -> PortfolioPosition:
+    existing = get_position_by_symbol(db, user_id, payload.symbol)
+    now = datetime.now(timezone.utc)
+
+    if existing:
+        existing.qty = payload.qty
+        existing.cost_basis = payload.cost_basis
+        existing.tags = _tags_to_str(payload.tags)
+        existing.updated_at = now
+        return existing
+
+    new_position = PortfolioPosition(
+        user_id=user_id,
+        symbol=payload.symbol,
+        qty=payload.qty,
+        cost_basis=payload.cost_basis,
+        tags=_tags_to_str(payload.tags),
+        created_at=now,
+        updated_at=now,
+    )
+    db.add(new_position)
+    db.flush()
+    return new_position
+
+
 async def _maybe_create_alerts(owner: str, symbol: str, cost_basis: float):
     if not ALERTS_AVAILABLE:
         return
@@ -191,29 +219,13 @@ async def add_or_update_position(
     with get_session() as db:
         # Phase 4b-2: Use cached queries (MEDIUM_TERM, 300s)
         u = get_user_by_handle(db, me)
-        existing = get_position_by_symbol(db, u.id, payload.symbol)
-        now = datetime.now(timezone.utc)
-        if existing:
-            existing.qty = payload.qty
-            existing.cost_basis = payload.cost_basis
-            existing.tags = _tags_to_str(payload.tags)
-            existing.updated_at = now
-            p = existing
-        else:
-            p = PortfolioPosition(
-                user_id=u.id,
-                symbol=payload.symbol,
-                qty=payload.qty,
-                cost_basis=payload.cost_basis,
-                tags=_tags_to_str(payload.tags),
-                created_at=now,
-                updated_at=now,
-            )
-            db.add(p)
-            db.flush()
+        user_id = u.id
+        p = _upsert_position(db, user_id, payload)
         comp = _compute_fields(p)
     if create_alerts:
         await _maybe_create_alerts(me, payload.symbol, payload.cost_basis)
+    invalidate_portfolio_cache(user_id)
+    await cache.clear_pattern("cache:portfolio:*")
     return PositionOut(
         id=p.id,
         symbol=p.symbol,
@@ -227,7 +239,7 @@ async def add_or_update_position(
 
 
 @router.delete("/portfolio/{position_id}")
-def delete_position(
+async def delete_position(
     position_id: int,
     handle: str | None = Query(None),
     authorization: str | None = Header(None),
@@ -244,8 +256,11 @@ def delete_position(
         ).scalar_one_or_none()
         if not row:
             raise HTTPException(status_code=404, detail="Position not found")
+        user_id = u.id
         db.delete(row)
-        return {"deleted": True, "id": position_id}
+    invalidate_portfolio_cache(user_id)
+    await cache.clear_pattern("cache:portfolio:*")
+    return {"deleted": True, "id": position_id}
 
 
 @router.post("/portfolio/import_text")
@@ -258,27 +273,39 @@ async def import_text(
     f = io.StringIO(payload.csv_text)
     reader = csv.DictReader(f)
     added = 0
-    for row in reader:
-        sym = (row.get("symbol") or "").strip()
-        if not sym:
-            continue
-        try:
-            qty = float(row.get("qty", "0"))
-            cb = float(row.get("cost_basis", "0"))
-            tags_raw = row.get("tags") or ""
-            tags = (
-                [t.strip() for t in tags_raw.split(",") if t.strip()]
-                if tags_raw
-                else None
+    with get_session() as db:
+        u = get_user_by_handle(db, me)
+        user_id = u.id
+
+        for row in reader:
+            sym = row.get("symbol", "").strip()
+            if not sym:
+                continue
+            try:
+                qty = float(row.get("qty", 0))
+                cb = float(row.get("cost_basis", 0))
+                tags_raw = row.get("tags")
+                tags = (
+                    [t.strip() for t in tags_raw.split(",") if t.strip()]
+                    if tags_raw
+                    else None
+                )
+            except Exception:
+                continue
+
+            _upsert_position(
+                db,
+                user_id,
+                PositionIn(handle=me, symbol=sym, qty=qty, cost_basis=cb, tags=tags),
             )
-        except Exception:
-            continue
-        await add_or_update_position(
-            PositionIn(handle=me, symbol=sym, qty=qty, cost_basis=cb, tags=tags),
-            create_alerts=create_alerts,
-            authorization=authorization,
-        )
-        added += 1
+            added += 1
+
+    if added:
+        invalidate_portfolio_cache(user_id)
+        await cache.clear_pattern("cache:portfolio:*")
+    if create_alerts and added and sym and cb:
+        # Best-effort alert creation for last processed entry
+        await _maybe_create_alerts(me, sym, cb)
     return {"ok": True, "added": added}
 
 
