@@ -165,5 +165,5 @@ webcolors==25.10.0
 webencodings==0.5.1
 websockets==16.0
 Werkzeug==3.1.5  # Updated: fix CVE-2025-22215 safe_join() Windows device names
-wheel==0.45.1
+wheel==0.46.2
 yarl==1.22.0
