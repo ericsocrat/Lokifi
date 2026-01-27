@@ -20,7 +20,7 @@ black==25.12.0
 bleach==6.3.0
 boolean.py==5.0
 boto3==1.42.35
-botocore==1.42.34
+botocore==1.42.35
 CacheControl==0.14.4
 celery==5.6.2
 certifi==2026.1.4
@@ -90,7 +90,7 @@ packaging==25.0
 parse==1.20.2
 passlib[bcrypt]==1.7.4
 pathable==0.4.4
-pathspec==1.0.3
+pathspec==1.0.4
 pillow==12.1.0
 pip_audit==2.10.0
 pip-api==0.0.34
