@@ -4,7 +4,7 @@ aiohttp==3.13.3
 aiosignal==1.4.0
 aiosmtplib==5.1.0
 aiosqlite==0.22.1
-alembic==1.18.1
+alembic==1.18.3
 amqp==5.3.1
 annotated-types==0.7.0
 anyio==4.12.1
@@ -19,8 +19,8 @@ billiard==4.2.4
 black==25.12.0
 bleach==6.3.0
 boolean.py==5.0
-boto3==1.42.35
-botocore==1.42.35
+boto3==1.42.39
+botocore==1.42.39
 CacheControl==0.14.4
 celery==5.6.2
 certifi==2026.1.4
@@ -32,7 +32,7 @@ click-repl==0.3.0
 click==8.3.1
 colorama==0.4.6
 coverage==7.13.2
-cryptography==46.0.3
+cryptography==46.0.4
 cyclonedx-python-lib==11.6.0
 defusedxml==0.7.1
 distro==1.9.0
@@ -55,7 +55,7 @@ httptools==0.7.1
 httpx==0.28.1
 hypothesis-graphql==0.11.1
 hypothesis-jsonschema==0.23.1
-hypothesis==6.151.1
+hypothesis==6.151.4
 idna==3.11
 iniconfig==2.3.0
 isodate==0.7.2
@@ -100,7 +100,7 @@ pluggy==1.6.0
 prometheus_client==0.24.1
 prompt_toolkit==3.0.52
 propcache==0.4.1
-psutil==7.2.1
+psutil==7.2.2
 psycopg2-binary==2.9.11
 py-serializable==2.1.0
 pyasn1==0.6.2
@@ -135,7 +135,7 @@ rsa==4.9.1
 ruff==0.14.14
 s3transfer==0.16.0
 schedule==1.2.2
-schemathesis==4.9.4
+schemathesis==4.9.5
 sentry-sdk==2.50.0
 setuptools==80.10.2
 six==1.17.0
@@ -147,10 +147,10 @@ starlette-testclient==0.4.1
 starlette>=0.52.1,<0.53.0  # FastAPI 0.128.0 compatibility
 toml==0.10.2
 tomli==2.4.0
-tqdm==4.67.1
+tqdm==4.67.2
 types-aiofiles==25.1.0.20251011
 types-bleach==6.3.0.20251115
-types-psutil==7.2.1.20260116
+types-psutil==7.2.2.20260130
 types-python-dateutil==2.9.0.20260124
 types-requests==2.32.4.20260107
 typing_extensions==4.15.0
