@@ -122,7 +122,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 # python-jose removed in favor of PyJWT (fixes HIGH severity ecdsa timing attack vulnerability)
 python-multipart==0.0.22
-pytokens==0.4.0
+pytokens==0.4.1
 PyYAML==6.0.3
 redis==7.1.0
 referencing>=0.35.1,<0.38.0
