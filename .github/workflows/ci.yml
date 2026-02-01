@@ -151,7 +151,7 @@ jobs:
     timeout-minutes: 5
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
@@ -165,7 +165,7 @@ jobs:
           --health-retries 5
 
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-
