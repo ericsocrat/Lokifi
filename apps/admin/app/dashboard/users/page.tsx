@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { userApi, type User, type UserFilters } from '@/lib/api';
+import { EditUserModal } from '@/components/EditUserModal';
 import './page.css';
 
 export default function UsersPage() {
@@ -21,6 +22,8 @@ export default function UsersPage() {
   });
 
   const [searchInput, setSearchInput] = useState('');
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', filters],
@@ -44,10 +47,14 @@ export default function UsersPage() {
     router.push(`/dashboard/users/${userId}`);
   };
 
-  const handleEditUser = (userId: string) => {
-    // TODO: Open edit modal when edit modal component is created
-    console.log('Edit user:', userId);
-    alert('Edit functionality coming soon. For now, user details can be updated via the API.');
+  const handleEditUser = (user: User) => {
+    setEditingUser(user);
+    setShowEditModal(true);
+  };
+
+  const handleEditModalClose = () => {
+    setShowEditModal(false);
+    setEditingUser(null);
   };
 
   const handleDeleteUser = async (user: User) => {
@@ -266,7 +273,7 @@ export default function UsersPage() {
                           className="action-btn edit"
                           title="Edit User"
                           type="button"
-                          onClick={() => handleEditUser(user.id)}
+                          onClick={() => handleEditUser(user)}
                         >
                           ✏️
                         </button>
@@ -313,6 +320,11 @@ export default function UsersPage() {
           )}
         </>
       )}
-    </div>
+      {/* Edit User Modal */}
+      <EditUserModal
+        user={editingUser}
+        isOpen={showEditModal}
+        onClose={handleEditModalClose}
+      />    </div>
   );
 }

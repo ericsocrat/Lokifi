@@ -5,9 +5,11 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { userApi } from '@/lib/api';
+import { EditUserModal } from '@/components/EditUserModal';
 import './page.css';
 
 export default function UserDetailPage() {
@@ -15,6 +17,8 @@ export default function UserDetailPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const userId = params.id as string;
+
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['user', userId],
@@ -270,6 +274,13 @@ export default function UserDetailPage() {
           <h3>Admin Actions</h3>
           <div className="action-buttons-vertical">
             <button
+              onClick={() => setShowEditModal(true)}
+              className="primary-button"
+              type="button"
+            >
+              ✏️ Edit User Information
+            </button>
+            <button
               onClick={handleVerify}
               className={user.is_verified ? 'secondary-button' : 'primary-button'}
               type="button"
@@ -293,6 +304,13 @@ export default function UserDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit User Modal */}
+      <EditUserModal
+        user={user}
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+      />
     </div>
   );
 }
