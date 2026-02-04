@@ -316,7 +316,10 @@ def get_feed_posts(
             query = query.filter(Post.created_at < cursor_post.created_at)
 
     posts = query.limit(limit).all()
-    logger.debug(f"Feed query for user {user_id}: {len(posts)} posts (cursor={cursor})")
+    logger.debug(
+        "Feed query completed",
+        extra={"user_id": user_id, "post_count": len(posts), "cursor": cursor},
+    )
     return posts
 
 
@@ -369,7 +372,10 @@ def get_user_posts(
             query = query.filter(Post.created_at < cursor_post.created_at)
 
     posts = query.limit(limit).all()
-    logger.debug(f"User posts query for user {user_id}: {len(posts)} posts")
+    logger.debug(
+        "User posts query completed",
+        extra={"user_id": user_id, "post_count": len(posts)},
+    )
     return posts
 
 
@@ -403,7 +409,10 @@ def get_posts_by_symbol(
             query = query.filter(Post.created_at < cursor_post.created_at)
 
     posts = query.limit(limit).all()
-    logger.debug(f"Symbol posts query for {symbol}: {len(posts)} posts")
+    logger.debug(
+        "Symbol posts query completed",
+        extra={"symbol": symbol, "post_count": len(posts)},
+    )
     return posts
 
 
