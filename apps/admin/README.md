@@ -1,7 +1,7 @@
 # 🎛️ Admin Panel
 
-**Status**: 📋 Planned for Phase 4  
-**Technology**: Next.js 16 + React Admin + TypeScript  
+**Status**: 🚧 MVP scaffolded (Phase 4 in progress)  
+**Technology**: Next.js 16 + TypeScript  
 **Purpose**: Internal administration dashboard for platform management
 
 ---
@@ -13,6 +13,25 @@ The Admin Panel is a comprehensive administrative interface for managing the Lok
 ---
 
 ## 🚀 Planned Features
+
+## ✅ Current MVP Scaffold
+
+- [x] Next.js App Router foundation
+- [x] Admin landing page with status cards
+- [x] Base styling and layout system
+- [ ] Authentication + RBAC
+- [ ] User management module
+- [ ] Analytics dashboard
+
+## ▶️ Run Locally
+
+```bash
+cd apps/admin
+npm install
+npm run dev
+```
+
+**Default URL**: http://localhost:3001
 
 ### 1. **User Management**
 - [ ] User account CRUD operations

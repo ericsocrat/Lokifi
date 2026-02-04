@@ -28,7 +28,8 @@
   },
   "workspaces": [
     "apps/frontend",
-    "apps/backend"
+    "apps/backend",
+    "apps/admin"
   ],
   "repository": {
     "type": "git",
