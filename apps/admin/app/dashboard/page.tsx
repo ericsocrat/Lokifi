@@ -54,7 +54,7 @@ const activities = [
   },
 ];
 
-export default function DashboardPage(): JSX.Element {
+export default function DashboardPage() {
   return (
     <div className="dashboard-page">
       <div className="page-header">

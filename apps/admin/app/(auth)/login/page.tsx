@@ -11,7 +11,7 @@ import { loginAdmin } from '@/lib/auth';
 import type { ApiError } from '@/lib/types';
 import './login.css';
 
-export default function LoginPage(): JSX.Element {
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

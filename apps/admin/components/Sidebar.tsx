@@ -27,7 +27,7 @@ const navItems: NavItem[] = [
   { name: 'Security', href: '/dashboard/security', icon: '🛡️' },
 ];
 
-export function Sidebar(): JSX.Element {
+export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 

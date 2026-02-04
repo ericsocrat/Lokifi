@@ -16,7 +16,7 @@ export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}) {
   const router = useRouter();
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);

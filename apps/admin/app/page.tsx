@@ -40,7 +40,7 @@ const modules = [
   },
 ];
 
-export default function AdminHome(): JSX.Element {
+export default function AdminHome() {
   return (
     <div className="container">
       <header className="header">
