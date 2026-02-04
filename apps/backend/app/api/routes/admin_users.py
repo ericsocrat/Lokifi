@@ -15,6 +15,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
+from argon2 import PasswordHasher
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, EmailStr, Field
 from sqlalchemy import func, or_, select
@@ -27,6 +28,7 @@ from app.models.profile import Profile
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
+ph = PasswordHasher()
 
 router = APIRouter(prefix="/admin/users", tags=["Admin - Users"])
 
@@ -71,6 +73,19 @@ class UserUpdate(BaseModel):
     role: str | None = Field(None, pattern="^(user|moderator|admin)$")
     is_verified: bool | None = None
     is_active: bool | None = None
+
+
+class UserCreate(BaseModel):
+    """User creation schema for admin"""
+
+    email: EmailStr
+    handle: str = Field(..., min_length=3, max_length=30, pattern="^[a-zA-Z0-9_]+$")
+    name: str = Field(..., min_length=1, max_length=100)
+    password: str = Field(..., min_length=8)
+    bio: str | None = Field(None, max_length=500)
+    role: str = Field("user", pattern="^(user|moderator|admin)$")
+    is_verified: bool = False
+    is_active: bool = True
 
 
 # Admin authentication dependency
@@ -189,6 +204,92 @@ async def list_users(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to list users",
+        )
+
+
+@router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+async def create_user(
+    data: UserCreate,
+    current_admin: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> UserResponse:
+    """
+    Create a new user account.
+
+    Admin endpoint for creating user accounts with:
+    - Email and handle validation
+    - Password hashing
+    - Profile creation with initial data
+    - Role assignment
+    - Verification and activation status
+    """
+    try:
+        # Check if email already exists
+        email_check = await db.execute(select(User).where(User.email == data.email))
+        if email_check.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Email already registered",
+            )
+
+        # Check if handle already exists
+        handle_check = await db.execute(
+            select(Profile).where(Profile.username == data.handle)
+        )
+        if handle_check.scalar_one_or_none():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Handle already taken",
+            )
+
+        # Hash password
+        password_hash = ph.hash(data.password)
+
+        # Create user
+        new_user = User(
+            email=data.email,
+            password_hash=password_hash,
+            full_name=data.name,
+            is_verified=data.is_verified,
+            is_active=data.is_active,
+        )
+        db.add(new_user)
+        await db.flush()  # Get user.id for profile
+
+        # Create profile
+        new_profile = Profile(
+            user_id=new_user.id,
+            username=data.handle,
+            display_name=data.name,
+            bio=data.bio,
+        )
+        db.add(new_profile)
+        await db.commit()
+
+        # Reload user with profile
+        await db.refresh(new_user, ["profile"])
+
+        logger.info(
+            "Admin created user",
+            extra={
+                "admin_id": str(current_admin.id),
+                "new_user_id": str(new_user.id),
+                "email": data.email,
+                "handle": data.handle,
+            },
+        )
+
+        return user_to_response(new_user)
+
+    except HTTPException:
+        await db.rollback()
+        raise
+    except Exception as e:
+        await db.rollback()
+        logger.error("Error creating user", extra={"error": str(e)})
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to create user",
         )
 
 

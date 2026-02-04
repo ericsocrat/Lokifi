@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { userApi, type User, type UserFilters } from '@/lib/api';
 import { EditUserModal } from '@/components/EditUserModal';
+import { AddUserModal } from '@/components/AddUserModal';
 import './page.css';
 
 export default function UsersPage() {
@@ -24,6 +25,7 @@ export default function UsersPage() {
   const [searchInput, setSearchInput] = useState('');
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['users', filters],
@@ -97,7 +99,11 @@ export default function UsersPage() {
             Manage user accounts, roles, and permissions
           </p>
         </div>
-        <button className="primary-button" type="button">
+        <button
+          className="primary-button"
+          type="button"
+          onClick={() => setShowAddModal(true)}
+        >
           + Add User
         </button>
       </div>
@@ -325,6 +331,13 @@ export default function UsersPage() {
         user={editingUser}
         isOpen={showEditModal}
         onClose={handleEditModalClose}
-      />    </div>
+      />
+
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+      />
+    </div>
   );
 }

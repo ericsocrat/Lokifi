@@ -1,0 +1,87 @@
+/* Add User Modal specific styles */
+/* Inherits base modal styles from EditUserModal.css */
+
+.add-user-modal {
+  max-width: 650px;
+}
+
+/* Handle Input with @ prefix */
+.handle-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.handle-prefix {
+  position: absolute;
+  left: 0.75rem;
+  color: #3b82f6;
+  font-size: 0.95rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.handle-input {
+  padding-left: 2rem !important;
+}
+
+/* Field Hints */
+.field-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Create Button (variant of save button) */
+.create-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.create-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.create-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Password strength indicator (optional future enhancement) */
+.password-strength {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background-color: rgba(75, 85, 99, 0.3);
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+
+.strength-bar.active {
+  background-color: #ef4444;
+}
+
+.strength-bar.active.medium {
+  background-color: #f59e0b;
+}
+
+.strength-bar.active.strong {
+  background-color: #10b981;
+}

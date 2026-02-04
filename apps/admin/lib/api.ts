@@ -85,6 +85,17 @@ export interface UserFilters {
   page_size?: number;
 }
 
+export interface CreateUserData {
+  email: string;
+  handle: string;
+  name: string;
+  password: string;
+  bio?: string;
+  role: string;
+  is_verified: boolean;
+  is_active: boolean;
+}
+
 export const userApi = {
   /**
    * List users with filters and pagination
@@ -114,6 +125,16 @@ export const userApi = {
    */
   async getUser(id: string): Promise<User> {
     return fetchApi<User>(`/admin/users/${id}`);
+  },
+
+  /**
+   * Create new user
+   */
+  async createUser(data: CreateUserData): Promise<User> {
+    return fetchApi<User>('/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   /**
