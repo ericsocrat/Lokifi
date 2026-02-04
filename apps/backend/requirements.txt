@@ -16,7 +16,7 @@ attrs==25.4.0
 Authlib==1.6.6
 backoff==2.2.1
 billiard==4.2.4
-black==25.12.0
+black==26.1.0
 bleach==6.3.0
 boolean.py==5.0
 boto3==1.42.41
@@ -86,7 +86,7 @@ openapi-core==0.22.0
 openapi-schema-validator==0.6.3
 openapi-spec-validator==0.7.2
 packageurl-python==0.17.6
-packaging==25.0
+packaging==26.0
 parse==1.20.2
 passlib[bcrypt]==1.7.4
 pathable==0.4.4
@@ -104,7 +104,7 @@ psutil==7.2.2
 psycopg2-binary==2.9.11
 py-serializable==2.1.0
 pyasn1==0.6.2
-pycparser==2.23
+pycparser==3.0
 pydantic_core==2.41.5
 pydantic-settings==2.12.0
 pydantic==2.12.5
