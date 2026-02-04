@@ -130,16 +130,32 @@ After resolving the starlette conflict, continued with security cleanup:
    - Fix: Removed unused assignment (code uses `base_total` instead)
 
 **CodeQL Cleanup Results:**
-- **8 alerts addressed**: 1 fixed (log injection), 4 dismissed (npm audit), 3 fixed (code quality)
-- **Security improved**: Eliminated critical log injection vulnerability
+- **10 alerts addressed total**: 1+4 log injection fixed, 4 npm dismissed, 2+1 unused imports removed, 1 dead code removed
+- **Security improved**: Eliminated ALL log injection vulnerabilities in backend
 - **Code quality**: Removed dead code, cleaned unused imports
+- **Pattern established**: Structured logging for all user-provided data in logs
 - **GitHub API lesson**: Dismissal reasons must use exact strings ("false positive" not "false_positive")
+
+**Additional Fixes (After Initial Push):**
+After commit `5b7bc456` was pushed, CodeQL rescanned and found 2 more instances of same issues:
+
+5. **Log Injection Fixed (Alert #950 - Error) - 4 additional instances:**
+   - File: `apps/backend/app/core/cached_queries.py` lines 240, 255, 271, 424
+   - Functions: `invalidate_cache_for_user`, `invalidate_portfolio_cache`, `invalidate_follow_cache`, `invalidate_feed_cache`
+   - All converted from f-string to structured logging
+   - Pattern: `logger.info("msg", extra={...})` prevents injection
+
+6. **Unused Import Fixed (Alert #951 - Note):**
+   - Removed `from sqlalchemy.orm import Session` from `social.py` line 11
+   - Code uses `get_session()` context manager instead
 
 **Session 180 Commits:**
 - `fa9bcb87` - First starlette fix (reverted by Renovate)
 - `92177e9c` - Second starlette fix + Renovate config
 - `b57ef072` - Session 180 documentation
-- `5b7bc456` - CodeQL security alert remediation (8 alerts)
+- `5b7bc456` - CodeQL security remediation (8 alerts)
+- `9c6b3712` - Session 180 documentation update
+- `63bfeccd` - Additional log injection fixes (2 more alerts)
 
 ---
 
