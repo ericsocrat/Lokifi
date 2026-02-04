@@ -491,7 +491,8 @@ def invalidate_all_feeds_for_followees(db: Session, followee_id: int) -> None:
         invalidate_cache_pattern(f"feed:user:{follower_id}*")
 
     logger.info(
-        f"Invalidated feeds for {len(followers)} followers of user {followee_id}"
+        "Invalidated feeds for followers of user",
+        extra={"follower_count": len(followers), "followee_id": followee_id},
     )
 
 
