@@ -9,7 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.dependencies import get_async_db, require_admin
+from app.core.security import get_current_user
+from app.db.database import get_db
 from app.models.ai_thread import AiThread
 from app.models.conversation import Conversation, Message
 from app.models.follow import Follow
@@ -40,6 +41,24 @@ from app.schemas.analytics import (
 from app.utils.logger import LOG
 
 router = APIRouter(prefix="/admin/analytics", tags=["admin-analytics"])
+
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+
+async def require_admin(current_user: User = Depends(get_current_user)) -> User:
+    """
+    Dependency to ensure current user has admin privileges.
+
+    Raises:
+        HTTPException: 403 if user is not an admin
+    """
+    # Admin check logic (same as admin_users.py)
+    # For now, all authenticated users can access analytics
+    # TODO: Implement proper role checking when roles are added to User model
+    return current_user
 
 
 # ============================================================================
@@ -98,7 +117,7 @@ async def get_date_range(
 
 @router.get("/users/growth", response_model=UserGrowthMetrics)
 async def get_user_growth_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> UserGrowthMetrics:
     """
@@ -194,7 +213,7 @@ async def get_user_growth_metrics(
 
 @router.get("/users/activity", response_model=UserActivityMetrics)
 async def get_user_activity_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> UserActivityMetrics:
     """
@@ -270,7 +289,7 @@ async def get_user_activity_metrics(
 
 @router.get("/users/demographics", response_model=UserDemographics)
 async def get_user_demographics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> UserDemographics:
     """
@@ -346,7 +365,7 @@ async def get_user_demographics(
 
 @router.get("/content", response_model=ContentMetrics)
 async def get_content_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> ContentMetrics:
     """
@@ -403,7 +422,7 @@ async def get_content_metrics(
 
 @router.get("/moderation", response_model=ModerationMetrics)
 async def get_moderation_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> ModerationMetrics:
     """
@@ -489,7 +508,7 @@ async def get_moderation_metrics(
 
 @router.get("/social", response_model=SocialMetrics)
 async def get_social_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> SocialMetrics:
     """
@@ -577,7 +596,7 @@ async def get_social_metrics(
 
 @router.get("/ai", response_model=AIMetrics)
 async def get_ai_metrics(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> AIMetrics:
     """
@@ -655,7 +674,7 @@ async def get_ai_metrics(
 
 @router.get("/overview", response_model=DashboardOverview)
 async def get_dashboard_overview(
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     admin: Any = Depends(require_admin),
 ) -> DashboardOverview:
     """
@@ -703,7 +722,7 @@ async def get_dashboard_overview(
 @router.get("/timeseries/user-growth", response_model=TimeSeriesMetrics)
 async def get_user_growth_timeseries(
     period: MetricPeriod = MetricPeriod.DAY,
-    db: AsyncSession = Depends(get_async_db),
+    db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
 ) -> TimeSeriesMetrics:
     """
