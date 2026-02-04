@@ -20,7 +20,7 @@ from app.core.cached_queries import (
 )
 from app.core.redis_cache import cache, cache_portfolio_data
 from app.db.db import get_session, init_db
-from app.db.models import PortfolioPosition, User
+from app.db.models import PortfolioPosition
 from app.services.auth import require_handle
 from app.services.smart_price_service import PriceData, SmartPriceService
 
@@ -455,7 +455,6 @@ def _build_analytics(
             total_value += market_value
             total_pl += unreal or 0.0
 
-        base_value = market_value if market_value is not None else cost_value
         allocations.append(
             AllocationOut(
                 symbol=r.symbol,

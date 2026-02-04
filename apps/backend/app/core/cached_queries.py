@@ -453,8 +453,10 @@ def invalidate_post_cache(
     # Note: This could be optimized by invalidating only specific followers' feeds
     # For now, we'll handle this in the service layer when post is created
 
+    # Use structured logging to prevent log injection
     logger.info(
-        f"Invalidated post cache: post_id={post_id}, user={user_id}, symbol={symbol}"
+        "Invalidated post cache",
+        extra={"post_id": post_id, "user_id": user_id, "symbol": symbol},
     )
 
 

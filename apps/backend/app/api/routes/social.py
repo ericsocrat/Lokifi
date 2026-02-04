@@ -11,8 +11,6 @@ from sqlalchemy import and_, desc, func, select
 from sqlalchemy.orm import Session
 
 from app.core.cached_queries import (
-    get_follower_count,
-    get_following_count,
     get_user_by_handle,
     invalidate_all_feeds_for_followees,
     invalidate_feed_cache,
