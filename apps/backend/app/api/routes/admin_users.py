@@ -13,7 +13,6 @@ Provides CRUD operations for user administration including:
 import logging
 import uuid
 from datetime import datetime, timezone
-from typing import Any
 
 from argon2 import PasswordHasher
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -274,8 +273,8 @@ async def create_user(
             extra={
                 "admin_id": str(current_admin.id),
                 "new_user_id": str(new_user.id),
-                "email": data.email,
-                "handle": data.handle,
+                "email": str(data.email),
+                "handle": str(data.handle),
             },
         )
 
@@ -330,7 +329,10 @@ async def get_user(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error getting user {user_id}: {e!s}")
+        logger.error(
+            "Error getting user",
+            extra={"user_id": str(user_id), "error": str(e)},
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get user",
@@ -404,7 +406,10 @@ async def update_user(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error updating user {user_id}: {e!s}")
+        logger.error(
+            "Error updating user",
+            extra={"user_id": str(user_id), "error": str(e)},
+        )
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -452,7 +457,10 @@ async def delete_user(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error deleting user {user_id}: {e!s}")
+        logger.error(
+            "Error deleting user",
+            extra={"user_id": str(user_id), "error": str(e)},
+        )
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -505,7 +513,10 @@ async def suspend_user(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error suspending user {user_id}: {e!s}")
+        logger.error(
+            "Error suspending user",
+            extra={"user_id": str(user_id), "error": str(e)},
+        )
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -557,7 +568,10 @@ async def verify_user(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error verifying user {user_id}: {e!s}")
+        logger.error(
+            "Error verifying user",
+            extra={"user_id": str(user_id), "error": str(e)},
+        )
         await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

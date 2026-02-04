@@ -1,10 +1,10 @@
 "use client";
 
+import HistoryTimeline from "@/components/HistoryTimeline";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import HistoryTimeline from "@/components/HistoryTimeline";
 import s from "./detail.module.css";
 
 interface FlagDetail {

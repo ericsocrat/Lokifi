@@ -31,6 +31,7 @@
 **Status**: COMPLETE ✅ (3 phases, 3 commits)
 
 **Phase 1: Backend Infrastructure** (Commit b9ed3e7d, 820 lines):
+
 - ✅ Database models: FlaggedContent, ModerationDecision, ModerationAppeal
 - ✅ Pydantic schemas: 13 request/response models with validation
 - ✅ Backend API: 11 endpoints (list, create, decide, appeal, statistics)
@@ -38,12 +39,14 @@
 - ✅ Appeal workflow with appealable flag tracking
 
 **Phase 2: Frontend Dashboard** (Commit 4ef8772c, 1,031 lines):
+
 - ✅ Moderation list page: Filters (status, reason), search, pagination, statistics cards
 - ✅ Detail page: Full flag context, moderation action form with validation
 - ✅ Action types: Dismiss, Approve Remove, Suspend Temporary/Permanent
 - ✅ CSS modules: Dark theme with glassmorphism, responsive grid, badge variants
 
 **Phase 3: Moderation History Timeline** (Commit b9a4a6f1, 571 lines):
+
 - ✅ Backend endpoint: GET /admin/moderation/flags/{id}/history
 - ✅ History schemas: ModerationHistoryEntry, ModerationHistoryResponse
 - ✅ Frontend component: HistoryTimeline.tsx with vertical timeline design
@@ -54,11 +57,13 @@
 **Files Created** (18 files, 2,422 insertions):
 
 **Phase 1 - Backend** (820 lines):
+
 - `app/models/moderation.py` (298 lines) - 3 models, 5 enums
 - `app/schemas/moderation.py` (179 lines → 229 with Phase 3) - 15 schemas
 - `app/api/routes/admin_moderation.py` (657 lines → 800 with Phase 3) - 12 endpoints
 
 **Phase 2 - Frontend** (1,031 lines):
+
 - `apps/admin/app/dashboard/moderation/page.tsx` (322 lines) - List view
 - `apps/admin/app/dashboard/moderation/[id]/page.tsx` (366 lines) - Detail view
 - `apps/admin/app/dashboard/moderation/moderation.module.css` (234 lines)
@@ -66,6 +71,7 @@
 - Updated: `components/Sidebar.tsx` (added moderation link)
 
 **Phase 3 - History Timeline** (571 lines):
+
 - `apps/admin/components/HistoryTimeline.tsx` (210 lines) - Timeline component
 - `apps/admin/components/HistoryTimeline.module.css` (218 lines) - Timeline styles
 - Updated schemas: Added ModerationHistoryEntry + ModerationHistoryResponse (50 lines)
@@ -82,23 +88,17 @@
 **Backend API** (12 endpoints):
 
 **FlaggedContent** (4):
+
 1. `POST /admin/moderation/flags` - Create flag (409 if duplicate within 24h)
 2. `GET /admin/moderation/flags` - List with filters (status, reason, content_type)
 3. `GET /admin/moderation/flags/{id}` - Get specific flag details
 4. `PUT /admin/moderation/flags/{id}` - Update flag status/notes
 
-**ModerationDecision** (3):
-5. `POST /admin/moderation/flags/{id}/decision` - Make moderation decision
-6. `GET /admin/moderation/decisions` - List all decisions
-7. `GET /admin/moderation/decisions/{id}` - Get decision details
+**ModerationDecision** (3): 5. `POST /admin/moderation/flags/{id}/decision` - Make moderation decision 6. `GET /admin/moderation/decisions` - List all decisions 7. `GET /admin/moderation/decisions/{id}` - Get decision details
 
-**ModerationAppeal** (3):
-8. `POST /admin/moderation/appeals` - Submit user appeal
-9. `GET /admin/moderation/appeals` - List appeals (filter by status)
-10. `POST /admin/moderation/appeals/{id}/review` - Review/approve/deny appeal
+**ModerationAppeal** (3): 8. `POST /admin/moderation/appeals` - Submit user appeal 9. `GET /admin/moderation/appeals` - List appeals (filter by status) 10. `POST /admin/moderation/appeals/{id}/review` - Review/approve/deny appeal
 
-**Statistics** (1):
-11. `GET /admin/moderation/statistics` - Overall moderation metrics
+**Statistics** (1): 11. `GET /admin/moderation/statistics` - Overall moderation metrics
 
 **History Timeline** (1): 12. `GET /admin/moderation/flags/{id}/history` - Chronological event timeline
 

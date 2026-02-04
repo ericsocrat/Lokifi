@@ -7,7 +7,7 @@ import json
 
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import and_, desc, func, select
+from sqlalchemy import desc, func, select
 
 from app.core.cached_queries import (
     get_user_by_handle,

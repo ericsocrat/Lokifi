@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import s from './HistoryTimeline.module.css';
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import s from "./HistoryTimeline.module.css";
 
 interface HistoryEntry {
   id: string;
@@ -22,56 +22,53 @@ interface HistoryTimelineProps {
 
 const EVENT_CONFIG = {
   flag_created: {
-    icon: '🚩',
-    label: 'Content Flagged',
-    color: '#3b82f6', // blue
+    icon: "🚩",
+    label: "Content Flagged",
+    color: "#3b82f6", // blue
   },
   decision_made: {
-    icon: '⚖️',
-    label: 'Moderation Decision',
-    color: '#10b981', // green
+    icon: "⚖️",
+    label: "Moderation Decision",
+    color: "#10b981", // green
   },
   appeal_submitted: {
-    icon: '📝',
-    label: 'Appeal Submitted',
-    color: '#f59e0b', // amber
+    icon: "📝",
+    label: "Appeal Submitted",
+    color: "#f59e0b", // amber
   },
   appeal_reviewed: {
-    icon: '✅',
-    label: 'Appeal Reviewed',
-    color: '#8b5cf6', // purple
+    icon: "✅",
+    label: "Appeal Reviewed",
+    color: "#8b5cf6", // purple
   },
 };
 
 const ACTION_LABELS = {
-  dismiss: 'Dismissed',
-  approve_remove: 'Content Removed',
-  suspend_temporary: 'Temporary Suspension',
-  suspend_permanent: 'Permanent Ban',
+  dismiss: "Dismissed",
+  approve_remove: "Content Removed",
+  suspend_temporary: "Temporary Suspension",
+  suspend_permanent: "Permanent Ban",
 };
 
 const APPEAL_STATUS_LABELS = {
-  pending: 'Pending Review',
-  approved: 'Appeal Approved',
-  denied: 'Appeal Denied',
+  pending: "Pending Review",
+  approved: "Appeal Approved",
+  denied: "Appeal Denied",
 };
 
 export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['moderationHistory', flagId],
+    queryKey: ["moderationHistory", flagId],
     queryFn: async () => {
-      const token = localStorage.getItem('adminToken');
-      const res = await fetch(
-        `http://localhost:8000/admin/moderation/flags/${flagId}/history`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!res.ok) throw new Error('Failed to load history');
+      const token = localStorage.getItem("adminToken");
+      const res = await fetch(`http://localhost:8000/admin/moderation/flags/${flagId}/history`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error("Failed to load history");
       return res.json();
     },
   });
@@ -127,9 +124,9 @@ export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
       <div className={s.timeline}>
         {entries.map((entry, index) => {
           const config = EVENT_CONFIG[entry.event_type as keyof typeof EVENT_CONFIG] || {
-            icon: '📌',
+            icon: "📌",
             label: entry.event_type,
-            color: '#6b7280',
+            color: "#6b7280",
           };
           const isExpanded = expandedNotes.has(entry.id);
           const hasLongNotes = (entry.notes?.length || 0) > 150;
@@ -137,7 +134,7 @@ export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
           return (
             <div key={`${entry.id}-${index}`} className={s.entry}>
               <div className={s.entryLine} style={{ background: config.color }} />
-              
+
               <div className={s.entryIcon} style={{ background: config.color }}>
                 {config.icon}
               </div>
@@ -146,12 +143,12 @@ export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
                 <div className={s.entryHeader}>
                   <span className={s.entryLabel}>{config.label}</span>
                   <span className={s.entryTime}>
-                    {new Date(entry.timestamp).toLocaleString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
+                    {new Date(entry.timestamp).toLocaleString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </span>
                 </div>
@@ -164,7 +161,8 @@ export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
 
                 {entry.action && (
                   <div className={s.entryAction}>
-                    Action: <span className={s.actionBadge}>{ACTION_LABELS[entry.action as keyof typeof ACTION_LABELS]}</span>
+                    Action:{" "}
+                    <span className={s.actionBadge}>{ACTION_LABELS[entry.action as keyof typeof ACTION_LABELS]}</span>
                   </div>
                 )}
 
@@ -176,22 +174,20 @@ export default function HistoryTimeline({ flagId }: HistoryTimelineProps) {
 
                 {entry.appeal_status && (
                   <div className={s.entryAppeal}>
-                    Status: <span className={s.appealBadge}>{APPEAL_STATUS_LABELS[entry.appeal_status as keyof typeof APPEAL_STATUS_LABELS]}</span>
+                    Status:{" "}
+                    <span className={s.appealBadge}>
+                      {APPEAL_STATUS_LABELS[entry.appeal_status as keyof typeof APPEAL_STATUS_LABELS]}
+                    </span>
                   </div>
                 )}
 
                 {entry.notes && (
                   <div className={s.entryNotes}>
                     <div className={s.notesLabel}>Notes:</div>
-                    <div className={isExpanded ? s.notesExpanded : s.notesTruncated}>
-                      {entry.notes}
-                    </div>
+                    <div className={isExpanded ? s.notesExpanded : s.notesTruncated}>{entry.notes}</div>
                     {hasLongNotes && (
-                      <button
-                        className={s.notesToggle}
-                        onClick={() => toggleNotes(entry.id)}
-                      >
-                        {isExpanded ? 'Show less' : 'Show more'}
+                      <button className={s.notesToggle} onClick={() => toggleNotes(entry.id)}>
+                        {isExpanded ? "Show less" : "Show more"}
                       </button>
                     )}
                   </div>
