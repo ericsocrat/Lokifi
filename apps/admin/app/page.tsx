@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const stats = [
   { label: "Active Users", value: "128,540" },
   { label: "Daily Trades", value: "42,110" },
@@ -69,12 +71,12 @@ export default function AdminHome(): JSX.Element {
             real-time insights and tooling designed for scale.
           </p>
           <div className="button-group">
-            <button className="button" type="button">
+            <Link href="/login" className="button">
               Launch Admin Console
-            </button>
-            <button className="button secondary" type="button">
+            </Link>
+            <Link href="/dashboard" className="button secondary">
               View API Health
-            </button>
+            </Link>
           </div>
         </div>
         <div className="hero-card">
