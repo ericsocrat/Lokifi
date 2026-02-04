@@ -1,9 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended",
-    ":disableDependencyDashboard"
-  ],
+  "extends": ["config:recommended", ":disableDependencyDashboard"],
   "baseBranches": ["main"],
   "timezone": "Africa/Johannesburg",
   "prConcurrentLimit": 5,
@@ -73,12 +70,7 @@
     {
       "description": "TypeScript ecosystem",
       "groupName": "TypeScript",
-      "matchPackageNames": [
-        "typescript",
-        "@types/node",
-        "@types/react",
-        "@types/react-dom"
-      ],
+      "matchPackageNames": ["typescript", "@types/node", "@types/react", "@types/react-dom"],
       "automerge": true,
       "minimumReleaseAge": "7 days"
     },
