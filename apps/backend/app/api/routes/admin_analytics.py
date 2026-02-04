@@ -2,6 +2,7 @@
 Admin analytics routes for dashboard metrics and insights.
 """
 
+import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -38,8 +39,8 @@ from app.schemas.analytics import (
     UserDemographics,
     UserGrowthMetrics,
 )
-from app.utils.logger import LOG
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/admin/analytics", tags=["admin-analytics"])
 
 
@@ -180,7 +181,7 @@ async def get_user_growth_metrics(
         growth_rate = calculate_growth_rate(new_users_month, prev_month_users)
         trend = calculate_trend(new_users_month, prev_month_users)
 
-        LOG.info(
+        logger.info(
             "User growth metrics retrieved",
             extra={
                 "total_users": total_users,
@@ -201,7 +202,7 @@ async def get_user_growth_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving user growth metrics",
             extra={"error": str(e)},
         )
@@ -258,7 +259,7 @@ async def get_user_activity_metrics(
         avg_session_duration = 15.5  # minutes
         avg_sessions_per_user = 3.2
 
-        LOG.info(
+        logger.info(
             "User activity metrics retrieved",
             extra={
                 "daily_active": daily_active,
@@ -277,7 +278,7 @@ async def get_user_activity_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving user activity metrics",
             extra={"error": str(e)},
         )
@@ -338,7 +339,7 @@ async def get_user_demographics(
             "inactive": inactive_result.scalar() or 0,
         }
 
-        LOG.info("User demographics retrieved")
+        logger.info("User demographics retrieved")
 
         return UserDemographics(
             by_timezone=by_timezone,
@@ -348,7 +349,7 @@ async def get_user_demographics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving user demographics",
             extra={"error": str(e)},
         )
@@ -396,7 +397,7 @@ async def get_content_metrics(
         avg_posts_per_user = round(total_posts / total_users, 2)
         content_growth_rate = calculate_growth_rate(posts_month, prev_month_posts)
 
-        LOG.info("Content metrics retrieved")
+        logger.info("Content metrics retrieved")
 
         return ContentMetrics(
             total_posts=total_posts,
@@ -410,7 +411,7 @@ async def get_content_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving content metrics",
             extra={"error": str(e)},
         )
@@ -473,7 +474,7 @@ async def get_moderation_metrics(
         # Calculate average resolution time (placeholder - would need actual timing data)
         avg_resolution_time = 4.5  # hours
 
-        LOG.info(
+        logger.info(
             "Moderation metrics retrieved",
             extra={"total_flags": total_flags, "pending_flags": pending_flags},
         )
@@ -491,7 +492,7 @@ async def get_moderation_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving moderation metrics",
             extra={"error": str(e)},
         )
@@ -564,7 +565,7 @@ async def get_social_metrics(
         # Engagement rate (placeholder calculation)
         engagement_rate = 42.5
 
-        LOG.info("Social metrics retrieved")
+        logger.info("Social metrics retrieved")
 
         return SocialMetrics(
             total_follows=total_follows,
@@ -579,7 +580,7 @@ async def get_social_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving social metrics",
             extra={"error": str(e)},
         )
@@ -643,7 +644,7 @@ async def get_ai_metrics(
             "google": 2_530,
         }
 
-        LOG.info("AI metrics retrieved")
+        logger.info("AI metrics retrieved")
 
         return AIMetrics(
             total_threads=total_threads,
@@ -657,7 +658,7 @@ async def get_ai_metrics(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving AI metrics",
             extra={"error": str(e)},
         )
@@ -691,7 +692,7 @@ async def get_dashboard_overview(
         social = await get_social_metrics(db, admin)
         ai = await get_ai_metrics(db, admin)
 
-        LOG.info("Dashboard overview retrieved")
+        logger.info("Dashboard overview retrieved")
 
         return DashboardOverview(
             user_growth=user_growth,
@@ -704,7 +705,7 @@ async def get_dashboard_overview(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving dashboard overview",
             extra={"error": str(e)},
         )
@@ -766,7 +767,7 @@ async def get_user_growth_timeseries(
         else:
             trend = TrendDirection.STABLE
 
-        LOG.info(
+        logger.info(
             "User growth time series retrieved",
             extra={"period": period.value, "data_points": len(data_points)},
         )
@@ -782,7 +783,7 @@ async def get_user_growth_timeseries(
         )
 
     except Exception as e:
-        LOG.error(
+        logger.error(
             "Error retrieving user growth time series",
             extra={"error": str(e)},
         )
