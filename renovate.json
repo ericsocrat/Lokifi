@@ -114,6 +114,14 @@
       "enabled": false
     },
     {
+      "description": "FastAPI ecosystem requires manual review (starlette has strict version constraints)",
+      "matchPackageNames": ["fastapi", "starlette", "sse-starlette", "starlette-testclient"],
+      "automerge": false,
+      "labels": ["dependencies", "fastapi-ecosystem", "requires-review"],
+      "prPriority": 8,
+      "minimumReleaseAge": "3 days"
+    },
+    {
       "description": "Docker images (weekly)",
       "matchManagers": ["dockerfile", "docker-compose"],
       "groupName": "Docker images",
