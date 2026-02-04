@@ -9,6 +9,7 @@ from app.api.market.routes import router as realtime_market_router
 from app.api.routes import (
     admin_analytics,  # Session 192 Admin Analytics Dashboard
     admin_moderation,  # Session 190 Content Moderation
+    admin_settings,  # Session 193 System Settings
     admin_users,  # Session 189 Admin User Management
     market,
     security,
@@ -219,6 +220,9 @@ app.include_router(
 app.include_router(
     admin_analytics.router, prefix=settings.API_PREFIX
 )  # Session 192 Admin Analytics Dashboard
+app.include_router(
+    admin_settings.router, prefix=settings.API_PREFIX
+)  # Session 193 System Settings
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(
     ai_websocket.router, prefix=settings.API_PREFIX
