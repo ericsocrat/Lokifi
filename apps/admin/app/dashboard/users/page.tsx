@@ -6,11 +6,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { userApi, type User, type UserFilters } from '@/lib/api';
 import './page.css';
 
 export default function UsersPage() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
   const [filters, setFilters] = useState<UserFilters>({
     page: 1,
     page_size: 20,
@@ -34,6 +38,39 @@ export default function UsersPage() {
 
   const handlePageChange = (newPage: number) => {
     setFilters({ ...filters, page: newPage });
+  };
+
+  const handleViewUser = (userId: string) => {
+    router.push(`/dashboard/users/${userId}`);
+  };
+
+  const handleEditUser = (userId: string) => {
+    // TODO: Open edit modal when edit modal component is created
+    console.log('Edit user:', userId);
+    alert('Edit functionality coming soon. For now, user details can be updated via the API.');
+  };
+
+  const handleDeleteUser = async (user: User) => {
+    const confirmMessage = `Are you sure you want to delete user "${user.name || user.handle}"?\n\n` +
+      `Email: ${user.email}\n` +
+      `This action cannot be undone.`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      await userApi.deleteUser(user.id);
+      
+      // Invalidate users query to refetch the list
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      
+      alert(`User "${user.name || user.handle}" has been deleted successfully.`);
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to delete user: ${errorMessage}`);
+      console.error('Delete error:', error);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -221,6 +258,7 @@ export default function UsersPage() {
                           className="action-btn view"
                           title="View Details"
                           type="button"
+                          onClick={() => handleViewUser(user.id)}
                         >
                           👁️
                         </button>
@@ -228,6 +266,7 @@ export default function UsersPage() {
                           className="action-btn edit"
                           title="Edit User"
                           type="button"
+                          onClick={() => handleEditUser(user.id)}
                         >
                           ✏️
                         </button>
@@ -235,6 +274,7 @@ export default function UsersPage() {
                           className="action-btn delete"
                           title="Delete User"
                           type="button"
+                          onClick={() => handleDeleteUser(user)}
                         >
                           🗑️
                         </button>

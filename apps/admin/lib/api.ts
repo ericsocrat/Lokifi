@@ -65,6 +65,7 @@ export interface User {
   last_login?: string;
   follower_count?: number;
   following_count?: number;
+  avatar_url?: string;
 }
 
 export interface UserListResponse {
