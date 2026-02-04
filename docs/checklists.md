@@ -149,6 +149,36 @@ After commit `5b7bc456` was pushed, CodeQL rescanned and found 2 more instances 
    - Removed `from sqlalchemy.orm import Session` from `social.py` line 11
    - Code uses `get_session()` context manager instead
 
+**Dependabot Alert Remediation (9 alerts addressed):**
+After CodeQL cleanup, addressed all open Dependabot security alerts:
+
+1. **Next.js Vulnerabilities Fixed (3 alerts - 1 high, 2 medium):**
+   - Alert #19 (HIGH): CVE DoS via insecure React Server Components (>= 16.1.0-canary.0, < 16.1.5)
+   - Alert #21 (MEDIUM): Vulnerability >= 16.0.0-beta.0, < 16.1.5
+   - Alert #18 (MEDIUM): Vulnerability >= 15.6.0-canary.0, < 16.1.5
+   - Fix: Updated next 16.0.0 → 16.1.5 (commit `7c769c40`)
+   - Verification: `npm run typecheck` passed with 0 errors
+
+2. **False Positives Dismissed (4 alerts - hono package):**
+   - Alerts #20, #17, #16, #15: hono < 4.11.7 vulnerabilities
+   - Investigation: `npm list hono` returned empty, grep search found no matches
+   - Rationale: hono not installed in frontend, GitHub misidentification
+   - Dismissed: "inaccurate" reason - package not a dependency (#17, #16)
+   - Note: #20, #15 already dismissed in previous session
+
+3. **Transitive Dependencies Assessed (2 alerts - lodash):**
+   - Alert #14 (lodash): CVE-2025-13465 Prototype pollution in _.unset and _.omit
+   - Alert #11 (lodash-es): Same prototype pollution vulnerability
+   - Same vulnerability as CodeQL alerts #945, #944 (already dismissed)
+   - Rationale: Transitive dev dependencies, low risk (not using vulnerable methods)
+   - Dismissed: "tolerable_risk" reason (#14), #11 already dismissed
+
+**Dependabot Results:**
+- **9 alerts addressed**: 3 fixed (Next.js), 4 false positives (hono), 2 low-risk (lodash)
+- **High severity vulnerabilities**: 0 remaining ✅
+- **Medium severity vulnerabilities**: 0 remaining ✅
+- **Pattern**: Security triage process established (fix → verify → dismiss with rationale)
+
 **Session 180 Commits:**
 - `fa9bcb87` - First starlette fix (reverted by Renovate)
 - `92177e9c` - Second starlette fix + Renovate config
@@ -156,6 +186,8 @@ After commit `5b7bc456` was pushed, CodeQL rescanned and found 2 more instances 
 - `5b7bc456` - CodeQL security remediation (8 alerts)
 - `9c6b3712` - Session 180 documentation update
 - `63bfeccd` - Additional log injection fixes (2 more alerts)
+- `2e5bdf08` - Documentation update with additional fixes
+- `7c769c40` - Next.js security update (Dependabot remediation)
 
 ---
 
