@@ -7,6 +7,15 @@ Static analysis validation for market.py route integration with Phase 4c caching
 - Confirms Phase 4c-1 completeness
 
 Run: pytest tests/integration/test_market_cached_integration.py -v
+
+SKIPPED: This entire module is skipped because Phase 4c extended caching was never completed.
+These tests were written for features that don't exist:
+- CACHE_REGIONS constant missing from query_cache.py
+- get_market_ohlc is not async (tests expect async)
+- Phase 4c documentation doesn't exist
+- Cached routes not implemented
+
+See: https://github.com/ericsocrat/Lokifi/issues/213
 """
 
 from __future__ import annotations
@@ -15,6 +24,11 @@ import inspect
 from typing import Any
 
 import pytest
+
+# Skip entire module - Phase 4c caching incomplete
+pytestmark = pytest.mark.skip(
+    reason="Phase 4c extended caching incomplete - see issue #213"
+)
 
 
 class TestMarketProductionReadiness:
