@@ -8,7 +8,6 @@ import json
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, desc, func, select
-from sqlalchemy.orm import Session
 
 from app.core.cached_queries import (
     get_user_by_handle,

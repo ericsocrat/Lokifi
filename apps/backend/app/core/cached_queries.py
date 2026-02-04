@@ -237,7 +237,7 @@ def invalidate_user_cache(user_id: int) -> None:
     invalidate_cache_pattern("user:*")
     invalidate_cache_pattern(f"portfolio:user:{user_id}*")
     invalidate_cache_pattern(f"social:*:{user_id}*")
-    logger.info(f"Invalidated cache for user {user_id}")
+    logger.info("Invalidated cache for user", extra={"user_id": user_id})
 
 
 def invalidate_portfolio_cache(user_id: int) -> None:
@@ -252,7 +252,7 @@ def invalidate_portfolio_cache(user_id: int) -> None:
     invalidate_cache_pattern(f"portfolio:user:{user_id}*")
     invalidate_cache_pattern(f"portfolio:positions:{user_id}*")
     invalidate_cache_pattern(f"portfolio:position:{user_id}*")
-    logger.info(f"Invalidated portfolio cache for user {user_id}")
+    logger.info("Invalidated portfolio cache for user", extra={"user_id": user_id})
 
 
 def invalidate_follow_cache(follower_id: int, followee_id: int) -> None:
@@ -268,7 +268,10 @@ def invalidate_follow_cache(follower_id: int, followee_id: int) -> None:
     invalidate_cache_pattern(f"social:followers:count:{followee_id}*")
     invalidate_cache_pattern(f"social:following:count:{follower_id}*")
     invalidate_cache_pattern(f"social:follows:{follower_id}:{followee_id}*")
-    logger.info(f"Invalidated follow cache: {follower_id} -> {followee_id}")
+    logger.info(
+        "Invalidated follow cache",
+        extra={"follower_id": follower_id, "followee_id": followee_id},
+    )
 
 
 # ============================================================================
@@ -421,7 +424,7 @@ def invalidate_feed_cache(user_id: int) -> None:
         user_id: User ID whose feed to invalidate
     """
     invalidate_cache_pattern(f"feed:user:{user_id}*")
-    logger.info(f"Invalidated feed cache for user {user_id}")
+    logger.info("Invalidated feed cache for user", extra={"user_id": user_id})
 
 
 def invalidate_post_cache(
