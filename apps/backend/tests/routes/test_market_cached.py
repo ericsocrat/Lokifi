@@ -9,13 +9,8 @@ Test suite for market.py route integration with cached queries.
 
 Run: pytest tests/routes/test_market_cached.py -v
 
-SKIPPED: This entire module is skipped because Phase 4c extended caching was never completed.
-These tests fail with:
-- RuntimeError: cannot reuse already awaited coroutine (get_market_ohlc not properly async)
-- 500 Internal Server Error on /market/ohlc endpoint
-- Coroutine not awaited errors in cache stats
-
-See: https://github.com/ericsocrat/Lokifi/issues/213
+Status: ACTIVE - Phase 4c-1 implementation completed in Session 186
+All tests should pass with @cached_query decorator applied to get_market_ohlc.
 """
 
 from __future__ import annotations
@@ -25,11 +20,6 @@ from typing import Any
 from unittest.mock import AsyncMock, patch
 
 import pytest
-
-# Skip entire module - Phase 4c caching incomplete
-pytestmark = pytest.mark.skip(
-    reason="Phase 4c extended caching incomplete - see issue #213"
-)
 
 
 class TestMarketOHLCBasics:
@@ -67,6 +57,11 @@ class TestMarketOHLCBasics:
 class TestMarketOHLCCaching:
     """Test cache hit/miss behavior for market OHLC data."""
 
+    @pytest.fixture(autouse=True)
+    def _clear_cache(self, clear_cache):
+        """Auto-use cache clearing fixture for all tests in this class."""
+        return clear_cache
+
     @pytest.mark.asyncio
     async def test_first_call_uses_fetch_ohlc(self):
         """Test that first call to cached_ohlc invokes fetch_ohlc."""
@@ -101,13 +96,15 @@ class TestMarketOHLCCaching:
         with patch(
             "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [
-                {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
-            ]
+            # Use async function to ensure fresh coroutine each call
+            async def mock_fetch_fn(*args, **kwargs):
+                return [{"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}]
 
-            # Call with different symbols
-            result1 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=1)
-            result2 = await get_market_ohlc(symbol="ETHUSD", timeframe="1h", limit=1)
+            mock_fetch.side_effect = mock_fetch_fn
+
+            # Call with different symbols (use unique params not used by previous tests)
+            result1 = await get_market_ohlc(symbol="TEST_SYM1", timeframe="1h", limit=1)
+            result2 = await get_market_ohlc(symbol="TEST_SYM2", timeframe="1h", limit=1)
 
             # Both should be called (different cache keys)
             assert mock_fetch.call_count == 2
@@ -120,13 +117,15 @@ class TestMarketOHLCCaching:
         with patch(
             "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [
-                {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
-            ]
+            # Use async function to ensure fresh coroutine each call
+            async def mock_fetch_fn(*args, **kwargs):
+                return [{"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}]
 
-            # Call with different timeframes
-            result1 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=1)
-            result2 = await get_market_ohlc(symbol="BTCUSD", timeframe="4h", limit=1)
+            mock_fetch.side_effect = mock_fetch_fn
+
+            # Call with different timeframes (use unique params)
+            result1 = await get_market_ohlc(symbol="TEST_TF1", timeframe="1h", limit=1)
+            result2 = await get_market_ohlc(symbol="TEST_TF1", timeframe="4h", limit=1)
 
             # Both should be called (different cache keys)
             assert mock_fetch.call_count == 2
@@ -139,13 +138,19 @@ class TestMarketOHLCCaching:
         with patch(
             "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [
-                {"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}
-            ]
+            # Use async function to ensure fresh coroutine each call
+            async def mock_fetch_fn(*args, **kwargs):
+                return [{"timestamp": "2026-01-14T10:00:00Z", "close": 100.0}]
 
-            # Call with different limits
-            result1 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=100)
-            result2 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=500)
+            mock_fetch.side_effect = mock_fetch_fn
+
+            # Call with different limits (use unique params)
+            result1 = await get_market_ohlc(
+                symbol="TEST_LIM", timeframe="1h", limit=100
+            )
+            result2 = await get_market_ohlc(
+                symbol="TEST_LIM", timeframe="1h", limit=500
+            )
 
             # Both should be called (different cache keys)
             assert mock_fetch.call_count == 2
@@ -153,6 +158,11 @@ class TestMarketOHLCCaching:
 
 class TestMarketOHLCPerformance:
     """Performance tests for market OHLC caching."""
+
+    @pytest.fixture(autouse=True)
+    def _clear_cache(self, clear_cache):
+        """Auto-use cache clearing fixture for all tests in this class."""
+        return clear_cache
 
     @pytest.mark.asyncio
     async def test_cached_call_is_fast(self):
@@ -177,14 +187,25 @@ class TestMarketOHLCPerformance:
         with patch(
             "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = test_bars
+            # Use async function to ensure fresh coroutine each call
+            async def mock_fetch_fn(*args, **kwargs):
+                return test_bars
 
-            # Warm up - first call
-            await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=500)
+            mock_fetch.side_effect = mock_fetch_fn
+
+            # Clear cache before test
+            from app.core.query_cache import medium_term_cache
+
+            medium_term_cache.invalidate()
+
+            # Warm up - first call (use unique params)
+            await get_market_ohlc(symbol="TEST_SPEED", timeframe="1h", limit=500)
 
             # Measure cached call time
             start = time.time()
-            result = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=500)
+            result = await get_market_ohlc(
+                symbol="TEST_SPEED", timeframe="1h", limit=500
+            )
             cached_time = time.time() - start
 
             # Cached call should be very fast (<1ms for in-memory operation)
@@ -219,19 +240,23 @@ class TestMarketOHLCPerformance:
 
             mock_fetch.side_effect = slow_fetch
 
-            # Measure first call (uncached)
-            start = time.time()
-            result1 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=100)
-            fetch_time = time.time() - start
+            # Clear cache before test
+            from app.core.query_cache import medium_term_cache
 
-            # Reset mock for cached call
-            mock_fetch.reset_mock()
-            mock_fetch.side_effect = None
-            mock_fetch.return_value = test_bars
+            medium_term_cache.invalidate()
+
+            # Measure first call (uncached, use unique params)
+            start = time.time()
+            result1 = await get_market_ohlc(
+                symbol="TEST_SPEEDUP", timeframe="1h", limit=100
+            )
+            fetch_time = time.time() - start
 
             # Measure second call (should be cached)
             start = time.time()
-            result2 = await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=100)
+            result2 = await get_market_ohlc(
+                symbol="TEST_SPEEDUP", timeframe="1h", limit=100
+            )
             cached_time = time.time() - start
 
             # Cache should be 50x+ faster (100ms → <2ms)
@@ -250,15 +275,24 @@ class TestMarketOHLCPerformance:
         with patch(
             "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = test_bars
+            # Use async function to ensure fresh coroutine each call
+            async def mock_fetch_fn(*args, **kwargs):
+                return test_bars
 
-            # Warm up cache
-            await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=1)
+            mock_fetch.side_effect = mock_fetch_fn
+
+            # Clear cache before test
+            from app.core.query_cache import medium_term_cache
+
+            medium_term_cache.invalidate()
+
+            # Warm up cache (use unique params)
+            await get_market_ohlc(symbol="TEST_THROUGH", timeframe="1h", limit=1)
 
             # Measure throughput: 1000 cached calls
             start = time.time()
             for _ in range(1000):
-                await get_market_ohlc(symbol="BTCUSD", timeframe="1h", limit=1)
+                await get_market_ohlc(symbol="TEST_THROUGH", timeframe="1h", limit=1)
             total_time = time.time() - start
 
             # Should handle 1000+ calls/sec from cache
@@ -270,6 +304,11 @@ class TestMarketOHLCPerformance:
 
 class TestMarketOHLCIntegration:
     """Integration tests for market OHLC route."""
+
+    @pytest.fixture(autouse=True)
+    def _clear_cache(self, clear_cache):
+        """Auto-use cache clearing fixture for all tests in this class."""
+        return clear_cache
 
     @pytest.mark.asyncio
     async def test_route_uses_cached_query(self):
@@ -306,6 +345,11 @@ class TestMarketOHLCIntegration:
 
         # Cache stats should be available after calls
         stats = get_cache_stats()
+
+        # Check if it's a coroutine and await it
+        if asyncio.iscoroutine(stats):
+            stats = await stats
+
         assert isinstance(stats, dict)
         # Should have cache information
         assert stats is not None

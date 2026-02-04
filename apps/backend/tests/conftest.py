@@ -175,3 +175,24 @@ async def integration_db_session() -> AsyncGenerator[AsyncSession]:
 
     # Dispose engine
     await test_engine.dispose()
+
+
+@pytest.fixture
+async def clear_cache():
+    """Clear Redis cache before and after each test."""
+    from app.core.redis_cache import clear_all_cache
+
+    # Clear cache before test
+    try:
+        await clear_all_cache()
+    except Exception:
+        # Redis may not be available in all test environments
+        pass
+
+    yield
+
+    # Clear cache after test
+    try:
+        await clear_all_cache()
+    except Exception:
+        pass
