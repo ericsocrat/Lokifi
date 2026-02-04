@@ -24,6 +24,40 @@
 
 ---
 
+### Session 187 – February 4, 2026 ✅ (Documentation + Security Validation)
+
+**Focus**: Documentation consolidation and security posture validation
+**Objective**: Complete pattern library update and trigger CodeQL rescan
+**Status**: COMPLETE ✅
+
+**Documentation Improvements**:
+- ✅ Created Extended Caching Architecture pattern (CACHE-001, 545 lines)
+  - Comprehensive documentation of Phase 4c (all 4 phases, 53/53 tests)
+  - Multi-layer caching architecture (query + route levels)
+  - Performance metrics: 10-50x speedup documented
+  - TTL guidelines, invalidation strategies, testing patterns
+  - Anti-patterns and success criteria included
+- ✅ Archived outdated Phase 4c planning document to `.archive/`
+- ✅ Updated pattern library index (43 → 44 patterns)
+- ✅ Added Performance Patterns category (new)
+- ✅ Updated session count: 120+ → 186+ sessions
+
+**Security Validation**:
+- ✅ Verified CodeQL alert fixes in place (alerts #950, #952)
+  - No f-string logging in cached_queries.py (grep confirmed)
+  - No unused imports in social.py (grep confirmed)
+- ✅ Triggered CodeQL rescan via documentation update
+- ✅ 0 Dependabot alerts, 2 CodeQL alerts (awaiting auto-resolution)
+
+**Quality Metrics**:
+- ✅ Pre-commit hooks passed (typecheck, lint, format, security)
+- ✅ All 5,408 frontend tests passed
+- ✅ All 468 backend tests passed
+- ✅ Documentation follows existing patterns
+- ✅ Commit: 18f246ad - docs(patterns): Add Extended Caching Architecture pattern
+
+---
+
 ### Session 186 – February 4, 2026 ✅ (Phase 4c Complete: Extended Caching Initiative)
 
 **Focus**: Complete Phase 4c Extended Caching Initiative (All 4 phases)
@@ -40,6 +74,7 @@
 **Phase 4c-4: Social Route Optimization** (Final Phase):
 
 **Architecture Discovery**:
+
 - Social routes use **DUAL caching layers** for optimal performance
 - **Layer 1 (Route-level)**: Manual Redis caching (Phase 3c-1 pattern)
   - Caches full PostOut responses for instant API returns
@@ -51,11 +86,13 @@
   - TTL: 60s (SHORT_TERM cache)
 
 **Routes Verified**:
+
 1. `/social/posts` - Lists posts, cache key: `posts:list:{symbol}:{cursor}:l{limit}`
 2. `/social/feed` - User feed, cache key: `feed:{handle}:{symbol}:{cursor}:l{limit}`
 3. `/social/users/{handle}` - User profiles, cache key: `user:profile:{handle}`
 
 **Test Coverage** (11/11 tests, 100%):
+
 - **TestSocialBasics** (3 tests): Endpoints exist, functions imported, decorators applied
 - **TestSocialRouteCaching** (2 tests): Cache key format documentation
 - **TestSocialQueryCaching** (3 tests): Function signatures, return types verified
@@ -63,23 +100,27 @@
 - **TestSocialIntegration** (2 tests): Dual-layer architecture, invalidation strategies
 
 **Performance Impact**:
+
 - Route cache hit: 2-5ms (10-50x faster than database)
 - Query cache hit: 1-2ms (15-60x faster than database)
 - Combined benefit: Multiple features reuse cached queries
 - Overall system throughput: 10-50x improvement on cache hits
 
 **Cache Invalidation Strategies**:
+
 - On post create: `invalidate_feed_cache()`, `invalidate_all_feeds_for_followees()`
 - On post delete: `invalidate_post_cache()`, clear route-level cache
 - On follow/unfollow: `invalidate_follow_cache()`, clear feed cache
 
 **Architectural Benefits**:
+
 - Route-level cache: Instant API responses, no query overhead
 - Query-level cache: Reusable across features (AI tools, analytics, monitoring)
 - Coordinated invalidation: Both layers stay synchronized
 - Optimal for high-traffic social features
 
 **Phase 4c Overall Impact** (53 total tests):
+
 - **Market caching**: 10-20x speedup on OHLC data queries
 - **Alerts caching**: 15-30x speedup on user alerts
 - **Chat verification**: Confirmed tools benefit from market/alerts caching
@@ -87,6 +128,7 @@
 - **Total performance gain**: System-wide 10-50x improvement on cache hits
 
 **Quality Metrics**:
+
 - ✅ All 53 tests passing (100%)
 - ✅ 0 Ruff violations
 - ✅ 0 Black formatting issues

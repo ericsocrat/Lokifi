@@ -27,11 +27,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from app.api.routes.social import router
-from app.core.cached_queries import (
-    get_feed_posts,
-    get_user_posts,
-    short_term_cache,
-)
+from app.core.cached_queries import get_feed_posts, get_user_posts, short_term_cache
 from app.db.models import Post, User
 
 
