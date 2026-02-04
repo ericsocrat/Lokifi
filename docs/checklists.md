@@ -1,6 +1,6 @@
 # ✅ Lokifi Development Checklists
 
-**Last Updated:** January 14, 2026
+**Last Updated:** February 4, 2026
 **Purpose:** Repeatable process checklists for development workflow
 **Status:** Production Ready
 
@@ -19,6 +19,74 @@
 > - **ESLint**: 0 errors, 0 warnings (100% clean) ✅ 🎉
 > - **Pre-commit Hooks**: Active (quality + security gates) ✅
 > - **GitHub Issues**: 0 open ✅ | **Security Alerts**: 0 Dependabot, 30 CodeQL (documented) ✅
+
+---
+
+### Session 180 – February 4, 2026 ✅ (Renovate automerge fix + starlette conflict resolution TWICE)
+**Focus**: Fix critical CI failures caused by Renovate automerge of incompatible starlette update
+**Objective**: Resolve FastAPI/starlette version mismatch (TWICE) and prevent future automerge issues
+**Status**: COMPLETE ✅
+
+**Problem Summary:**
+- Renovate PR #203 (backend-minor) updated starlette to >=0.52.1,<0.53.0
+- FastAPI 0.128.0 requires starlette<0.51.0 (strict constraint)
+- PR #203 **auto-merged twice** despite breaking CI (commits c7582404, then reverted in 92177e9c)
+- Fast Feedback + Coverage Tracking workflows failed with pip ResolutionImpossible error
+- Issues #188 (Fast Feedback), #186 (Coverage Tracking) auto-created
+
+**Root Cause:**
+- Renovate config had global `automerge: true`
+- Minor updates auto-merge after 1 day (starlette 0.40→0.52 qualified)
+- No exception for FastAPI ecosystem packages (tight version coupling)
+- Similar to Session 178 but with different version numbers
+
+**Fixes Applied:**
+
+1. **requirements.txt (apps/backend/)** - Fixed TWICE:
+   - First fix (commit fa9bcb87): Changed starlette >=0.52.1 → >=0.40.0,<0.51.0
+   - Renovate auto-merged PR #203 after 1 minute, reverted fix
+   - Second fix (commit 92177e9c): Same change + warning comment
+   - Comment: "DO NOT UPDATE - Renovate #203 breaks CI"
+
+2. **renovate.json**:
+   - Added FastAPI ecosystem rule (fastapi, starlette, sse-starlette, starlette-testclient)
+   - Set `automerge: false` for these packages
+   - Labels: `requires-review`, `fastapi-ecosystem`
+   - Minimum release age: 3 days
+   - Priority: 8 (high but not critical)
+
+3. **PR Management**:
+   - Closed PR #203 with comment explaining incompatibility
+   - Closed new PR #209 (Renovate regenerated starlette update)
+   - Verified PR #209 had automerge disabled ✅ (Renovate config working!)
+
+**Quality:**
+- Pre-commit hooks: All quality gates passed ✅
+- Pre-push tests: Backend 468 passed, Frontend 5408 passed ✅
+- CI Results:
+  - Fast Feedback: **SUCCESS** ✅ (commit 92177e9c check-runs)
+  - Coverage Tracking: **SUCCESS** ✅
+  - Issues #188, #186 auto-closed ✅
+
+**Files Changed:**
+- [requirements.txt](../apps/backend/requirements.txt) - starlette constraint (line 47)
+- [renovate.json](../renovate.json) - FastAPI ecosystem automerge prevention
+
+**Commits:**
+- `fa9bcb87` - First starlette fix (reverted by Renovate PR #203)
+- `92177e9c` - Second starlette fix + Renovate config update
+
+**Impact:**
+- Prevented Renovate automerge from breaking CI in future
+- Established pattern for managing tightly-coupled dependency ecosystems
+- FastAPI/starlette updates now require manual review (prevents CI breakage)
+- Documented in PR #203 and PR #209 for historical reference
+
+**Lessons Learned:**
+- Renovate automerge requires ecosystem-aware rules (not just update types)
+- FastAPI has strict starlette version constraints that change between releases
+- Global automerge is dangerous for packages with tight version coupling
+- Pattern: Add automerge exceptions for dependency ecosystems (FastAPI, React, etc.)
 
 ---
 
