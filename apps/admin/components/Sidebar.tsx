@@ -3,13 +3,12 @@
  * Session 188: Admin dashboard navigation
  */
 
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { logoutAdmin } from '@/lib/auth';
-import { useRouter } from 'next/navigation';
-import './Sidebar.css';
+import { logoutAdmin } from "@/lib/auth";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import "./Sidebar.css";
 
 interface NavItem {
   name: string;
@@ -18,13 +17,14 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Overview', href: '/dashboard', icon: '📊' },
-  { name: 'Users', href: '/dashboard/users', icon: '👥' },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: '📈' },
-  { name: 'Content', href: '/dashboard/content', icon: '📝' },
-  { name: 'System', href: '/dashboard/system', icon: '⚙️' },
-  { name: 'API Keys', href: '/dashboard/api-keys', icon: '🔑' },
-  { name: 'Security', href: '/dashboard/security', icon: '🛡️' },
+  { name: "Overview", href: "/dashboard", icon: "📊" },
+  { name: "Users", href: "/dashboard/users", icon: "👥" },
+  { name: "Moderation", href: "/dashboard/moderation", icon: "🛑" },
+  { name: "Analytics", href: "/dashboard/analytics", icon: "📈" },
+  { name: "Content", href: "/dashboard/content", icon: "📝" },
+  { name: "System", href: "/dashboard/system", icon: "⚙️" },
+  { name: "API Keys", href: "/dashboard/api-keys", icon: "🔑" },
+  { name: "Security", href: "/dashboard/security", icon: "🛡️" },
 ];
 
 export function Sidebar() {
@@ -34,9 +34,9 @@ export function Sidebar() {
   const handleLogout = async () => {
     try {
       await logoutAdmin();
-      router.push('/login');
+      router.push("/login");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -54,11 +54,7 @@ export function Sidebar() {
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sidebar-link ${isActive ? 'active' : ''}`}
-            >
+            <Link key={item.href} href={item.href} className={`sidebar-link ${isActive ? "active" : ""}`}>
               <span className="sidebar-icon">{item.icon}</span>
               <span className="sidebar-text">{item.name}</span>
             </Link>
@@ -67,11 +63,7 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar-footer">
-        <button
-          onClick={handleLogout}
-          className="sidebar-logout"
-          type="button"
-        >
+        <button onClick={handleLogout} className="sidebar-logout" type="button">
           <span className="sidebar-icon">🚪</span>
           <span className="sidebar-text">Logout</span>
         </button>
