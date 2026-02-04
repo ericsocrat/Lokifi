@@ -426,23 +426,15 @@ class AdvancedTestFramework:
                 engine = create_async_engine(settings.DATABASE_URL)
                 async with engine.begin() as conn:
                     if "sqlite" in settings.DATABASE_URL:
-                        result = await conn.execute(
-                            text(
-                                """
+                        result = await conn.execute(text("""
                             SELECT name FROM sqlite_master
                             WHERE type='table' AND name NOT LIKE 'sqlite_%'
-                        """
-                            )
-                        )
+                        """))
                     else:
-                        result = await conn.execute(
-                            text(
-                                """
+                        result = await conn.execute(text("""
                             SELECT tablename FROM pg_tables
                             WHERE schemaname = 'public'
-                        """
-                            )
-                        )
+                        """))
 
                     tables = [row[0] for row in result.fetchall()]
 

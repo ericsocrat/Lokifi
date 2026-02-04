@@ -34,17 +34,13 @@ class DatabaseMigrationService:
 
                 if not table_exists:
                     # Create migrations table
-                    await session.execute(
-                        text(
-                            """
+                    await session.execute(text("""
                         CREATE TABLE migrations (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name VARCHAR(255) NOT NULL UNIQUE,
                             applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
                         )
-                    """
-                        )
-                    )
+                    """))
                     await session.commit()
                     logger.info("Created migrations table")
 

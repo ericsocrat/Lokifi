@@ -173,8 +173,7 @@ class AnalyticsQueryBuilder:
 
             # Build query with dialect-specific date truncation
             if self.dialect == DatabaseDialect.POSTGRESQL:
-                query = text(
-                    """
+                query = text("""
                     SELECT
                         DATE_TRUNC('hour', created_at) as hour,
                         COUNT(*) as activity_count,
@@ -184,12 +183,10 @@ class AnalyticsQueryBuilder:
                     GROUP BY DATE_TRUNC('hour', created_at)
                     ORDER BY hour DESC
                     LIMIT 168
-                """
-                )
+                """)
 
             elif self.dialect == DatabaseDialect.SQLITE:
-                query = text(
-                    """
+                query = text("""
                     SELECT
                         strftime('%Y-%m-%d %H:00:00', created_at) as hour,
                         COUNT(*) as activity_count,
@@ -199,8 +196,7 @@ class AnalyticsQueryBuilder:
                     GROUP BY strftime('%Y-%m-%d %H:00:00', created_at)
                     ORDER BY hour DESC
                     LIMIT 168
-                """
-                )
+                """)
 
             result = session.execute(query, {"cutoff_date": cutoff_date})
 
@@ -226,8 +222,7 @@ class AnalyticsQueryBuilder:
             cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
             # Base query that works on both databases
-            base_query = text(
-                """
+            base_query = text("""
                 SELECT
                     type,
                     priority,
@@ -238,8 +233,7 @@ class AnalyticsQueryBuilder:
                 WHERE created_at >= :cutoff_date
                 GROUP BY type, priority
                 ORDER BY count DESC
-            """
-            )
+            """)
 
             result = session.execute(base_query, {"cutoff_date": cutoff_date})
 
@@ -318,8 +312,7 @@ class AnalyticsQueryBuilder:
             cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
             # Simplified query that works on both databases
-            engagement_query = text(
-                """
+            engagement_query = text("""
                 SELECT
                     user_id,
                     COUNT(*) as total_notifications,
@@ -331,8 +324,7 @@ class AnalyticsQueryBuilder:
                 GROUP BY user_id
                 ORDER BY total_notifications DESC
                 LIMIT 100
-            """
-            )
+            """)
 
             result = session.execute(engagement_query, {"cutoff_date": cutoff_date})
 
@@ -387,21 +379,17 @@ class AnalyticsQueryBuilder:
 
             # Check if messages table exists
             if self.dialect == DatabaseDialect.POSTGRESQL:
-                table_check = text(
-                    """
+                table_check = text("""
                     SELECT EXISTS (
                         SELECT FROM information_schema.tables
                         WHERE table_name = 'messages'
                     )
-                """
-                )
+                """)
             else:
-                table_check = text(
-                    """
+                table_check = text("""
                     SELECT COUNT(*) > 0 FROM sqlite_master
                     WHERE type='table' AND name='messages'
-                """
-                )
+                """)
 
             table_exists = session.execute(table_check).scalar()
 
@@ -410,16 +398,14 @@ class AnalyticsQueryBuilder:
                 return {"error": "Messages table not available", "fallback": True}
 
             # Simple message analytics query
-            message_query = text(
-                """
+            message_query = text("""
                 SELECT
                     COUNT(*) as total_messages,
                     COUNT(DISTINCT sender_id) as unique_senders,
                     AVG(LENGTH(content)) as avg_message_length
                 FROM messages
                 WHERE created_at >= :cutoff_date
-            """
-            )
+            """)
 
             result = session.execute(
                 message_query, {"cutoff_date": cutoff_date}
@@ -455,8 +441,7 @@ class AnalyticsQueryBuilder:
         try:
             cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
-            simple_query = text(
-                """
+            simple_query = text("""
                 SELECT
                     DATE(created_at) as day,
                     COUNT(*) as activity_count
@@ -464,8 +449,7 @@ class AnalyticsQueryBuilder:
                 WHERE created_at >= :cutoff_date
                 GROUP BY DATE(created_at)
                 ORDER BY day DESC
-            """
-            )
+            """)
 
             result = session.execute(simple_query, {"cutoff_date": cutoff_date})
 
@@ -491,13 +475,11 @@ class AnalyticsQueryBuilder:
         try:
             cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
-            simple_query = text(
-                """
+            simple_query = text("""
                 SELECT COUNT(*) as total_count
                 FROM notifications
                 WHERE created_at >= :cutoff_date
-            """
-            )
+            """)
 
             result = session.execute(
                 simple_query, {"cutoff_date": cutoff_date}

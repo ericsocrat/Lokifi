@@ -239,16 +239,14 @@ class AdvancedStorageAnalytics:
 
                 # Time-based usage patterns
                 hourly_stats = await session.execute(
-                    text(
-                        """
+                    text("""
                         SELECT EXTRACT(hour FROM created_at) as hour, COUNT(*) as count
                         FROM ai_messages
                         WHERE created_at >= :last_week
                         GROUP BY EXTRACT(hour FROM created_at)
                         ORDER BY count DESC
                         LIMIT 5
-                    """
-                    ),
+                    """),
                     {"last_week": last_week},
                 )
                 metrics.peak_hours = [int(row[0]) for row in hourly_stats]
@@ -528,8 +526,7 @@ class AdvancedStorageAnalytics:
         try:
             async for session in get_db_session():
                 # Temporal distribution
-                temporal_query = text(
-                    """
+                temporal_query = text("""
                     SELECT
                         DATE(created_at) as date,
                         COUNT(*) as message_count,
@@ -539,8 +536,7 @@ class AdvancedStorageAnalytics:
                     GROUP BY DATE(created_at)
                     ORDER BY date DESC
                     LIMIT 30
-                """
-                )
+                """)
 
                 temporal_result = await session.execute(
                     temporal_query,
@@ -553,8 +549,7 @@ class AdvancedStorageAnalytics:
                 }
 
                 # User behavior patterns
-                user_behavior_query = text(
-                    """
+                user_behavior_query = text("""
                     SELECT
                         u.id,
                         COUNT(DISTINCT t.id) as thread_count,
@@ -568,8 +563,7 @@ class AdvancedStorageAnalytics:
                     HAVING COUNT(m.id) > 0
                     ORDER BY message_count DESC
                     LIMIT 20
-                """
-                )
+                """)
 
                 user_behavior_result = await session.execute(user_behavior_query)
                 patterns["user_behavior"] = {
@@ -583,8 +577,7 @@ class AdvancedStorageAnalytics:
                 }
 
                 # Content analysis
-                content_query = text(
-                    """
+                content_query = text("""
                     SELECT
                         provider,
                         model,
@@ -596,8 +589,7 @@ class AdvancedStorageAnalytics:
                     AND provider IS NOT NULL
                     GROUP BY provider, model
                     ORDER BY count DESC
-                """
-                )
+                """)
 
                 content_result = await session.execute(content_query)
                 patterns["content_analysis"] = {

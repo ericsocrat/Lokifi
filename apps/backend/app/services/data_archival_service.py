@@ -77,17 +77,10 @@ class DataArchivalService:
                         )
                         or 0
                     )
-                    metrics.ai_messages_archive_size_mb = (
-                        await session.scalar(
-                            text(
-                                """
+                    metrics.ai_messages_archive_size_mb = await session.scalar(text("""
                                 SELECT COALESCE(SUM(LENGTH(content)), 0) / 1024.0 / 1024.0
                                 FROM ai_messages_archive
-                                """
-                            )
-                        )
-                        or 0.0
-                    )
+                                """)) or 0.0
                 except Exception:
                     metrics.archived_messages = 0
                     metrics.ai_messages_archive_size_mb = 0.0
@@ -105,9 +98,7 @@ class DataArchivalService:
     async def create_archive_table_if_not_exists(self):
         try:
             async for session in db_manager.get_session(read_only=False):
-                await session.execute(
-                    text(
-                        """
+                await session.execute(text("""
                     CREATE TABLE IF NOT EXISTS ai_messages_archive (
                         id INTEGER PRIMARY KEY,
                         thread_id INTEGER NOT NULL,
@@ -122,9 +113,7 @@ class DataArchivalService:
                         archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         content_compressed BOOLEAN DEFAULT FALSE
                     )
-                """
-                    )
-                )
+                """))
                 logger.info("✅ Archive table verified")
                 return
         except Exception as e:
@@ -225,15 +214,13 @@ class DataArchivalService:
             await self.create_archive_table_if_not_exists()
             async for session in db_manager.get_session(read_only=False):
                 result = await session.execute(
-                    text(
-                        """
+                    text("""
                         SELECT id, content
                         FROM ai_messages_archive
                         WHERE content_compressed = FALSE
                         ORDER BY id
                         LIMIT :limit
-                        """
-                    ),
+                        """),
                     {"limit": batch_size},
                 )
                 rows = result.fetchall()
@@ -266,14 +253,12 @@ class DataArchivalService:
                     encoded_content = base64.b64encode(compressed_data).decode("ascii")
 
                     await session.execute(
-                        text(
-                            """
+                        text("""
                             UPDATE ai_messages_archive
                             SET content = :content,
                                 content_compressed = TRUE
                             WHERE id = :id
-                            """
-                        ),
+                            """),
                         {"content": encoded_content, "id": row_id},
                     )
 

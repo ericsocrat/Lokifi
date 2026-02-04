@@ -165,17 +165,13 @@ class J53PerformanceMonitor:
                 # Index health (PostgreSQL only)
                 if not self.settings.DATABASE_URL.startswith("sqlite"):
                     try:
-                        index_usage = await session.execute(
-                            text(
-                                """
+                        index_usage = await session.execute(text("""
                             SELECT schemaname, tablename, attname, n_distinct, correlation
                             FROM pg_stats
                             WHERE schemaname = 'public'
                             AND tablename IN ('ai_messages', 'ai_threads')
                             ORDER BY tablename, attname
-                        """
-                            )
-                        )
+                        """))
                         health_data["index_statistics"] = [
                             dict(row._mapping) for row in index_usage
                         ]
@@ -628,15 +624,11 @@ class J53AutoOptimizer:
                         optimizations.append("Updated database statistics")
 
                         # Check for missing indexes on frequently queried columns
-                        index_analysis = await session.execute(
-                            text(
-                                """
+                        index_analysis = await session.execute(text("""
                             SELECT schemaname, tablename, seq_scan, seq_tup_read, idx_scan, idx_tup_fetch
                             FROM pg_stat_user_tables
                             WHERE schemaname = 'public'
-                        """
-                            )
-                        )
+                        """))
 
                         for row in index_analysis:
                             if (
