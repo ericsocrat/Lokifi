@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
 from app.api.routes import (
+    admin_moderation,  # Session 190 Content Moderation
     admin_users,  # Session 189 Admin User Management
     market,
     security,
@@ -211,6 +212,9 @@ app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase 
 app.include_router(
     admin_users.router, prefix=settings.API_PREFIX
 )  # Session 189 Admin User Management
+app.include_router(
+    admin_moderation.router, prefix=settings.API_PREFIX
+)  # Session 190 Content Moderation
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(
     ai_websocket.router, prefix=settings.API_PREFIX

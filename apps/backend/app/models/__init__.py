@@ -6,6 +6,16 @@ Database models package.
 from .ai_thread import AiMessage, AiThread, AiUsage
 from .conversation import Conversation, ConversationParticipant, Message, MessageReceipt
 from .follow import Follow
+from .moderation import (
+    AppealStatus,
+    ContentType,
+    FlaggedContent,
+    FlagReason,
+    FlagStatus,
+    ModerationAction,
+    ModerationAppeal,
+    ModerationDecision,
+)
 from .notification_models import Notification, NotificationPreference
 from .profile import Profile
 from .reaction import MessageReaction, ReactionType
@@ -15,12 +25,20 @@ __all__ = [
     "AiMessage",
     "AiThread",
     "AiUsage",
+    "AppealStatus",
+    "ContentType",
     "Conversation",
     "ConversationParticipant",
+    "FlagReason",
+    "FlagStatus",
+    "FlaggedContent",
     "Follow",
     "Message",
     "MessageReaction",
     "MessageReceipt",
+    "ModerationAction",
+    "ModerationAppeal",
+    "ModerationDecision",
     "Notification",
     "NotificationPreference",
     "Profile",
