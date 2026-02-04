@@ -27,6 +27,7 @@ __all__ = [
     "invalidate_cache_pattern",
 ]
 
+import asyncio
 import hashlib
 import json
 import logging
@@ -36,6 +37,7 @@ from functools import wraps
 from typing import Any, TypeVar
 
 from dogpile.cache import CacheRegion, make_region
+from dogpile.cache.api import NO_VALUE
 from sqlalchemy import event
 from sqlalchemy.orm import Session
 
@@ -267,13 +269,17 @@ def cached_query(
     """
     Decorator for caching query results using dogpile.cache
 
-    Uses dogpile's built-in cache_on_arguments decorator which handles
-    NoValue sentinels and cache invalidation properly.
+    Handles both sync and async functions. For async functions, awaits the
+    result before caching to avoid caching coroutine objects.
 
     Usage:
         @cached_query(region=medium_term_cache)
         def get_user_by_handle(db: Session, handle: str) -> User:
             return db.execute(select(User).where(User.handle == handle)).scalar()
+
+        @cached_query(region=medium_term_cache)
+        async def get_market_ohlc(symbol: str, timeframe: str) -> list[dict]:
+            return await fetch_ohlc(symbol, timeframe)
 
     Args:
         region: Cache region to use (short_term, medium_term, long_term)
@@ -282,15 +288,51 @@ def cached_query(
     """
 
     def decorator(fn: Callable[..., T]) -> Callable[..., T]:
-        if key_generator:
-            # Custom key generator: wrap it for dogpile's expected signature
-            def dogpile_key_gen(*args: Any, **kwargs: Any) -> str:
-                return key_generator(*args, **kwargs)
+        # Check if function is async
+        if asyncio.iscoroutinefunction(fn):
+            # Async function: need custom wrapper to await before caching
+            @wraps(fn)
+            async def async_wrapper(*args: Any, **kwargs: Any) -> T:
+                # Generate cache key
+                if key_generator:
+                    cache_key = key_generator(*args, **kwargs)
+                else:
+                    # Use dogpile's default key generation logic
+                    # Serialize args/kwargs to create stable key
+                    key_parts = [fn.__module__, fn.__name__]
+                    key_parts.extend(str(arg) for arg in args)
+                    key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
+                    cache_key = "|".join(key_parts)
 
-            return region.cache_on_arguments(function_key_generator=dogpile_key_gen)(fn)
+                # Try to get from cache
+                cached_value = region.get(cache_key)
+                if cached_value is not NO_VALUE:
+                    return cached_value
+
+                # Cache miss: call function and await result
+                result = await fn(*args, **kwargs)
+
+                # Store awaited result in cache (not the coroutine)
+                region.set(cache_key, result)
+
+                return result
+
+            # Expose wrapped function for testing/introspection
+            async_wrapper.__wrapped__ = fn
+            return async_wrapper
         else:
-            # Use dogpile's default key generator
-            return region.cache_on_arguments()(fn)
+            # Sync function: use dogpile's built-in decorator
+            if key_generator:
+                # Custom key generator: wrap it for dogpile's expected signature
+                def dogpile_key_gen(*args: Any, **kwargs: Any) -> str:
+                    return key_generator(*args, **kwargs)
+
+                return region.cache_on_arguments(
+                    function_key_generator=dogpile_key_gen
+                )(fn)
+            else:
+                # Use dogpile's default key generator
+                return region.cache_on_arguments()(fn)
 
     return decorator
 

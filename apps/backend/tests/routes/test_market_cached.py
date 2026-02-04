@@ -312,31 +312,46 @@ class TestMarketOHLCIntegration:
 
     @pytest.mark.asyncio
     async def test_route_uses_cached_query(self):
-        """Test that the route endpoint uses get_market_ohlc."""
-        from fastapi.testclient import TestClient
+        """Test that the route endpoint uses get_market_ohlc.
 
-        from app.core.cached_queries import get_market_ohlc
+        Note: This test validates that the route calls the cached function
+        by mocking the underlying fetch_ohlc function.
+        """
+        from httpx import ASGITransport, AsyncClient
+
+        from app.core.cached_queries import fetch_ohlc
         from app.main import app
 
-        with patch.object(
-            get_market_ohlc, "__wrapped__", new_callable=AsyncMock
+        # Mock the underlying fetch function (not the cached wrapper)
+        with patch(
+            "app.core.cached_queries.fetch_ohlc", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [
-                {
-                    "timestamp": "2026-01-14T10:00:00Z",
-                    "open": 100.0,
-                    "high": 102.0,
-                    "low": 99.0,
-                    "close": 101.0,
-                    "volume": 1000000,
-                }
-            ]
 
-            client = TestClient(app)
-            response = client.get("/api/market/ohlc?symbol=BTCUSD&timeframe=1h&limit=1")
+            async def mock_fetch_fn(*args, **kwargs):
+                return [
+                    {
+                        "timestamp": "2026-01-14T10:00:00Z",
+                        "open": 100.0,
+                        "high": 102.0,
+                        "low": 99.0,
+                        "close": 101.0,
+                        "volume": 1000000,
+                    }
+                ]
 
-            # Route should return the cached data
-            assert response.status_code == 200
+            mock_fetch.side_effect = mock_fetch_fn
+
+            transport = ASGITransport(app=app)
+            async with AsyncClient(
+                transport=transport, base_url="http://test"
+            ) as client:
+                response = await client.get(
+                    "/api/market/ohlc?symbol=BTCUSD&timeframe=1h&limit=1"
+                )
+
+                # Route should return the cached data
+                assert response.status_code == 200
+                assert mock_fetch.called
 
     @pytest.mark.asyncio
     async def test_cache_monitoring_integration(self):
