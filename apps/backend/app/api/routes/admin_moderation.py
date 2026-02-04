@@ -37,6 +37,8 @@ from app.schemas.moderation import (
     ModerationDecisionCreate,
     ModerationDecisionListResponse,
     ModerationDecisionResponse,
+    ModerationHistoryEntry,
+    ModerationHistoryResponse,
     ModerationStatistics,
 )
 
@@ -654,3 +656,132 @@ async def get_reason_statistics(
         )
         for row in rows
     ]
+
+
+# ============================================================================
+# Moderation History Endpoint
+# ============================================================================
+
+
+@router.get("/flags/{flag_id}/history", response_model=ModerationHistoryResponse)
+async def get_flag_history(
+    flag_id: UUID,
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+) -> ModerationHistoryResponse:
+    """
+    Get complete moderation history for a flagged content item.
+
+    Returns chronological timeline of all events:
+    - Flag creation
+    - Moderation decisions
+    - Appeals submitted
+    - Appeals reviewed
+    """
+    # Verify flag exists
+    flag_result = await db.execute(
+        select(FlaggedContent).where(FlaggedContent.id == flag_id)
+    )
+    flag = flag_result.scalar_one_or_none()
+
+    if not flag:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Flagged content not found"
+        )
+
+    history_entries: list[ModerationHistoryEntry] = []
+
+    # 1. Flag creation event
+    reporter_result = await db.execute(
+        select(User.full_name).where(User.id == flag.reporter_id)
+    )
+    reporter_name = reporter_result.scalar_one_or_none()
+
+    history_entries.append(
+        ModerationHistoryEntry(
+            id=flag.id,
+            timestamp=flag.created_at,
+            event_type="flag_created",
+            moderator_id=flag.reporter_id,
+            moderator_name=reporter_name or "Unknown User",
+            notes=f"Reported for: {flag.reason.value.replace('_', ' ').title()}",
+        )
+    )
+
+    # 2. Get all moderation decisions
+    decisions_result = await db.execute(
+        select(ModerationDecision, User.full_name)
+        .join(User, ModerationDecision.moderator_id == User.id)
+        .where(ModerationDecision.flag_id == flag_id)
+        .order_by(ModerationDecision.created_at)
+    )
+    decisions = decisions_result.all()
+
+    for decision, moderator_name in decisions:
+        history_entries.append(
+            ModerationHistoryEntry(
+                id=decision.id,
+                timestamp=decision.created_at,
+                event_type="decision_made",
+                moderator_id=decision.moderator_id,
+                moderator_name=moderator_name,
+                action=decision.action,
+                notes=decision.notes,
+                suspension_days=decision.suspension_days,
+            )
+        )
+
+    # 3. Get all appeals
+    appeals_result = await db.execute(
+        select(ModerationAppeal)
+        .where(ModerationAppeal.flag_id == flag_id)
+        .order_by(ModerationAppeal.created_at)
+    )
+    appeals = appeals_result.scalars().all()
+
+    for appeal in appeals:
+        # Appeal submitted
+        appellant_result = await db.execute(
+            select(User.full_name).where(User.id == appeal.appellant_id)
+        )
+        appellant_name = appellant_result.scalar_one_or_none()
+
+        history_entries.append(
+            ModerationHistoryEntry(
+                id=appeal.id,
+                timestamp=appeal.created_at,
+                event_type="appeal_submitted",
+                moderator_id=appeal.appellant_id,
+                moderator_name=appellant_name or "Unknown User",
+                notes=appeal.appeal_reason,
+                appeal_status=appeal.status,
+            )
+        )
+
+        # Appeal reviewed (if reviewed)
+        if appeal.reviewed_at and appeal.reviewed_by:
+            reviewer_result = await db.execute(
+                select(User.full_name).where(User.id == appeal.reviewed_by)
+            )
+            reviewer_name = reviewer_result.scalar_one_or_none()
+
+            history_entries.append(
+                ModerationHistoryEntry(
+                    id=appeal.id,
+                    timestamp=appeal.reviewed_at,
+                    event_type="appeal_reviewed",
+                    moderator_id=appeal.reviewed_by,
+                    moderator_name=reviewer_name or "Unknown Moderator",
+                    notes=appeal.reviewer_notes,
+                    appeal_status=appeal.status,
+                )
+            )
+
+    # Sort all entries by timestamp
+    history_entries.sort(key=lambda x: x.timestamp)
+
+    return ModerationHistoryResponse(
+        flag_id=flag_id,
+        entries=history_entries,
+        total_entries=len(history_entries),
+    )

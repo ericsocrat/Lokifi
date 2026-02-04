@@ -197,3 +197,35 @@ class FlagReasonStatistics(BaseModel):
     reason: FlagReason
     total_flags: int
     percentage: float
+
+
+# ============================================================================
+# Moderation History Schemas
+# ============================================================================
+
+
+class ModerationHistoryEntry(BaseModel):
+    """Schema for a single history entry in the moderation timeline."""
+
+    id: UUID
+    timestamp: datetime
+    event_type: (
+        str  # "flag_created", "decision_made", "appeal_submitted", "appeal_reviewed"
+    )
+    moderator_id: UUID | None = None
+    moderator_name: str | None = None
+    action: ModerationAction | None = None
+    notes: str | None = None
+    suspension_days: int | None = None
+    appeal_status: AppealStatus | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class ModerationHistoryResponse(BaseModel):
+    """Schema for moderation history timeline response."""
+
+    flag_id: UUID
+    entries: list[ModerationHistoryEntry]
+    total_entries: int

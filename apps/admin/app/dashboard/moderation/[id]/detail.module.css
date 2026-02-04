@@ -280,6 +280,11 @@
   color: #dc2626;
 }
 
+/* History Timeline Section */
+.historySection {
+  margin-top: 2rem;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .content {
