@@ -145,13 +145,13 @@
   - `GET /admin/settings/health` - Public health check (no auth required)
   - `GET /admin/settings/feature-flags` - Public feature flags retrieval (no auth required)
   - `POST /admin/settings/reset-to-defaults` - Nuclear reset option (admin-only, non-undoable)
-  - Helper functions: get_or_create_settings(), require_admin(), _is_valid_ip_or_cidr()
+  - Helper functions: get_or_create_settings(), require_admin(), \_is_valid_ip_or_cidr()
 - ✅ **Validation & Security**:
   - Email field validation with EmailStr
   - Port range validation (1-65535)
   - Session timeout bounds (5-1440 minutes)
   - Password length bounds (6-64 characters)
-  - CORS origin format checking (http://, https://, or *)
+  - CORS origin format checking (http://, https://, or \*)
   - IP/CIDR format validation using ipaddress module
   - SMTP config validation (host required if port specified)
 - ✅ **Logging & Error Handling**:

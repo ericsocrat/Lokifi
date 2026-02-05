@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  AreaChart,
   Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from 'recharts';
 import styles from './page.module.css';
 
@@ -114,8 +114,7 @@ type MetricPeriod = 'HOUR' | 'DAY' | 'WEEK' | 'MONTH' | 'YEAR' | 'ALL_TIME';
 
 export default function AnalyticsPage() {
   const [overview, setOverview] = useState<DashboardOverview | null>(null);
-  const [userGrowthTimeSeries, setUserGrowthTimeSeries] =
-    useState<TimeSeriesMetrics | null>(null);
+  const [userGrowthTimeSeries, setUserGrowthTimeSeries] = useState<TimeSeriesMetrics | null>(null);
   const [period, setPeriod] = useState<MetricPeriod>('DAY');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -174,9 +173,7 @@ export default function AnalyticsPage() {
       );
 
       if (!response.ok) {
-        throw new Error(
-          `Failed to fetch time series: ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch time series: ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -191,13 +188,10 @@ export default function AnalyticsPage() {
     fetchOverview();
     fetchUserGrowthTimeSeries(period);
 
-    const interval = setInterval(
-      () => {
-        fetchOverview();
-        fetchUserGrowthTimeSeries(period);
-      },
-      60000
-    ); // 60 seconds
+    const interval = setInterval(() => {
+      fetchOverview();
+      fetchUserGrowthTimeSeries(period);
+    }, 60000); // 60 seconds
 
     return () => clearInterval(interval);
   }, [period]);
@@ -270,16 +264,12 @@ export default function AnalyticsPage() {
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Analytics Dashboard</h1>
-          <p className={styles.subtitle}>
-            Last updated: {lastRefresh.toLocaleTimeString()}
-          </p>
+          <p className={styles.subtitle}>Last updated: {lastRefresh.toLocaleTimeString()}</p>
         </div>
         <div className={styles.controls}>
           <select
             value={period}
-            onChange={(e) =>
-              handlePeriodChange(e.target.value as MetricPeriod)
-            }
+            onChange={(e) => handlePeriodChange(e.target.value as MetricPeriod)}
             className={styles.periodSelect}
           >
             <option value="HOUR">Last Hour</option>
@@ -303,11 +293,7 @@ export default function AnalyticsPage() {
             <div className={styles.metricCard}>
               <div className={styles.cardHeader}>
                 <h3>User Growth</h3>
-                <span
-                  className={
-                    getTrendIndicator(overview.user_growth.trend).color
-                  }
-                >
+                <span className={getTrendIndicator(overview.user_growth.trend).color}>
                   {getTrendIndicator(overview.user_growth.trend).icon}{' '}
                   {overview.user_growth.growth_rate.toFixed(1)}%
                 </span>
@@ -382,9 +368,7 @@ export default function AnalyticsPage() {
                 </span>
               </div>
               <div className={styles.cardContent}>
-                <div className={styles.mainStat}>
-                  {formatNumber(overview.content.total_posts)}
-                </div>
+                <div className={styles.mainStat}>{formatNumber(overview.content.total_posts)}</div>
                 <div className={styles.label}>Total Posts</div>
                 <div className={styles.subStats}>
                   <div>
@@ -484,9 +468,7 @@ export default function AnalyticsPage() {
                 <h3>AI Usage</h3>
               </div>
               <div className={styles.cardContent}>
-                <div className={styles.mainStat}>
-                  {formatNumber(overview.ai.total_threads)}
-                </div>
+                <div className={styles.mainStat}>{formatNumber(overview.ai.total_threads)}</div>
                 <div className={styles.label}>Total Threads</div>
                 <div className={styles.subStats}>
                   <div>
@@ -521,15 +503,9 @@ export default function AnalyticsPage() {
                   <h3>User Registration Trend</h3>
                   <div className={styles.chartStats}>
                     <span>Total: {formatNumber(userGrowthTimeSeries.total)}</span>
-                    <span>
-                      Avg: {formatNumber(Math.round(userGrowthTimeSeries.average))}
-                    </span>
+                    <span>Avg: {formatNumber(Math.round(userGrowthTimeSeries.average))}</span>
                     <span>Peak: {formatNumber(userGrowthTimeSeries.peak)}</span>
-                    <span
-                      className={
-                        getTrendIndicator(userGrowthTimeSeries.trend).color
-                      }
-                    >
+                    <span className={getTrendIndicator(userGrowthTimeSeries.trend).color}>
                       {getTrendIndicator(userGrowthTimeSeries.trend).icon} Trend
                     </span>
                   </div>

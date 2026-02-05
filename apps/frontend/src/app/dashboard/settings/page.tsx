@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import styles from "./page.module.css";
+import { useEffect, useState } from 'react';
+import styles from './page.module.css';
 
 interface SystemSettingsResponse {
   site_name: string;
@@ -60,14 +60,14 @@ export default function SettingsPage() {
   const fetchSettings = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/admin/settings", {
+      const response = await fetch('/api/admin/settings', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error("Failed to load settings");
+        throw new Error('Failed to load settings');
       }
 
       const data = (await response.json()) as SystemSettingsResponse;
@@ -75,72 +75,66 @@ export default function SettingsPage() {
       setFormData({});
       setError(null);
     } catch (_err) {
-      setError(
-        _err instanceof Error ? _err.message : "Failed to load settings"
-      );
+      setError(_err instanceof Error ? _err.message : 'Failed to load settings');
       setSettings(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, type, value } = e.target;
     const target = e.target as HTMLInputElement;
 
-    if (type === "checkbox") {
+    if (type === 'checkbox') {
       setFormData((prev) => ({
         ...prev,
         [name]: target.checked,
       }));
-    } else if (type === "number") {
+    } else if (type === 'number') {
       setFormData((prev) => ({
         ...prev,
-        [name]: value === "" ? null : parseInt(value, 10),
+        [name]: value === '' ? null : parseInt(value, 10),
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: value === "" ? null : value,
+        [name]: value === '' ? null : value,
       }));
     }
   };
 
   const validateSettings = async () => {
     if (!formData || Object.keys(formData).length === 0) {
-      setError("No changes to validate");
+      setError('No changes to validate');
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch("/api/admin/settings/validate", {
-        method: "POST",
+      const response = await fetch('/api/admin/settings/validate', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error("Validation failed");
+        throw new Error('Validation failed');
       }
 
       const data = (await response.json()) as SettingsValidationResponse;
       setValidation(data);
 
       if (data.is_valid) {
-        setSuccess("✅ Settings validation passed - ready to save");
+        setSuccess('✅ Settings validation passed - ready to save');
       } else {
-        setError(
-          `❌ Validation failed with ${Object.keys(data.errors).length} error(s)`
-        );
+        setError(`❌ Validation failed with ${Object.keys(data.errors).length} error(s)`);
       }
     } catch (_err) {
-      setError(_err instanceof Error ? _err.message : "Validation failed");
+      setError(_err instanceof Error ? _err.message : 'Validation failed');
       setValidation(null);
     } finally {
       setLoading(false);
@@ -149,23 +143,23 @@ export default function SettingsPage() {
 
   const saveSettings = async () => {
     if (!formData || Object.keys(formData).length === 0) {
-      setError("No changes to save");
+      setError('No changes to save');
       return;
     }
 
     setSaveLoading(true);
     try {
-      const response = await fetch("/api/admin/settings", {
-        method: "PATCH",
+      const response = await fetch('/api/admin/settings', {
+        method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save settings");
+        throw new Error('Failed to save settings');
       }
 
       const data = (await response.json()) as SystemSettingsResponse;
@@ -173,10 +167,10 @@ export default function SettingsPage() {
       setFormData({});
       setValidation(null);
       setError(null);
-      setSuccess("✅ Settings saved successfully!");
+      setSuccess('✅ Settings saved successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save settings");
+      setError(err instanceof Error ? err.message : 'Failed to save settings');
     } finally {
       setSaveLoading(false);
     }
@@ -188,28 +182,24 @@ export default function SettingsPage() {
       const response = await fetch(
         `/api/admin/settings/maintenance-mode/${enabled}?message=System%20maintenance%20in%20progress...`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to toggle maintenance mode");
+        throw new Error('Failed to toggle maintenance mode');
       }
 
       const data = (await response.json()) as SystemSettingsResponse;
       setSettings(data);
       setFormData({});
-      setSuccess(
-        `✅ Maintenance mode ${enabled ? "enabled" : "disabled"} successfully!`
-      );
+      setSuccess(`✅ Maintenance mode ${enabled ? 'enabled' : 'disabled'} successfully!`);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to toggle maintenance mode"
-      );
+      setError(err instanceof Error ? err.message : 'Failed to toggle maintenance mode');
     } finally {
       setSaveLoading(false);
     }
@@ -218,15 +208,12 @@ export default function SettingsPage() {
   const toggleFeatureFlag = async (flagName: string, enabled: boolean) => {
     setSaveLoading(true);
     try {
-      const response = await fetch(
-        `/api/admin/settings/feature-flags/${flagName}/${enabled}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch(`/api/admin/settings/feature-flags/${flagName}/${enabled}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to toggle feature flag: ${flagName}`);
@@ -238,7 +225,7 @@ export default function SettingsPage() {
       setSuccess(`✅ Feature flag '${flagName}' toggled successfully!`);
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to toggle feature flag");
+      setError(err instanceof Error ? err.message : 'Failed to toggle feature flag');
     } finally {
       setSaveLoading(false);
     }
@@ -252,15 +239,15 @@ export default function SettingsPage() {
 
     setSaveLoading(true);
     try {
-      const response = await fetch("/api/admin/settings/reset-to-defaults", {
-        method: "POST",
+      const response = await fetch('/api/admin/settings/reset-to-defaults', {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
       if (!response.ok) {
-        throw new Error("Failed to reset settings");
+        throw new Error('Failed to reset settings');
       }
 
       const data = (await response.json()) as SystemSettingsResponse;
@@ -269,10 +256,10 @@ export default function SettingsPage() {
       setValidation(null);
       setError(null);
       setShowResetConfirm(false);
-      setSuccess("✅ Settings reset to defaults successfully!");
+      setSuccess('✅ Settings reset to defaults successfully!');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to reset settings");
+      setError(err instanceof Error ? err.message : 'Failed to reset settings');
       setShowResetConfirm(false);
     } finally {
       setSaveLoading(false);
@@ -290,18 +277,18 @@ export default function SettingsPage() {
   if (!settings) {
     return (
       <div className={styles.container}>
-        <div className={styles.error}>{error || "Failed to load settings"}</div>
+        <div className={styles.error}>{error || 'Failed to load settings'}</div>
       </div>
     );
   }
 
   const featureFlagNames: Record<string, string> = {
-    user_registration: "User Registration",
-    portfolio_management: "Portfolio Management",
-    social_features: "Social Features",
-    ai_features: "AI Features",
-    advanced_analytics: "Advanced Analytics",
-    api_access: "API Access",
+    user_registration: 'User Registration',
+    portfolio_management: 'Portfolio Management',
+    social_features: 'Social Features',
+    ai_features: 'AI Features',
+    advanced_analytics: 'Advanced Analytics',
+    api_access: 'API Access',
   };
 
   return (
@@ -309,8 +296,7 @@ export default function SettingsPage() {
       <div className={styles.header}>
         <h1>System Settings</h1>
         <div className={styles.status}>
-          Last updated:{" "}
-          {new Date(settings.updated_at).toLocaleString()}
+          Last updated: {new Date(settings.updated_at).toLocaleString()}
         </div>
       </div>
 
@@ -367,7 +353,7 @@ export default function SettingsPage() {
             type="text"
             name="site_logo_url"
             placeholder="https://example.com/logo.png"
-            defaultValue={settings.site_logo_url || ""}
+            defaultValue={settings.site_logo_url || ''}
             onChange={handleChange}
             className={styles.input}
           />
@@ -410,7 +396,7 @@ export default function SettingsPage() {
             type="text"
             name="email_smtp_host"
             placeholder="smtp.gmail.com"
-            defaultValue={settings.email_smtp_host || ""}
+            defaultValue={settings.email_smtp_host || ''}
             onChange={handleChange}
             className={styles.input}
           />
@@ -423,7 +409,7 @@ export default function SettingsPage() {
             type="number"
             name="email_smtp_port"
             placeholder="587"
-            defaultValue={settings.email_smtp_port || ""}
+            defaultValue={settings.email_smtp_port || ''}
             onChange={handleChange}
             className={styles.input}
           />
@@ -436,7 +422,7 @@ export default function SettingsPage() {
             type="text"
             name="email_smtp_username"
             placeholder="your-email@gmail.com"
-            defaultValue={settings.email_smtp_username || ""}
+            defaultValue={settings.email_smtp_username || ''}
             onChange={handleChange}
             className={styles.input}
           />
@@ -452,9 +438,7 @@ export default function SettingsPage() {
               type="checkbox"
               name="maintenance_mode"
               checked={settings.maintenance_mode}
-              onChange={() =>
-                toggleMaintenanceMode(!settings.maintenance_mode)
-              }
+              onChange={() => toggleMaintenanceMode(!settings.maintenance_mode)}
               disabled={saveLoading}
               className={styles.checkbox}
             />
@@ -469,7 +453,7 @@ export default function SettingsPage() {
               id="maintenance_message"
               name="maintenance_message"
               placeholder="System maintenance in progress..."
-              defaultValue={settings.maintenance_message || ""}
+              defaultValue={settings.maintenance_message || ''}
               onChange={handleChange}
               className={styles.textarea}
               rows={2}
@@ -559,9 +543,7 @@ export default function SettingsPage() {
               onChange={handleChange}
               className={styles.checkbox}
             />
-            <span className={styles.checkboxText}>
-              Require Email Verification
-            </span>
+            <span className={styles.checkboxText}>Require Email Verification</span>
           </label>
         </div>
 
@@ -592,9 +574,7 @@ export default function SettingsPage() {
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="lockout_duration_minutes">
-            Lockout Duration (minutes)
-          </label>
+          <label htmlFor="lockout_duration_minutes">Lockout Duration (minutes)</label>
           <input
             id="lockout_duration_minutes"
             type="number"
@@ -647,19 +627,13 @@ export default function SettingsPage() {
                 <input
                   type="checkbox"
                   checked={enabled}
-                  onChange={() =>
-                    toggleFeatureFlag(flag, !enabled)
-                  }
+                  onChange={() => toggleFeatureFlag(flag, !enabled)}
                   disabled={saveLoading}
                   className={styles.checkbox}
                 />
-                <span className={styles.checkboxText}>
-                  {featureFlagNames[flag] || flag}
-                </span>
+                <span className={styles.checkboxText}>{featureFlagNames[flag] || flag}</span>
               </label>
-              <span className={styles.flagStatus}>
-                {enabled ? "✅ Enabled" : "⭕ Disabled"}
-              </span>
+              <span className={styles.flagStatus}>{enabled ? '✅ Enabled' : '⭕ Disabled'}</span>
             </div>
           ))}
         </div>
@@ -705,7 +679,7 @@ export default function SettingsPage() {
           disabled={loading || saveLoading || Object.keys(formData).length === 0}
           className={`${styles.btn} ${styles.secondary}`}
         >
-          {loading ? "Validating..." : "Validate Changes"}
+          {loading ? 'Validating...' : 'Validate Changes'}
         </button>
 
         <button
@@ -713,7 +687,7 @@ export default function SettingsPage() {
           disabled={saveLoading || Object.keys(formData).length === 0}
           className={`${styles.btn} ${styles.primary}`}
         >
-          {saveLoading ? "Saving..." : "Save Changes"}
+          {saveLoading ? 'Saving...' : 'Save Changes'}
         </button>
 
         <button
@@ -721,7 +695,7 @@ export default function SettingsPage() {
           disabled={saveLoading}
           className={`${styles.btn} ${styles.danger}`}
         >
-          {showResetConfirm ? "Confirm Reset" : "Reset to Defaults"}
+          {showResetConfirm ? 'Confirm Reset' : 'Reset to Defaults'}
         </button>
 
         {showResetConfirm && (
@@ -737,8 +711,8 @@ export default function SettingsPage() {
 
       {showResetConfirm && (
         <div className={styles.resetWarning}>
-          ⚠️ Warning: This action cannot be undone. All settings will be reset
-          to their default values.
+          ⚠️ Warning: This action cannot be undone. All settings will be reset to their default
+          values.
         </div>
       )}
     </div>
