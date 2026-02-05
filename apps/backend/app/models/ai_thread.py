@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class AiProvider(str, Enum):
+class AiProvider(StrEnum):
     """AI provider types."""
 
     OPENROUTER = "openrouter"
@@ -36,7 +36,7 @@ class AiProvider(str, Enum):
     OLLAMA = "ollama"
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     """Message roles in AI conversation."""
 
     USER = "user"

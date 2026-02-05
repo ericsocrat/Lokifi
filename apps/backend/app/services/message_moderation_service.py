@@ -5,7 +5,7 @@ Enhanced message moderation service for J4 Direct Messages.
 import logging
 import re
 import uuid
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel
 from sqlalchemy import select, update
@@ -17,7 +17,7 @@ from app.utils.enhanced_validation import sanitize_for_logging
 logger = logging.getLogger(__name__)
 
 
-class ModerationAction(str, Enum):
+class ModerationAction(StrEnum):
     """Moderation actions that can be taken."""
 
     ALLOW = "allow"

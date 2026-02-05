@@ -6,7 +6,7 @@ and maintenance mode status. Single row per setting for simplicity.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, String, Text
@@ -95,7 +95,7 @@ class SystemSettings(Base):
         return f"<SystemSettings(site_name={self.site_name}, maintenance_mode={self.maintenance_mode})>"
 
 
-class FeatureFlagEnum(str, Enum):
+class FeatureFlagEnum(StrEnum):
     """Available feature flags."""
 
     USER_REGISTRATION = "user_registration"

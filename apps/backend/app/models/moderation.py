@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class ContentType(str, Enum):
+class ContentType(StrEnum):
     """Types of content that can be flagged."""
 
     POST = "post"
@@ -40,7 +40,7 @@ class ContentType(str, Enum):
     OTHER = "other"
 
 
-class FlagReason(str, Enum):
+class FlagReason(StrEnum):
     """Reasons for flagging content."""
 
     SPAM = "spam"
@@ -55,7 +55,7 @@ class FlagReason(str, Enum):
     OTHER = "other"
 
 
-class FlagStatus(str, Enum):
+class FlagStatus(StrEnum):
     """Status of a flagged content report."""
 
     PENDING = "pending"
@@ -65,7 +65,7 @@ class FlagStatus(str, Enum):
     APPEALED = "appealed"
 
 
-class ModerationAction(str, Enum):
+class ModerationAction(StrEnum):
     """Types of moderation actions."""
 
     NO_ACTION = "no_action"
@@ -77,7 +77,7 @@ class ModerationAction(str, Enum):
     BAN = "ban"
 
 
-class AppealStatus(str, Enum):
+class AppealStatus(StrEnum):
     """Status of a content moderation appeal."""
 
     PENDING = "pending"

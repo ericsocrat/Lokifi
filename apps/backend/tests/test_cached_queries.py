@@ -34,6 +34,7 @@ from app.core.cached_queries import (
     is_following,
 )
 from app.core.query_cache import (
+    clear_all_query_caches,
     invalidate_cache_pattern,
     medium_term_cache,
     short_term_cache,
@@ -292,6 +293,7 @@ class TestIntegrationScenarios:
 
     def test_follow_unfollow_workflow(self) -> None:
         """Test cache invalidation on follow/unfollow"""
+        clear_all_query_caches()
         db = MagicMock()
         db.query.return_value.filter.return_value.count.return_value = 50
 

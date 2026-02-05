@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class ContentType(str, Enum):
+class ContentType(StrEnum):
     """Message content types."""
 
     TEXT = "text"

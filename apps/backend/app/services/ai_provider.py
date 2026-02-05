@@ -5,13 +5,13 @@ AI Provider abstraction layer for Lokifi AI Chatbot (J5).
 import uuid
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterator
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, Field
 
 
-class MessageRole(str, Enum):
+class MessageRole(StrEnum):
     """Message roles in AI conversations."""
 
     SYSTEM = "system"

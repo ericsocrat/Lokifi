@@ -17,7 +17,7 @@ import statistics
 import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 logger = logging.getLogger(__name__)
 
 
-class OptimizationLevel(str, Enum):
+class OptimizationLevel(StrEnum):
     """Optimization levels for different scenarios"""
 
     CONSERVATIVE = "conservative"  # Safe optimizations

@@ -8,13 +8,13 @@ import logging
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
 
-class ModerationLevel(str, Enum):
+class ModerationLevel(StrEnum):
     """Content moderation severity levels."""
 
     SAFE = "safe"
@@ -23,7 +23,7 @@ class ModerationLevel(str, Enum):
     FLAGGED = "flagged"
 
 
-class ModerationCategory(str, Enum):
+class ModerationCategory(StrEnum):
     """Categories of content that can be moderated."""
 
     HARMFUL = "harmful"

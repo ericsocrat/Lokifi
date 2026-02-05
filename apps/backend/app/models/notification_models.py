@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, String, Text
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class NotificationType(str, Enum):
+class NotificationType(StrEnum):
     """Notification types for different system events"""
 
     FOLLOW = "follow"
@@ -27,7 +27,7 @@ class NotificationType(str, Enum):
     ANNOUNCEMENT = "announcement"
 
 
-class NotificationPriority(str, Enum):
+class NotificationPriority(StrEnum):
     """Notification priority levels"""
 
     LOW = "low"

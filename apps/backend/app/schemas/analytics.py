@@ -3,13 +3,13 @@ Analytics schemas for admin dashboard metrics and insights.
 """
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
 
-class MetricPeriod(str, Enum):
+class MetricPeriod(StrEnum):
     """Time period for metrics aggregation."""
 
     HOUR = "hour"
@@ -20,7 +20,7 @@ class MetricPeriod(str, Enum):
     ALL_TIME = "all_time"
 
 
-class TrendDirection(str, Enum):
+class TrendDirection(StrEnum):
     """Trend direction for metric changes."""
 
     UP = "up"

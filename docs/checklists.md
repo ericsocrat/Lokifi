@@ -110,6 +110,21 @@
 
 ---
 
+### Session 194 – February 5, 2026 ✅ (CI Stabilization: StrEnum + Cache Isolation + Recharts)
+
+**Focus**: Resolve CI failures in Fast Feedback + Coverage Tracking
+**Changes**:
+
+- **Backend**: Replace `str, Enum` with `StrEnum` across models/services/schemas to satisfy Ruff UP042
+- **Tests**: Clear query caches in cached query integration workflow to avoid cross-test pollution
+- **Frontend**: Add `recharts` dependency to satisfy TypeScript module resolution
+  **Quality**:
+- Tests: Not run (CI targeted)
+- Coverage: Not run locally
+- Lint: Not run locally
+
+---
+
 ### Session 193 – February 5, 2026 ✅ (Admin System Settings)
 
 **Focus**: Admin Panel Phase 7 - Platform-Wide System Settings & Feature Flags

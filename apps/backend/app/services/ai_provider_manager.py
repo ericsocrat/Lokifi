@@ -3,7 +3,7 @@ AI Provider manager and factory for Lokifi AI Chatbot (J5).
 """
 
 import logging
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from app.core.config import settings
@@ -15,7 +15,7 @@ from app.services.providers.openrouter_provider import OpenRouterProvider
 logger = logging.getLogger(__name__)
 
 
-class ProviderType(str, Enum):
+class ProviderType(StrEnum):
     """Available AI provider types."""
 
     OPENROUTER = "openrouter"

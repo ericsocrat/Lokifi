@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
-from enum import Enum
+from enum import StrEnum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from app.models.user import User
 
 
-class ReactionType(str, Enum):
+class ReactionType(StrEnum):
     """Available reaction types."""
 
     LIKE = "like"

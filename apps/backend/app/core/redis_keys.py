@@ -4,11 +4,11 @@ Provides consistent Redis key patterns and centralized management
 """
 
 import hashlib
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 
-class RedisKeyspace(str, Enum):
+class RedisKeyspace(StrEnum):
     """Redis keyspace prefixes for different domains"""
 
     # Core application data
