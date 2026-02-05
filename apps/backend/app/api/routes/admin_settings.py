@@ -9,12 +9,18 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user
 from app.db.database import get_db
+from app.models.audit_log import (
+    AdminAuditLog,
+    AuditAction,
+    AuditResourceType,
+    AuditStatus,
+)
 from app.models.settings import FeatureFlagEnum, SystemSettings
 from app.models.user import User
 from app.schemas.settings import (
@@ -83,6 +89,7 @@ async def get_system_settings(
 @router.patch("", response_model=SystemSettingsResponse)
 async def update_system_settings(
     update_data: SystemSettingsUpdate,
+    request: Request,
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(require_admin),
 ) -> SystemSettingsResponse:
@@ -102,6 +109,8 @@ async def update_system_settings(
             if hasattr(settings, key):
                 setattr(settings, key, value)
 
+        flags_update: dict[str, bool] = {}
+
         # Handle feature flags separately
         if update_data.feature_flags:
             flags_update = update_data.feature_flags.model_dump(exclude_none=True)
@@ -110,6 +119,26 @@ async def update_system_settings(
         settings.updated_at = datetime.utcnow()
         settings.updated_by = admin.id
 
+        ip_address = request.client.host if request.client else None
+        user_agent = request.headers.get("user-agent")
+
+        audit_entry = AdminAuditLog(
+            user_id=admin.id,
+            action=AuditAction.UPDATE.value,
+            resource_type=AuditResourceType.SETTINGS.value,
+            resource_id="system_settings",
+            status=AuditStatus.SUCCESS.value,
+            description="System settings updated",
+            ip_address=ip_address,
+            user_agent=user_agent,
+            audit_metadata={
+                "fields_changed": list(update_dict.keys()),
+                "feature_flags_changed": list(flags_update.keys()),
+            },
+            changes={"settings": update_dict, "feature_flags": flags_update},
+        )
+
+        db.add(audit_entry)
         await db.commit()
         await db.refresh(settings)
 
@@ -198,6 +227,7 @@ async def validate_settings(
 @router.post("/maintenance-mode/{enabled}", response_model=SystemSettingsResponse)
 async def toggle_maintenance_mode(
     enabled: bool,
+    request: Request,
     message: str = "System maintenance in progress. We'll be back shortly.",
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(require_admin),
@@ -208,11 +238,39 @@ async def toggle_maintenance_mode(
     """
     try:
         settings = await get_or_create_settings(db)
+        old_values = {
+            "maintenance_mode": settings.maintenance_mode,
+            "maintenance_message": settings.maintenance_message,
+        }
+
         settings.maintenance_mode = enabled
         settings.maintenance_message = message if enabled else None
         settings.updated_at = datetime.utcnow()
         settings.updated_by = admin.id
 
+        ip_address = request.client.host if request.client else None
+        user_agent = request.headers.get("user-agent")
+
+        audit_entry = AdminAuditLog(
+            user_id=admin.id,
+            action=AuditAction.UPDATE.value,
+            resource_type=AuditResourceType.SETTINGS.value,
+            resource_id="system_settings",
+            status=AuditStatus.SUCCESS.value,
+            description="Maintenance mode updated",
+            ip_address=ip_address,
+            user_agent=user_agent,
+            audit_metadata={"maintenance_enabled": enabled},
+            changes={
+                "before": old_values,
+                "after": {
+                    "maintenance_mode": settings.maintenance_mode,
+                    "maintenance_message": settings.maintenance_message,
+                },
+            },
+        )
+
+        db.add(audit_entry)
         await db.commit()
         await db.refresh(settings)
 
@@ -351,6 +409,7 @@ async def get_feature_flags(
 
 @router.post("/reset-to-defaults", response_model=SystemSettingsResponse)
 async def reset_to_defaults(
+    request: Request,
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(require_admin),
 ) -> SystemSettingsResponse:
@@ -361,37 +420,64 @@ async def reset_to_defaults(
     try:
         settings = await get_or_create_settings(db)
 
-        # Store old values for logging
-        old_settings = {
-            "site_name": settings.site_name,
-            "maintenance_mode": settings.maintenance_mode,
+        reset_fields = {
+            "site_name": "Lokifi",
+            "site_description": "Financial platform",
+            "site_domain": "lokifi.com",
+            "maintenance_mode": False,
+            "maintenance_message": None,
+            "rate_limit_enabled": True,
+            "rate_limit_requests": 100,
+            "rate_limit_window": 3600,
+            "session_timeout_minutes": 30,
+            "require_email_verification": True,
+            "password_min_length": 8,
+            "max_login_attempts": 5,
+            "lockout_duration_minutes": 15,
+            "api_key_expiration_days": 365,
+            "feature_flags": {
+                "user_registration": True,
+                "portfolio_management": True,
+                "social_features": True,
+                "ai_features": True,
+                "advanced_analytics": True,
+                "api_access": True,
+            },
         }
 
-        # Reset to defaults
-        settings.site_name = "Lokifi"
-        settings.site_description = "Financial platform"
-        settings.site_domain = "lokifi.com"
-        settings.maintenance_mode = False
-        settings.rate_limit_enabled = True
-        settings.rate_limit_requests = 100
-        settings.rate_limit_window = 3600
-        settings.session_timeout_minutes = 30
-        settings.require_email_verification = True
-        settings.password_min_length = 8
-        settings.max_login_attempts = 5
-        settings.lockout_duration_minutes = 15
-        settings.api_key_expiration_days = 365
-        settings.feature_flags = {
-            "user_registration": True,
-            "portfolio_management": True,
-            "social_features": True,
-            "ai_features": True,
-            "advanced_analytics": True,
-            "api_access": True,
+        old_settings = {
+            field: (
+                dict(settings.feature_flags)
+                if field == "feature_flags" and settings.feature_flags is not None
+                else getattr(settings, field)
+            )
+            for field in reset_fields
         }
+
+        for field, value in reset_fields.items():
+            if hasattr(settings, field):
+                setattr(settings, field, value)
+
         settings.updated_at = datetime.utcnow()
         settings.updated_by = admin.id
 
+        ip_address = request.client.host if request.client else None
+        user_agent = request.headers.get("user-agent")
+
+        audit_entry = AdminAuditLog(
+            user_id=admin.id,
+            action=AuditAction.UPDATE.value,
+            resource_type=AuditResourceType.SETTINGS.value,
+            resource_id="system_settings",
+            status=AuditStatus.SUCCESS.value,
+            description="System settings reset to defaults",
+            ip_address=ip_address,
+            user_agent=user_agent,
+            audit_metadata={"reset_fields": list(reset_fields.keys())},
+            changes={"before": old_settings, "after": reset_fields},
+        )
+
+        db.add(audit_entry)
         await db.commit()
         await db.refresh(settings)
 
