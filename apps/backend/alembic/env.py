@@ -12,7 +12,23 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 # Import the Base and all models
 from app.core.config import Settings
-from app.db.models import Base
+from app.db.database import Base
+
+# Import all models to register them with SQLAlchemy
+# This ensures alembic can detect all tables for migrations
+from app.models import (  # noqa: F401
+    APIKey,
+    AdminAuditLog,
+    AiMessage,
+    AiThread,
+    Conversation,
+    EmailTemplate,
+    Follow,
+    Notification,
+    NotificationPreference,
+    Profile,
+    User,
+)
 
 # Setup logger
 logger = logging.getLogger("alembic.env")
