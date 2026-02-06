@@ -1,0 +1,409 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  min-height: 100vh;
+}
+
+.header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000;
+  margin: 0 0 0.5rem 0;
+}
+
+.header p {
+  font-size: 0.875rem;
+  color: #666;
+  margin: 0;
+}
+
+.navigation {
+  margin-bottom: 2rem;
+}
+
+.navGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.navCard {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.navCard:hover {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navCardTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #000;
+  margin-bottom: 0.5rem;
+}
+
+.navCardDesc {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.navCardArrow {
+  font-size: 1.25rem;
+  color: #3b82f6;
+  font-weight: 300;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.searchInput,
+.select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  min-width: 150px;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 200px;
+}
+
+.searchInput:focus,
+.select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.buttonPrimary,
+.buttonSecondary,
+.buttonSmall,
+.buttonSmallDanger {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.buttonPrimary {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.buttonSecondary {
+  background: #f3f4f6;
+  color: #000;
+  border: 1px solid #d1d5db;
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.buttonSmall {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  background: #e5e7eb;
+  color: #000;
+}
+
+.buttonSmall:hover:not(:disabled) {
+  background: #d1d5db;
+}
+
+.buttonSmallDanger {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.buttonSmallDanger:hover:not(:disabled) {
+  background: #fecdcd;
+}
+
+.formContainer {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.formContainer h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup label {
+  font-weight: 500;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.formGroup input[type='text'],
+.formGroup input[type='email'],
+.formGroup textarea,
+.formGroup select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+}
+
+.formGroup input[type='text']:focus,
+.formGroup input[type='email']:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+}
+
+.formGroup input[type='checkbox'] {
+  margin-right: 0.5rem;
+}
+
+.formGroup small {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  justify-content: flex-start;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #000;
+}
+
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.nameCell {
+  font-weight: 500;
+  max-width: 200px;
+  word-break: break-word;
+}
+
+.truncate {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dateCell {
+  font-size: 0.8125rem;
+  color: #666;
+}
+
+.center {
+  text-align: center;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.badgeEnabled {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.badgeDisabled {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.paginationInfo {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.loading,
+.empty,
+.error {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.9375rem;
+}
+
+.loading {
+  color: #666;
+}
+
+.empty {
+  color: #999;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.buttonPrimary:disabled,
+.buttonSecondary:disabled,
+.buttonSmall:disabled,
+.buttonSmallDanger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+  .searchInput,
+  .select {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .tableContainer {
+    border-radius: 0;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border: none;
+  }
+
+  .table {
+    font-size: 0.75rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 0.5rem 0.375rem;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+  }
+
+  .navGrid {
+    grid-template-columns: 1fr;
+  }
+}

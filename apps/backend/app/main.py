@@ -1,21 +1,17 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
-from app.api.routes import (
-    admin_analytics,  # Session 192 Admin Analytics Dashboard
-    admin_audit_logs,  # Session 195 Admin Audit Logs
-    admin_moderation,  # Session 190 Content Moderation
-    admin_settings,  # Session 193 System Settings
-    admin_users,  # Session 189 Admin User Management
-    market,
-    security,
-    social,  # Use comprehensive social router from api/routes
-)
+from app.api.routes import admin_analytics  # Session 192 Admin Analytics Dashboard
+from app.api.routes import admin_api_keys  # Session 196 API Keys Management
+from app.api.routes import admin_audit_logs  # Session 194 Admin Audit Logs
+from app.api.routes import admin_email_templates  # Session 195 Email Templates
+from app.api.routes import admin_moderation  # Session 190 Content Moderation
+from app.api.routes import admin_settings  # Session 193 System Settings
+from app.api.routes import admin_users  # Session 189 Admin User Management
+from app.api.routes import social  # Use comprehensive social router from api/routes
+from app.api.routes import market, security
 from app.api.routes.monitoring import router as monitoring_router
 
 # Temporarily disable J53 scheduler due to async issues
@@ -49,10 +45,13 @@ from app.routers import (
     websocket_prices,
 )
 from app.routers.profile_enhanced import router as profile_enhanced_router
-from app.services.alerts import evaluator as alerts_evaluator, store as alerts_store
+from app.services.alerts import evaluator as alerts_evaluator
+from app.services.alerts import store as alerts_store
 from app.services.websocket_manager import connection_manager
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = get_logger(__name__)
 
@@ -200,16 +199,12 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
-app.include_router(
-    profile.router, prefix=settings.API_PREFIX
-)  # Phase J Profiles & Settings
+app.include_router(profile.router, prefix=settings.API_PREFIX)  # Phase J Profiles & Settings
 app.include_router(
     profile_enhanced_router, prefix=settings.API_PREFIX
 )  # Phase J2 Enhanced Profile Features
 app.include_router(follow.router, prefix=settings.API_PREFIX)  # Phase J Follow Graph
-app.include_router(
-    conversations.router, prefix=settings.API_PREFIX
-)  # Phase J4 Direct Messages
+app.include_router(conversations.router, prefix=settings.API_PREFIX)  # Phase J4 Direct Messages
 app.include_router(websocket.router, prefix=settings.API_PREFIX)  # Phase J4 WebSocket
 app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase J4 Admin
 app.include_router(
@@ -221,22 +216,22 @@ app.include_router(
 app.include_router(
     admin_analytics.router, prefix=settings.API_PREFIX
 )  # Session 192 Admin Analytics Dashboard
-app.include_router(
-    admin_settings.router, prefix=settings.API_PREFIX
-)  # Session 193 System Settings
+app.include_router(admin_settings.router, prefix=settings.API_PREFIX)  # Session 193 System Settings
 app.include_router(
     admin_audit_logs.router, prefix=settings.API_PREFIX
-)  # Session 195 Admin Audit Logs
-app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
+)  # Session 194 Admin Audit Logs
 app.include_router(
-    ai_websocket.router, prefix=settings.API_PREFIX
-)  # Phase J5 AI WebSocket
+    admin_email_templates.router, prefix=settings.API_PREFIX
+)  # Session 195 Email Templates
+app.include_router(
+    admin_api_keys.router, prefix=settings.API_PREFIX
+)  # Session 196 API Keys Management
+app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
+app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(
     notifications.router, prefix=settings.API_PREFIX
 )  # Phase J6 Enterprise Notifications
-app.include_router(
-    j6_2_router, prefix=settings.API_PREFIX
-)  # Phase J6.2 Advanced Features
+app.include_router(j6_2_router, prefix=settings.API_PREFIX)  # Phase J6.2 Advanced Features
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market.router, prefix=settings.API_PREFIX)  # Phase 4c Market caching
 app.include_router(news.router, prefix=settings.API_PREFIX)
@@ -247,12 +242,8 @@ app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
-app.include_router(
-    realtime_market_router, prefix=settings.API_PREFIX
-)  # Real-time prices
-app.include_router(
-    smart_prices.router, prefix=settings.API_PREFIX
-)  # 🎯 Smart Price Service
+app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
+app.include_router(smart_prices.router, prefix=settings.API_PREFIX)  # 🎯 Smart Price Service
 app.include_router(
     websocket_prices.router, prefix=settings.API_PREFIX
 )  # 🔌 WebSocket Price Updates

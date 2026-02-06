@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 interface AuditLogEntry {
@@ -31,7 +31,15 @@ interface AuditLogResponse {
 }
 
 type AuditAction = 'create' | 'update' | 'delete' | 'view' | 'export';
-type ResourceType = 'user' | 'content' | 'settings' | 'moderation' | 'analytics' | 'report' | 'api_key' | 'email_template';
+type ResourceType =
+  | 'user'
+  | 'content'
+  | 'settings'
+  | 'moderation'
+  | 'analytics'
+  | 'report'
+  | 'api_key'
+  | 'email_template';
 type AuditStatus = 'success' | 'failure' | 'pending';
 
 const ACTION_COLORS: Record<string, string> = {
@@ -293,9 +301,7 @@ export default function AuditLogsPage() {
               <div className={styles.spinner} />
             </div>
           ) : entries.length === 0 ? (
-            <div className={styles.empty}>
-              No audit log entries found
-            </div>
+            <div className={styles.empty}>No audit log entries found</div>
           ) : (
             <div className={styles.tableWrapper}>
               <table className={styles.table}>
@@ -314,7 +320,9 @@ export default function AuditLogsPage() {
                   {entries.map((entry) => (
                     <tr key={entry.id}>
                       <td>
-                        <span className={`${styles.badge} ${ACTION_COLORS[entry.action] || 'bg-gray-100 text-gray-800'}`}>
+                        <span
+                          className={`${styles.badge} ${ACTION_COLORS[entry.action] || 'bg-gray-100 text-gray-800'}`}
+                        >
                           {entry.action}
                         </span>
                       </td>
@@ -333,16 +341,14 @@ export default function AuditLogsPage() {
                         </div>
                       </td>
                       <td>
-                        <span className={`${styles.badge} ${STATUS_COLORS[entry.status] || 'bg-gray-100 text-gray-800'}`}>
+                        <span
+                          className={`${styles.badge} ${STATUS_COLORS[entry.status] || 'bg-gray-100 text-gray-800'}`}
+                        >
                           {entry.status}
                         </span>
                       </td>
-                      <td className={styles.description}>
-                        {entry.description || '-'}
-                      </td>
-                      <td className={styles.ip}>
-                        {entry.ip_address || '-'}
-                      </td>
+                      <td className={styles.description}>{entry.description || '-'}</td>
+                      <td className={styles.ip}>{entry.ip_address || '-'}</td>
                       <td className={styles.date}>
                         {format(new Date(entry.created_at), 'MMM d, yyyy HH:mm:ss')}
                       </td>
