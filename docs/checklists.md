@@ -30,8 +30,9 @@
 - **Phase 1**: CI Emergency Fix (Database migrations UUID alignment)
 - **Phase 2**: Webhook Infrastructure (API, Models, 11 endpoints, tests)
 - **Phase 3A**: Async Delivery Processor (Redis queue, event emitter, background processor)
-- **Objective**: Production-ready webhook system from infrastructure to delivery
-- **Status**: Phase 1-3A COMPLETE ✅
+- **Phase 3B**: Frontend React UI for webhook management
+- **Objective**: Production-ready webhook system end-to-end
+- **Status**: Phase 1-3B COMPLETE ✅
 
 **Phase 1: Emergency CI Fix** (Session Start):
 
@@ -165,7 +166,74 @@
 **Time**: ~3 hours (Phase 1: 1hr emergency fix, Phase 2: 1.5hrs infrastructure, Phase 3A: 0.5hrs processor)
 **Tokens**: ~150K (comprehensive design + testing + integration)
 
-**Next Phase**: Phase 3B - Frontend React UI for webhook configuration/management, Phase 3C - Event integration hooks
+**Phase 3B: Frontend React UI** (Commit [pending]):
+- ✅ **page.tsx** (650 LOC):
+  - Webhook listing page with pagination (20 per page)
+  - Status filters (ACTIVE/INACTIVE/DISABLED)
+  - Modal forms for create/edit webhooks
+  - Event subscription checkboxes (12 event types)
+  - Retry configuration (max_retries, retry_delay_seconds)
+  - Row actions: Edit, View Secret, View Deliveries, Test, Delete
+  - Delivery history viewer (paginated, 50 per page)
+  - Secret management (view, rotate with confirmation)
+  - Test payload sender (POST to /api/admin/webhooks/{id}/test)
+  - Loading/error/empty states with user feedback
+  - Success/error messages with auto-dismiss
+
+- ✅ **page.module.css** (400 LOC):
+  - Responsive design (mobile-first, breakpoints at 640px/768px)
+  - Theme: Blue primary (#3182ce), green success, red danger, gray neutral
+  - Components: Table, modal, form, buttons, badges, pagination
+  - Hover effects, focus states, transition animations
+  - Accessible color contrast (WCAG AA 4.5:1)
+
+- ✅ **Frontend Documentation** (frontend-webhook-management.md):
+  - Complete UI/UX specifications
+  - Type definitions and API integration
+  - Performance optimization notes
+  - Accessibility features (semantic HTML, ARIA, keyboard nav)
+  - Security considerations
+  - Testing checklist
+  - Future enhancements (bulk ops, templates, analytics)
+
+**Frontend Features**:
+1. **Webhook Management**: Full CRUD for webhooks with instant UI feedback
+2. **Event Selection**: Checkboxes for 12 event types (user.*, post.*, follow.*, conversation.*, admin.*, system.*)
+3. **Retry Configuration**: Sliders for max_retries (0-10) and retry_delay_seconds (10-3600)
+4. **Delivery History**: View recent deliveries with status, attempts, HTTP codes
+5. **Secret Management**: View secret (once on creation), copy button, rotate (with confirmation)
+6. **Webhook Testing**: Send test payload (system.event) directly from UI
+7. **Pagination**: Navigate webhook list, delivery history with page controls
+8. **Status Filtering**: Quick filter by ACTIVE/INACTIVE/DISABLED status
+9. **Responsive Design**: Fully functional on mobile (375px+), tablet, desktop
+10. **Accessibility**: Keyboard navigation, color + text status indicators, semantic HTML
+
+**API Integration**:
+- GET /api/admin/webhooks?page=1&page_size=20&status_filter=
+- POST /api/admin/webhooks (create)
+- PATCH /api/admin/webhooks/{id} (update)
+- DELETE /api/admin/webhooks/{id}
+- GET /api/admin/webhooks/{id}/secret
+- POST /api/admin/webhooks/{id}/rotate-secret
+- GET /api/admin/webhooks/{id}/deliveries?page=1&page_size=50
+- POST /api/admin/webhooks/{id}/test
+
+**Code Quality**:
+- ✅ Full TypeScript (no implicit any)
+- ✅ React hooks only (no class components)
+- ✅ CSS modules (scoped styling)
+- ✅ Error handling for all API calls
+- ✅ Loading/error/empty states
+- ✅ Responsive across all viewports
+- ✅ WCAG AA accessibility compliance
+- ✅ User feedback for all operations
+
+**Files Created**:
+- apps/frontend/src/app/admin/webhooks/page.tsx (650 LOC)
+- apps/frontend/src/app/admin/webhooks/page.module.css (400 LOC)
+- docs/guides/frontend-webhook-management.md (comprehensive guide)
+
+**Next Phase**: Phase 3C - Event integration hooks (emit webhook events from app)
 
 ---
 
