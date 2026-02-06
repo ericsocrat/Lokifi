@@ -74,7 +74,7 @@ def upgrade() -> None:
         ),
         sa.Column(
             "created_by",
-            sa.Integer(),
+            sa.UUID(),
             sa.ForeignKey("users.id", ondelete="SET NULL"),
             nullable=True,
         ),
