@@ -131,7 +131,7 @@ class Notification(Base):
         "User", back_populates="notifications", foreign_keys=[user_id]
     )
     children: Mapped[list[Notification]] = relationship(
-        "Notification", backref="parent", remote_side=[id]
+        "Notification", backref="parent", remote_side="[Notification.id]"
     )
 
     # Indexes for performance
