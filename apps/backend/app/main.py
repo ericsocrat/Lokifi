@@ -49,6 +49,10 @@ from app.routers.profile_enhanced import router as profile_enhanced_router
 from app.services.alerts import evaluator as alerts_evaluator
 from app.services.alerts import store as alerts_store
 from app.services.websocket_manager import connection_manager
+from app.tasks.webhook_processor import (
+    start_webhook_processor,
+    stop_webhook_processor,
+)
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 from fastapi import FastAPI
@@ -108,6 +112,13 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"⚠️ Alerts evaluator error (continuing): {e}")
 
+    logger.info("🪝 Starting webhook processor...")
+    try:
+        await start_webhook_processor()
+        logger.info("✅ Webhook processor started")
+    except Exception as e:
+        logger.warning(f"⚠️ Webhook processor error (continuing): {e}")
+
     # Disable data services for faster startup (optional services)
     logger.info("🗄️ Data services disabled for faster startup")
     # await startup_data_services()
@@ -149,6 +160,13 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Alerts evaluator stopped")
     except Exception as e:
         logger.error(f"❌ Error stopping alerts evaluator: {e}")
+
+    logger.info("🪝 Stopping webhook processor...")
+    try:
+        await stop_webhook_processor()
+        logger.info("✅ Webhook processor stopped")
+    except Exception as e:
+        logger.error(f"❌ Error stopping webhook processor: {e}")
 
     # logger.info("🗄️ Shutting down data services...")
     # await shutdown_data_services()
