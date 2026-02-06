@@ -10,6 +10,7 @@ from app.api.routes import admin_email_templates  # Session 195 Email Templates
 from app.api.routes import admin_moderation  # Session 190 Content Moderation
 from app.api.routes import admin_settings  # Session 193 System Settings
 from app.api.routes import admin_users  # Session 189 Admin User Management
+from app.api.routes import admin_webhooks  # Session 197 Webhook Management
 from app.api.routes import social  # Use comprehensive social router from api/routes
 from app.api.routes import market, security
 from app.api.routes.monitoring import router as monitoring_router
@@ -226,6 +227,9 @@ app.include_router(
 app.include_router(
     admin_api_keys.router, prefix=settings.API_PREFIX
 )  # Session 196 API Keys Management
+app.include_router(
+    admin_webhooks.router, prefix=settings.API_PREFIX
+)  # Session 197 Webhook Management
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(

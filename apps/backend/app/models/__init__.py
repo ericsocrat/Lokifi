@@ -23,6 +23,8 @@ from .notification_models import Notification, NotificationPreference
 from .profile import Profile
 from .reaction import MessageReaction, ReactionType
 from .user import User
+from .webhook import Webhook, WebhookEvent, WebhookStatus
+from .webhook_delivery import DeliveryStatus, WebhookDelivery
 
 __all__ = [
     "APIKey",
@@ -37,6 +39,7 @@ __all__ = [
     "ContentType",
     "Conversation",
     "ConversationParticipant",
+    "DeliveryStatus",
     "EmailTemplate",
     "FlagReason",
     "FlagStatus",
@@ -53,4 +56,8 @@ __all__ = [
     "Profile",
     "ReactionType",
     "User",
+    "Webhook",
+    "WebhookDelivery",
+    "WebhookEvent",
+    "WebhookStatus",
 ]
