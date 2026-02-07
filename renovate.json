@@ -35,6 +35,14 @@
       "minimumReleaseAge": "3 days"
     },
     {
+      "description": "recharts grouped across all apps (prevent partial upgrades)",
+      "groupName": "recharts",
+      "matchPackageNames": ["recharts"],
+      "automerge": false,
+      "labels": ["dependencies", "requires-review"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
       "description": "Testing tools (group together)",
       "groupName": "Testing tools",
       "matchPackageNames": [
