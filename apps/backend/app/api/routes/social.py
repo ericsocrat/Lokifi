@@ -4,6 +4,10 @@ __all__ = ["router"]
 
 import json
 
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
+from pydantic import BaseModel, Field
+from sqlalchemy import desc, func, select
+
 from app.core.cached_queries import (
     get_user_by_handle,
     invalidate_all_feeds_for_followees,
@@ -18,9 +22,6 @@ from app.db.db import get_session, init_db
 from app.db.models import Follow, Post, User
 from app.services.auth import require_handle
 from app.services.webhook_event_emitter import webhook_event_emitter
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
-from pydantic import BaseModel, Field
-from sqlalchemy import desc, func, select
 
 router = APIRouter()
 
@@ -43,6 +44,10 @@ class UserOut(BaseModel):
     following_count: int
     followers_count: int
     posts_count: int
+    # V2 fields (optional for backward compat)
+    account_status: str | None = None
+    mutual_follow: bool | None = None
+    metadata: dict | None = None
 
 
 class PostCreate(BaseModel):
@@ -70,7 +75,10 @@ class PostOut(BaseModel):
 
 # ===== Users =====
 @router.post("/social/users", response_model=UserOut)
-def create_user(payload: UserCreate, background_tasks: BackgroundTasks):
+def create_user(
+    payload: UserCreate, request: Request, background_tasks: BackgroundTasks
+):
+    api_version = request.state.api_version
     with get_session() as db:
         existing = db.execute(
             select(User).where(User.handle == payload.handle)
@@ -92,6 +100,14 @@ def create_user(payload: UserCreate, background_tasks: BackgroundTasks):
             posts_count=0,
         )
 
+        # Phase 5B: Add v2 metadata
+        if api_version == APIVersion.V2:
+            out.account_status = "active"
+            out.metadata = {
+                "account_created_timestamp": u.created_at.timestamp(),
+                "onboarding_complete": False,
+            }
+
         # Emit webhook event in background
         background_tasks.add_task(
             webhook_event_emitter.emit,
@@ -108,13 +124,16 @@ def create_user(payload: UserCreate, background_tasks: BackgroundTasks):
 
 
 @router.get("/social/users/{handle}", response_model=UserOut)
-def get_user(handle: str):
+def get_user(handle: str, request: Request):
     """Get user with counts using aggregation queries instead of N+1.
 
     Phase 3c-1 Cache: User profiles cached for 10 minutes.
     Invalidated on: profile updates, follow/unfollow changes.
     Expected improvement: 50-100x faster on cache hit.
+
+    Phase 5B: Version-aware response with optional v2 metadata.
     """
+    api_version = request.state.api_version
     # Phase 3c-1: Try to get from cache first
     cache_key = f"user:profile:{handle}"
     try:
@@ -122,7 +141,17 @@ def get_user(handle: str):
         if hasattr(cache, "_redis") and cache._redis:
             cached = cache._redis.get(cache_key)
             if cached:
-                return UserOut(**json.loads(cached))
+                out = UserOut(**json.loads(cached))
+
+                # Phase 5B: Add v2 metadata if requested
+                if api_version == APIVersion.V2:
+                    out.account_status = "active"
+                    out.mutual_follow = (
+                        False  # Would need current user context to compute
+                    )
+                    out.metadata = {"cached": True}
+
+                return out
     except Exception:
         pass  # Cache miss or error - proceed to database
 
@@ -132,15 +161,15 @@ def get_user(handle: str):
         result = db.execute(
             select(
                 User,
-                func.coalesce(func.count(Follow.id).filter(Follow.follower_id == User.id), 0).label(
-                    "following_count"
-                ),
-                func.coalesce(func.count(Follow.id).filter(Follow.followee_id == User.id), 0).label(
-                    "followers_count"
-                ),
-                func.coalesce(func.count(Post.id).filter(Post.user_id == User.id), 0).label(
-                    "posts_count"
-                ),
+                func.coalesce(
+                    func.count(Follow.id).filter(Follow.follower_id == User.id), 0
+                ).label("following_count"),
+                func.coalesce(
+                    func.count(Follow.id).filter(Follow.followee_id == User.id), 0
+                ).label("followers_count"),
+                func.coalesce(
+                    func.count(Post.id).filter(Post.user_id == User.id), 0
+                ).label("posts_count"),
             )
             .outerjoin(Follow, Follow.follower_id == User.id)
             .outerjoin(Post, Post.user_id == User.id)
@@ -169,6 +198,12 @@ def get_user(handle: str):
         except Exception:
             pass  # Cache error - still return valid result
 
+        # Phase 5B: Add v2 metadata if requested
+        if api_version == APIVersion.V2:
+            out.account_status = "active"
+            out.mutual_follow = False  # Would need current user context to compute
+            out.metadata = {"cached": False}
+
         return out
 
 
@@ -176,10 +211,12 @@ def get_user(handle: str):
 @router.post("/social/follow/{handle}")
 def follow(
     handle: str,
+    request: Request,
     authorization: str | None = Header(None),
     background_tasks: BackgroundTasks = None,
 ):
     """Follow a user and invalidate both users' profile caches."""
+    api_version = request.state.api_version
     with get_session() as db:
         me = require_handle(authorization)
         # Phase 4b-3: Use cached queries (MEDIUM_TERM, 300s)
@@ -189,7 +226,11 @@ def follow(
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
         # Phase 4b-3: Use cached is_following check (SHORT_TERM, 60s)
         if is_following(db, me_u.id, target.id):
-            return {"ok": True, "following": True}
+            response = {"ok": True, "following": True}
+            if api_version == APIVersion.V2:
+                response["timestamp"] = None  # Already following, no new action
+                response["action"] = "already_following"
+            return response
         db.add(Follow(follower_id=me_u.id, followee_id=target.id))
         db.commit()
 
@@ -222,26 +263,42 @@ def follow(
                 },
             )
 
-        return {"ok": True, "following": True}
+        response = {"ok": True, "following": True}
+        if api_version == APIVersion.V2:
+            response["timestamp"] = db.execute(
+                select(Follow.created_at).where(
+                    (Follow.follower_id == me_u.id) & (Follow.followee_id == target.id)
+                )
+            ).scalar()
+            response["action"] = "follow_created"
+        return response
 
 
 @router.delete("/social/follow/{handle}")
 def unfollow(
     handle: str,
+    request: Request,
     authorization: str | None = Header(None),
     background_tasks: BackgroundTasks = None,
 ):
     """Unfollow a user and invalidate both users' profile caches."""
+    api_version = request.state.api_version
     with get_session() as db:
         me = require_handle(authorization)
         # Phase 4b-3: Use cached queries (MEDIUM_TERM, 300s)
         me_u = get_user_by_handle(db, me)
         target = get_user_by_handle(db, handle)
         f = db.execute(
-            select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
+            select(Follow).where(
+                Follow.follower_id == me_u.id, Follow.followee_id == target.id
+            )
         ).scalar_one_or_none()
         if not f:
-            return {"ok": True, "following": False}
+            response = {"ok": True, "following": False}
+            if api_version == APIVersion.V2:
+                response["timestamp"] = None
+                response["action"] = "not_following"
+            return response
         db.delete(f)
         db.commit()
 
@@ -274,7 +331,11 @@ def unfollow(
                 },
             )
 
-        return {"ok": True, "following": False}
+        response = {"ok": True, "following": False}
+        if api_version == APIVersion.V2:
+            response["timestamp"] = f.created_at.isoformat() if f else None
+            response["action"] = "follow_deleted"
+        return response
 
 
 # ===== Posts =====
@@ -328,7 +389,9 @@ def create_post(
 
                     # Symbol-specific feed first page (if applicable)
                     if payload.symbol:
-                        cache._redis.delete(f"posts:list:{payload.symbol}:p1:l{limit_val}")
+                        cache._redis.delete(
+                            f"posts:list:{payload.symbol}:p1:l{limit_val}"
+                        )
 
                 # Invalidate follower feeds (get author's followers)
                 follower_handles = [
@@ -346,7 +409,9 @@ def create_post(
                     for follower_handle in follower_handles:
                         for limit_val in [50, 100, 200]:
                             # Invalidate global personal feed
-                            cache._redis.delete(f"feed:{follower_handle}:global:p1:l{limit_val}")
+                            cache._redis.delete(
+                                f"feed:{follower_handle}:global:p1:l{limit_val}"
+                            )
 
                             # Invalidate symbol-specific personal feed (if applicable)
                             if payload.symbol:
@@ -404,7 +469,9 @@ def list_posts(
                             post_out.comment_count = 0
                             post_out.metadata = {
                                 "word_count": len(post_out.content.split()),
-                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
+                                "reading_time_minutes": len(post_out.content.split())
+                                // 200
+                                + 1,
                             }
                 return posts_out
     except Exception:
@@ -436,7 +503,9 @@ def list_posts(
                 post_out.comment_count = 0
                 post_out.metadata = {
                     "word_count": len(p.content.split()) if p.content else 0,
-                    "reading_time_minutes": (len(p.content.split()) // 200 + 1) if p.content else 1,
+                    "reading_time_minutes": (
+                        (len(p.content.split()) // 200 + 1) if p.content else 1
+                    ),
                 }
 
             out.append(post_out)
@@ -488,7 +557,9 @@ def feed(
                             post_out.comment_count = 0
                             post_out.metadata = {
                                 "word_count": len(post_out.content.split()),
-                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
+                                "reading_time_minutes": len(post_out.content.split())
+                                // 200
+                                + 1,
                             }
                 return posts_out
     except Exception:
@@ -540,7 +611,9 @@ def feed(
                 post_out.comment_count = 0
                 post_out.metadata = {
                     "word_count": len(p.content.split()) if p.content else 0,
-                    "reading_time_minutes": (len(p.content.split()) // 200 + 1) if p.content else 1,
+                    "reading_time_minutes": (
+                        (len(p.content.split()) // 200 + 1) if p.content else 1
+                    ),
                     "engagement_signal": "feed_personalized",
                 }
 
