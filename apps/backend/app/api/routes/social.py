@@ -4,10 +4,6 @@ __all__ = ["router"]
 
 import json
 
-from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
-from pydantic import BaseModel, Field
-from sqlalchemy import desc, func, select
-
 from app.core.cached_queries import (
     get_user_by_handle,
     invalidate_all_feeds_for_followees,
@@ -17,10 +13,14 @@ from app.core.cached_queries import (
     is_following,
 )
 from app.core.redis_cache import cache
+from app.core.versioning import APIVersion
 from app.db.db import get_session, init_db
 from app.db.models import Follow, Post, User
 from app.services.auth import require_handle
 from app.services.webhook_event_emitter import webhook_event_emitter
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
+from pydantic import BaseModel, Field
+from sqlalchemy import desc, func, select
 
 router = APIRouter()
 
@@ -58,6 +58,10 @@ class PostOut(BaseModel):
     symbol: str | None
     created_at: str
     avatar_url: str | None = None
+    # V2 fields (optional for backward compat)
+    like_count: int | None = None
+    comment_count: int | None = None
+    metadata: dict | None = None
 
 
 # ===== Helpers =====
@@ -128,15 +132,15 @@ def get_user(handle: str):
         result = db.execute(
             select(
                 User,
-                func.coalesce(
-                    func.count(Follow.id).filter(Follow.follower_id == User.id), 0
-                ).label("following_count"),
-                func.coalesce(
-                    func.count(Follow.id).filter(Follow.followee_id == User.id), 0
-                ).label("followers_count"),
-                func.coalesce(
-                    func.count(Post.id).filter(Post.user_id == User.id), 0
-                ).label("posts_count"),
+                func.coalesce(func.count(Follow.id).filter(Follow.follower_id == User.id), 0).label(
+                    "following_count"
+                ),
+                func.coalesce(func.count(Follow.id).filter(Follow.followee_id == User.id), 0).label(
+                    "followers_count"
+                ),
+                func.coalesce(func.count(Post.id).filter(Post.user_id == User.id), 0).label(
+                    "posts_count"
+                ),
             )
             .outerjoin(Follow, Follow.follower_id == User.id)
             .outerjoin(Post, Post.user_id == User.id)
@@ -234,9 +238,7 @@ def unfollow(
         me_u = get_user_by_handle(db, me)
         target = get_user_by_handle(db, handle)
         f = db.execute(
-            select(Follow).where(
-                Follow.follower_id == me_u.id, Follow.followee_id == target.id
-            )
+            select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
         ).scalar_one_or_none()
         if not f:
             return {"ok": True, "following": False}
@@ -279,9 +281,13 @@ def unfollow(
 @router.post("/social/posts", response_model=PostOut)
 def create_post(
     payload: PostCreate,
+    request: Request,
     authorization: str | None = Header(None),
     background_tasks: BackgroundTasks = None,
 ):
+    """Create a post (Phase 5B versioning: v1 basic response, v2 adds metadata)"""
+    api_version = request.state.api_version
+
     with get_session() as db:
         require_handle(authorization, payload.handle)
         # Phase 4b-3: Use cached query (MEDIUM_TERM, 300s)
@@ -300,6 +306,15 @@ def create_post(
             avatar_url=u.avatar_url,
         )
 
+        # Phase 5B: V2 adds metadata
+        if api_version == APIVersion.V2:
+            post_out.like_count = 0
+            post_out.comment_count = 0
+            post_out.metadata = {
+                "word_count": len(payload.content.split()),
+                "reading_time_minutes": len(payload.content.split()) // 200 + 1,
+            }
+
         # Phase 4d-2: Invalidate dogpile caches for posts and feeds
         invalidate_post_cache(p.id, u.id, payload.symbol)
         invalidate_all_feeds_for_followees(db, u.id)
@@ -313,9 +328,7 @@ def create_post(
 
                     # Symbol-specific feed first page (if applicable)
                     if payload.symbol:
-                        cache._redis.delete(
-                            f"posts:list:{payload.symbol}:p1:l{limit_val}"
-                        )
+                        cache._redis.delete(f"posts:list:{payload.symbol}:p1:l{limit_val}")
 
                 # Invalidate follower feeds (get author's followers)
                 follower_handles = [
@@ -333,9 +346,7 @@ def create_post(
                     for follower_handle in follower_handles:
                         for limit_val in [50, 100, 200]:
                             # Invalidate global personal feed
-                            cache._redis.delete(
-                                f"feed:{follower_handle}:global:p1:l{limit_val}"
-                            )
+                            cache._redis.delete(f"feed:{follower_handle}:global:p1:l{limit_val}")
 
                             # Invalidate symbol-specific personal feed (if applicable)
                             if payload.symbol:
@@ -362,10 +373,17 @@ def create_post(
 
 
 @router.get("/social/posts", response_model=list[PostOut])
-def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None = None):
+def list_posts(
+    symbol: str | None = None,
+    limit: int = 50,
+    after_id: int | None = None,
+    request: Request = None,
+):
+    """List posts (Phase 5B versioning: v1 basic, v2 adds metadata)"""
+    api_version = request.state.api_version if request else APIVersion.V1
     limit = max(1, min(200, limit))
 
-    # Build cache key
+    # Build cache key (v1 vs v2 use same cache, populate v2 fields on read)
     symbol_key = symbol if symbol else "global"
     cursor_key = "p1" if not after_id else f"after{after_id}"
     cache_key = f"posts:list:{symbol_key}:{cursor_key}:l{limit}"
@@ -376,7 +394,19 @@ def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None 
             cached = cache._redis.get(cache_key)
             if cached:
                 posts_data = json.loads(cached)
-                return [PostOut(**post) for post in posts_data]
+                posts_out = [PostOut(**post) for post in posts_data]
+
+                # Phase 5B: Add v2 metadata on cache hit
+                if api_version == APIVersion.V2:
+                    for post_out in posts_out:
+                        if post_out.content:
+                            post_out.like_count = 0
+                            post_out.comment_count = 0
+                            post_out.metadata = {
+                                "word_count": len(post_out.content.split()),
+                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
+                            }
+                return posts_out
     except Exception:
         pass  # Cache failure shouldn't block responses
 
@@ -391,18 +421,27 @@ def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None 
         rows = db.execute(stmt).all()
         out: list[PostOut] = []
         for p, u in rows:
-            out.append(
-                PostOut(
-                    id=p.id,
-                    handle=u.handle,
-                    content=p.content,
-                    symbol=p.symbol,
-                    created_at=p.created_at.isoformat(),
-                    avatar_url=u.avatar_url,
-                )
+            post_out = PostOut(
+                id=p.id,
+                handle=u.handle,
+                content=p.content,
+                symbol=p.symbol,
+                created_at=p.created_at.isoformat(),
+                avatar_url=u.avatar_url,
             )
 
-        # Cache result with TTL
+            # Phase 5B: V2 adds metadata
+            if api_version == APIVersion.V2:
+                post_out.like_count = 0
+                post_out.comment_count = 0
+                post_out.metadata = {
+                    "word_count": len(p.content.split()) if p.content else 0,
+                    "reading_time_minutes": (len(p.content.split()) // 200 + 1) if p.content else 1,
+                }
+
+            out.append(post_out)
+
+        # Cache result with TTL (stores v1 base fields only)
         # 60s for symbol-specific (more volatile), 120s for global (less volatile)
         try:
             if hasattr(cache, "_redis") and cache._redis:
@@ -418,11 +457,17 @@ def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None 
 # ===== Feed (people I follow) =====
 @router.get("/social/feed", response_model=list[PostOut])
 def feed(
-    handle: str, symbol: str | None = None, limit: int = 50, after_id: int | None = None
+    handle: str,
+    symbol: str | None = None,
+    limit: int = 50,
+    after_id: int | None = None,
+    request: Request = None,
 ):
+    """Get personalized feed (Phase 5B versioning: v1 basic, v2 adds metadata)"""
+    api_version = request.state.api_version if request else APIVersion.V1
     limit = max(1, min(200, limit))
 
-    # Build cache key
+    # Build cache key (v1 vs v2 use same cache, populate v2 fields on read)
     symbol_key = symbol if symbol else "global"
     cursor_key = "p1" if not after_id else f"after{after_id}"
     cache_key = f"feed:{handle}:{symbol_key}:{cursor_key}:l{limit}"
@@ -433,7 +478,19 @@ def feed(
             cached = cache._redis.get(cache_key)
             if cached:
                 posts_data = json.loads(cached)
-                return [PostOut(**post) for post in posts_data]
+                posts_out = [PostOut(**post) for post in posts_data]
+
+                # Phase 5B: Add v2 metadata on cache hit
+                if api_version == APIVersion.V2:
+                    for post_out in posts_out:
+                        if post_out.content:
+                            post_out.like_count = 0
+                            post_out.comment_count = 0
+                            post_out.metadata = {
+                                "word_count": len(post_out.content.split()),
+                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
+                            }
+                return posts_out
     except Exception:
         pass  # Cache failure shouldn't block responses
 
@@ -468,18 +525,28 @@ def feed(
 
         out: list[PostOut] = []
         for p, u in rows:
-            out.append(
-                PostOut(
-                    id=p.id,
-                    handle=u.handle,
-                    content=p.content,
-                    symbol=p.symbol,
-                    created_at=p.created_at.isoformat(),
-                    avatar_url=u.avatar_url,
-                )
+            post_out = PostOut(
+                id=p.id,
+                handle=u.handle,
+                content=p.content,
+                symbol=p.symbol,
+                created_at=p.created_at.isoformat(),
+                avatar_url=u.avatar_url,
             )
 
-        # Cache result with TTL
+            # Phase 5B: V2 adds metadata with engagement signals
+            if api_version == APIVersion.V2:
+                post_out.like_count = 0
+                post_out.comment_count = 0
+                post_out.metadata = {
+                    "word_count": len(p.content.split()) if p.content else 0,
+                    "reading_time_minutes": (len(p.content.split()) // 200 + 1) if p.content else 1,
+                    "engagement_signal": "feed_personalized",
+                }
+
+            out.append(post_out)
+
+        # Cache result with TTL (stores v1 base fields only)
         # 60s for symbol-specific (more volatile), 120s for global (less volatile)
         try:
             if hasattr(cache, "_redis") and cache._redis:

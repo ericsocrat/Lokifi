@@ -24,6 +24,110 @@
 
 ---
 
+### Session 200 – February 7, 2026 ✅ (Phase 5B: Endpoint Migration - Initial Implementation)
+
+**Focus**: Migrate critical social endpoints to version-aware responses, validating Phase 5A infrastructure
+
+**Completed Work - Phase 5B Partial Implementation**:
+
+- ✅ **Session Cleanup & Context Recovery**:
+  - Started with Phase 5A fully complete (6 commits ahead from last session)
+  - Committed formatter cleanup (58e20829) - 10 files, import reordering + spacing
+  - Verified Phase 5A infrastructure still functional after formatter changes
+
+- ✅ **Fixed Middleware Signature**:
+  - Issue: BaseHTTPMiddleware signature was incorrect
+  - Fix: Changed from `__call__(self, request, call_next)` to `dispatch(self, request, call_next)`
+  - Result: Middleware now properly inherits from BaseHTTPMiddleware ✅
+
+- ✅ **Version-Aware Social Endpoints** (3 critical endpoints updated):
+  
+  1. **POST /social/posts** - Create post with metadata:
+     - Added Request parameter to extract api_version
+     - V2 adds: like_count=0, comment_count=0, metadata with word_count + reading_time_minutes
+     - Maintains webhook emission and cache invalidation
+  
+  2. **GET /social/posts** - List posts with version support:
+     - V2 adds metadata enrichment on cache hits
+     - Metadata calculated from content: word_count, reading_time_minutes
+     - Backward compatible cache strategy (v1 base fields only)
+  
+  3. **GET /social/feed** - Personalized feed with engagement signals:
+     - V2 adds engagement_signal="feed_personalized" to metadata
+     - Identifies feed origin for analytics/tracking
+     - Same cache strategy as list_posts
+
+- ✅ **Comprehensive Test Suite** (18 test cases, 15 passing):
+  - TestListPostsVersioning: 5 tests (all passing) ✅
+  - TestFeedVersioning: 3 tests (3 database setup issues)
+  - TestVersioningHeaders: 2 tests (both passing) ✅
+  - TestVersioningIntegration: 3 tests (all passing) ✅
+  - TestResponseSchema: 3 tests (all passing) ✅
+  - TestBackwardCompatibility: 2 tests (both passing) ✅
+  - Results: **15/18 PASSING** (83% success rate)
+  
+  Validated:
+  - ✅ Version detection from Accept-Version header
+  - ✅ V1 responses exclude metadata
+  - ✅ V2 responses include metadata
+  - ✅ X-API-Version header present
+  - ✅ Vary: Accept-Version header set
+  - ✅ Default version is v1 (backward compat)
+  - ✅ Invalid versions fall back to v1
+  - ✅ Same data in v1/v2 (same cache)
+
+- ✅ **Route Diagnostics**:
+  - Created test file to debug and verify route registration
+  - Confirmed all social endpoints accessible at /api/social/*
+  - Middleware correctly adds X-API-Version headers
+  - Accept-Version header properly respected
+
+**Architecture Notes**:
+
+- **Version Flow**: Request → Middleware extracts version → stored in request.state.api_version → Endpoint accesses via request.state → Response built with conditional fields
+- **Cache Strategy**: V1 and V2 share same cache (base fields only), v2 fields added on read
+- **Metadata Calculation**: Word count derived from content.split(), reading time = (words / 200) + 1 minutes
+- **Feed Intelligence**: engagement_signal field identifies content source (global vs personalized)
+- **Protocol Compliance**: RFC 8594 ready (X-API-Version, Vary headers present)
+
+**Phase 5B Status**: ✅ PARTIALLY COMPLETE (3/7 endpoints versioned, infrastructure validated)
+
+**What's Working**:
+- ✅ Middleware correctly detects and propagates versions
+- ✅ Social endpoints properly access api_version from request.state
+- ✅ V1/V2 responses have correct schemas
+- ✅ Cache works across versions
+- ✅ Response headers properly set
+- ✅ Backward compatibility maintained
+
+**Remaining Phase 5B Work**:
+- [ ] Version remaining social endpoints (users, follow/unfollow) - estimated 2 endpoints
+- [ ] RFC 8594 deprecation headers (automatic via phase 5c)
+- [ ] Comprehensive endpoint-to-endpoint tests (database integration)
+
+**Next Immediate Steps**:
+1. Complete versioning of user endpoints (POST/GET users)
+2. Version follow/unfollow endpoints
+3. Schema versioning for complex objects
+4. Performance testing (cache hit rates on v1 vs v2)
+
+**Test Results**:
+```
+tests/test_social_versioning.py::TestListPostsVersioning - 5/5 PASS ✅
+tests/test_social_versioning.py::TestVersioningHeaders - 2/2 PASS ✅
+tests/test_social_versioning.py::TestVersioningIntegration - 3/3 PASS ✅
+tests/test_social_versioning.py::TestResponseSchema - 3/3 PASS ✅
+tests/test_social_versioning.py::TestBackwardCompatibility - 2/2 PASS ✅
+tests/test_social_versioning.py::TestFeedVersioning - 0/3 PASS (DB setup)
+
+Overall: 15/18 PASSING (83%)
+```
+
+**Commits**:
+- [Pending] feat(phase5b): versioned social endpoints with v1/v2 responses
+
+---
+
 ### Session 199 – February 7, 2026 ✅ (Phase 5A API Versioning: Complete Implementation)
 
 **Focus**: Implement Phase 5A versioning infrastructure end-to-end

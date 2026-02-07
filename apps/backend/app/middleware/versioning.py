@@ -3,19 +3,16 @@ API Version Detection Middleware
 Extracts and tracks API version from request, adds version info to responses
 """
 
-from typing import Callable
-
 from app.core.versioning import APIVersion, get_api_version
-from fastapi import Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 
-class VersionDetectionMiddleware:
+class VersionDetectionMiddleware(BaseHTTPMiddleware):
     """Middleware to detect and track API version in requests/responses"""
 
-    def __init__(self, app):
-        self.app = app
-
-    async def __call__(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next) -> Response:
         """
         Detect API version from request and attach to state
         Also add version headers to response
