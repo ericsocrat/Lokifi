@@ -9,8 +9,9 @@ Validates:
 """
 
 import pytest
-from app.main import app
 from fastapi.testclient import TestClient
+
+from app.main import app
 
 client = TestClient(app)
 
@@ -122,3 +123,16 @@ class TestResponseHeaders:
         response = client.get("/api/v1/example/version")
         assert "Vary" in response.headers
         # Note: CORS may add to Vary header, so just check presence
+
+    def test_deprecation_headers_present_for_v1(self):
+        """V1 responses include RFC 8594 deprecation headers"""
+        response = client.get("/api/v1/example/version")
+        assert response.headers.get("Deprecation") == "true"
+        assert "Sunset" in response.headers
+        assert "Link" in response.headers
+
+    def test_deprecation_headers_absent_for_v2(self):
+        """V2 responses should not include deprecation headers"""
+        response = client.get("/api/v2/example/version")
+        assert "Deprecation" not in response.headers
+        assert "Sunset" not in response.headers
