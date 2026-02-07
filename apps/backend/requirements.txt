@@ -167,3 +167,4 @@ websockets==16.0
 Werkzeug==3.1.5  # Updated: fix CVE-2025-22215 safe_join() Windows device names
 wheel==0.46.3
 yarl==1.22.0
+pytest-benchmark

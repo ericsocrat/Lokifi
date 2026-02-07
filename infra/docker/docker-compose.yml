@@ -88,7 +88,7 @@ services:
       start_period: 10s
 
   postgres:
-    image: postgres:18-alpine
+    image: postgres:16-alpine
     container_name: lokifi-postgres-dev
     environment:
       POSTGRES_USER: lokifi

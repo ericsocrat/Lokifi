@@ -20,6 +20,7 @@ from .moderation import (
     ModerationDecision,
 )
 from .notification_models import Notification, NotificationPreference
+from .post import Post
 from .profile import Profile
 from .reaction import MessageReaction, ReactionType
 from .user import User
@@ -53,6 +54,7 @@ __all__ = [
     "ModerationDecision",
     "Notification",
     "NotificationPreference",
+    "Post",
     "Profile",
     "ReactionType",
     "User",

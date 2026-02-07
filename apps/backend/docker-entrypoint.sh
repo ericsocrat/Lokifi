@@ -19,5 +19,10 @@ alembic upgrade head
 echo "✅ Migrations complete!"
 
 # Start the application
-echo "🎯 Starting FastAPI server..."
-exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+if [ "$#" -gt 0 ]; then
+    echo "▶️  Running custom command: $@"
+    exec "$@"
+else
+    echo "🎯 Starting FastAPI server..."
+    exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+fi
