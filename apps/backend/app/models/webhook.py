@@ -137,6 +137,10 @@ class Webhook(Base):
         """Parse comma-separated events string into list."""
         return [e.strip() for e in self.events.split(",") if e.strip()]
 
+    def get_events(self) -> list[str]:
+        """Get parsed events list. Alias for parse_events."""
+        return self.parse_events()
+
     def set_events(self, events: list[str]) -> None:
         """Set events from list and convert to comma-separated string."""
         self.events = ",".join(events)

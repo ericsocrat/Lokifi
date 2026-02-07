@@ -79,7 +79,7 @@ class WebhookDeliveryService:
                         event=event,
                         payload=json.dumps(payload),
                         status=DeliveryStatus.PENDING,
-                        attempt_count=0,
+                        attempt=0,
                         next_retry_at=None,
                     )
                     session.add(delivery)
@@ -342,7 +342,7 @@ class WebhookDeliveryService:
             delivery_id: ID of the delivery
             session: Database session
         """
-        attempt_count = delivery.attempt_count + 1
+        attempt_count = delivery.attempt + 1
         max_retries = webhook.max_retries
 
         if attempt_count >= max_retries:
@@ -372,7 +372,7 @@ class WebhookDeliveryService:
                 .where(WebhookDelivery.id == delivery_id)
                 .values(
                     status=DeliveryStatus.RETRYING,
-                    attempt_count=attempt_count,
+                    attempt=attempt_count,
                     next_retry_at=next_retry_at,
                 )
             )

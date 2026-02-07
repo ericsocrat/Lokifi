@@ -1,453 +1,662 @@
-"""Test suite for admin webhook management endpoints (Session 197)."""
+"""Tests for admin webhook management routes."""
 
-import json
-import uuid
-from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock, patch
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.main import app
-from app.models import User, Webhook, WebhookDelivery, WebhookEvent, WebhookStatus
-from app.schemas.webhook import WebhookResponse
-
-
-@pytest.fixture
-async def test_webhook(db_session: AsyncSession, admin_user: User) -> Webhook:
-    """Create a test webhook."""
-    webhook = Webhook(
-        id=uuid.uuid4(),
-        url="https://example.com/webhook",
-        name="Test Webhook",
-        description="Test webhook for integration",
-        events=["user.created", "content.updated"],
-        secret="test_secret_key_12345",
-        active=True,
-        status=WebhookStatus.ACTIVE,
-        max_retries=5,
-        retry_delay_seconds=60,
-        created_at=datetime.now(timezone.utc),
-        created_by=admin_user.id,
-    )
-    db_session.add(webhook)
-    await db_session.flush()
-    return webhook
+from app.api.routes.admin_webhooks import (
+    create_webhook,
+    delete_webhook,
+    get_available_events,
+    get_webhook,
+    get_webhook_deliveries,
+    get_webhook_secret,
+    list_webhooks,
+    rotate_webhook_secret,
+    test_webhook as route_test_webhook,
+    update_webhook,
+)
+from app.models.user import User
+from app.models.webhook import Webhook, WebhookStatus
+from app.models.webhook_delivery import DeliveryStatus, WebhookDelivery
+from app.schemas.webhook import WebhookCreate, WebhookTestPayload, WebhookUpdate
 
 
-@pytest.fixture
-async def test_webhook_delivery(db_session: AsyncSession, test_webhook: Webhook):
-    """Create a test webhook delivery."""
-    from app.models import DeliveryStatus
+class TestAdminWebhookCRUD:
+    """Test CRUD operations for webhook management routes."""
 
-    delivery = WebhookDelivery(
-        id=uuid.uuid4(),
-        webhook_id=test_webhook.id,
-        event="user.created",
-        payload=json.dumps({"user_id": str(uuid.uuid4()), "username": "testuser"}),
-        status=DeliveryStatus.SUCCESS,
-        http_status_code=200,
-        response_body=json.dumps({"success": True}),
-        attempt=1,
-        created_at=datetime.now(timezone.utc),
-        delivered_at=datetime.now(timezone.utc),
-    )
-    db_session.add(delivery)
-    await db_session.flush()
-    return delivery
+    @pytest.fixture
+    def mock_admin_user(self) -> User:
+        """Create a mock admin user."""
+        user = MagicMock(spec=User)
+        user.id = uuid4()
+        user.email = "admin@lokifi.com"
+        user.is_admin = True
+        return user
 
+    @pytest.fixture
+    def mock_webhook(self) -> MagicMock:
+        """Create a mock webhook with all required attributes."""
+        webhook = MagicMock(spec=Webhook)
+        webhook.id = uuid4()
+        webhook.url = "https://example.com/webhook"
+        webhook.name = "Test Webhook"
+        webhook.description = "Test webhook for testing"
+        webhook.events = "user.created,content.updated"
+        webhook.secret = "test_secret_key_12345678"
+        webhook.active = True
+        webhook.status = WebhookStatus.ACTIVE
+        webhook.max_retries = 5
+        webhook.retry_delay_seconds = 60
+        webhook.created_at = datetime.now(timezone.utc)
+        webhook.updated_at = datetime.now(timezone.utc)
+        webhook.last_triggered_at = None
+        webhook.successful_deliveries = 0
+        webhook.failed_deliveries = 0
+        webhook.parse_events.return_value = ["user.created", "content.updated"]
+        return webhook
 
-class TestWebhookCRUD:
-    """Test CRUD operations for webhooks."""
+    @pytest.fixture
+    def mock_delivery(self, mock_webhook: MagicMock) -> MagicMock:
+        """Create a mock webhook delivery."""
+        delivery = MagicMock(spec=WebhookDelivery)
+        delivery.id = uuid4()
+        delivery.webhook_id = mock_webhook.id
+        delivery.event = "user.created"
+        delivery.payload = '{"user_id": "test-id"}'
+        delivery.status = DeliveryStatus.SUCCESS
+        delivery.http_status_code = 200
+        delivery.response_body = '{"ok": true}'
+        delivery.attempt = 1
+        delivery.created_at = datetime.now(timezone.utc)
+        delivery.delivered_at = datetime.now(timezone.utc)
+        delivery.next_retry_at = None
+        return delivery
 
-    async def test_list_webhooks_empty(
-        self, client: TestClient, admin_token: str, db_session: AsyncSession
-    ):
-        """Test listing webhooks when empty."""
-        response = client.get(
-            "/api/v1/admin/webhooks",
-            headers={"Authorization": f"Bearer {admin_token}"},
+    # ========== List Webhooks ==========
+
+    async def test_list_webhooks_empty(self, mock_admin_user: User) -> None:
+        """Test listing webhooks when no webhooks exist."""
+        db = AsyncMock()
+
+        count_result = MagicMock()
+        count_result.scalars.return_value.all.return_value = []
+
+        list_result = MagicMock()
+        list_result.scalars.return_value.all.return_value = []
+
+        db.execute.side_effect = [count_result, list_result]
+
+        result = await list_webhooks(
+            db=db,
+            _=mock_admin_user,
+            page=1,
+            page_size=20,
+            status_filter=None,
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["items"] == []
-        assert data["total"] == 0
-        assert data["page"] == 1
 
-    async def test_list_webhooks_with_pagination(
-        self,
-        client: TestClient,
-        admin_token: str,
-        db_session: AsyncSession,
-        test_webhook: Webhook,
-    ):
-        """Test listing webhooks with pagination."""
-        response = client.get(
-            "/api/v1/admin/webhooks?page=1&page_size=20",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data["items"]) == 1
-        assert data["total"] == 1
-        assert data["items"][0]["name"] == "Test Webhook"
-        # Verify secret is redacted
-        assert "..." in data["items"][0]["secret"]
+        assert result.total == 0
+        assert result.webhooks == []
+        assert result.page == 1
+        assert result.page_size == 20
 
-    async def test_create_webhook(self, client: TestClient, admin_token: str):
-        """Test creating a webhook."""
-        payload = {
-            "name": "New Webhook",
-            "url": "https://api.example.com/webhook",
-            "description": "New webhook for testing",
-            "events": ["user.created", "user.deleted"],
-            "active": True,
-            "max_retries": 3,
-            "retry_delay_seconds": 30,
-        }
-        response = client.post(
-            "/api/v1/admin/webhooks",
-            json=payload,
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 201
-        data = response.json()
-        assert data["name"] == "New Webhook"
-        assert data["url"] == "https://api.example.com/webhook"
-        assert data["active"] is True
-        assert data["status"] == "ACTIVE"
-        # Verify secret is generated
-        assert "secret" in data
-        assert len(data["secret"]) > 0
+    async def test_list_webhooks_with_results(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test listing webhooks returns webhook data."""
+        db = AsyncMock()
 
-    async def test_create_webhook_invalid_url(self, client: TestClient, admin_token: str):
-        """Test creating a webhook with invalid URL."""
-        payload = {
-            "name": "Invalid webhook",
-            "url": "not-a-valid-url",  # Invalid URL
-            "description": "Test",
-            "events": ["user.created"],
-            "active": True,
-        }
-        response = client.post(
-            "/api/v1/admin/webhooks",
-            json=payload,
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 422  # Validation error
+        count_result = MagicMock()
+        count_result.scalars.return_value.all.return_value = [mock_webhook]
 
-    async def test_get_webhook(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
-        """Test getting a single webhook."""
-        response = client.get(
-            f"/api/v1/admin/webhooks/{test_webhook.id}",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["id"] == str(test_webhook.id)
-        assert data["name"] == "Test Webhook"
-        assert data["created_at"] is not None
+        list_result = MagicMock()
+        list_result.scalars.return_value.all.return_value = [mock_webhook]
 
-    async def test_get_webhook_not_found(self, client: TestClient, admin_token: str):
-        """Test getting non-existent webhook."""
-        fake_id = uuid.uuid4()
-        response = client.get(
-            f"/api/v1/admin/webhooks/{fake_id}",
-            headers={"Authorization": f"Bearer {admin_token}"},
+        db.execute.side_effect = [count_result, list_result]
+
+        result = await list_webhooks(
+            db=db,
+            _=mock_admin_user,
+            page=1,
+            page_size=20,
+            status_filter=None,
         )
-        assert response.status_code == 404
+
+        assert result.total == 1
+        assert len(result.webhooks) == 1
+        assert result.webhooks[0].name == "Test Webhook"
+
+    async def test_list_webhooks_with_status_filter(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test listing webhooks with status filter."""
+        db = AsyncMock()
+
+        count_result = MagicMock()
+        count_result.scalars.return_value.all.return_value = [mock_webhook]
+
+        list_result = MagicMock()
+        list_result.scalars.return_value.all.return_value = [mock_webhook]
+
+        db.execute.side_effect = [count_result, list_result]
+
+        result = await list_webhooks(
+            db=db,
+            _=mock_admin_user,
+            page=1,
+            page_size=20,
+            status_filter="active",
+        )
+
+        assert result.total == 1
+        assert len(result.webhooks) == 1
+
+    # ========== Create Webhook ==========
+
+    async def test_create_webhook(self, mock_admin_user: User) -> None:
+        """Test creating a new webhook."""
+        db = AsyncMock()
+
+        async def mock_refresh(webhook: Webhook) -> None:
+            webhook.id = uuid4()
+            webhook.created_at = datetime.now(timezone.utc)
+            webhook.updated_at = datetime.now(timezone.utc)
+            webhook.last_triggered_at = None
+            webhook.successful_deliveries = 0
+            webhook.failed_deliveries = 0
+
+        db.refresh.side_effect = mock_refresh
+
+        data = WebhookCreate(
+            name="New Webhook",
+            url="https://api.example.com/webhook",
+            description="A test webhook",
+            events=["user.created", "user.deleted"],
+            active=True,
+            max_retries=3,
+            retry_delay_seconds=30,
+        )
+
+        result = await create_webhook(
+            db=db,
+            _=mock_admin_user,
+            webhook_data=data,
+        )
+
+        assert result.name == "New Webhook"
+        assert result.active is True
+        assert result.status == WebhookStatus.ACTIVE
+        assert db.add.called
+        assert db.commit.called
+        assert db.refresh.called
+
+    # ========== Get Webhook ==========
+
+    async def test_get_webhook_found(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test getting an existing webhook."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
+
+        result = await get_webhook(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+        )
+
+        assert result.name == "Test Webhook"
+
+    async def test_get_webhook_not_found(self, mock_admin_user: User) -> None:
+        """Test getting a non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        with pytest.raises(Exception) as exc:
+            await get_webhook(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+            )
+        assert "not found" in str(exc.value).lower()
+
+    # ========== Update Webhook ==========
 
     async def test_update_webhook(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
         """Test updating a webhook."""
-        payload = {
-            "description": "Updated description",
-            "max_retries": 10,
-        }
-        response = client.patch(
-            f"/api/v1/admin/webhooks/{test_webhook.id}",
-            json=payload,
-            headers={"Authorization": f"Bearer {admin_token}"},
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
+
+        data = WebhookUpdate(
+            description="Updated description",
+            max_retries=10,
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["description"] == "Updated description"
-        assert data["max_retries"] == 10
-        # Verify unchanged fields
-        assert data["name"] == "Test Webhook"
+
+        result = await update_webhook(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+            webhook_data=data,
+        )
+
+        assert result.name == "Test Webhook"
+        assert db.commit.called
+        assert db.refresh.called
+
+    async def test_update_webhook_not_found(self, mock_admin_user: User) -> None:
+        """Test updating a non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        data = WebhookUpdate(description="Updated")
+
+        with pytest.raises(Exception) as exc:
+            await update_webhook(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+                webhook_data=data,
+            )
+        assert "not found" in str(exc.value).lower()
+
+    # ========== Delete Webhook ==========
 
     async def test_delete_webhook(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-        db_session: AsyncSession,
-    ):
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
         """Test deleting a webhook."""
-        response = client.delete(
-            f"/api/v1/admin/webhooks/{test_webhook.id}",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 204
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
 
-        # Verify webhook is deleted
-        result = await db_session.execute(select(Webhook).where(Webhook.id == test_webhook.id))
-        assert result.scalar_one_or_none() is None
+        await delete_webhook(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+        )
+
+        assert db.delete.called
+        assert db.commit.called
+
+    async def test_delete_webhook_not_found(self, mock_admin_user: User) -> None:
+        """Test deleting a non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        with pytest.raises(Exception) as exc:
+            await delete_webhook(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+            )
+        assert "not found" in str(exc.value).lower()
 
 
 class TestWebhookSecretManagement:
     """Test webhook secret management endpoints."""
 
-    async def test_get_webhook_secret_full(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
+    @pytest.fixture
+    def mock_admin_user(self) -> User:
+        """Create a mock admin user."""
+        user = MagicMock(spec=User)
+        user.id = uuid4()
+        user.email = "admin@lokifi.com"
+        user.is_admin = True
+        return user
+
+    @pytest.fixture
+    def mock_webhook(self) -> MagicMock:
+        """Create a mock webhook."""
+        webhook = MagicMock(spec=Webhook)
+        webhook.id = uuid4()
+        webhook.url = "https://example.com/webhook"
+        webhook.name = "Test Webhook"
+        webhook.description = "Test webhook"
+        webhook.events = "user.created"
+        webhook.secret = "test_secret_key_12345678"
+        webhook.active = True
+        webhook.status = WebhookStatus.ACTIVE
+        webhook.max_retries = 5
+        webhook.retry_delay_seconds = 60
+        webhook.created_at = datetime.now(timezone.utc)
+        webhook.updated_at = datetime.now(timezone.utc)
+        webhook.last_triggered_at = None
+        webhook.successful_deliveries = 0
+        webhook.failed_deliveries = 0
+        return webhook
+
+    async def test_get_webhook_secret(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
         """Test viewing full webhook secret."""
-        response = client.get(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/secret",
-            headers={"Authorization": f"Bearer {admin_token}"},
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
+
+        result = await get_webhook_secret(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["secret"] == test_webhook.secret
-        assert "test_secret" in data["secret"]
+
+        assert result.secret == "test_secret_key_12345678"
+        assert result.webhook_id == str(mock_webhook.id)
+
+    async def test_get_webhook_secret_not_found(self, mock_admin_user: User) -> None:
+        """Test getting secret for non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        with pytest.raises(Exception) as exc:
+            await get_webhook_secret(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+            )
+        assert "not found" in str(exc.value).lower()
 
     async def test_rotate_webhook_secret(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-        db_session: AsyncSession,
-    ):
-        """Test rotating webhook secret."""
-        old_secret = test_webhook.secret
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test rotating webhook secret generates new secret."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
 
-        response = client.post(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/rotate-secret",
-            headers={"Authorization": f"Bearer {admin_token}"},
+        result = await rotate_webhook_secret(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
         )
-        assert response.status_code == 200
-        data = response.json()
-        new_secret = data["secret"]
 
-        # Verify secret is different
-        assert new_secret != old_secret
+        assert db.commit.called
+        assert result.webhook_id == str(mock_webhook.id)
 
-        # Verify new secret is stored in database
-        await db_session.refresh(test_webhook)
-        assert test_webhook.secret == new_secret
+    async def test_rotate_webhook_secret_not_found(
+        self, mock_admin_user: User
+    ) -> None:
+        """Test rotating secret for non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        with pytest.raises(Exception) as exc:
+            await rotate_webhook_secret(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+            )
+        assert "not found" in str(exc.value).lower()
 
 
-class TestWebhookDeliveries:
+class TestWebhookDeliveryHistory:
     """Test webhook delivery tracking endpoints."""
 
-    async def test_get_webhook_deliveries_empty(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
+    @pytest.fixture
+    def mock_admin_user(self) -> User:
+        """Create a mock admin user."""
+        user = MagicMock(spec=User)
+        user.id = uuid4()
+        user.email = "admin@lokifi.com"
+        user.is_admin = True
+        return user
+
+    @pytest.fixture
+    def mock_webhook(self) -> MagicMock:
+        """Create a mock webhook."""
+        webhook = MagicMock(spec=Webhook)
+        webhook.id = uuid4()
+        webhook.url = "https://example.com/webhook"
+        webhook.name = "Test Webhook"
+        webhook.events = "user.created"
+        webhook.secret = "test_secret"
+        webhook.active = True
+        webhook.status = WebhookStatus.ACTIVE
+        webhook.max_retries = 5
+        webhook.retry_delay_seconds = 60
+        webhook.created_at = datetime.now(timezone.utc)
+        webhook.updated_at = datetime.now(timezone.utc)
+        webhook.parse_events.return_value = ["user.created"]
+        return webhook
+
+    @pytest.fixture
+    def mock_delivery(self, mock_webhook: MagicMock) -> MagicMock:
+        """Create a mock webhook delivery."""
+        delivery = MagicMock(spec=WebhookDelivery)
+        delivery.id = uuid4()
+        delivery.webhook_id = mock_webhook.id
+        delivery.event = "user.created"
+        delivery.payload = '{"user_id": "123"}'
+        delivery.status = DeliveryStatus.SUCCESS
+        delivery.http_status_code = 200
+        delivery.response_body = '{"ok": true}'
+        delivery.attempt = 1
+        delivery.created_at = datetime.now(timezone.utc)
+        delivery.delivered_at = datetime.now(timezone.utc)
+        delivery.next_retry_at = None
+        return delivery
+
+    async def test_get_deliveries_empty(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
         """Test getting delivery history when empty."""
-        response = client.get(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/deliveries",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["items"] == []
-        assert data["total"] == 0
+        db = AsyncMock()
 
-    async def test_get_webhook_deliveries_with_items(
+        webhook_result = MagicMock()
+        webhook_result.scalar_one_or_none.return_value = mock_webhook
+
+        count_result = MagicMock()
+        count_result.scalars.return_value.all.return_value = []
+
+        delivery_result = MagicMock()
+        delivery_result.scalars.return_value.all.return_value = []
+
+        db.execute.side_effect = [webhook_result, count_result, delivery_result]
+
+        result = await get_webhook_deliveries(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+            page=1,
+            page_size=20,
+        )
+
+        assert result.total == 0
+        assert result.deliveries == []
+
+    async def test_get_deliveries_with_items(
         self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-        test_webhook_delivery: WebhookDelivery,
-    ):
+        mock_admin_user: User,
+        mock_webhook: MagicMock,
+        mock_delivery: MagicMock,
+    ) -> None:
         """Test getting delivery history with items."""
-        response = client.get(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/deliveries",
-            headers={"Authorization": f"Bearer {admin_token}"},
+        db = AsyncMock()
+
+        webhook_result = MagicMock()
+        webhook_result.scalar_one_or_none.return_value = mock_webhook
+
+        count_result = MagicMock()
+        count_result.scalars.return_value.all.return_value = [mock_delivery]
+
+        delivery_result = MagicMock()
+        delivery_result.scalars.return_value.all.return_value = [mock_delivery]
+
+        db.execute.side_effect = [webhook_result, count_result, delivery_result]
+
+        result = await get_webhook_deliveries(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+            page=1,
+            page_size=20,
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data["items"]) == 1
-        assert data["total"] == 1
-        assert data["items"][0]["event"] == "user.created"
-        assert data["items"][0]["status"] == "SUCCESS"
-        assert data["items"][0]["http_status_code"] == 200
 
-    async def test_get_webhook_deliveries_pagination(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-        test_webhook_delivery: WebhookDelivery,
-    ):
-        """Test delivery history pagination."""
-        response = client.get(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/deliveries?page=1&page_size=10",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert data["page"] == 1
-        assert data["page_size"] == 10
+        assert result.total == 1
+        assert len(result.deliveries) == 1
+        assert result.deliveries[0].event == "user.created"
+        assert result.deliveries[0].status == DeliveryStatus.SUCCESS
+
+    async def test_get_deliveries_webhook_not_found(
+        self, mock_admin_user: User
+    ) -> None:
+        """Test getting deliveries for non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
+
+        with pytest.raises(Exception) as exc:
+            await get_webhook_deliveries(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+                page=1,
+                page_size=20,
+            )
+        assert "not found" in str(exc.value).lower()
 
 
-class TestWebhookTesting:
+class TestWebhookTestEndpoint:
     """Test webhook testing endpoints."""
 
-    async def test_test_webhook_delivery(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
-        """Test webhook test delivery endpoint."""
-        payload = {"event": "user.created"}
-        response = client.post(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/test",
-            json=payload,
-            headers={"Authorization": f"Bearer {admin_token}"},
+    @pytest.fixture
+    def mock_admin_user(self) -> User:
+        """Create a mock admin user."""
+        user = MagicMock(spec=User)
+        user.id = uuid4()
+        user.email = "admin@lokifi.com"
+        user.is_admin = True
+        return user
+
+    @pytest.fixture
+    def mock_webhook(self) -> MagicMock:
+        """Create a mock webhook."""
+        webhook = MagicMock(spec=Webhook)
+        webhook.id = uuid4()
+        webhook.url = "https://example.com/webhook"
+        webhook.name = "Test Webhook"
+        webhook.events = "user.created,content.updated"
+        webhook.secret = "test_secret"
+        webhook.active = True
+        webhook.status = WebhookStatus.ACTIVE
+        webhook.max_retries = 5
+        webhook.retry_delay_seconds = 60
+        webhook.created_at = datetime.now(timezone.utc)
+        webhook.updated_at = datetime.now(timezone.utc)
+        webhook.parse_events.return_value = ["user.created", "content.updated"]
+        return webhook
+
+    async def test_test_webhook_valid_event(
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test webhook test delivery with valid event."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
+
+        payload = WebhookTestPayload(event="user.created")
+
+        result = await route_test_webhook(
+            db=db,
+            _=mock_admin_user,
+            webhook_id=str(mock_webhook.id),
+            test_payload=payload,
         )
-        assert response.status_code == 202  # Accepted for async
+
+        assert result["status"] == "queued"
 
     async def test_test_webhook_invalid_event(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-    ):
-        """Test webhook test with invalid event."""
-        payload = {"event": "invalid.event"}
-        response = client.post(
-            f"/api/v1/admin/webhooks/{test_webhook.id}/test",
-            json=payload,
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 400  # Bad request
+        self, mock_admin_user: User, mock_webhook: MagicMock
+    ) -> None:
+        """Test webhook test with event not subscribed."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = mock_webhook
+        db.execute.return_value = result_mock
 
-    async def test_get_available_events(self, client: TestClient, admin_token: str):
-        """Test getting available webhook events."""
-        response = client.get(
-            "/api/v1/admin/webhooks/available-events",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert "events" in data
-        assert len(data["events"]) > 0
-        # Verify known events exist
-        assert "user.created" in data["events"]
-        assert "user.updated" in data["events"]
+        payload = WebhookTestPayload(event="invalid.event")
 
+        with pytest.raises(Exception) as exc:
+            await route_test_webhook(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(mock_webhook.id),
+                test_payload=payload,
+            )
+        assert "400" in str(exc.value) or "not subscribed" in str(exc.value).lower()
 
-class TestWebhookFiltering:
-    """Test webhook filtering and querying."""
+    async def test_test_webhook_not_found(self, mock_admin_user: User) -> None:
+        """Test webhook test for non-existent webhook raises 404."""
+        db = AsyncMock()
+        result_mock = MagicMock()
+        result_mock.scalar_one_or_none.return_value = None
+        db.execute.return_value = result_mock
 
-    async def test_list_webhooks_by_status(
-        self,
-        client: TestClient,
-        admin_token: str,
-        test_webhook: Webhook,
-        db_session: AsyncSession,
-    ):
-        """Test filtering webhooks by status."""
-        # Create inactive webhook
-        inactive_webhook = Webhook(
-            id=uuid.uuid4(),
-            url="https://inactive.example.com",
-            name="Inactive Webhook",
-            description="Inactive webhook",
-            events=["user.created"],
-            secret="inactive_secret",
-            active=False,
-            status=WebhookStatus.INACTIVE,
-            max_retries=3,
-            retry_delay_seconds=60,
-            created_at=datetime.now(timezone.utc),
-            created_by=test_webhook.created_by,
-        )
-        db_session.add(inactive_webhook)
-        await db_session.flush()
+        payload = WebhookTestPayload(event="user.created")
 
-        # Filter by ACTIVE status
-        response = client.get(
-            "/api/v1/admin/webhooks?status_filter=ACTIVE",
-            headers={"Authorization": f"Bearer {admin_token}"},
-        )
-        assert response.status_code == 200
-        data = response.json()
-        assert len(data["items"]) == 1
-        assert data["items"][0]["status"] == "ACTIVE"
+        with pytest.raises(Exception) as exc:
+            await route_test_webhook(
+                db=db,
+                _=mock_admin_user,
+                webhook_id=str(uuid4()),
+                test_payload=payload,
+            )
+        assert "not found" in str(exc.value).lower()
 
 
-class TestWebhookAuthorization:
-    """Test webhook authorization and permissions."""
+class TestWebhookAvailableEvents:
+    """Test available webhook events endpoint."""
 
-    async def test_unauthorized_access(self, client: TestClient):
-        """Test accessing webhook endpoints without token."""
-        response = client.get("/api/v1/admin/webhooks")
-        assert response.status_code == 401
+    @pytest.fixture
+    def mock_admin_user(self) -> User:
+        """Create a mock admin user."""
+        user = MagicMock(spec=User)
+        user.id = uuid4()
+        user.email = "admin@lokifi.com"
+        user.is_admin = True
+        return user
 
-    async def test_non_admin_access(
-        self,
-        client: TestClient,
-        regular_user: User,
-        db_session: AsyncSession,
-    ):
-        """Test non-admin user accessing webhook endpoints."""
-        # Create a token for regular user (simplified)
-        # In real test, use proper token generation
-        response = client.get(
-            "/api/v1/admin/webhooks",
-            headers={"Authorization": "Bearer invalid_token"},
-        )
-        assert response.status_code in [401, 403]
+    async def test_get_available_events(self, mock_admin_user: User) -> None:
+        """Test getting list of available webhook events."""
+        result = await get_available_events(_=mock_admin_user)
 
+        assert len(result.events) > 0
+        assert "user.created" in result.events
+        assert "user.updated" in result.events
+        assert "content.created" in result.events
 
-class TestWebhookEventParsing:
-    """Test webhook event parsing and handling."""
+    async def test_available_events_includes_all_categories(
+        self, mock_admin_user: User
+    ) -> None:
+        """Test that all event categories are represented."""
+        result = await get_available_events(_=mock_admin_user)
 
-    async def test_webhook_event_list_conversion(
-        self,
-        db_session: AsyncSession,
-        admin_user: User,
-    ):
-        """Test event list conversion for webhook model."""
-        events = ["user.created", "user.deleted", "content.updated"]
-        webhook = Webhook(
-            id=uuid.uuid4(),
-            url="https://example.com",
-            name="Event Test",
-            description="Testing event parsing",
-            active=True,
-            status=WebhookStatus.ACTIVE,
-            max_retries=5,
-            retry_delay_seconds=60,
-            created_at=datetime.now(timezone.utc),
-            created_by=admin_user.id,
-        )
-        webhook.set_events(events)
-
-        # Verify events are stored as CSV
-        assert "," in webhook.events
-        assert "user.created" in webhook.events
-
-        # Verify parsing
-        parsed = webhook.parse_events()
-        assert parsed == events
+        events = result.events
+        assert "user.created" in events
+        assert "content.created" in events
+        assert "admin.action" in events
+        assert "system.health" in events

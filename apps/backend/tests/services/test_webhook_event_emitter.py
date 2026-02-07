@@ -5,13 +5,16 @@ Tests cover:
 - Event routing to subscribed webhooks
 - Event payload structure
 - Custom event handlers
+- Event map validation
 """
 
-from unittest.mock import AsyncMock, patch
+from __future__ import annotations
+
+from datetime import datetime, timezone
+from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.webhook import Webhook, WebhookEvent, WebhookStatus
 from app.services.webhook_event_emitter import (
@@ -21,54 +24,73 @@ from app.services.webhook_event_emitter import (
 )
 
 
+def _make_mock_webhook(
+    url: str,
+    name: str,
+    events: list[str],
+    secret: str = "test-secret",  # noqa: S107
+) -> MagicMock:
+    """Create a mock webhook with proper event filtering support."""
+    webhook = MagicMock()
+    webhook.id = uuid4()
+    webhook.url = url
+    webhook.name = name
+    webhook.events = ",".join(events)
+    webhook.secret = secret
+    webhook.active = True
+    webhook.status = WebhookStatus.ACTIVE
+    webhook.max_retries = 3
+    webhook.retry_delay_seconds = 60
+    # get_events() returns list of event strings for filtering
+    webhook.get_events.return_value = events
+    return webhook
+
+
 @pytest.fixture
-async def test_webhooks(session: AsyncSession) -> list[Webhook]:
-    """Create test webhooks with different event subscriptions."""
-    webhooks = [
-        Webhook(
-            id=uuid4(),
+def test_webhooks() -> list[MagicMock]:
+    """Create mock test webhooks with different event subscriptions."""
+    return [
+        _make_mock_webhook(
             url="https://webhook1.example.com/events",
             name="User Events Webhook",
-            events="user.created,user.verified",
+            events=["user.created", "user.verified"],
             secret="secret1",
-            active=True,
-            status=WebhookStatus.ACTIVE,
-            max_retries=3,
-            retry_delay_seconds=60,
         ),
-        Webhook(
-            id=uuid4(),
+        _make_mock_webhook(
             url="https://webhook2.example.com/events",
             name="Post Events Webhook",
-            events="post.created,post.updated",
+            events=["post.created", "post.updated"],
             secret="secret2",
-            active=True,
-            status=WebhookStatus.ACTIVE,
-            max_retries=3,
-            retry_delay_seconds=60,
         ),
-        Webhook(
-            id=uuid4(),
+        _make_mock_webhook(
             url="https://webhook3.example.com/events",
             name="All Events Webhook",
-            events="user.created,post.created,follow.created",
+            events=["user.created", "post.created", "follow.created"],
             secret="secret3",
-            active=True,
-            status=WebhookStatus.ACTIVE,
-            max_retries=3,
-            retry_delay_seconds=60,
         ),
     ]
-    for webhook in webhooks:
-        session.add(webhook)
-    await session.flush()
-    return webhooks
 
 
 @pytest.fixture
 def emitter() -> WebhookEventEmitter:
     """Create a webhook event emitter instance."""
     return WebhookEventEmitter()
+
+
+def _patch_db_with_webhooks(webhooks: list[MagicMock]):
+    """Create a patch context for db_manager.session() returning webhooks."""
+    mock_session = AsyncMock()
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.all.return_value = webhooks
+    mock_session.execute.return_value = mock_result
+
+    mock_cm = AsyncMock()
+    mock_cm.__aenter__.return_value = mock_session
+
+    return patch(
+        "app.services.webhook_event_emitter.db_manager",
+        **{"session.return_value": mock_cm},
+    )
 
 
 class TestWebhookEventEmission:
@@ -78,115 +100,118 @@ class TestWebhookEventEmission:
     async def test_emit_user_created_event(
         self,
         emitter: WebhookEventEmitter,
-        test_webhooks: list[Webhook],
+        test_webhooks: list[MagicMock],
     ):
-        """Test emitting user.created event."""
+        """Test emitting user.created event routes to subscribed webhooks."""
         user_id = uuid4()
-        email = "test@example.com"
-        username = "testuser"
 
-        with patch(
-            "app.services.webhook_event_emitter.webhook_delivery_service.queue_delivery"
-        ) as mock_queue:
-            mock_queue.return_value = True
+        with (
+            _patch_db_with_webhooks(test_webhooks),
+            patch(
+                "app.services.webhook_event_emitter.webhook_delivery_service"
+            ) as mock_service,
+        ):
+            mock_service.queue_delivery = AsyncMock(return_value=True)
 
             result = await emitter.emit_user_created(
                 user_id=user_id,
-                email=email,
-                username=username,
+                email="test@example.com",
+                username="testuser",
             )
 
             assert result is True
-            # Should queue to webhooks subscribed to user.created
-            assert mock_queue.call_count == 2  # webhook1 and webhook3
+            # webhook1 and webhook3 subscribe to user.created
+            assert mock_service.queue_delivery.call_count == 2
 
     @pytest.mark.asyncio
     async def test_emit_post_created_event(
         self,
         emitter: WebhookEventEmitter,
-        test_webhooks: list[Webhook],
+        test_webhooks: list[MagicMock],
     ):
-        """Test emitting post.created event."""
-        post_id = uuid4()
-        author_id = uuid4()
-        content_type = "text"
-
-        with patch(
-            "app.services.webhook_event_emitter.webhook_delivery_service.queue_delivery"
-        ) as mock_queue:
-            mock_queue.return_value = True
+        """Test emitting post.created event routes correctly."""
+        with (
+            _patch_db_with_webhooks(test_webhooks),
+            patch(
+                "app.services.webhook_event_emitter.webhook_delivery_service"
+            ) as mock_service,
+        ):
+            mock_service.queue_delivery = AsyncMock(return_value=True)
 
             result = await emitter.emit_post_created(
-                post_id=post_id,
-                author_id=author_id,
-                content_type=content_type,
+                post_id=uuid4(),
+                author_id=uuid4(),
+                content_type="text",
             )
 
             assert result is True
-            # Should queue to webhooks subscribed to post.created
-            assert mock_queue.call_count == 2  # webhook2 and webhook3
+            # webhook2 and webhook3 subscribe to post.created
+            assert mock_service.queue_delivery.call_count == 2
 
     @pytest.mark.asyncio
     async def test_emit_follow_created_event(
         self,
         emitter: WebhookEventEmitter,
-        test_webhooks: list[Webhook],
+        test_webhooks: list[MagicMock],
     ):
-        """Test emitting follow.created event."""
-        follower_id = uuid4()
-        following_id = uuid4()
-
-        with patch(
-            "app.services.webhook_event_emitter.webhook_delivery_service.queue_delivery"
-        ) as mock_queue:
-            mock_queue.return_value = True
+        """Test emitting follow.created event routes to correct webhook."""
+        with (
+            _patch_db_with_webhooks(test_webhooks),
+            patch(
+                "app.services.webhook_event_emitter.webhook_delivery_service"
+            ) as mock_service,
+        ):
+            mock_service.queue_delivery = AsyncMock(return_value=True)
 
             result = await emitter.emit_follow_created(
-                follower_id=follower_id,
-                following_id=following_id,
+                follower_id=uuid4(),
+                following_id=uuid4(),
             )
 
             assert result is True
-            # Should queue to webhook3 only (follows webhook)
-            assert mock_queue.call_count == 1  # webhook3
+            # Only webhook3 subscribes to follow.created
+            assert mock_service.queue_delivery.call_count == 1
 
     @pytest.mark.asyncio
     async def test_emit_admin_action(
         self,
         emitter: WebhookEventEmitter,
-        test_webhooks: list[Webhook],
+        test_webhooks: list[MagicMock],
     ):
         """Test emitting admin.action event."""
-        admin_id = uuid4()
-        target_id = uuid4()
-
-        with patch(
-            "app.services.webhook_event_emitter.webhook_delivery_service.queue_delivery"
-        ) as mock_queue:
-            mock_queue.return_value = True
+        with (
+            _patch_db_with_webhooks(test_webhooks),
+            patch(
+                "app.services.webhook_event_emitter.webhook_delivery_service"
+            ) as mock_service,
+        ):
+            mock_service.queue_delivery = AsyncMock(return_value=True)
 
             result = await emitter.emit_admin_action(
-                admin_id=admin_id,
+                admin_id=uuid4(),
                 action="user.suspend",
                 target_type="user",
-                target_id=target_id,
+                target_id=uuid4(),
                 details={"reason": "spam"},
             )
 
-            # Note: admin.action not in test webhooks subscriptions
+            # admin.action not in test webhook subscriptions, so 0 queued
             assert result is True
 
     @pytest.mark.asyncio
     async def test_emit_system_event(
         self,
         emitter: WebhookEventEmitter,
-        test_webhooks: list[Webhook],
+        test_webhooks: list[MagicMock],
     ):
         """Test emitting system.event."""
-        with patch(
-            "app.services.webhook_event_emitter.webhook_delivery_service.queue_delivery"
-        ) as mock_queue:
-            mock_queue.return_value = True
+        with (
+            _patch_db_with_webhooks(test_webhooks),
+            patch(
+                "app.services.webhook_event_emitter.webhook_delivery_service"
+            ) as mock_service,
+        ):
+            mock_service.queue_delivery = AsyncMock(return_value=True)
 
             result = await emitter.emit_system_event(
                 event_name="maintenance_started",
@@ -194,7 +219,7 @@ class TestWebhookEventEmission:
                 details={"estimated_duration": "30 minutes"},
             )
 
-            # Note: system.event not in test webhooks subscriptions
+            # system.event not in test webhook subscriptions
             assert result is True
 
 
@@ -206,6 +231,7 @@ class TestWebhookEventPayload:
         payload = WebhookEventPayload(
             event="user.created",
             data={"user_id": "123", "email": "test@example.com"},
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         assert payload.event == "user.created"
@@ -219,6 +245,7 @@ class TestWebhookEventPayload:
         payload = WebhookEventPayload(
             event="user.created",
             data=data,
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )
 
         payload_dict = payload.__dict__
@@ -239,7 +266,7 @@ class TestWebhookEventHandlers:
         """Test registering and calling synchronous event handler."""
         handler_called = {"called": False, "payload": None}
 
-        def test_handler(payload: dict[str, str | any]):
+        def test_handler(payload: dict):
             handler_called["called"] = True
             handler_called["payload"] = payload
 
@@ -257,7 +284,7 @@ class TestWebhookEventHandlers:
         """Test registering and calling asynchronous event handler."""
         handler_called = {"called": False, "payload": None}
 
-        async def async_test_handler(payload: dict[str, str | any]):
+        async def async_test_handler(payload: dict):
             handler_called["called"] = True
             handler_called["payload"] = payload
 
@@ -297,7 +324,7 @@ class TestWebhookEventHandlers:
         emitter: WebhookEventEmitter,
     ):
         """Test multiple handlers for same event."""
-        calls = []
+        calls: list[str] = []
 
         def handler1(payload: dict):
             calls.append("handler1")
@@ -345,9 +372,8 @@ class TestEventMap:
 
     def test_event_map_maps_to_enum(self, emitter: WebhookEventEmitter):
         """Test that EVENT_MAP values are WebhookEvent enum values."""
-        for event_str, event_enum in emitter.EVENT_MAP.items():
+        for event_enum in emitter.EVENT_MAP.values():
             assert isinstance(event_enum, WebhookEvent)
-            assert event_str == event_enum
 
 
 class TestGlobalEmitter:

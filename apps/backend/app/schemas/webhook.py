@@ -1,9 +1,10 @@
 """Pydantic schemas for Webhook API."""
 
 from datetime import datetime
-from typing import Optional
+from typing import Any
+from uuid import UUID
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 from app.models.webhook import WebhookEvent, WebhookStatus
 from app.models.webhook_delivery import DeliveryStatus
@@ -55,6 +56,22 @@ class WebhookResponse(WebhookBase):
 
     model_config = {"from_attributes": True}
 
+    @field_validator("id", mode="before")
+    @classmethod
+    def convert_id_to_string(cls, v: Any) -> str:
+        """Convert UUID to string for API responses."""
+        if isinstance(v, UUID):
+            return str(v)
+        return v
+
+    @field_validator("events", mode="before")
+    @classmethod
+    def parse_events_string(cls, v: Any) -> list[str]:
+        """Convert comma-separated events string from DB to list."""
+        if isinstance(v, str):
+            return [e.strip() for e in v.split(",") if e.strip()]
+        return v
+
     def redact_secret(self) -> None:
         """Redact secret to show only last 8 characters."""
         if len(self.secret) > 8:
@@ -89,6 +106,14 @@ class DeliveryStatusResponse(BaseModel):
     delivered_at: datetime | None = None
 
     model_config = {"from_attributes": True}
+
+    @field_validator("id", "webhook_id", mode="before")
+    @classmethod
+    def convert_ids_to_string(cls, v: Any) -> str:
+        """Convert UUID to string for API responses."""
+        if isinstance(v, UUID):
+            return str(v)
+        return v
 
 
 class DeliveryListResponse(BaseModel):
