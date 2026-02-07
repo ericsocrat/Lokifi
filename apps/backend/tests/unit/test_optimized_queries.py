@@ -30,6 +30,26 @@ from app.db.models import Follow, Post, User
 @pytest.fixture
 def sample_users():
     """Create test users."""
+    # First, clean up any existing test users and their posts in a separate session
+    test_handles = ["alice", "bob", "charlie", "diana"]
+    with get_session() as db:
+        # Get IDs of test users before deleting
+        test_user_ids = db.query(User.id).filter(
+            User.handle.in_(test_handles)
+        ).all()
+        test_user_ids = [id_tuple[0] for id_tuple in test_user_ids] if test_user_ids else []
+        
+        # Delete their posts first
+        if test_user_ids:
+            db.query(Post).filter(Post.user_id.in_(test_user_ids)).delete()
+        
+        # Delete the users
+        for handle in test_handles:
+            db.query(User).filter(User.handle == handle).delete(synchronize_session='fetch')
+        db.commit()
+
+    # Now create new users in a fresh session
+    users_dict = {}
     with get_session() as db:
         users = [
             User(
@@ -54,53 +74,66 @@ def sample_users():
         db.commit()
         for u in users:
             db.refresh(u)
-        return {u.handle: u for u in users}
+            users_dict[u.handle] = {"id": u.id, "handle": u.handle}
+    return users_dict
 
 
 @pytest.fixture
 def sample_follows(sample_users):
     """Create follow relationships."""
-    alice = sample_users["alice"]
-    bob = sample_users["bob"]
-    charlie = sample_users["charlie"]
+    alice_id = sample_users["alice"]["id"]
+    bob_id = sample_users["bob"]["id"]
+    charlie_id = sample_users["charlie"]["id"]
 
     with get_session() as db:
+        # Clean up any existing follows between test users
+        db.query(Follow).filter(
+            Follow.follower_id.in_([alice_id, bob_id, charlie_id])
+            | Follow.followee_id.in_([alice_id, bob_id, charlie_id])
+        ).delete()
+        db.commit()
+
         # Alice follows Bob and Charlie
-        db.add(Follow(follower_id=alice.id, followee_id=bob.id))
-        # Bob follows Charlie
-        db.add(Follow(follower_id=bob.id, followee_id=charlie.id))
+        db.add(Follow(follower_id=alice_id, followee_id=bob_id))
+        db.add(Follow(follower_id=alice_id, followee_id=charlie_id))
         db.commit()
 
 
 @pytest.fixture
 def sample_posts(sample_users):
     """Create sample posts."""
-    bob = sample_users["bob"]
-    charlie = sample_users["charlie"]
-    diana = sample_users["diana"]
+    bob_id = sample_users["bob"]["id"]
+    charlie_id = sample_users["charlie"]["id"]
+    diana_id = sample_users["diana"]["id"]
 
     with get_session() as db:
+        # Clean up any existing posts by test users
+        db.query(Post).filter(
+            Post.user_id.in_([bob_id, charlie_id, diana_id])
+        ).delete()
+        db.commit()
+
         posts = [
             Post(
-                user_id=bob.id,
+                user_id=bob_id,
                 content="Bob's first post about AAPL",
                 symbol="AAPL",
                 created_at=datetime.now() - timedelta(hours=3),
             ),
             Post(
-                user_id=charlie.id,
+                user_id=charlie_id,
                 content="Charlie's tech thoughts",
                 symbol=None,
                 created_at=datetime.now() - timedelta(hours=2),
             ),
             Post(
-                user_id=bob.id,
+                user_id=bob_id,
                 content="Bob's second post about GOOGL",
                 symbol="GOOGL",
                 created_at=datetime.now() - timedelta(hours=1),
             ),
             Post(
-                user_id=diana.id,
+                user_id=diana_id,
                 content="Diana's post (not followed by Alice)",
                 symbol="MSFT",
                 created_at=datetime.now() - timedelta(minutes=30),
@@ -119,10 +152,10 @@ class TestOptimizedFeedQuery:
 
     def test_get_optimized_feed_basic(self, sample_users, sample_follows, sample_posts):
         """Test basic feed retrieval without filters."""
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
-            posts = get_optimized_feed(db, user_id=str(alice.id))
+            posts = get_optimized_feed(db, user_id=str(alice_id))
 
         # Alice follows Bob and Charlie, so should see 3 posts (2 from Bob, 1 from Charlie)
         assert len(posts) == 3
@@ -130,36 +163,30 @@ class TestOptimizedFeedQuery:
         # Most recent first
         assert posts[0]["content"] == "Bob's second post about GOOGL"
 
-    def test_get_optimized_feed_symbol_filter(
-        self, sample_users, sample_follows, sample_posts
-    ):
+    def test_get_optimized_feed_symbol_filter(self, sample_users, sample_follows, sample_posts):
         """Test feed with symbol filter."""
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
-            posts = get_optimized_feed(db, user_id=str(alice.id), symbol="AAPL")
+            posts = get_optimized_feed(db, user_id=str(alice_id), symbol="AAPL")
 
         # Only AAPL posts from followees
         assert len(posts) == 1
         assert posts[0]["content"] == "Bob's first post about AAPL"
         assert posts[0]["symbol"] == "AAPL"
 
-    def test_get_optimized_feed_timestamp_cursor(
-        self, sample_users, sample_follows, sample_posts
-    ):
+    def test_get_optimized_feed_timestamp_cursor(self, sample_users, sample_follows, sample_posts):
         """Test timestamp-based cursor pagination."""
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
             # Get all posts first
-            all_posts = get_optimized_feed(db, user_id=str(alice.id))
+            all_posts = get_optimized_feed(db, user_id=str(alice_id))
             assert len(all_posts) == 3
 
             # Get posts created before the second post
             cursor_time = all_posts[1]["created_at"]  # "2 hours old" post
-            older_posts = get_optimized_feed(
-                db, user_id=str(alice.id), after_timestamp=cursor_time
-            )
+            older_posts = get_optimized_feed(db, user_id=str(alice_id), after_timestamp=cursor_time)
 
             # Should get posts older than cursor (1 post older than 2-hour mark)
             assert len(older_posts) == 1
@@ -167,10 +194,10 @@ class TestOptimizedFeedQuery:
 
     def test_get_optimized_feed_limit(self, sample_users, sample_follows, sample_posts):
         """Test limit parameter."""
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
-            posts = get_optimized_feed(db, user_id=str(alice.id), limit=2)
+            posts = get_optimized_feed(db, user_id=str(alice_id), limit=2)
 
         assert len(posts) == 2
         # Most recent first
@@ -178,10 +205,10 @@ class TestOptimizedFeedQuery:
 
     def test_get_optimized_feed_no_posts(self, sample_users):
         """Test feed for user with no following."""
-        diana = sample_users["diana"]
+        diana_id = sample_users["diana"]["id"]
 
         with get_session() as db:
-            posts = get_optimized_feed(db, user_id=str(diana.id))
+            posts = get_optimized_feed(db, user_id=str(diana_id))
 
         # Diana follows no one
         assert len(posts) == 0
@@ -190,16 +217,14 @@ class TestOptimizedFeedQuery:
         self, sample_users, sample_follows, sample_posts
     ):
         """Test that SQLAlchemy and raw SQL implementations match."""
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
             # Raw SQL version
-            raw_posts = get_optimized_feed(db, user_id=str(alice.id))
+            raw_posts = get_optimized_feed(db, user_id=str(alice_id))
 
             # SQLAlchemy version
-            sqlalchemy_results = get_optimized_feed_sqlalchemy(
-                db, user_id=str(alice.id)
-            )
+            sqlalchemy_results = get_optimized_feed_sqlalchemy(db, user_id=str(alice_id))
             sqlalchemy_posts = [
                 {
                     "id": p.id,
@@ -227,13 +252,13 @@ class TestUserFollowerStats:
 
     def test_get_user_follower_stats_basic(self, sample_users, sample_follows):
         """Test accurate follower count calculations."""
-        alice = sample_users["alice"]
-        bob = sample_users["bob"]
+        alice_id = sample_users["alice"]["id"]
+        bob_id = sample_users["bob"]["id"]
 
         with get_session() as db:
             # Refresh to ensure relationships are loaded
-            alice_stats = get_user_follower_stats(db, str(alice.id))
-            bob_stats = get_user_follower_stats(db, str(bob.id))
+            alice_stats = get_user_follower_stats(db, str(alice_id))
+            bob_stats = get_user_follower_stats(db, str(bob_id))
 
         # Alice follows 2 people, has 0 followers
         assert alice_stats["following"] == 2
@@ -244,14 +269,12 @@ class TestUserFollowerStats:
         assert bob_stats["following"] == 0
         assert bob_stats["followers"] == 1
 
-    def test_get_user_follower_stats_with_posts(
-        self, sample_users, sample_follows, sample_posts
-    ):
+    def test_get_user_follower_stats_with_posts(self, sample_users, sample_follows, sample_posts):
         """Test stats with posts included."""
-        bob = sample_users["bob"]
+        bob_id = sample_users["bob"]["id"]
 
         with get_session() as db:
-            stats = get_user_follower_stats(db, str(bob.id))
+            stats = get_user_follower_stats(db, str(bob_id))
 
         # Bob has 1 follower, 0 following, 2 posts
         assert stats["followers"] == 1
@@ -260,10 +283,10 @@ class TestUserFollowerStats:
 
     def test_get_user_follower_stats_zero_counts(self, sample_users):
         """Test stats for user with no relationships."""
-        diana = sample_users["diana"]
+        diana_id = sample_users["diana"]["id"]
 
         with get_session() as db:
-            stats = get_user_follower_stats(db, str(diana.id))
+            stats = get_user_follower_stats(db, str(diana_id))
 
         assert stats["following"] == 0
         assert stats["followers"] == 0
@@ -300,38 +323,32 @@ class TestDatabaseIndexes:
 class TestPerformanceCharacteristics:
     """Performance-related tests (informational)."""
 
-    def test_feed_query_execution_time(
-        self, sample_users, sample_follows, sample_posts
-    ):
+    def test_feed_query_execution_time(self, sample_users, sample_follows, sample_posts):
         """Test that optimized feed query executes quickly (informational)."""
         import time
 
-        alice = sample_users["alice"]
+        alice_id = sample_users["alice"]["id"]
 
         with get_session() as db:
             start = time.perf_counter()
-            posts = get_optimized_feed(db, user_id=str(alice.id))
+            posts = get_optimized_feed(db, user_id=str(alice_id))
             elapsed_ms = (time.perf_counter() - start) * 1000
 
         # Should complete in <100ms (cold run, no cache)
         # Note: This is informational; actual performance depends on system load
         assert len(posts) == 3
         # Don't hard-fail on timing - just log for visibility
-        print(
-            f"\nOptimized feed query executed in {elapsed_ms:.2f}ms ({len(posts)} posts)"
-        )
+        print(f"\nOptimized feed query executed in {elapsed_ms:.2f}ms ({len(posts)} posts)")
 
-    def test_user_stats_query_execution_time(
-        self, sample_users, sample_follows, sample_posts
-    ):
+    def test_user_stats_query_execution_time(self, sample_users, sample_follows, sample_posts):
         """Test that stats query executes quickly (informational)."""
         import time
 
-        bob = sample_users["bob"]
+        bob_id = sample_users["bob"]["id"]
 
         with get_session() as db:
             start = time.perf_counter()
-            stats = get_user_follower_stats(db, str(bob.id))
+            stats = get_user_follower_stats(db, str(bob_id))
             elapsed_ms = (time.perf_counter() - start) * 1000
 
         print(f"\nUser stats query executed in {elapsed_ms:.2f}ms")

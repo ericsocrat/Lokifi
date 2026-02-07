@@ -16,6 +16,7 @@ from app.core.cached_queries import (
     invalidate_post_cache,
     is_following,
 )
+from app.core.optimized_queries import create_database_indexes, get_optimized_feed
 from app.core.redis_cache import cache
 from app.core.versioning import APIVersion
 from app.db.db import get_session, init_db
@@ -27,6 +28,13 @@ router = APIRouter()
 
 # Ensure tables exist when router loads (idempotent)
 init_db()
+
+# Ensure Phase 6A performance indexes exist (idempotent)
+try:
+    with get_session() as db:
+        create_database_indexes(db)
+except Exception:
+    pass
 
 
 # ===== Schemas =====
@@ -529,16 +537,22 @@ def feed(
     handle: str,
     symbol: str | None = None,
     limit: int = 50,
+    after_timestamp: str | None = None,
     after_id: int | None = None,
     request: Request = None,
 ):
-    """Get personalized feed (Phase 5B versioning: v1 basic, v2 adds metadata)"""
+    """Get personalized feed (Phase 5B versioning: v1 basic, v2 adds metadata)."""
     api_version = request.state.api_version if request else APIVersion.V1
     limit = max(1, min(200, limit))
 
     # Build cache key (v1 vs v2 use same cache, populate v2 fields on read)
     symbol_key = symbol if symbol else "global"
-    cursor_key = "p1" if not after_id else f"after{after_id}"
+    if after_timestamp:
+        cursor_key = f"after{after_timestamp}"
+    elif after_id:
+        cursor_key = f"afterid{after_id}"
+    else:
+        cursor_key = "p1"
     cache_key = f"feed:{handle}:{symbol_key}:{cursor_key}:l{limit}"
 
     # Check cache
@@ -570,39 +584,31 @@ def feed(
         # Phase 4b-3: Use cached query (MEDIUM_TERM, 300s)
         me = get_user_by_handle(db, handle)
 
-        # get followee ids
-        followee_ids = [
-            row[0]
-            for row in db.execute(
-                select(Follow.followee_id).where(Follow.follower_id == me.id)
-            ).all()
-        ]
+        resolved_after_timestamp = after_timestamp
+        if not resolved_after_timestamp and after_id:
+            cursor_value = db.execute(
+                select(Post.created_at).where(Post.id == after_id)
+            ).scalar_one_or_none()
+            if cursor_value:
+                resolved_after_timestamp = cursor_value.isoformat()
 
-        stmt = select(Post, User).join(User, User.id == Post.user_id)
-
-        if followee_ids:
-            stmt = stmt.where(Post.user_id.in_(followee_ids))
-        else:
-            # if user follows no one, fall back to global feed
-            pass
-
-        if symbol:
-            stmt = stmt.where(Post.symbol == symbol)
-        if after_id:
-            stmt = stmt.where(Post.id < after_id)
-
-        stmt = stmt.order_by(desc(Post.id)).limit(limit)
-        rows = db.execute(stmt).all()
+        posts = get_optimized_feed(
+            db,
+            user_id=str(me.id),
+            symbol=symbol,
+            after_timestamp=resolved_after_timestamp,
+            limit=limit,
+        )
 
         out: list[PostOut] = []
-        for p, u in rows:
+        for p in posts:
             post_out = PostOut(
-                id=p.id,
-                handle=u.handle,
-                content=p.content,
-                symbol=p.symbol,
-                created_at=p.created_at.isoformat(),
-                avatar_url=u.avatar_url,
+                id=p["id"],
+                handle=p["handle"],
+                content=p["content"],
+                symbol=p["symbol"],
+                created_at=p["created_at"],
+                avatar_url=p["avatar_url"],
             )
 
             # Phase 5B: V2 adds metadata with engagement signals
@@ -610,9 +616,9 @@ def feed(
                 post_out.like_count = 0
                 post_out.comment_count = 0
                 post_out.metadata = {
-                    "word_count": len(p.content.split()) if p.content else 0,
+                    "word_count": len(p["content"].split()) if p["content"] else 0,
                     "reading_time_minutes": (
-                        (len(p.content.split()) // 200 + 1) if p.content else 1
+                        (len(p["content"].split()) // 200 + 1) if p["content"] else 1
                     ),
                     "engagement_signal": "feed_personalized",
                 }
