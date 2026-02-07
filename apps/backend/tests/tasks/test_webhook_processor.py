@@ -86,12 +86,18 @@ class TestWebhookProcessorQueueing:
         with patch(
             "app.tasks.webhook_processor.webhook_delivery_service.process_queue"
         ) as mock_process:
-            mock_process.return_value = 5  # Processed 5 items
 
-            processed = await processor._process_loop.__wrapped__(processor)
+            async def process_and_stop(*args, **kwargs):
+                processor.running = False
+                return 5
 
-            # Note: _process_loop is a while True loop, so we can't directly test it
-            # This test is more of a structure validation
+            mock_process.side_effect = process_and_stop
+            processor.running = True
+
+            await processor._process_loop()
+
+            assert processor.processed_total == 5
+            mock_process.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_processor_batch_size(self, processor: WebhookProcessor):

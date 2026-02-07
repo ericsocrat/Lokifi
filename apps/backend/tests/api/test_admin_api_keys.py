@@ -29,7 +29,7 @@ class TestAdminAPIKeys:
     def mock_admin_user(self) -> User:
         """Create a mock admin user."""
         user = MagicMock(spec=User)
-        user.id = 1
+        user.id = uuid4()
         user.email = "admin@lokifi.com"
         user.is_admin = True
         return user
@@ -48,7 +48,7 @@ class TestAdminAPIKeys:
         api_key.expires_at = datetime.now(timezone.utc) + timedelta(days=30)
         api_key.last_used_at = None
         api_key.is_active = True
-        api_key.created_by = 1
+        api_key.created_by = uuid4()
         api_key.created_at = datetime.now(timezone.utc)
         api_key.updated_at = datetime.now(timezone.utc)
         api_key.creator = None

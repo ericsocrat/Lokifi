@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
 
@@ -26,7 +27,7 @@ class TestAdminEmailTemplates:
     def mock_admin_user(self):
         """Create a mock admin user."""
         user = MagicMock(spec=User)
-        user.id = 1
+        user.id = uuid4()
         user.username = "admin_user"
         user.is_admin = True
         return user

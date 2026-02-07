@@ -5,11 +5,10 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
+from app.db.database import Base
 from sqlalchemy import DateTime, Enum, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.db.database import Base
 
 if TYPE_CHECKING:
     from app.models.webhook import Webhook
