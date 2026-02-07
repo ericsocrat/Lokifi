@@ -108,7 +108,7 @@ class TestAdminAPIKeys:
             limit=50,
             search="Test",
             is_active=True,
-            created_by=1,
+            created_by=uuid4(),
         )
 
         assert result.total == 1

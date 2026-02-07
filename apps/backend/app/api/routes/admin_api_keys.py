@@ -53,7 +53,7 @@ async def list_api_keys(
     limit: int = Query(50, ge=1, le=500),
     search: str | None = Query(None),
     is_active: bool | None = Query(None),
-    created_by: int | None = Query(None),
+    created_by: UUID | None = Query(None),
 ) -> APIKeyListResponse:
     """List all API keys with optional filtering.
 

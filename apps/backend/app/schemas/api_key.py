@@ -45,7 +45,7 @@ class APIKeyBase(BaseModel):
     expires_at: datetime | None
     last_used_at: datetime | None
     is_active: bool
-    created_by: int | None
+    created_by: UUID | None
     created_at: datetime
     updated_at: datetime
 

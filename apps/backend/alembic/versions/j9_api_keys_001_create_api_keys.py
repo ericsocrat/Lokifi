@@ -7,8 +7,9 @@ Create Date: 2026-02-06 23:00:00.000000
 """
 
 import sqlalchemy as sa
-from alembic import op
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "j9_api_keys_001"
@@ -40,7 +41,7 @@ def upgrade() -> None:
         # Audit fields
         sa.Column(
             "created_by",
-            sa.Integer,
+            postgresql.UUID(as_uuid=True),
             sa.ForeignKey("users.id", ondelete="SET NULL"),
             nullable=True,
         ),

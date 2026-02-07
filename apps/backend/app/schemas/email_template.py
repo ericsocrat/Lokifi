@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -50,7 +51,7 @@ class EmailTemplateBase(BaseModel):
 class EmailTemplateResponse(EmailTemplateBase):
     """Complete email template response."""
     
-    created_by: int | None = None
+    created_by: UUID | None = None
     
     class Config:
         from_attributes = True
