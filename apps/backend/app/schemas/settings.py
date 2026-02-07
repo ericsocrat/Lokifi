@@ -7,7 +7,7 @@ Pydantic models for system settings API requests and responses.
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 
 class FeatureFlagsUpdate(BaseModel):
@@ -20,14 +20,15 @@ class FeatureFlagsUpdate(BaseModel):
     advanced_analytics: bool | None = None
     api_access: bool | None = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "user_registration": True,
                 "portfolio_management": True,
                 "social_features": False,
             }
         }
+    )
 
 
 class SystemSettingsResponse(BaseModel):
@@ -59,8 +60,7 @@ class SystemSettingsResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SystemSettingsUpdate(BaseModel):
@@ -90,14 +90,15 @@ class SystemSettingsUpdate(BaseModel):
     cors_allowed_origins: str | None = None
     feature_flags: FeatureFlagsUpdate | None = None
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "site_name": "Lokifi Pro",
                 "maintenance_mode": False,
                 "rate_limit_requests": 200,
             }
         }
+    )
 
 
 class SettingsAuditEntry(BaseModel):
@@ -111,8 +112,7 @@ class SettingsAuditEntry(BaseModel):
     change_reason: str | None = None
     changed_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SettingsAuditResponse(BaseModel):
@@ -132,8 +132,7 @@ class SystemHealthCheck(BaseModel):
     message: str
     timestamp: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SettingsValidationResponse(BaseModel):

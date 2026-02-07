@@ -9,7 +9,7 @@ from enum import StrEnum
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class AuditAction(StrEnum):
@@ -83,9 +83,7 @@ class AuditLogEntry(BaseModel):
     changes: dict[str, Any] | None = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
-        populate_by_name = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
 
 class AuditLogListResponse(BaseModel):

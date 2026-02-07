@@ -5,7 +5,7 @@ Pydantic schemas for content moderation API.
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.moderation import (
     AppealStatus,
@@ -55,8 +55,7 @@ class FlaggedContentResponse(FlaggedContentBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FlaggedContentListResponse(BaseModel):
@@ -94,8 +93,7 @@ class ModerationDecisionResponse(BaseModel):
     is_appealable: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ModerationDecisionListResponse(BaseModel):
@@ -139,8 +137,7 @@ class ModerationAppealResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ModerationAppealListResponse(BaseModel):
@@ -218,8 +215,7 @@ class ModerationHistoryEntry(BaseModel):
     suspension_days: int | None = None
     appeal_status: AppealStatus | None = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ModerationHistoryResponse(BaseModel):
