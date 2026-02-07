@@ -1,14 +1,14 @@
 """Admin webhook management routes."""
 
 import secrets
-from typing import Annotated, Optional
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.security import get_current_admin
-from app.db.database import get_session
+from app.core.security import get_current_user
+from app.db.database import get_db
 from app.models.user import User
 from app.models.webhook import Webhook, WebhookStatus
 from app.models.webhook_delivery import WebhookDelivery
@@ -28,7 +28,7 @@ router = APIRouter(prefix="/admin/webhooks", tags=["admin-webhooks"])
 
 
 async def require_admin(
-    current_user: Annotated[User, Depends(get_current_admin)],
+    current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """Require admin user for webhook routes."""
     if not current_user.is_admin:
@@ -38,7 +38,7 @@ async def require_admin(
 
 @router.get("", response_model=WebhookListResponse)
 async def list_webhooks(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
@@ -56,12 +56,12 @@ async def list_webhooks(
     if status_filter and status_filter in [s.value for s in WebhookStatus]:
         count_query = count_query.where(Webhook.status == status_filter)
 
-    result = await session.execute(count_query)
+    result = await db.execute(count_query)
     total = len(result.scalars().all())
 
     # Apply pagination
     query = query.offset((page - 1) * page_size).limit(page_size)
-    result = await session.execute(query)
+    result = await db.execute(query)
     webhooks = result.scalars().all()
 
     # Prepare response
@@ -78,7 +78,7 @@ async def list_webhooks(
 
 @router.post("", response_model=WebhookResponse, status_code=status.HTTP_201_CREATED)
 async def create_webhook(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_data: WebhookCreate,
 ) -> WebhookResponse:
@@ -98,9 +98,9 @@ async def create_webhook(
         status=WebhookStatus.ACTIVE if webhook_data.active else WebhookStatus.INACTIVE,
     )
 
-    session.add(webhook)
-    await session.commit()
-    await session.refresh(webhook)
+    db.add(webhook)
+    await db.commit()
+    await db.refresh(webhook)
 
     response = WebhookResponse.model_validate(webhook)
     response.redact_secret()
@@ -109,12 +109,12 @@ async def create_webhook(
 
 @router.get("/{webhook_id}", response_model=WebhookResponse)
 async def get_webhook(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
 ) -> WebhookResponse:
     """Get webhook details."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
@@ -127,13 +127,13 @@ async def get_webhook(
 
 @router.patch("/{webhook_id}", response_model=WebhookResponse)
 async def update_webhook(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
     webhook_data: WebhookUpdate,
 ) -> WebhookResponse:
     """Update webhook configuration."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
@@ -154,8 +154,8 @@ async def update_webhook(
         elif "active" in update_data:
             webhook.status = update_data["status"]
 
-    await session.commit()
-    await session.refresh(webhook)
+    await db.commit()
+    await db.refresh(webhook)
 
     response = WebhookResponse.model_validate(webhook)
     response.redact_secret()
@@ -164,29 +164,29 @@ async def update_webhook(
 
 @router.delete("/{webhook_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_webhook(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
 ) -> None:
     """Delete a webhook."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
 
-    await session.delete(webhook)
-    await session.commit()
+    await db.delete(webhook)
+    await db.commit()
 
 
 @router.get("/{webhook_id}/secret", response_model=WebhookSecretResponse)
 async def get_webhook_secret(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
 ) -> WebhookSecretResponse:
     """Get webhook signing secret (full secret for display once)."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
@@ -197,26 +197,26 @@ async def get_webhook_secret(
 
 @router.post("/{webhook_id}/rotate-secret", response_model=WebhookSecretResponse)
 async def rotate_webhook_secret(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
 ) -> WebhookSecretResponse:
     """Rotate webhook signing secret."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
 
     webhook.secret = secrets.token_urlsafe(32)
-    await session.commit()
+    await db.commit()
 
     return WebhookSecretResponse(secret=webhook.secret, webhook_id=webhook_id)
 
 
 @router.get("/{webhook_id}/deliveries", response_model=DeliveryListResponse)
 async def get_webhook_deliveries(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
     page: int = Query(1, ge=1),
@@ -224,13 +224,13 @@ async def get_webhook_deliveries(
 ) -> DeliveryListResponse:
     """Get webhook delivery history."""
     # Verify webhook exists
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     if not result.scalar_one_or_none():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
 
     # Get total deliveries
     count_query = select(WebhookDelivery).where(WebhookDelivery.webhook_id == webhook_id)
-    result = await session.execute(count_query)
+    result = await db.execute(count_query)
     total = len(result.scalars().all())
 
     # Get paginated deliveries
@@ -241,7 +241,7 @@ async def get_webhook_deliveries(
         .offset((page - 1) * page_size)
         .limit(page_size)
     )
-    result = await session.execute(query)
+    result = await db.execute(query)
     deliveries = result.scalars().all()
 
     delivery_responses = [
@@ -255,13 +255,13 @@ async def get_webhook_deliveries(
 
 @router.post("/{webhook_id}/test", status_code=status.HTTP_202_ACCEPTED)
 async def test_webhook(
-    session: Annotated[AsyncSession, Depends(get_session)],
+    db: Annotated[AsyncSession, Depends(get_db)],
     _: Annotated[User, Depends(require_admin)],
     webhook_id: str,
     test_payload: WebhookTestPayload,
 ) -> dict:
     """Test webhook delivery with a sample payload."""
-    result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+    result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     webhook = result.scalar_one_or_none()
 
     if not webhook:
