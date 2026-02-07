@@ -280,7 +280,7 @@ class TestComparisonMetrics:
 
             print("\n\n=== Follower Listing Query (idx_follows_followee_id) ===")
             result = db.execute(f"""
-                EXPLAIN ANALYZE  
+                EXPLAIN ANALYZE
                 SELECT follower_id FROM follows WHERE followee_id = {user.id}
                 """).fetchall()
             for row in result:
@@ -289,7 +289,7 @@ class TestComparisonMetrics:
             print("\n\n=== is_following Query (idx_follows_follower_followee) ===")
             result = db.execute(f"""
                 EXPLAIN ANALYZE
-                SELECT COUNT(*) FROM follows 
+                SELECT COUNT(*) FROM follows
                 WHERE follower_id = {user.id} AND followee_id = {user.id}
                 """).fetchall()
             for row in result:

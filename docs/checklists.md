@@ -116,7 +116,7 @@
   - Statistics: Real-time queue size, delivery counts, error tracking
 
 - ✅ **webhook_event_emitter.py** (380 LOC):
-  - Event Types: 12 event constants (user.*, post.*, follow.*, conversation.*, admin.*, system.*)
+  - Event Types: 12 event constants (user._, post._, follow._, conversation._, admin._, system._)
   - Event Emission: `emit_user_created()`, `emit_post_created()`, etc. (typed convenience methods)
   - Webhook Routing: Filters by subscription (webhook.get_events())
   - Custom Handlers: Sync + async event handler support
@@ -215,7 +215,7 @@
 **Frontend Features**:
 
 1. **Webhook Management**: Full CRUD for webhooks with instant UI feedback
-2. **Event Selection**: Checkboxes for 12 event types (user.*, post.*, follow.*, conversation.*, admin.*, system.*)
+2. **Event Selection**: Checkboxes for 12 event types (user._, post._, follow._, conversation._, admin._, system._)
 3. **Retry Configuration**: Sliders for max_retries (0-10) and retry_delay_seconds (10-3600)
 4. **Delivery History**: View recent deliveries with status, attempts, HTTP codes
 5. **Secret Management**: View secret (once on creation), copy button, rotate (with confirmation)
@@ -259,15 +259,15 @@
 
 **Implementation**:
 
-- ✅ **Auth Routes** (`/auth/register`): Emit `USER_REGISTERED` event  
+- ✅ **Auth Routes** (`/auth/register`): Emit `USER_REGISTERED` event
   - Event includes user ID, handle, email, registration timestamp
   - Delivered to subscribed webhooks asynchronously
-  
-- ✅ **Social Routes** (Follow, Post operations): Emit `USER_FOLLOWED`, `POST_CREATED`, `POST_DELETED`  
-  - Use `BackgroundTasks` for async emission from sync route handlers  
+
+- ✅ **Social Routes** (Follow, Post operations): Emit `USER_FOLLOWED`, `POST_CREATED`, `POST_DELETED`
+  - Use `BackgroundTasks` for async emission from sync route handlers
   - Handles sync→async adapter pattern (FastAPI → async webhook emitter)
-  
-- ✅ **Admin Routes** (Webhook CRUD, API Key operations): Emit `WEBHOOK_CREATED`, `WEBHOOK_UPDATED_SETTINGS`, `API_KEY_CREATED`, `API_KEY_UPDATED`, `API_KEY_DELETED`  
+
+- ✅ **Admin Routes** (Webhook CRUD, API Key operations): Emit `WEBHOOK_CREATED`, `WEBHOOK_UPDATED_SETTINGS`, `API_KEY_CREATED`, `API_KEY_UPDATED`, `API_KEY_DELETED`
   - Direct async emission (routes already async)
   - Webhook events stored immediately for delivery
 
@@ -281,9 +281,9 @@
 **Files Modified**:
 
 - `app/api/routes/auth.py`: Import webhook emitter, emit on user register
-- `app/api/routes/social.py`: Import webhook emitter, emit on follow/post operations  
+- `app/api/routes/social.py`: Import webhook emitter, emit on follow/post operations
 - `app/api/routes/admin_users.py`: Import webhook emitter, emit on webhook/API key operations
-- `tests/api/test_auth.py`: Update register() calls with BackgroundTasks()  
+- `tests/api/test_auth.py`: Update register() calls with BackgroundTasks()
 - `tests/unit/test_specific_issues.py`: Fix test_database_connection skip logic, remove emoji
 
 **Webhook System Status**: COMPLETE ✅
@@ -291,7 +291,7 @@
 - **Phase 1**: CI Emergency Fix (UUID type alignment) ✅
 - **Phase 2**: Webhook API + Models (11 endpoints, RESTful CRUD) ✅
 - **Phase 3A**: Async Delivery (Redis queue, HTTP delivery, retry logic) ✅
-- **Phase 3B**: Frontend UI (webhook management dashboard) ✅  
+- **Phase 3B**: Frontend UI (webhook management dashboard) ✅
 - **Phase 3C**: Event Integration (emit from routes) ✅
 
 Now fully production-ready: events emit → queue → HTTP delivery → webhook endpoints
@@ -320,6 +320,7 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 **Discovery**: Follow table had **zero indexes** despite heavy query usage
 
 **Impact Analysis**:
+
 - Feed generation: `SELECT followee_id WHERE follower_id = X` (O(n) sequential scan)
 - Cache invalidation: `SELECT follower_id WHERE followee_id = X` (O(n) sequential scan)
 - Follow validation: `WHERE follower_id = X AND followee_id = Y` (O(n) sequential scan)
@@ -328,18 +329,21 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 **Solution - Migration phase_3a_002** (92 lines):
 
 ✅ **idx_follows_follower_id**:
+
 - Purpose: Feed generation optimization
 - Query: `SELECT followee_id WHERE follower_id = X`
 - Expected gain: **10-50x** (O(n) → O(log n) + O(k))
 - Frequency: Every feed request (~1000s/day at scale)
 
 ✅ **idx_follows_followee_id**:
+
 - Purpose: Cache invalidation + follower listings
 - Query: `SELECT follower_id WHERE followee_id = X`
 - Expected gain: **20-100x** for popular users
 - Frequency: Every post create with follower feed invalidation (~100s/day)
 
 ✅ **idx_follows_follower_followee** (composite):
+
 - Purpose: is_following checks
 - Query: `WHERE follower_id = X AND followee_id = Y`
 - Expected gain: **5-10x**
@@ -352,10 +356,10 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 
 - ✅ **Problem**: Alembic "Multiple head revisions" error in CI Coverage Tracking
 - ✅ **Root Cause**: phase_3a_002 pointed to phase_3a_001 (old merge head), but j10_webhooks_001 was created after, causing divergent heads
-- ✅ **Migration Chain Before**: 
+- ✅ **Migration Chain Before**:
   - phase_3a_001 → j7, j8, j9, j10_webhooks_001 (HEAD 1)
   - phase_3a_001 → phase_3a_002 (HEAD 2) ❌ DIVERGED
-- ✅ **Migration Chain After**: 
+- ✅ **Migration Chain After**:
   - phase_3a_001 → j7, j8, j9, j10_webhooks_001 → phase_3a_002 (single HEAD) ✅
 - ✅ **Fix**: Updated down_revision from 'phase_3a_001' to 'j10_webhooks_001'
 - ✅ **Impact**: Resolves CI failures, maintains linear migration history
@@ -395,25 +399,26 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 **Implementation** - Benchmark Suite (506 lines):
 
 ✅ **benchmarks/test_social_performance.py** (318 lines):
+
 - **4 Test Classes** with 7 comprehensive benchmarks
-- **TestFeedGenerationPerformance**: 
+- **TestFeedGenerationPerformance**:
   - `test_get_followees_for_feed`: Followee lookup (idx_follows_follower_id)
     - Target: < 50ms | Expected: 10-50x faster
   - `test_feed_posts_generation`: Full feed generation
     - Target: < 100ms | Uses idx_follows_follower_id + idx_posts_user_id
-    
+
 - **TestFollowerListingPerformance**:
   - `test_get_followers_list`: Follower lookup (idx_follows_followee_id)
     - Target: < 50ms | Expected: 20-100x faster
   - `test_cache_invalidation_follower_lookup`: Post creation cache invalidation
     - Target: < 30ms (critical path) | Uses idx_follows_followee_id
-    
+
 - **TestFollowCheckPerformance**:
   - `test_is_following_check`: Single follow relationship check
     - Target: < 10ms | Expected: 5-10x faster with composite index
   - `test_batch_follow_checks`: Bulk follow status (10 users)
     - Target: < 50ms | Uses idx_follows_follower_followee
-    
+
 - **TestComparisonMetrics**:
   - `test_index_effectiveness_comparison`: EXPLAIN ANALYZE output
     - Shows actual PostgreSQL query plans
@@ -421,6 +426,7 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
     - Run with: `pytest -v -s benchmarks/test_social_performance.py::TestComparisonMetrics`
 
 ✅ **benchmarks/README.md** (274 lines):
+
 - **Quick Start Guide**: pytest-benchmark usage examples
 - **Performance Targets Table**: Target times per operation
 - **Baseline Comparison Workflow**: Before/after optimization comparison
@@ -429,15 +435,16 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 
 **Performance Targets**:
 
-| Operation | Target | Index | Expected Gain |
-|-----------|--------|-------|---------------|
-| Feed generation | < 100ms | idx_follows_follower_id | 10-50x |
-| Follower listing | < 50ms | idx_follows_followee_id | 20-100x |
-| is_following | < 10ms | idx_follows_follower_followee | 5-10x |
-| Cache invalidation | < 30ms | idx_follows_followee_id | 20-100x |
-| Batch follow check | < 50ms | idx_follows_follower_followee | 5-10x |
+| Operation          | Target  | Index                         | Expected Gain |
+| ------------------ | ------- | ----------------------------- | ------------- |
+| Feed generation    | < 100ms | idx_follows_follower_id       | 10-50x        |
+| Follower listing   | < 50ms  | idx_follows_followee_id       | 20-100x       |
+| is_following       | < 10ms  | idx_follows_follower_followee | 5-10x         |
+| Cache invalidation | < 30ms  | idx_follows_followee_id       | 20-100x       |
+| Batch follow check | < 50ms  | idx_follows_follower_followee | 5-10x         |
 
 **Usage**:
+
 ```bash
 # Run all benchmarks
 pytest benchmarks/ -v --benchmark-only
@@ -453,12 +460,14 @@ pytest -v -s benchmarks/test_social_performance.py::TestComparisonMetrics
 ```
 
 **Benefits**:
+
 - **Data-driven validation**: Measure actual speedup, not estimates
 - **Baseline for future work**: Track performance over time
 - **Regression detection**: CI integration prevents performance degradation
 - **Query plan verification**: EXPLAIN ANALYZE shows index usage
 
 **Next Steps**:
+
 - Generate test data (10-20 follow relationships minimum)
 - Run baseline before phase_3a_002 (if testing rollback)
 - Run comparison after migration deployment
