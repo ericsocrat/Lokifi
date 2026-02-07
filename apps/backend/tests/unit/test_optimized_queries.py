@@ -34,18 +34,20 @@ def sample_users():
     test_handles = ["alice", "bob", "charlie", "diana"]
     with get_session() as db:
         # Get IDs of test users before deleting
-        test_user_ids = db.query(User.id).filter(
-            User.handle.in_(test_handles)
-        ).all()
-        test_user_ids = [id_tuple[0] for id_tuple in test_user_ids] if test_user_ids else []
-        
+        test_user_ids = db.query(User.id).filter(User.handle.in_(test_handles)).all()
+        test_user_ids = (
+            [id_tuple[0] for id_tuple in test_user_ids] if test_user_ids else []
+        )
+
         # Delete their posts first
         if test_user_ids:
             db.query(Post).filter(Post.user_id.in_(test_user_ids)).delete()
-        
+
         # Delete the users
         for handle in test_handles:
-            db.query(User).filter(User.handle == handle).delete(synchronize_session='fetch')
+            db.query(User).filter(User.handle == handle).delete(
+                synchronize_session="fetch"
+            )
         db.commit()
 
     # Now create new users in a fresh session
@@ -108,9 +110,7 @@ def sample_posts(sample_users):
 
     with get_session() as db:
         # Clean up any existing posts by test users
-        db.query(Post).filter(
-            Post.user_id.in_([bob_id, charlie_id, diana_id])
-        ).delete()
+        db.query(Post).filter(Post.user_id.in_([bob_id, charlie_id, diana_id])).delete()
         db.commit()
 
         posts = [
@@ -163,7 +163,9 @@ class TestOptimizedFeedQuery:
         # Most recent first
         assert posts[0]["content"] == "Bob's second post about GOOGL"
 
-    def test_get_optimized_feed_symbol_filter(self, sample_users, sample_follows, sample_posts):
+    def test_get_optimized_feed_symbol_filter(
+        self, sample_users, sample_follows, sample_posts
+    ):
         """Test feed with symbol filter."""
         alice_id = sample_users["alice"]["id"]
 
@@ -175,7 +177,9 @@ class TestOptimizedFeedQuery:
         assert posts[0]["content"] == "Bob's first post about AAPL"
         assert posts[0]["symbol"] == "AAPL"
 
-    def test_get_optimized_feed_timestamp_cursor(self, sample_users, sample_follows, sample_posts):
+    def test_get_optimized_feed_timestamp_cursor(
+        self, sample_users, sample_follows, sample_posts
+    ):
         """Test timestamp-based cursor pagination."""
         alice_id = sample_users["alice"]["id"]
 
@@ -186,7 +190,9 @@ class TestOptimizedFeedQuery:
 
             # Get posts created before the second post
             cursor_time = all_posts[1]["created_at"]  # "2 hours old" post
-            older_posts = get_optimized_feed(db, user_id=str(alice_id), after_timestamp=cursor_time)
+            older_posts = get_optimized_feed(
+                db, user_id=str(alice_id), after_timestamp=cursor_time
+            )
 
             # Should get posts older than cursor (1 post older than 2-hour mark)
             assert len(older_posts) == 1
@@ -224,7 +230,9 @@ class TestOptimizedFeedQuery:
             raw_posts = get_optimized_feed(db, user_id=str(alice_id))
 
             # SQLAlchemy version
-            sqlalchemy_results = get_optimized_feed_sqlalchemy(db, user_id=str(alice_id))
+            sqlalchemy_results = get_optimized_feed_sqlalchemy(
+                db, user_id=str(alice_id)
+            )
             sqlalchemy_posts = [
                 {
                     "id": p.id,
@@ -269,7 +277,9 @@ class TestUserFollowerStats:
         assert bob_stats["following"] == 0
         assert bob_stats["followers"] == 1
 
-    def test_get_user_follower_stats_with_posts(self, sample_users, sample_follows, sample_posts):
+    def test_get_user_follower_stats_with_posts(
+        self, sample_users, sample_follows, sample_posts
+    ):
         """Test stats with posts included."""
         bob_id = sample_users["bob"]["id"]
 
@@ -323,7 +333,9 @@ class TestDatabaseIndexes:
 class TestPerformanceCharacteristics:
     """Performance-related tests (informational)."""
 
-    def test_feed_query_execution_time(self, sample_users, sample_follows, sample_posts):
+    def test_feed_query_execution_time(
+        self, sample_users, sample_follows, sample_posts
+    ):
         """Test that optimized feed query executes quickly (informational)."""
         import time
 
@@ -338,9 +350,13 @@ class TestPerformanceCharacteristics:
         # Note: This is informational; actual performance depends on system load
         assert len(posts) == 3
         # Don't hard-fail on timing - just log for visibility
-        print(f"\nOptimized feed query executed in {elapsed_ms:.2f}ms ({len(posts)} posts)")
+        print(
+            f"\nOptimized feed query executed in {elapsed_ms:.2f}ms ({len(posts)} posts)"
+        )
 
-    def test_user_stats_query_execution_time(self, sample_users, sample_follows, sample_posts):
+    def test_user_stats_query_execution_time(
+        self, sample_users, sample_follows, sample_posts
+    ):
         """Test that stats query executes quickly (informational)."""
         import time
 

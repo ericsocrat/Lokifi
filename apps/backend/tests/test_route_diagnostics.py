@@ -9,7 +9,9 @@ def test_available_routes(client: TestClient):
     routes = []
     for route in client.app.routes:
         if hasattr(route, "path"):
-            routes.append(f"{route.path} - {route.methods if hasattr(route, 'methods') else 'N/A'}")
+            routes.append(
+                f"{route.path} - {route.methods if hasattr(route, 'methods') else 'N/A'}"
+            )
 
     # Filter for social routes
     social_routes = [r for r in routes if "social" in r.lower()]
@@ -28,7 +30,9 @@ def test_health_endpoint(client: TestClient):
     """Test basic health endpoint to ensure app is working"""
     response = client.get("/health")
     print(f"Health status: {response.status_code}")
-    print(f"Response: {response.json() if response.status_code == 200 else response.text}")
+    print(
+        f"Response: {response.json() if response.status_code == 200 else response.text}"
+    )
 
 
 def test_direct_social_post_no_version(client: TestClient):

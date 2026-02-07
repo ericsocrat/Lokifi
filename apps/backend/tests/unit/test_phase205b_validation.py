@@ -30,23 +30,28 @@ class TestPhase205BPerformanceValidation:
         # Cleanup existing bench users first
         with get_session() as db:
             test_handles = [f"perfuser_{i}" for i in range(50)]
-            
+
             # Get IDs of test users
-            test_user_ids = db.query(User.id).filter(
-                User.handle.in_(test_handles)
-            ).all()
-            test_user_ids = [id_tuple[0] for id_tuple in test_user_ids] if test_user_ids else []
-            
+            test_user_ids = (
+                db.query(User.id).filter(User.handle.in_(test_handles)).all()
+            )
+            test_user_ids = (
+                [id_tuple[0] for id_tuple in test_user_ids] if test_user_ids else []
+            )
+
             # Delete their posts and follows first
             if test_user_ids:
                 db.query(Post).filter(Post.user_id.in_(test_user_ids)).delete()
                 db.query(Follow).filter(
-                    (Follow.follower_id.in_(test_user_ids)) | (Follow.followee_id.in_(test_user_ids))
+                    (Follow.follower_id.in_(test_user_ids))
+                    | (Follow.followee_id.in_(test_user_ids))
                 ).delete()
-            
+
             # Delete the users
             for handle in test_handles:
-                db.query(User).filter(User.handle == handle).delete(synchronize_session='fetch')
+                db.query(User).filter(User.handle == handle).delete(
+                    synchronize_session="fetch"
+                )
             db.commit()
 
         # Create new users in fresh session
@@ -103,7 +108,9 @@ class TestPhase205BPerformanceValidation:
 
             return {"count": len(sample_users_large) * 10}
 
-    def test_legacy_two_query_pattern(self, sample_users_large, sample_follows_large, sample_posts_large):
+    def test_legacy_two_query_pattern(
+        self, sample_users_large, sample_follows_large, sample_posts_large
+    ):
         """Baseline: Measure legacy two-query pattern performance.
 
         This represents the BEFORE state (pre-Phase 205B).
@@ -144,7 +151,11 @@ class TestPhase205BPerformanceValidation:
                         "id": row[0],
                         "user_id": row[1],
                         "content": row[2],
-                        "created_at": row[3].isoformat() if hasattr(row[3], "isoformat") else row[3],
+                        "created_at": (
+                            row[3].isoformat()
+                            if hasattr(row[3], "isoformat")
+                            else row[3]
+                        ),
                         "handle": row[4],
                         "avatar_url": row[5],
                     }
@@ -156,7 +167,7 @@ class TestPhase205BPerformanceValidation:
             elapsed = time.perf_counter() - start
             elapsed_ms = elapsed * 1000
 
-            print(f"\n🔍 Legacy Two-Query Pattern:")
+            print("\n🔍 Legacy Two-Query Pattern:")
             print(f"   Followee query: {len(followee_ids)} users found")
             print(f"   Posts query: {len(posts)} posts retrieved")
             print(f"   Total time: {elapsed_ms:.2f}ms")
@@ -167,7 +178,9 @@ class TestPhase205BPerformanceValidation:
 
             return {"elapsed_ms": elapsed_ms, "posts_count": len(posts)}
 
-    def test_optimized_cte_query(self, sample_users_large, sample_follows_large, sample_posts_large):
+    def test_optimized_cte_query(
+        self, sample_users_large, sample_follows_large, sample_posts_large
+    ):
         """Optimized: Measure Phase 205B CTE-based query performance.
 
         This represents the AFTER state (Phase 205B).
@@ -191,7 +204,7 @@ class TestPhase205BPerformanceValidation:
             elapsed = time.perf_counter() - start
             elapsed_ms = elapsed * 1000
 
-            print(f"\n✨ Optimized CTE Query:")
+            print("\n✨ Optimized CTE Query:")
             print(f"   Posts retrieved: {len(posts)}")
             print(f"   Total time: {elapsed_ms:.2f}ms")
 
@@ -204,7 +217,9 @@ class TestPhase205BPerformanceValidation:
 
             return {"elapsed_ms": elapsed_ms, "posts_count": len(posts)}
 
-    def test_performance_comparison(self, sample_users_large, sample_follows_large, sample_posts_large):
+    def test_performance_comparison(
+        self, sample_users_large, sample_follows_large, sample_posts_large
+    ):
         """Compare legacy vs optimized performance.
 
         Validates the Phase 205B optimization claim:
@@ -260,20 +275,24 @@ class TestPhase205BPerformanceValidation:
             # Calculate improvement
             improvement_pct = ((legacy_median - optimized_median) / legacy_median) * 100
 
-            print(f"\n📊 Performance Comparison (3 runs each, median):")
+            print("\n📊 Performance Comparison (3 runs each, median):")
             print(f"   Legacy pattern:    {legacy_median:.2f}ms")
             print(f"   Optimized pattern: {optimized_median:.2f}ms")
             print(f"   Improvement:       {improvement_pct:.1f}% faster")
-            print(f"\n   Target: 40% improvement (500ms → 300ms)")
+            print("\n   Target: 40% improvement (500ms → 300ms)")
             print(f"   Actual: {improvement_pct:.1f}% improvement")
 
             if improvement_pct > 0:
-                print(f"   ✅ SUCCESS: Optimization provides {improvement_pct:.1f}% speedup")
+                print(
+                    f"   ✅ SUCCESS: Optimization provides {improvement_pct:.1f}% speedup"
+                )
             else:
-                print(f"   ⚠️ WARNING: No significant improvement detected")
+                print("   ⚠️ WARNING: No significant improvement detected")
 
             # Assert some improvement (allow for variance in test environment)
-            assert improvement_pct > 0, f"Expected performance improvement, got {improvement_pct:.1f}%"
+            assert (
+                improvement_pct > 0
+            ), f"Expected performance improvement, got {improvement_pct:.1f}%"
 
             # Document results for Session 207
             return {
