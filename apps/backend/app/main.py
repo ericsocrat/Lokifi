@@ -216,6 +216,10 @@ app.add_middleware(
 )
 
 # Include routers
+# Phase 5A: API Versioning foundation in app/core/versioning.py
+# Will be implemented with middleware in next phase
+
+# Legacy routes (backward compatibility) - still serve /api/* without version
 app.include_router(health.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
 app.include_router(
