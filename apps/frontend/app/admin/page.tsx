@@ -42,6 +42,12 @@ export default function AdminPage() {
             <div className={styles.navCardArrow}>→</div>
           </Link>
 
+          <Link href="/admin/webhooks" className={styles.navCard}>
+            <div className={styles.navCardTitle}>Webhooks</div>
+            <div className={styles.navCardDesc}>Configure webhook endpoints and event subscriptions</div>
+            <div className={styles.navCardArrow}>→</div>
+          </Link>
+
           <Link href="/admin/settings" className={styles.navCard}>
             <div className={styles.navCardTitle}>System Settings</div>
             <div className={styles.navCardDesc}>Configure system behavior</div>
