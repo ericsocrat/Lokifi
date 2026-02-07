@@ -29,18 +29,20 @@
 **Focus**: Implement automatic Deprecation/Sunset headers for v1 API responses
 
 **Completed Work**:
+
 - ✅ Added RFC 8594 helpers in app/core/versioning.py
   - ISO to HTTP-date formatting utility
   - DeprecationWarning supports optional deprecation_date and combined Link header
   - Global v1 deprecation policy with sunset date + migration guide
 - ✅ Middleware now applies Deprecation/Sunset/Link for v1 responses
   - Preserves existing Link header if present
-  - Scoped to /api/* paths only
+  - Scoped to /api/\* paths only
 - ✅ Tests updated to validate deprecation headers
   - v1 responses include Deprecation/Sunset/Link
   - v2 responses omit deprecation headers
 
 **Quality**:
+
 - Black: ✅ (app/core/versioning.py, app/middleware/versioning.py, tests/unit/test_versioning.py)
 - Ruff: ✅ (same files)
 - Tests: runTests tool reported "No tests found" for tests/unit/test_versioning.py (tooling limitation)
