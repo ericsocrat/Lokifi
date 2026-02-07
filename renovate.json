@@ -106,8 +106,18 @@
       "enabled": false
     },
     {
+      "description": "pyrate-limiter disabled (schemathesis 4.9.5 requires pyrate-limiter<4.0)",
+      "matchPackageNames": ["pyrate-limiter"],
+      "enabled": false
+    },
+    {
+      "description": "starlette disabled (FastAPI pins starlette version; independent updates always conflict)",
+      "matchPackageNames": ["starlette"],
+      "enabled": false
+    },
+    {
       "description": "FastAPI ecosystem requires manual review (starlette has strict version constraints)",
-      "matchPackageNames": ["fastapi", "starlette", "sse-starlette", "starlette-testclient"],
+      "matchPackageNames": ["fastapi", "sse-starlette", "starlette-testclient"],
       "automerge": false,
       "labels": ["dependencies", "fastapi-ecosystem", "requires-review"],
       "prPriority": 8,
