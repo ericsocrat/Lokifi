@@ -116,14 +116,24 @@ class WebhookEventList(BaseModel):
         WebhookEvent.USER_UPDATED,
         WebhookEvent.USER_DELETED,
         WebhookEvent.USER_LOGIN,
-        # Content events
+        WebhookEvent.USER_VERIFIED,
+        # Content/Post events
         WebhookEvent.CONTENT_CREATED,
         WebhookEvent.CONTENT_UPDATED,
         WebhookEvent.CONTENT_DELETED,
+        WebhookEvent.POST_CREATED,
+        WebhookEvent.POST_UPDATED,
+        WebhookEvent.POST_DELETED,
+        # Social events
+        WebhookEvent.FOLLOW_CREATED,
+        WebhookEvent.FOLLOW_DELETED,
+        WebhookEvent.CONVERSATION_STARTED,
+        WebhookEvent.CONVERSATION_MESSAGE,
         # Admin events
         WebhookEvent.ADMIN_ACTION,
         WebhookEvent.SETTINGS_CHANGED,
         # System events
         WebhookEvent.SYSTEM_HEALTH,
         WebhookEvent.SYSTEM_ERROR,
+        WebhookEvent.SYSTEM_EVENT,
     ]

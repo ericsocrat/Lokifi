@@ -33,11 +33,21 @@ class WebhookEvent(enum.StrEnum):
     USER_UPDATED = "user.updated"
     USER_DELETED = "user.deleted"
     USER_LOGIN = "user.login"
+    USER_VERIFIED = "user.verified"
 
-    # Content events
+    # Content/Post events
     CONTENT_CREATED = "content.created"
     CONTENT_UPDATED = "content.updated"
     CONTENT_DELETED = "content.deleted"
+    POST_CREATED = "post.created"
+    POST_UPDATED = "post.updated"
+    POST_DELETED = "post.deleted"
+
+    # Social events
+    FOLLOW_CREATED = "follow.created"
+    FOLLOW_DELETED = "follow.deleted"
+    CONVERSATION_STARTED = "conversation.started"
+    CONVERSATION_MESSAGE = "conversation.message"
 
     # Admin events
     ADMIN_ACTION = "admin.action"
@@ -46,6 +56,7 @@ class WebhookEvent(enum.StrEnum):
     # System events
     SYSTEM_HEALTH = "system.health"
     SYSTEM_ERROR = "system.error"
+    SYSTEM_EVENT = "system.event"
 
 
 class WebhookStatus(enum.StrEnum):

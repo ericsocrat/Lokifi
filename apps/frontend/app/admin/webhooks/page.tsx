@@ -45,9 +45,13 @@ type FormAction = 'create' | 'edit' | 'view-deliveries' | 'view-secret' | 'none'
 
 const WEBHOOK_EVENTS = [
   'user.created',
-  'user.verified',
   'user.updated',
   'user.deleted',
+  'user.login',
+  'user.verified',
+  'content.created',
+  'content.updated',
+  'content.deleted',
   'post.created',
   'post.updated',
   'post.deleted',
@@ -56,6 +60,10 @@ const WEBHOOK_EVENTS = [
   'conversation.started',
   'conversation.message',
   'admin.action',
+  'settings.changed',
+  'system.health',
+  'system.error',
+  'system.event',
 ];
 
 const STATUS_COLORS: Record<string, string> = {
