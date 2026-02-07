@@ -1,8 +1,8 @@
 # Frontend Webhook Management UI - Session 197 Phase 3B
 
-**Status**: ✅ Complete - Production Ready  
-**Location**: `apps/frontend/src/app/admin/webhooks/`  
-**Files**: 2 files (page.tsx, page.module.css)  
+**Status**: ✅ Complete - Production Ready
+**Location**: `apps/frontend/src/app/admin/webhooks/`
+**Files**: 2 files (page.tsx, page.module.css)
 **LOC**: ~650 production code + ~400 CSS
 
 ## Overview
@@ -12,6 +12,7 @@ Comprehensive React component for webhook management admin interface. Follows es
 ## Architecture
 
 ### Page Component (`page.tsx`)
+
 - **Framework**: Next.js 15 App Router with 'use client' directive
 - **State Management**: React hooks (useState, useEffect)
 - **Styling**: CSS modules with responsive design
@@ -20,6 +21,7 @@ Comprehensive React component for webhook management admin interface. Follows es
 ### Key Features Implemented
 
 #### 1. **Webhook Listing**
+
 - Paginated table (20 per page default, configurable)
 - Columns: Name, URL, Status (color-coded badges), Events count, Success/Failed stats, Last Triggered, Actions
 - Filters: Status filter (ACTIVE/INACTIVE/DISABLED) with dropdown
@@ -27,12 +29,14 @@ Comprehensive React component for webhook management admin interface. Follows es
 - Responsive table with horizontal scroll on mobile
 
 #### 2. **Webhook CRUD Operations**
+
 - **Create**: Modal form with webhook configuration
 - **Edit**: Load existing webhook into form
 - **Delete**: Confirmation dialog before deletion
 - **List**: Paginated query with filtering
 
 #### 3. **Form Modal**
+
 - URL validation (HTTP/HTTPS)
 - Name field (required)
 - Description (optional)
@@ -49,6 +53,7 @@ Comprehensive React component for webhook management admin interface. Follows es
 - Loading indicator during submission
 
 #### 4. **Delivery History Viewer**
+
 - Modal displaying paginated delivery history (50 per page)
 - Columns: Event, Status, Attempts, HTTP Status Code, Date
 - Color-coded delivery status badges:
@@ -60,6 +65,7 @@ Comprehensive React component for webhook management admin interface. Follows es
 - Formatted timestamps (MMM dd, HH:mm)
 
 #### 5. **Secret Management**
+
 - View secret modal with masked display
 - Copy-to-clipboard button (browser Clipboard API)
 - Rotate secret button with confirmation
@@ -67,12 +73,14 @@ Comprehensive React component for webhook management admin interface. Follows es
 - Security: Secrets never sent off server except over HTTPS
 
 #### 6. **Webhook Testing**
+
 - Send test payload button (POST /api/admin/webhooks/{id}/test)
 - Tests with system.event type
 - Shows success/error messages
 - Simulates actual webhook delivery without real payload
 
 #### 7. **Action Buttons (Row Actions)**
+
 - Edit ✏️: Opens form modal with webhook data
 - View Secret 👁️: Shows secret in modal
 - View Deliveries 📋: Shows delivery history
@@ -82,6 +90,7 @@ Comprehensive React component for webhook management admin interface. Follows es
 ### UI/UX Design
 
 #### Color Scheme
+
 - **Primary**: #3182ce (Chakra blue)
 - **Success**: Green (#38a169, #48bb78)
 - **Error/Danger**: Red (#f56565, #e53e3e)
@@ -89,21 +98,24 @@ Comprehensive React component for webhook management admin interface. Follows es
 - **Neutral**: Gray (#e2e8f0, #a0aec0, #718096)
 
 #### Layout
+
 - **Maximum width**: 1400px (desktop)
 - **Padding**: 24px (desktop), 16px (tablet), 12px (mobile)
-- **Breakpoints**: 
+- **Breakpoints**:
   - Desktop: >768px (3-column grid)
   - Tablet: 641-768px (2-column grid)
   - Mobile: <640px (1-column, stacked)
 
 #### Components
+
 - **Modals**: Centered, semi-transparent overlay, dismissible
 - **Tables**: Striped rows, hover effects, truncated long text with tooltips
 - **Buttons**: Consistent styling, hover/active states, icon support
 - **Badges**: Color-coded status indicators with padding and border-radius
-- **Forms**: Accessible labels, required indicator (*), focus states with outline
+- **Forms**: Accessible labels, required indicator (\*), focus states with outline
 
 #### Responsive Design
+
 - Mobile-first approach
 - Truncated URL display on small screens
 - Stacked form layout on mobile
@@ -120,7 +132,7 @@ interface Webhook {
   description?: string;
   events: string[];
   active: boolean;
-  status: 'ACTIVE' | 'INACTIVE' | 'DISABLED';
+  status: "ACTIVE" | "INACTIVE" | "DISABLED";
   max_retries: number;
   retry_delay_seconds: number;
   trigger_count: number;
@@ -134,7 +146,7 @@ interface Webhook {
 interface WebhookDelivery {
   id: string;
   event: string;
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'RETRYING';
+  status: "PENDING" | "SUCCESS" | "FAILED" | "RETRYING";
   attempt_count: number;
   http_status_code?: number;
   response_body?: string;
@@ -153,6 +165,7 @@ interface WebhookListResponse {
 ### API Integration
 
 **Endpoints Used**:
+
 - `GET /api/admin/webhooks?page=1&page_size=20&status_filter=` - List webhooks
 - `POST /api/admin/webhooks` - Create webhook
 - `PATCH /api/admin/webhooks/{id}` - Update webhook
@@ -163,6 +176,7 @@ interface WebhookListResponse {
 - `POST /api/admin/webhooks/{id}/test` - Send test payload
 
 **Error Handling**:
+
 - Network errors caught and displayed to user
 - 404 errors for missing resources
 - 400 errors for invalid requests
@@ -172,6 +186,7 @@ interface WebhookListResponse {
 ### State Management
 
 **Component State**:
+
 - `webhooks`: Array of Webhook objects (fetched from API)
 - `selectedWebhook`: Current webhook being viewed/edited
 - `deliveries`: Array of WebhookDelivery objects
@@ -210,6 +225,7 @@ interface WebhookListResponse {
 - Mobile browsers: iOS Safari 14+, Chrome Mobile
 
 **Requires**:
+
 - ES2020+ support (async/await, optional chaining, nullish coalescing)
 - CSS Grid, Flexbox
 - Fetch API
@@ -229,6 +245,7 @@ apps/frontend/src/app/admin/webhooks/
 
 1. Find admin layout file: `apps/frontend/src/app/admin/layout.tsx` or parent layout
 2. Add menu item:
+
    ```tsx
    {
      name: 'Webhooks',
@@ -242,12 +259,14 @@ apps/frontend/src/app/admin/webhooks/
 ## Styling Specifics
 
 ### CSS Modules Structure
+
 - **Layout**: Container, header, controls, pagination
 - **Components**: Table, modal, form, buttons, badges
 - **States**: Loading, error, empty, hover, focus, disabled
 - **Responsive**: Media queries for tablet (768px) and mobile (480px)
 
 ### Key Classes
+
 - `.container`: Main wrapper (max-width 1400px)
 - `.table`: Styled table with hover effects
 - `.modal`: Full-screen overlay with centered content
@@ -259,6 +278,7 @@ apps/frontend/src/app/admin/webhooks/
 ## Testing Considerations
 
 ### Manual Testing Checklist
+
 - [ ] Create webhook with valid URL and multiple event subscriptions
 - [ ] Edit webhook and verify changes saved
 - [ ] Delete webhook with confirmation dialog
@@ -274,22 +294,23 @@ apps/frontend/src/app/admin/webhooks/
 - [ ] Tooltips appear on hover (view tooltip for truncated URL)
 
 ### Automated Testing (Future)
+
 ```typescript
 // Example Vitest test structure
-describe('WebhooksPage', () => {
-  it('should fetch and display webhooks', async () => {
+describe("WebhooksPage", () => {
+  it("should fetch and display webhooks", async () => {
     // Mock fetch /api/admin/webhooks
     // Render component
     // Assert table contains webhooks
   });
 
-  it('should create new webhook', async () => {
+  it("should create new webhook", async () => {
     // Mock POST /api/admin/webhooks
     // Fill form and submit
     // Assert success message and webhook added to list
   });
 
-  it('should handle API errors', async () => {
+  it("should handle API errors", async () => {
     // Mock fetch to return 500
     // Assert error message displayed
   });
@@ -299,6 +320,7 @@ describe('WebhooksPage', () => {
 ## Known Limitations & Future Enhancements
 
 ### Current Limitations
+
 1. **No bulk operations**: Delete/enable multiple webhooks at once
 2. **No webhook templates**: Pre-configured webhook types
 3. **No event filtering**: Filter webhooks by event type
@@ -308,6 +330,7 @@ describe('WebhooksPage', () => {
 7. **No webhook signatures verification**: UI to verify HMAC signatures
 
 ### Future Enhancements
+
 1. **Advanced filtering**: Webhook name search, URL pattern matching, date range
 2. **Bulk operations**: Select multiple and delete/enable/disable in batch
 3. **Webhook analytics**: Charts of delivery success rates, event distribution, retry patterns
@@ -336,12 +359,15 @@ describe('WebhooksPage', () => {
 ## Migration Notes
 
 ### From Previous Versions
+
 If updating from earlier versions:
+
 1. Ensure `/api/admin/webhooks` endpoints are available (backend session 197)
 2. Database migration j10 must be applied (creates webhooks tables)
 3. Admin route `/admin/webhooks` must be routable (Next.js app router)
 
 ### Backward Compatibility
+
 - No breaking changes to existing admin UI
 - Webhook pages are additive (new admin feature)
 - Can be deployed independently from other admin pages
@@ -372,11 +398,13 @@ If updating from earlier versions:
 ## Related Files
 
 **Frontend**:
+
 - `pages/admin/audit-logs/page.tsx` - Reference pattern
 - `lib/api/client.ts` - API client (if centralized)
 - Existing admin layout and navigation
 
 **Backend**:
+
 - `app/models/webhook.py` - Webhook model definition
 - `app/models/webhook_delivery.py` - Webhook delivery model
 - `app/schemas/webhook.py` - Pydantic schemas (validation)
@@ -389,16 +417,17 @@ If updating from earlier versions:
 ## Author Notes
 
 **Implementation Follows**:
-✅ Next.js 15 App Router best practices  
-✅ TypeScript strict mode (no implicit any)  
-✅ React hooks for state management  
-✅ CSS modules for scoped styling  
-✅ Responsive design mobile-first  
-✅ Accessible HTML semantics  
-✅ Error handling for all API calls  
-✅ User feedback for all operations  
+✅ Next.js 15 App Router best practices
+✅ TypeScript strict mode (no implicit any)
+✅ React hooks for state management
+✅ CSS modules for scoped styling
+✅ Responsive design mobile-first
+✅ Accessible HTML semantics
+✅ Error handling for all API calls
+✅ User feedback for all operations
 
 **Code Quality**:
+
 - Full TypeScript type coverage
 - Proper error boundaries
 - Loading/error/empty states
@@ -408,5 +437,5 @@ If updating from earlier versions:
 
 ---
 
-**Phase 3B Status**: ✅ COMPLETE  
+**Phase 3B Status**: ✅ COMPLETE
 **Session 197 Overall**: ✅ COMPLETE (All 3 phases delivered)

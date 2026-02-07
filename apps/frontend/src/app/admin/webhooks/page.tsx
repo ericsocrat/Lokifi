@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Edit2, Eye, RotateCw, Trash2, Plus, Send, Copy, Check } from 'lucide-react';
+import { Copy, Edit2, Eye, Plus, RotateCw, Send, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
@@ -282,18 +282,10 @@ export default function WebhooksPage() {
       </div>
 
       {/* Success message */}
-      {success && (
-        <div className="mb-4 p-4 rounded-lg bg-green-100 text-green-800">
-          {success}
-        </div>
-      )}
+      {success && <div className="mb-4 p-4 rounded-lg bg-green-100 text-green-800">{success}</div>}
 
       {/* Error message */}
-      {error && (
-        <div className="mb-4 p-4 rounded-lg bg-red-100 text-red-800">
-          {error}
-        </div>
-      )}
+      {error && <div className="mb-4 p-4 rounded-lg bg-red-100 text-red-800">{error}</div>}
 
       {/* Form Modal */}
       {formAction !== 'none' && (
@@ -404,10 +396,7 @@ export default function WebhooksPage() {
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>Delivery History</h2>
-              <button
-                onClick={() => setFormAction('none')}
-                className={styles.closeButton}
-              >
+              <button onClick={() => setFormAction('none')} className={styles.closeButton}>
                 ✕
               </button>
             </div>
@@ -464,10 +453,7 @@ export default function WebhooksPage() {
           <div className={styles.modalContent}>
             <div className={styles.modalHeader}>
               <h2 className={styles.modalTitle}>Webhook Secret</h2>
-              <button
-                onClick={() => setFormAction('none')}
-                className={styles.closeButton}
-              >
+              <button onClick={() => setFormAction('none')} className={styles.closeButton}>
                 ✕
               </button>
             </div>
