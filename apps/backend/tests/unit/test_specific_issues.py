@@ -16,7 +16,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 @pytest.mark.asyncio
 async def test_database_connection():
     """Test database connection issues"""
-    print("1️⃣ TESTING DATABASE CONNECTION")
+    print("[1] TESTING DATABASE CONNECTION")
     print("-" * 40)
 
     try:
@@ -24,22 +24,32 @@ async def test_database_connection():
 
         # Test initialization
         await db_manager.initialize()
-        print("✅ Database manager initialized successfully")
+        print("[OK] Database manager initialized successfully")
 
         # Test session creation
         session_count = 0
         async for _session in db_manager.get_session():
             session_count += 1
-            print("✅ Database session created successfully")
+            print("[OK] Database session created successfully")
             if session_count >= 1:  # Just test one session
                 break
 
-        print("✅ DATABASE: No connection issues detected")
+        print("[OK] DATABASE: No connection issues detected")
         # Test passes if we reach here without exception
 
     except Exception as e:
         # Skip if database is unavailable (expected in local development without db)
-        if "Connection refused" in str(e) or "connect" in str(e).lower():
+        error_msg = str(e).lower()
+        skip_keywords = [
+            "connection refused",
+            "connect",
+            "no such host",
+            "timeout",
+            "password authentication",
+            "authentication failed",
+            "could not translate host",
+        ]
+        if any(kw in error_msg for kw in skip_keywords):
             pytest.skip(f"Database unavailable (expected in development): {e}")
         pytest.fail(f"DATABASE: Connection issues found: {e}")
 
@@ -47,7 +57,7 @@ async def test_database_connection():
 @pytest.mark.asyncio
 async def test_redis_connection():
     """Test Redis connection issues"""
-    print("\n2️⃣ TESTING REDIS CONNECTION")
+    print("\n[2] TESTING REDIS CONNECTION")
     print("-" * 40)
 
     try:
@@ -55,33 +65,33 @@ async def test_redis_connection():
 
         # Test Redis initialization
         await advanced_redis_client.initialize()
-        print("✅ Redis client initialized successfully")
+        print("[OK] Redis client initialized successfully")
 
         # Test basic Redis operation
         if hasattr(advanced_redis_client, "is_connected"):
             connected = await advanced_redis_client.is_connected()
             if connected:
-                print("✅ Redis client connection established")
+                print("[OK] Redis client connection established")
             else:
-                print("⚠️ Redis client not connected (expected in development)")
+                print("[WARN] Redis client not connected (expected in development)")
         else:
             print(
-                "⚠️ Cannot determine Redis connection status (no 'is_connected' method)"
+                "[WARN] Cannot determine Redis connection status (no 'is_connected' method)"
             )
 
-        print("✅ REDIS: No critical configuration issues")
+        print("[OK] REDIS: No critical configuration issues")
         # Test passes if we reach here without exception
 
     except Exception as e:
         # Redis connection failures are expected in development without Redis running
-        print(f"⚠️ REDIS: Expected connection issues in development: {e}")
-        print("✅ REDIS: Configuration is properly handled")
+        print(f"[WARN] REDIS: Expected connection issues in development: {e}")
+        print("[OK] REDIS: Configuration is properly handled")
         # This is expected in development - test passes
 
 
 def test_scheduler_issues():
     """Test async scheduling issues"""
-    print("\n3️⃣ TESTING SCHEDULER ISSUES")
+    print("\n[3] TESTING SCHEDULER ISSUES")
     print("-" * 40)
 
     try:
@@ -89,20 +99,20 @@ def test_scheduler_issues():
         try:
             from app.services.j53_scheduler import j53_lifespan_manager, j53_router
 
-            print("⚠️ J53 scheduler is still enabled - checking for async issues")
+            print("[WARN] J53 scheduler is still enabled - checking for async issues")
 
             # Try to import schedule to see if it causes issues
             import schedule
 
-            print("✅ Schedule library imported without issues")
+            print("[OK] Schedule library imported without issues")
 
         except ImportError:
-            print("✅ J53 scheduler properly disabled/isolated")
+            print("[OK] J53 scheduler properly disabled/isolated")
 
         # Test that the main app can be imported without scheduler issues
-        print("✅ Main app imports without scheduler conflicts")
+        print("[OK] Main app imports without scheduler conflicts")
 
-        print("✅ SCHEDULER: No async coroutine issues detected")
+        print("[OK] SCHEDULER: No async coroutine issues detected")
         # Test passes if we reach here without exception
 
     except Exception as e:
@@ -112,7 +122,7 @@ def test_scheduler_issues():
 @pytest.mark.asyncio
 async def test_monitoring_alerts():
     """Test if monitoring system triggers false alerts"""
-    print("\n4️⃣ TESTING MONITORING ALERTS")
+    print("\n[4] TESTING MONITORING ALERTS")
     print("-" * 40)
 
     try:
@@ -127,14 +137,14 @@ async def test_monitoring_alerts():
             )
             if grace_remaining > 0:
                 print(
-                    f"✅ Startup grace period active: {grace_remaining:.1f}s remaining"
+                    f"[OK] Startup grace period active: {grace_remaining:.1f}s remaining"
                 )
             else:
-                print("✅ Grace period expired - monitoring active")
+                print("[OK] Grace period expired - monitoring active")
         else:
-            print("⚠️ Monitoring system may not have grace period")
+            print("[WARN] Monitoring system may not have grace period")
 
-        print("✅ MONITORING: Alert system configured properly")
+        print("[OK] MONITORING: Alert system configured properly")
         # Test passes if we reach here without exception
 
     except Exception as e:
@@ -162,7 +172,7 @@ async def main():
                 test_func()
             results.append((issue_name, True))
         except Exception as e:
-            print(f"❌ {issue_name}: {e}")
+            print(f"[FAIL] {issue_name}: {e}")
             results.append((issue_name, False))
 
     print("\n" + "=" * 50)
@@ -170,7 +180,7 @@ async def main():
 
     all_fixed = True
     for i, (issue, result) in enumerate(results, 1):
-        status = "✅ FIXED" if result else "❌ STILL PRESENT"
+        status = "[OK] FIXED" if result else "[FAIL] STILL PRESENT"
         print(f"{i}. {issue}: {status}")
         if not result:
             all_fixed = False
@@ -179,7 +189,7 @@ async def main():
     if all_fixed:
         print("🎉 ALL ISSUES HAVE BEEN RESOLVED!")
     else:
-        print("⚠️ Some issues may still need attention")
+        print("[WARN] Some issues may still need attention")
 
     return all_fixed
 

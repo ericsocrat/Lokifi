@@ -1,0 +1,531 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.9, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\ericsocrat\Desktop\lokifi\apps\backend
+configfile: pytest.ini
+plugins: anyio-4.12.1, Faker-40.1.2, hypothesis-6.151.5, asyncio-1.3.0, cov-7.0.0, mock-3.15.1, timeout-2.4.0, schemathesis-4.9.5
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 5429 items / 3 skipped
+
+tests\analytics\test_cross_database_compatibility.py ................... [  0%]
+.............................                                            [  0%]
+tests\analytics\test_cross_database_compatibility_gaps.py .............. [  1%]
+.                                                                        [  1%]
+tests\api\routes\test_portfolio_routes.py .............................. [  1%]
+................                                                         [  2%]
+tests\api\routes\test_routes_alerts.py ................................. [  2%]
+..............                                                           [  2%]
+tests\api\routes\test_routes_security.py ............................... [  3%]
+................................                                         [  4%]
+tests\api\test_admin_api_keys.py ............                            [  4%]
+tests\api\test_admin_audit_logs.py ...                                   [  4%]
+tests\api\test_admin_email_templates.py .........                        [  4%]
+tests\api\test_admin_messaging.py ...........                            [  4%]
+tests\api\test_admin_webhooks.py ......................                  [  5%]
+tests\api\test_ai.py ........................                            [  5%]
+tests\api\test_alerts.py ......s                                         [  5%]
+tests\api\test_api.py .sssssss.s.                                        [  5%]
+tests\api\test_auth.py ....................                              [  6%]
+tests\api\test_auth_endpoints.py .                                       [  6%]
+tests\api\test_cache.py ............................                     [  6%]
+tests\api\test_conversations.py ......................                   [  7%]
+tests\api\test_endpoints.py .                                            [  7%]
+tests\api\test_fmp.py ......s                                            [  7%]
+tests\api\test_follow.py ......................                          [  7%]
+tests\api\test_follow_endpoints.py s                                     [  7%]
+tests\api\test_health.py .                                               [  7%]
+tests\api\test_health_check.py ....................                      [  8%]
+tests\api\test_j6_2_endpoints.py ....................................... [  8%]
+...s.s......                                                             [  9%]
+tests\api\test_market_data.py ......s                                    [  9%]
+tests\api\test_market_routes.py .                                        [  9%]
+tests\api\test_monitoring.py ...............................             [  9%]
+tests\api\test_news.py ......s                                           [  9%]
+tests\api\test_notifications.py ......s                                  [ 10%]
+tests\api\test_portfolio.py ......s                                      [ 10%]
+tests\api\test_profile.py ....................                           [ 10%]
+tests\api\test_profile_endpoints.py s                                    [ 10%]
+tests\api\test_social.py ......s                                         [ 10%]
+tests\api\test_social_routes.py ................                         [ 10%]
+tests\core\test_advanced_redis_client.py ............................... [ 11%]
+...............................                                          [ 12%]
+tests\core\test_auth_deps.py ................                            [ 12%]
+tests\core\test_optimized_imports.py ................                    [ 12%]
+tests\core\test_redis_cache.py ......................................... [ 13%]
+.................                                                        [ 13%]
+tests\core\test_security.py .............                                [ 14%]
+tests\core\test_security_config.py ........................              [ 14%]
+tests\integration\test_cached_routes_integration.py .................    [ 14%]
+tests\integration\test_follow_service_integration.py ssssss              [ 14%]
+tests\integration\test_market_cached_integration.py ssssssssssssssssssss [ 15%]
+ssss                                                                     [ 15%]
+tests\integration\test_new_features.py ......                            [ 15%]
+tests\integration\test_profile_service_integration.py sssss              [ 15%]
+tests\integrations\test_notification_hooks.py .........................  [ 15%]
+tests\middleware\test_rate_limiting.py ................................. [ 16%]
+.......                                                                  [ 16%]
+tests\middleware\test_security_headers.py ....                           [ 16%]
+tests\models\test_notification_models.py ...........................     [ 17%]
+tests\models\test_notification_preferences.py ....................       [ 17%]
+tests\monitoring\test_cache_monitoring.py ............                   [ 17%]
+tests\optimization\test_performance_optimizer.py ....................... [ 18%]
+.................................................                        [ 19%]
+tests\performance\test_cache_benchmarks.py .......                       [ 19%]
+tests\performance\test_phase3b_elimination.py ...                        [ 19%]
+tests\routers\test_admin_messaging.py ...............................    [ 19%]
+tests\routers\test_ai_router.py ........................................ [ 20%]
+...............................                                          [ 21%]
+tests\routers\test_ai_router_authenticated.py .................          [ 21%]
+tests\routers\test_ai_websocket_router.py .............................. [ 22%]
+...........                                                              [ 22%]
+tests\routers\test_alerts_router.py ..                                   [ 22%]
+tests\routers\test_auth_router_errors.py .........                       [ 22%]
+tests\routers\test_chat_router.py ...                                    [ 22%]
+tests\routers\test_health_router.py .                                    [ 22%]
+tests\routers\test_market_data.py ....................................   [ 23%]
+tests\routers\test_notifications_router.py ............................. [ 23%]
+......................                                                   [ 24%]
+tests\routers\test_portfolio_router.py ..                                [ 24%]
+tests\routers\test_profile_enhanced_router.py .......................... [ 24%]
+..........................                                               [ 25%]
+tests\routers\test_realtime_market_router.py .....                       [ 25%]
+tests\routers\test_routers_crypto.py ................................... [ 25%]
+..............                                                           [ 26%]
+tests\routers\test_routers_mock_ohlc.py .............................    [ 26%]
+tests\routers\test_routers_ohlc.py ..................................... [ 27%]
+...........                                                              [ 27%]
+tests\routers\test_smart_prices.py ..................................... [ 28%]
+...............                                                          [ 28%]
+tests\routers\test_social_router.py ...                                  [ 28%]
+tests\routers\test_websocket_prices_router.py .......................... [ 29%]
+..............                                                           [ 29%]
+tests\routers\test_websocket_router.py ................................. [ 29%]
+                                                                         [ 29%]
+tests\routes\test_alerts_cached.py ...........                           [ 30%]
+tests\routes\test_chat_cached.py ..................                      [ 30%]
+tests\routes\test_chat_routes.py .....................................   [ 31%]
+tests\routes\test_market_cached.py .............                         [ 31%]
+tests\routes\test_social_cached.py ...........                           [ 31%]
+tests\security\test_alert_system.py .                                    [ 31%]
+tests\security\test_auth_error_handling.py ...............               [ 31%]
+tests\security\test_infra_enhanced_security.py .                         [ 31%]
+tests\security\test_infra_security_enhancements.py .....                 [ 32%]
+tests\security\test_security_features.py ....                            [ 32%]
+tests\services\providers\test_alphavantage.py ..................         [ 32%]
+tests\services\providers\test_base.py .........                          [ 32%]
+tests\services\providers\test_cmc.py ................                    [ 32%]
+tests\services\providers\test_coingecko.py ..............                [ 33%]
+tests\services\providers\test_finnhub.py .............                   [ 33%]
+tests\services\providers\test_huggingface_provider.py .................. [ 33%]
+..............................                                           [ 34%]
+tests\services\providers\test_huggingface_provider_gaps.py ............. [ 34%]
+................................                                         [ 35%]
+tests\services\providers\test_marketaux.py ...........                   [ 35%]
+tests\services\providers\test_newsapi.py ..........                      [ 35%]
+tests\services\providers\test_ollama_provider.py ....................... [ 35%]
+..........................                                               [ 36%]
+tests\services\providers\test_openrouter_provider.py ................... [ 36%]
+...........................                                              [ 37%]
+tests\services\providers\test_polygon.py .................               [ 37%]
+tests\services\test_advanced_monitoring.py ............................. [ 38%]
+...............................                                          [ 38%]
+tests\services\test_advanced_monitoring2.py ...                          [ 38%]
+tests\services\test_advanced_storage_analytics.py ...................... [ 39%]
+........                                                                 [ 39%]
+tests\services\test_advanced_storage_analytics_comprehensive.py .....    [ 39%]
+tests\services\test_ai.py ...................................            [ 40%]
+tests\services\test_ai_context_manager.py .............................. [ 40%]
+..............                                                           [ 40%]
+tests\services\test_ai_provider.py ......                                [ 40%]
+tests\services\test_ai_provider_manager.py ............................. [ 41%]
+...............                                                          [ 41%]
+tests\services\test_ai_provider_manager_gaps.py .............            [ 41%]
+tests\services\test_ai_service.py ..........s........................... [ 42%]
+.....s                                                                   [ 42%]
+tests\services\test_alerts.py ...............................            [ 43%]
+tests\services\test_auth.py .................................            [ 43%]
+tests\services\test_auth_service.py .........................            [ 44%]
+tests\services\test_content_moderation.py .............................. [ 44%]
+......................................                                   [ 45%]
+tests\services\test_conversation_export.py ............................. [ 46%]
+.........................................................                [ 47%]
+tests\services\test_conversation_service.py ............................ [ 47%]
+....                                                                     [ 47%]
+tests\services\test_crypto_discovery_service.py ........................ [ 48%]
+......................                                                   [ 48%]
+tests\services\test_data_archival_service.py ..............              [ 48%]
+tests\services\test_data_service.py .................................... [ 49%]
+........................................                                 [ 50%]
+tests\services\test_enhanced_performance_monitor.py .................... [ 50%]
+............................                                             [ 51%]
+tests\services\test_enhanced_rate_limiter.py .............               [ 51%]
+tests\services\test_fmp_service.py .............s                        [ 51%]
+tests\services\test_follow_service.py s............s.................... [ 52%]
+......                                                                   [ 52%]
+tests\services\test_historical_price_service.py ........................ [ 52%]
+.......................................                                  [ 53%]
+tests\services\test_indicators.py ................................s      [ 54%]
+tests\services\test_indices_service.py ............................      [ 54%]
+tests\services\test_j53_performance_monitor.py ......................... [ 55%]
+........................................................................ [ 56%]
+                                                                         [ 56%]
+tests\services\test_j53_scheduler.py .................                   [ 56%]
+tests\services\test_message_analytics_service.py ....................... [ 57%]
+............                                                             [ 57%]
+tests\services\test_message_moderation_service.py ...................... [ 57%]
+...................................                                      [ 58%]
+tests\services\test_message_search_service.py .......................    [ 58%]
+tests\services\test_multimodal_ai_service.py ........................... [ 59%]
+..........................                                               [ 59%]
+tests\services\test_new_services.py ...                                  [ 60%]
+tests\services\test_notification_analytics.py .......................... [ 60%]
+....................                                                     [ 60%]
+tests\services\test_notification_emitter.py ............................ [ 61%]
+.........                                                                [ 61%]
+tests\services\test_notification_service.py ............................ [ 62%]
+..............................s                                          [ 62%]
+tests\services\test_notification_service_gaps.py .........               [ 62%]
+tests\services\test_prices.py ................................           [ 63%]
+tests\services\test_profile_enhanced.py ................................ [ 63%]
+..............                                                           [ 64%]
+tests\services\test_profile_service.py ......s.s.s.s.s.s................ [ 64%]
+.......                                                                  [ 64%]
+tests\services\test_rate_limit_service.py .....................          [ 65%]
+tests\services\test_service_providers_base.py ......s                    [ 65%]
+tests\services\test_services_performance_monitor.py .................... [ 65%]
+................................                                         [ 66%]
+tests\services\test_smart_notifications.py ............................. [ 66%]
+................................                                         [ 67%]
+tests\services\test_smart_price_service.py ............................. [ 68%]
+.........                                                                [ 68%]
+tests\services\test_stock_service.py ......................              [ 68%]
+tests\services\test_timeframes.py .............................s         [ 69%]
+tests\services\test_unified_asset_service.py ............s               [ 69%]
+tests\services\test_unified_asset_service_comprehensive.py ............. [ 69%]
+.................                                                        [ 70%]
+tests\services\test_unified_asset_service_gaps.py ..................     [ 70%]
+tests\services\test_webhook_delivery_service.py ..............           [ 70%]
+tests\services\test_webhook_event_emitter.py ..............              [ 70%]
+tests\services\test_websocket_manager.py ............................... [ 71%]
+.........                                                                [ 71%]
+tests\tasks\test_maintenance_tasks.py .................................. [ 72%]
+.............                                                            [ 72%]
+tests\tasks\test_webhook_processor.py ...............                    [ 72%]
+tests\test_advanced_storage_analytics.py ............................... [ 73%]
+........                                                                 [ 73%]
+tests\test_api_contracts.py ...s                                         [ 73%]
+tests\test_cached_queries.py ....................................        [ 74%]
+tests\test_openapi_schema.py ...........                                 [ 74%]
+tests\test_query_cache.py ............................                   [ 74%]
+tests\test_query_cache_performance.py ...........                        [ 75%]
+tests\test_unified_asset_service.py .................................... [ 75%]
+.....                                                                    [ 75%]
+tests\unit\test_advanced_redis_client.py ......s                         [ 76%]
+tests\unit\test_advanced_websocket_manager.py ......s                    [ 76%]
+tests\unit\test_ai_analytics.py ...............................          [ 76%]
+tests\unit\test_ai_schemas.py ......s                                    [ 76%]
+tests\unit\test_ai_thread.py ......s                                     [ 76%]
+tests\unit\test_alerts_service.py ...................................... [ 77%]
+.                                                                        [ 77%]
+tests\unit\test_alerts_unit.py ......s                                   [ 77%]
+tests\unit\test_application_main.py ......s                              [ 77%]
+tests\unit\test_auth.py .....                                            [ 78%]
+tests\unit\test_auth_deps.py ......s                                     [ 78%]
+tests\unit\test_cache.py ......s                                         [ 78%]
+tests\unit\test_config.py ......s                                        [ 78%]
+tests\unit\test_conversation.py ......s                                  [ 78%]
+tests\unit\test_core_config.py ........................................  [ 79%]
+tests\unit\test_core_security.py ....................................... [ 80%]
+...............                                                          [ 80%]
+tests\unit\test_cross_database_compatibility.py ......s                  [ 80%]
+tests\unit\test_crypto_data_service.py ................................. [ 81%]
+.........                                                                [ 81%]
+tests\unit\test_crypto_unit.py ......s                                   [ 81%]
+tests\unit\test_database.py ..................................           [ 81%]
+tests\unit\test_database_base.py ......s                                 [ 82%]
+tests\unit\test_database_migration.py ....................               [ 82%]
+tests\unit\test_db.py ......s                                            [ 82%]
+tests\unit\test_deps.py .....................................s           [ 83%]
+tests\unit\test_enhanced_startup.py .................................... [ 83%]
+.........                                                                [ 84%]
+tests\unit\test_enhanced_validation.py ................................. [ 84%]
+.....................................................                    [ 85%]
+tests\unit\test_follow_actions.py s                                      [ 85%]
+tests\unit\test_follow_extended.py ss                                    [ 85%]
+tests\unit\test_follow_notifications_unit.py s                           [ 85%]
+tests\unit\test_follow_unit.py s                                         [ 85%]
+tests\unit\test_forex_service.py ....................                    [ 86%]
+tests\unit\test_health_check.py ......s                                  [ 86%]
+tests\unit\test_input_validation.py .................................... [ 86%]
+.                                                                        [ 86%]
+tests\unit\test_jwt_websocket_auth.py ......s                            [ 87%]
+tests\unit\test_logger.py ...........................                    [ 87%]
+tests\unit\test_main.py .............s...............ssss...ss           [ 88%]
+tests\unit\test_maintenance.py ......s                                   [ 88%]
+tests\unit\test_market.py ......s                                        [ 88%]
+tests\unit\test_minimal_server.py .                                      [ 88%]
+tests\unit\test_models.py ......s                                        [ 88%]
+tests\unit\test_models_api.py ......................................     [ 89%]
+tests\unit\test_monitoring.py ......s                                    [ 89%]
+tests\unit\test_news_service.py ...................                      [ 89%]
+tests\unit\test_notification_hooks.py ......s                            [ 89%]
+tests\unit\test_notification_models.py ......s                           [ 90%]
+tests\unit\test_notifications_unit.py ......s                            [ 90%]
+tests\unit\test_optimized_imports.py ......s                             [ 90%]
+tests\unit\test_performance_monitor.py ................................. [ 90%]
+...s                                                                     [ 91%]
+tests\unit\test_performance_optimizer.py ......s                         [ 91%]
+tests\unit\test_portfolio_unit.py ......s                                [ 91%]
+tests\unit\test_profile_unit.py ......s                                  [ 91%]
+tests\unit\test_reaction.py ......s                                      [ 91%]
+tests\unit\test_redis.py ......s                                         [ 91%]
+tests\unit\test_redis_client.py ........................................ [ 92%]
+...............                                                          [ 92%]
+tests\unit\test_redis_keys.py .......................................... [ 93%]
+........................                                                 [ 93%]
+tests\unit\test_routes.py ......s                                        [ 94%]
+tests\unit\test_security_alerts.py ......s                               [ 94%]
+tests\unit\test_security_config.py ..................................... [ 94%]
+......s                                                                  [ 95%]
+tests\unit\test_security_logger.py ......s                               [ 95%]
+tests\unit\test_server_startup.py .                                      [ 95%]
+tests\unit\test_session.py ......s                                       [ 95%]
+tests\unit\test_social_unit.py ......s                                   [ 95%]
+tests\unit\test_specific_issues.py F...                                  [ 95%]
+tests\unit\test_sse.py .....................                             [ 95%]
+tests\unit\test_timeframes.py .........................                  [ 96%]
+tests\utils\test_enhanced_validation.py ................                 [ 96%]
+tests\utils\test_input_validation.py ..............................      [ 97%]
+tests\utils\test_logger.py ........                                      [ 97%]
+tests\utils\test_redis_utils.py .....................                    [ 97%]
+tests\utils\test_security_logger.py ........................             [ 98%]
+tests\websockets\test_advanced_websocket_manager.py .................... [ 98%]
+.........                                                                [ 98%]
+tests\websockets\test_jwt_websocket_auth.py ............................ [ 99%]
+...............                                                          [ 99%]
+tests\websockets\test_notifications_ws.py ............................   [100%]
+
+================================== FAILURES ===================================
+__________________________ test_database_connection ___________________________
+tests\unit\test_specific_issues.py:26: in test_database_connection
+    await db_manager.initialize()
+app\core\database.py:99: in initialize
+    await self._test_connections()
+app\core\database.py:115: in _test_connections
+    async with self.primary_engine.begin() as conn:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\AppData\Local\Programs\Python\Python313\Lib\contextlib.py:214: in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:1068: in begin
+    async with conn:
+               ^^^^
+venv\Lib\site-packages\sqlalchemy\ext\asyncio\base.py:121: in __aenter__
+    return await self.start(is_ctxmanager=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\ext\asyncio\engine.py:275: in start
+    await greenlet_spawn(self.sync_engine.connect)
+venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:201: in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\engine\base.py:3285: in connect
+    return self._connection_cls(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\engine\base.py:143: in __init__
+    self._dbapi_connection = engine.raw_connection()
+                             ^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\engine\base.py:3309: in raw_connection
+    return self.pool.connect()
+           ^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\base.py:447: in connect
+    return _ConnectionFairy._checkout(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\base.py:1264: in _checkout
+    fairy = _ConnectionRecord.checkout(pool)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\base.py:711: in checkout
+    rec = pool._do_get()
+          ^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\impl.py:177: in _do_get
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+venv\Lib\site-packages\sqlalchemy\pool\impl.py:175: in _do_get
+    return self._create_connection()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\base.py:388: in _create_connection
+    return _ConnectionRecord(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\pool\base.py:673: in __init__
+    self.__connect()
+venv\Lib\site-packages\sqlalchemy\pool\base.py:899: in __connect
+    with util.safe_reraise():
+         ^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\util\langhelpers.py:224: in __exit__
+    raise exc_value.with_traceback(exc_tb)
+venv\Lib\site-packages\sqlalchemy\pool\base.py:895: in __connect
+    self.dbapi_connection = connection = pool._invoke_creator(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\engine\create.py:661: in connect
+    return dialect.connect(*cargs, **cparams)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\engine\default.py:630: in connect
+    return self.loaded_dbapi.connect(*cargs, **cparams)  # type: ignore[no-any-return]  # NOQA: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py:955: in connect
+    await_only(creator_fn(*arg, **kw)),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:132: in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py:196: in greenlet_spawn
+    value = await result
+            ^^^^^^^^^^^^
+venv\Lib\site-packages\asyncpg\connection.py:2443: in connect
+    return await connect_utils._connect(
+venv\Lib\site-packages\asyncpg\connect_utils.py:1218: in _connect
+    conn = await _connect_addr(
+venv\Lib\site-packages\asyncpg\connect_utils.py:1054: in _connect_addr
+    return await __connect_addr(params, True, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\asyncpg\connect_utils.py:1102: in __connect_addr
+    await connected
+E   asyncpg.exceptions.InvalidPasswordError: password authentication failed for user "lokifi"
+
+During handling of the above exception, another exception occurred:
+tests\unit\test_specific_issues.py:44: in test_database_connection
+    pytest.fail(f"DATABASE: Connection issues found: {e}")
+E   Failed: DATABASE: Connection issues found: password authentication failed for user "lokifi"
+---------------------------- Captured stdout call -----------------------------
+1\ufe0f\u20e3 TESTING DATABASE CONNECTION\n----------------------------------------
+------------------------------ Captured log call ------------------------------
+ERROR    app.core.database:database.py:122 \u274c Primary database connection failed: password authentication failed for user "lokifi"\nERROR    app.core.database:database.py:105 Failed to initialize database: password authentication failed for user "lokifi"
+============================== warnings summary ===============================
+app\schemas\audit.py:68
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\audit.py:68: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class AuditLogEntry(BaseModel):
+
+app\schemas\email_template.py:59
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\email_template.py:59: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class EmailTemplateResponse(EmailTemplateBase):
+
+app\api\routes\admin_users.py:37
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\api\routes\admin_users.py:37: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class UserResponse(BaseModel):
+
+app\schemas\moderation.py:46
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\moderation.py:46: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FlaggedContentResponse(FlaggedContentBase):
+
+app\schemas\moderation.py:85
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\moderation.py:85: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ModerationDecisionResponse(BaseModel):
+
+app\schemas\moderation.py:128
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\moderation.py:128: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ModerationAppealResponse(BaseModel):
+
+app\schemas\moderation.py:206
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\moderation.py:206: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class ModerationHistoryEntry(BaseModel):
+
+app\schemas\settings.py:13
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\settings.py:13: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class FeatureFlagsUpdate(BaseModel):
+
+app\schemas\settings.py:33
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\settings.py:33: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class SystemSettingsResponse(BaseModel):
+
+app\schemas\settings.py:66
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\settings.py:66: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class SystemSettingsUpdate(BaseModel):
+
+app\schemas\settings.py:103
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\settings.py:103: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class SettingsAuditEntry(BaseModel):
+
+app\schemas\settings.py:127
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\schemas\settings.py:127: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class SystemHealthCheck(BaseModel):
+
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_list_email_templates_returns_entries
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_list_email_templates_with_category_filter
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_list_email_templates_with_search_filter
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\api\routes\admin_email_templates.py:114: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    templates=[EmailTemplateResponse.from_orm(t) for t in templates],
+
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_get_email_template_returns_template
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\api\routes\admin_email_templates.py:145: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return EmailTemplateResponse.from_orm(template)
+
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_create_email_template_new_template
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\api\routes\admin_email_templates.py:209: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return EmailTemplateResponse.from_orm(template)
+
+tests/api/test_admin_email_templates.py::TestAdminEmailTemplates::test_update_email_template_increments_version
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\app\api\routes\admin_email_templates.py:290: PydanticDeprecatedSince20: The `from_orm` method is deprecated; set `model_config['from_attributes']=True` and use `model_validate` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    return EmailTemplateResponse.from_orm(template)
+
+tests/api/test_auth.py::TestAuthHandle::test_returns_none_for_invalid_signature
+tests/services/test_auth.py::TestAuthHandleFromHeader::test_wrong_secret
+tests/unit/test_deps.py::TestAuthHandle::test_wrong_secret
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 12 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/core/test_security.py::test_verify_jwt_token_invalid_signature
+tests/core/test_security.py::test_get_current_user_invalid_token_raises
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 8 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/core/test_security.py::test_verify_jwt_token_invalid_signature
+tests/core/test_security.py::test_get_current_user_invalid_token_raises
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:371: InsecureKeyLengthWarning: The HMAC key is 8 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+tests/services/test_auth.py: 21 warnings
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 27 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/services/test_auth.py: 22 warnings
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:371: InsecureKeyLengthWarning: The HMAC key is 27 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+tests/unit/test_core_security.py::TestJWTTokenVerification::test_verify_token_with_wrong_algorithm
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 43 bytes long, which is below the minimum recommended length of 64 bytes for SHA512. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/websockets/test_jwt_websocket_auth.py: 10 warnings
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 11 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/websockets/test_jwt_websocket_auth.py::TestCreateAccessToken::test_create_token_preserves_data
+tests/websockets/test_jwt_websocket_auth.py::TestVerifyToken::test_verify_valid_token
+tests/websockets/test_jwt_websocket_auth.py::TestVerifyToken::test_verify_tampered_token
+tests/websockets/test_jwt_websocket_auth.py::TestAuthenticateWebsocket::test_authenticate_with_query_param_token
+tests/websockets/test_jwt_websocket_auth.py::TestAuthenticateWebsocket::test_authenticate_with_bearer_token
+tests/websockets/test_jwt_websocket_auth.py::TestAuthenticateWebsocket::test_authenticate_with_direct_token
+tests/websockets/test_jwt_websocket_auth.py::TestAuthenticateWebsocket::test_authenticate_token_missing_user_id
+tests/websockets/test_jwt_websocket_auth.py::TestWebSocketEndpoint::test_endpoint_accepts_valid_auth
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:371: InsecureKeyLengthWarning: The HMAC key is 11 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+tests/websockets/test_jwt_websocket_auth.py::TestVerifyToken::test_verify_token_wrong_secret
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 10 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    return self._jws.encode(
+
+tests/websockets/test_jwt_websocket_auth.py::TestVerifyToken::test_verify_token_wrong_secret
+  C:\Users\ericsocrat\Desktop\lokifi\apps\backend\venv\Lib\site-packages\jwt\api_jwt.py:371: InsecureKeyLengthWarning: The HMAC key is 10 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+    decoded = self.decode_complete(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.13.9-final-0 _______________
+
+Coverage HTML written to dir htmlcov
+Coverage XML written to file coverage.xml
+Coverage JSON written to file coverage.json
+Required test coverage of 20% reached. Total coverage: 84.74%
+=========================== short test summary info ===========================
+FAILED tests/unit/test_specific_issues.py::test_database_connection - Failed:...
+==== 1 failed, 5308 passed, 123 skipped, 89 warnings in 381.61s (0:06:21) =====
