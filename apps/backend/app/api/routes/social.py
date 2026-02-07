@@ -2,7 +2,6 @@ from __future__ import annotations
 
 __all__ = ["router"]
 
-import asyncio
 import json
 
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
