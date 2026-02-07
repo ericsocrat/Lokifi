@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from app.models.webhook_delivery import WebhookDelivery
 
 
-class WebhookEvent(str, enum.Enum):
+class WebhookEvent(enum.StrEnum):
     """Webhook event types."""
 
     # User events
@@ -48,7 +48,7 @@ class WebhookEvent(str, enum.Enum):
     SYSTEM_ERROR = "system.error"
 
 
-class WebhookStatus(str, enum.Enum):
+class WebhookStatus(enum.StrEnum):
     """Webhook activation status."""
 
     ACTIVE = "active"

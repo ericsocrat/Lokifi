@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from app.models.webhook import Webhook
 
 
-class DeliveryStatus(str, enum.Enum):
+class DeliveryStatus(enum.StrEnum):
     """Webhook delivery status."""
 
     PENDING = "pending"
