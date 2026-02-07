@@ -386,6 +386,89 @@ Now fully production-ready: events emit → queue → HTTP delivery → webhook 
 **Time**: ~90 minutes (autonomous priority assessment + implementation + CI resolution)
 **Tokens**: ~120K (performance analysis + migration design + troubleshooting)
 
+**Phase 4D: Performance Validation Framework** ✅ (Commit b471d460)
+
+**Focus**: Benchmark suite for data-driven validation of optimization gains
+
+**Objective**: Create comprehensive performance testing to validate Phase 4C database optimization claims (5-50x improvements)
+
+**Implementation** - Benchmark Suite (506 lines):
+
+✅ **benchmarks/test_social_performance.py** (318 lines):
+- **4 Test Classes** with 7 comprehensive benchmarks
+- **TestFeedGenerationPerformance**: 
+  - `test_get_followees_for_feed`: Followee lookup (idx_follows_follower_id)
+    - Target: < 50ms | Expected: 10-50x faster
+  - `test_feed_posts_generation`: Full feed generation
+    - Target: < 100ms | Uses idx_follows_follower_id + idx_posts_user_id
+    
+- **TestFollowerListingPerformance**:
+  - `test_get_followers_list`: Follower lookup (idx_follows_followee_id)
+    - Target: < 50ms | Expected: 20-100x faster
+  - `test_cache_invalidation_follower_lookup`: Post creation cache invalidation
+    - Target: < 30ms (critical path) | Uses idx_follows_followee_id
+    
+- **TestFollowCheckPerformance**:
+  - `test_is_following_check`: Single follow relationship check
+    - Target: < 10ms | Expected: 5-10x faster with composite index
+  - `test_batch_follow_checks`: Bulk follow status (10 users)
+    - Target: < 50ms | Uses idx_follows_follower_followee
+    
+- **TestComparisonMetrics**:
+  - `test_index_effectiveness_comparison`: EXPLAIN ANALYZE output
+    - Shows actual PostgreSQL query plans
+    - Validates "Index Scan" vs "Seq Scan"
+    - Run with: `pytest -v -s benchmarks/test_social_performance.py::TestComparisonMetrics`
+
+✅ **benchmarks/README.md** (274 lines):
+- **Quick Start Guide**: pytest-benchmark usage examples
+- **Performance Targets Table**: Target times per operation
+- **Baseline Comparison Workflow**: Before/after optimization comparison
+- **Troubleshooting Guide**: Common issues and solutions
+- **CI Integration Patterns**: Non-blocking regression detection
+
+**Performance Targets**:
+
+| Operation | Target | Index | Expected Gain |
+|-----------|--------|-------|---------------|
+| Feed generation | < 100ms | idx_follows_follower_id | 10-50x |
+| Follower listing | < 50ms | idx_follows_followee_id | 20-100x |
+| is_following | < 10ms | idx_follows_follower_followee | 5-10x |
+| Cache invalidation | < 30ms | idx_follows_followee_id | 20-100x |
+| Batch follow check | < 50ms | idx_follows_follower_followee | 5-10x |
+
+**Usage**:
+```bash
+# Run all benchmarks
+pytest benchmarks/ -v --benchmark-only
+
+# Save baseline (before optimization)
+pytest benchmarks/ --benchmark-save=before-indexes
+
+# Compare (after optimization)
+pytest benchmarks/ --benchmark-compare=before-indexes
+
+# View query plans
+pytest -v -s benchmarks/test_social_performance.py::TestComparisonMetrics
+```
+
+**Benefits**:
+- **Data-driven validation**: Measure actual speedup, not estimates
+- **Baseline for future work**: Track performance over time
+- **Regression detection**: CI integration prevents performance degradation
+- **Query plan verification**: EXPLAIN ANALYZE shows index usage
+
+**Next Steps**:
+- Generate test data (10-20 follow relationships minimum)
+- Run baseline before phase_3a_002 (if testing rollback)
+- Run comparison after migration deployment
+- Document actual speedup metrics in production
+
+**Commit**: b471d460
+
+**Time**: ~45 minutes (benchmark design + documentation + quality checks)
+**Tokens**: ~30K (comprehensive testing framework)
+
 ---
 
 **Session 197 Continuation – February 7, 2026 ✅ (CI Health, Security Alerts, Renovate Config, Webhook Integration)**
