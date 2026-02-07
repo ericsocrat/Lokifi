@@ -20,6 +20,7 @@ from app.api.routes import (
     social,  # Use comprehensive social router from api/routes
 )
 from app.api.routes.monitoring import router as monitoring_router
+from app.api.routes.versioning import router as versioning_router
 
 # Temporarily disable J53 scheduler due to async issues
 # from app.services.j53_scheduler import j53_router, j53_lifespan_manager
@@ -29,6 +30,7 @@ from app.core.database import db_manager
 
 # Security middleware imports
 from app.middleware.security import RequestLoggingMiddleware
+from app.middleware.versioning import VersionDetectionMiddleware
 from app.routers import (
     admin_messaging,
     ai,
@@ -199,6 +201,9 @@ app.add_middleware(RequestLoggingMiddleware)  # Request logging
 # app.add_middleware(RequestSizeLimitMiddleware)  # Request size limits
 # app.add_middleware(SecurityHeadersMiddleware)  # Security headers
 
+# Phase 5A: Version detection middleware (handles /api/v1/*, /api/v2/*, etc.)
+app.add_middleware(VersionDetectionMiddleware)
+
 # CORS must be added LAST so it executes FIRST (middleware runs in reverse order)
 app.add_middleware(
     CORSMiddleware,
@@ -216,11 +221,13 @@ app.add_middleware(
 )
 
 # Include routers
-# Phase 5A: API Versioning foundation in app/core/versioning.py
-# Will be implemented with middleware in next phase
-
-# Legacy routes (backward compatibility) - still serve /api/* without version
+# Phase 5A: API Versioning - Middleware detects version from URL path or headers
+# Adds X-API-Version response header automatically
+# Versions detected: /api/v1/*, /api/v2/*, or Accept-Version header
 app.include_router(health.router, prefix=settings.API_PREFIX)
+app.include_router(
+    versioning_router, prefix=settings.API_PREFIX
+)  # Phase 5A: Example versioning endpoints for demonstration
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
 app.include_router(
     profile.router, prefix=settings.API_PREFIX
