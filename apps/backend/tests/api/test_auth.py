@@ -17,6 +17,7 @@ from unittest.mock import Mock, patch
 import jwt
 import pytest
 from fastapi import HTTPException
+from fastapi.background import BackgroundTasks
 
 from app.api.routes.auth import (
     JWT_ALG,
@@ -154,7 +155,7 @@ class TestRegisterEndpoint:
             bio="Test bio",
         )
 
-        result = register(payload)
+        result = register(payload, BackgroundTasks())
 
         # Should return valid token
         assert result.access_token is not None
@@ -182,7 +183,7 @@ class TestRegisterEndpoint:
         payload = RegisterPayload(handle="existinguser", password="password123")
 
         with pytest.raises(HTTPException) as exc_info:
-            register(payload)
+            register(payload, BackgroundTasks())
 
         assert exc_info.value.status_code == 409
         assert "Handle already exists" in exc_info.value.detail
@@ -202,7 +203,7 @@ class TestRegisterEndpoint:
 
         payload = RegisterPayload(handle="newuser", password="password123")
 
-        register(payload)
+        register(payload, BackgroundTasks())
 
         # Verify user was created with hashed password
         call_args = mock_db.add.call_args
@@ -438,7 +439,7 @@ class TestAuthIntegration:
             avatar_url="https://example.com/avatar.jpg",
             bio="Integration test user",
         )
-        register_result = register(register_payload)
+        register_result = register(register_payload, BackgroundTasks())
         assert register_result.access_token is not None
 
         login_payload = LoginPayload(handle="integrationuser", password="password123")

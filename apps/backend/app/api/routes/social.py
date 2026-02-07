@@ -5,7 +5,7 @@ __all__ = ["router"]
 import asyncio
 import json
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, func, select
 
@@ -21,6 +21,7 @@ from app.core.redis_cache import cache
 from app.db.db import get_session, init_db
 from app.db.models import Follow, Post, User
 from app.services.auth import require_handle
+from app.services.webhook_event_emitter import webhook_event_emitter
 
 router = APIRouter()
 
@@ -66,7 +67,7 @@ class PostOut(BaseModel):
 
 # ===== Users =====
 @router.post("/social/users", response_model=UserOut)
-def create_user(payload: UserCreate):
+def create_user(payload: UserCreate, background_tasks: BackgroundTasks):
     with get_session() as db:
         existing = db.execute(
             select(User).where(User.handle == payload.handle)
@@ -87,6 +88,19 @@ def create_user(payload: UserCreate):
             followers_count=0,
             posts_count=0,
         )
+
+        # Emit webhook event in background
+        background_tasks.add_task(
+            webhook_event_emitter.emit,
+            "user.created",
+            {
+                "user_id": str(u.id),
+                "username": u.handle,
+                "email": "",
+                "verified": False,
+            },
+        )
+
         return out
 
 
@@ -157,7 +171,11 @@ def get_user(handle: str):
 
 # ===== Follow / Unfollow =====
 @router.post("/social/follow/{handle}")
-def follow(handle: str, authorization: str | None = Header(None)):
+def follow(
+    handle: str,
+    authorization: str | None = Header(None),
+    background_tasks: BackgroundTasks = None,
+):
     """Follow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
@@ -190,11 +208,26 @@ def follow(handle: str, authorization: str | None = Header(None)):
         except Exception:
             pass
 
+        # Emit webhook event in background
+        if background_tasks:
+            background_tasks.add_task(
+                webhook_event_emitter.emit,
+                "follow.created",
+                {
+                    "follower_id": str(me_u.id),
+                    "following_id": str(target.id),
+                },
+            )
+
         return {"ok": True, "following": True}
 
 
 @router.delete("/social/follow/{handle}")
-def unfollow(handle: str, authorization: str | None = Header(None)):
+def unfollow(
+    handle: str,
+    authorization: str | None = Header(None),
+    background_tasks: BackgroundTasks = None,
+):
     """Unfollow a user and invalidate both users' profile caches."""
     with get_session() as db:
         me = require_handle(authorization)
@@ -229,12 +262,27 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
         except Exception:
             pass
 
+        # Emit webhook event in background
+        if background_tasks:
+            background_tasks.add_task(
+                webhook_event_emitter.emit,
+                "follow.deleted",
+                {
+                    "follower_id": str(me_u.id),
+                    "following_id": str(target.id),
+                },
+            )
+
         return {"ok": True, "following": False}
 
 
 # ===== Posts =====
 @router.post("/social/posts", response_model=PostOut)
-def create_post(payload: PostCreate, authorization: str | None = Header(None)):
+def create_post(
+    payload: PostCreate,
+    authorization: str | None = Header(None),
+    background_tasks: BackgroundTasks = None,
+):
     with get_session() as db:
         require_handle(authorization, payload.handle)
         # Phase 4b-3: Use cached query (MEDIUM_TERM, 300s)
@@ -297,6 +345,19 @@ def create_post(payload: PostCreate, authorization: str | None = Header(None)):
                                 )
         except Exception:
             pass  # Cache invalidation failure shouldn't block responses
+
+        # Emit webhook event in background
+        if background_tasks:
+            background_tasks.add_task(
+                webhook_event_emitter.emit,
+                "post.created",
+                {
+                    "post_id": str(p.id),
+                    "author_id": str(u.id),
+                    "content_type": "text",
+                    "content_preview": p.content[:100] if p.content else None,
+                },
+            )
 
         return post_out
 

@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Header, HTTPException
 from jwt.exceptions import PyJWTError
 from pydantic import BaseModel, Field
 from sqlalchemy import select
@@ -17,6 +17,7 @@ from app.core.cached_queries import get_user_by_handle  # Phase 4b-1
 from app.core.config import get_settings
 from app.db.db import get_session, init_db
 from app.db.models import User
+from app.services.webhook_event_emitter import webhook_event_emitter
 
 router = APIRouter()
 init_db()
@@ -74,7 +75,7 @@ def _auth_handle(authorization: str | None) -> str | None:
 
 
 @router.post("/auth/register", response_model=TokenOut)
-def register(payload: RegisterPayload):
+def register(payload: RegisterPayload, background_tasks: BackgroundTasks):
     with get_session() as db:
         # Phase 4b-1: Use cached query for user lookup (prevents duplicate handles)
         existing = get_user_by_handle(db, payload.handle)
@@ -89,6 +90,19 @@ def register(payload: RegisterPayload):
         )
         db.add(u)
         db.flush()
+
+        # Emit webhook event in background
+        background_tasks.add_task(
+            webhook_event_emitter.emit,
+            "user.created",
+            {
+                "user_id": str(u.id),
+                "username": u.handle,
+                "email": "",
+                "verified": False,
+            },
+        )
+
         return _issue_token(u.handle)
 
 

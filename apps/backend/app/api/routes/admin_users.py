@@ -25,6 +25,7 @@ from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.profile import Profile
 from app.models.user import User
+from app.services.webhook_event_emitter import webhook_event_emitter
 
 logger = logging.getLogger(__name__)
 ph = PasswordHasher()
@@ -278,6 +279,17 @@ async def create_user(
             },
         )
 
+        # Emit webhook event (fire-and-forget, don't block response)
+        try:
+            await webhook_event_emitter.emit_user_created(
+                user_id=new_user.id,
+                email=str(data.email),
+                username=str(data.handle),
+                verified=data.is_verified,
+            )
+        except Exception:
+            logger.debug("Webhook emission failed for user.created", exc_info=True)
+
         return user_to_response(new_user)
 
     except HTTPException:
@@ -401,6 +413,26 @@ async def update_user(
         await db.commit()
         await db.refresh(user)
 
+        # Emit webhook event
+        try:
+            changes = {}
+            if data.name is not None:
+                changes["name"] = data.name
+            if data.bio is not None:
+                changes["bio"] = data.bio
+            if data.is_verified is not None:
+                changes["is_verified"] = data.is_verified
+            if data.is_active is not None:
+                changes["is_active"] = data.is_active
+            if data.role is not None:
+                changes["role"] = data.role
+            await webhook_event_emitter.emit_user_updated(
+                user_id=user_uuid,
+                changes=changes,
+            )
+        except Exception:
+            logger.debug("Webhook emission failed for user.updated", exc_info=True)
+
         return user_to_response(user)
 
     except HTTPException:
@@ -451,6 +483,15 @@ async def delete_user(
         # Delete user (cascades to profile and other relationships)
         await db.delete(user)
         await db.commit()
+
+        # Emit webhook event (after commit, user is deleted)
+        try:
+            await webhook_event_emitter.emit(
+                "user.deleted",
+                {"user_id": str(user_uuid), "deleted_by": str(current_admin.id)},
+            )
+        except Exception:
+            logger.debug("Webhook emission failed for user.deleted", exc_info=True)
 
         return {"message": f"User {user_id} deleted successfully"}
 
@@ -508,6 +549,17 @@ async def suspend_user(
         await db.commit()
         await db.refresh(user)
 
+        # Emit webhook event
+        try:
+            await webhook_event_emitter.emit_admin_action(
+                admin_id=current_admin.id,
+                action="user.suspend",
+                target_type="user",
+                target_id=user_uuid,
+            )
+        except Exception:
+            logger.debug("Webhook emission failed for admin.action", exc_info=True)
+
         return user_to_response(user)
 
     except HTTPException:
@@ -562,6 +614,15 @@ async def verify_user(
 
         await db.commit()
         await db.refresh(user)
+
+        # Emit webhook event
+        try:
+            await webhook_event_emitter.emit_user_verified(
+                user_id=user_uuid,
+                email=user.email or "",
+            )
+        except Exception:
+            logger.debug("Webhook emission failed for user.verified", exc_info=True)
 
         return user_to_response(user)
 
