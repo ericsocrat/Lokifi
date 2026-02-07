@@ -7,6 +7,7 @@
 Lokifi has a solid performance foundation with strategic Redis caching and optimized core queries. This analysis identifies optimization opportunities that can yield **50-70% latency reductions** for feed operations and improve overall system scalability.
 
 **Current State**:
+
 - ✅ Profile-level caching (10 min TTL)
 - ✅ Feed caching (60-120s TTL) with cursor pagination
 - ✅ Aggregate count queries (no N+1 for counts)
@@ -23,7 +24,7 @@ Lokifi has a solid performance foundation with strategic Redis caching and optim
 
 ```sql
 -- Current implementation (lines 165-183 in social.py)
-SELECT 
+SELECT
   users.*,
   COUNT(DISTINCT f1.id) as following_count,
   COUNT(DISTINCT f2.id) as followers_count,
@@ -37,12 +38,14 @@ GROUP BY users.id
 ```
 
 **Status**: ✅ **OPTIMIZED**
+
 - Single database query (good!)
 - Outerjoin pattern avoids cross products
 - GROUP BY on primary key only
 - Cache hit rate: ~90% (10 min TTL on profile)
 
 **Potential Enhancement**:
+
 - Could use subqueries instead of outerjoin for cleaner plans:
   ```sql
   SELECT users.*,
@@ -60,8 +63,8 @@ GROUP BY users.id
 ```python
 # Current implementation (lines 570-598 in social.py)
 1. SELECT followee_id FROM follows WHERE follower_id = ?  ← Query 1
-2. SELECT post, user FROM posts 
-   JOIN users ON users.id = posts.user_id 
+2. SELECT post, user FROM posts
+   JOIN users ON users.id = posts.user_id
    WHERE posts.user_id IN (followee_ids...)
    ORDER BY posts.id DESC
    LIMIT ?  ← Query 2
@@ -97,6 +100,7 @@ GROUP BY users.id
    - **Benchmark needed**: EXPLAIN ANALYZE on feeds with 1000+ followers
 
 **Expected Improvement**:
+
 ```
 Before: ~500ms (cold cache) → [200ms DB + 300ms query]
 After optimization:
@@ -127,12 +131,14 @@ def follow():
 **Status**: ✅ **WELL-OPTIMIZED** with smart caching
 
 **Good Patterns**:
+
 - ✅ Cached user lookups (300s)
 - ✅ Short-term follow check cache (60s)
 - ✅ Proper cache invalidation on write
 - ✅ Background webhook emission
 
 **Optimization Opportunity**:
+
 - Could parallelize: Cache invalidate + webhook in parallel threads
 - Low priority - already sub-100ms
 
@@ -152,6 +158,7 @@ def follow():
 ```
 
 **Status**: ⚠️ **NEEDS REVIEW**
+
 - Not checked: Do we invalidate feed caches for all followers on post creation?
 - If yes: Could be N+M query fan-out (N=number of followers, M=cache keys)
 - If not: Feeds may show stale post lists
@@ -165,17 +172,18 @@ def follow():
 ```sql
 -- Required checks:
 -- 1. Composite index on follows table
-CREATE INDEX IF NOT EXISTS idx_follows_follower_followee 
+CREATE INDEX IF NOT EXISTS idx_follows_follower_followee
   ON follows(follower_id, followee_id);  -- For fast lookup if not exists
 
 -- 2. Composite index on posts for feed queries
-CREATE INDEX IF NOT EXISTS idx_posts_user_created 
+CREATE INDEX IF NOT EXISTS idx_posts_user_created
   ON posts(user_id, created_at DESC);  -- For ordered feed fetches
 
 -- 3. Both should be checked via EXPLAIN ANALYZE
 ```
 
 **Current Status**: CHECK NEEDED
+
 - Need to run EXPLAIN ANALYZE on real feed queries
 - Need to check index hit rates in PostgreSQL stats
 
@@ -186,23 +194,27 @@ CREATE INDEX IF NOT EXISTS idx_posts_user_created
 ## Optimization Roadmap (Phase 6A Sessions)
 
 ### Session 204 (Current) - Profiling & Analysis ✓
+
 - ✅ Created QueryProfiler module for query tracking
 - ✅ Documented current performance characteristics
 - ✅ Identified optimization opportunities
 - ⏳ TODO: Attach profiler to test endpoints
 
 ### Session 205 - Query Optimization & Indexing
+
 - Combine two-query feed pattern into single CTE/subquery
 - Add composite indexes (follows, posts)
 - Implement timestamp-based cursor pagination
 - Benchmark improvements with EXPLAIN ANALYZE
 
 ### Session 206 - Cache Warming & Invalidation
+
 - Implement background cache warming for popular feeds
 - Add cache invalidation strategy for post creation
 - Test stale-while-revalidate pattern
 
 ### Session 207 - Benchmark & Validation
+
 - Run comprehensive performance tests
 - Measure before/after latency
 - Document query plan improvements
@@ -236,7 +248,7 @@ WITH followees AS (
   SELECT followee_id FROM follows WHERE follower_id = ?
 ),
 posts_joined AS (
-  SELECT 
+  SELECT
     posts.id,
     posts.user_id,
     posts.content,
@@ -256,6 +268,7 @@ SELECT * FROM posts_joined
 ```
 
 **Benefits**:
+
 - Single database round-trip (vs current 2)
 - Clearer query optimizer view
 - Same result set as current code
@@ -274,6 +287,7 @@ posts.where(Post.created_at < datetime.fromisoformat(after_timestamp))
 ```
 
 **Benefits**:
+
 - Cursor uniqueness guaranteed by monotonic time
 - Pagination semantics align with UX ("posts after timestamp")
 - Compatible with cache keys (can use timestamp in key)
@@ -282,12 +296,12 @@ posts.where(Post.created_at < datetime.fromisoformat(after_timestamp))
 
 ## Files Modified in Session 204
 
-| File | Purpose | Status |
-|------|---------|--------|
+| File                         | Purpose                                    | Status     |
+| ---------------------------- | ------------------------------------------ | ---------- |
 | `app/core/query_profiler.py` | Query performance profiling infrastructure | ✅ Created |
-| (Session 205) | Query optimization | ⏳ TODO |
-| (Session 206) | Cache warming | ⏳ TODO |
-| (Session 207) | Benchmarks & validation | ⏳ TODO |
+| (Session 205)                | Query optimization                         | ⏳ TODO    |
+| (Session 206)                | Cache warming                              | ⏳ TODO    |
+| (Session 207)                | Benchmarks & validation                    | ⏳ TODO    |
 
 ---
 
