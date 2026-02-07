@@ -74,9 +74,7 @@ class TestWebhookQueueing:
         # Verify delivery record was created
         async with db_manager.session() as session:
             result = await session.execute(
-                select(WebhookDelivery).where(
-                    WebhookDelivery.webhook_id == test_webhook.id
-                )
+                select(WebhookDelivery).where(WebhookDelivery.webhook_id == test_webhook.id)
             )
             deliveries = result.scalars().all()
             assert len(deliveries) == 1
@@ -183,9 +181,7 @@ class TestWebhookRetryLogic:
             assert updated_delivery.next_retry_at is not None
 
             # Verify delay is roughly 60 seconds (within 5 second tolerance)
-            actual_delay = (
-                updated_delivery.next_retry_at - after
-            ).total_seconds()
+            actual_delay = (updated_delivery.next_retry_at - after).total_seconds()
             assert 55 < actual_delay < 65
 
     @pytest.mark.asyncio

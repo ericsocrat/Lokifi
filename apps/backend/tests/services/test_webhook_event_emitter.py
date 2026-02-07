@@ -350,8 +350,6 @@ class TestEventMap:
             assert event_str == event_enum
 
 
-
-
 class TestGlobalEmitter:
     """Tests for global webhook event emitter instance."""
 

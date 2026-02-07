@@ -46,7 +46,9 @@ class WebhookDelivery(Base):
         Enum(DeliveryStatus), default=DeliveryStatus.PENDING, nullable=False
     )
     http_status_code: Mapped[int | None] = mapped_column(Integer, nullable=True)
-    response_body: Mapped[str | None] = mapped_column(Text, nullable=True, comment="Response from endpoint")
+    response_body: Mapped[str | None] = mapped_column(
+        Text, nullable=True, comment="Response from endpoint"
+    )
 
     # Retry tracking
     attempt: Mapped[int] = mapped_column(Integer, default=1, nullable=False)

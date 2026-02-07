@@ -1,18 +1,24 @@
 import os
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
-from app.api.routes import admin_analytics  # Session 192 Admin Analytics Dashboard
-from app.api.routes import admin_api_keys  # Session 196 API Keys Management
-from app.api.routes import admin_audit_logs  # Session 194 Admin Audit Logs
-from app.api.routes import admin_email_templates  # Session 195 Email Templates
-from app.api.routes import admin_moderation  # Session 190 Content Moderation
-from app.api.routes import admin_settings  # Session 193 System Settings
-from app.api.routes import admin_users  # Session 189 Admin User Management
-from app.api.routes import admin_webhooks  # Session 197 Webhook Management
-from app.api.routes import social  # Use comprehensive social router from api/routes
-from app.api.routes import market, security
+from app.api.routes import (
+    admin_analytics,  # Session 192 Admin Analytics Dashboard
+    admin_api_keys,  # Session 196 API Keys Management
+    admin_audit_logs,  # Session 194 Admin Audit Logs
+    admin_email_templates,  # Session 195 Email Templates
+    admin_moderation,  # Session 190 Content Moderation
+    admin_settings,  # Session 193 System Settings
+    admin_users,  # Session 189 Admin User Management
+    admin_webhooks,  # Session 197 Webhook Management
+    market,
+    security,
+    social,  # Use comprehensive social router from api/routes
+)
 from app.api.routes.monitoring import router as monitoring_router
 
 # Temporarily disable J53 scheduler due to async issues
@@ -46,17 +52,11 @@ from app.routers import (
     websocket_prices,
 )
 from app.routers.profile_enhanced import router as profile_enhanced_router
-from app.services.alerts import evaluator as alerts_evaluator
-from app.services.alerts import store as alerts_store
+from app.services.alerts import evaluator as alerts_evaluator, store as alerts_store
 from app.services.websocket_manager import connection_manager
-from app.tasks.webhook_processor import (
-    start_webhook_processor,
-    stop_webhook_processor,
-)
+from app.tasks.webhook_processor import start_webhook_processor, stop_webhook_processor
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 logger = get_logger(__name__)
 

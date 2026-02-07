@@ -6,11 +6,12 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from app.db.database import Base
 from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
+
+from app.db.database import Base
 
 if TYPE_CHECKING:
     from app.models.user import User

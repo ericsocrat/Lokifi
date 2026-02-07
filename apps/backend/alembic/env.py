@@ -3,8 +3,9 @@ import os
 import sys
 from logging.config import fileConfig
 
-from alembic import context
 from sqlalchemy import engine_from_config, pool
+
+from alembic import context
 
 # Add the parent directory to Python path to import our app
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -15,7 +16,7 @@ from app.db.database import Base
 
 # Import all models to register them with SQLAlchemy
 # This ensures alembic can detect all tables for migrations
-from app.models import (  # noqa: F401
+from app.models import (
     AdminAuditLog,
     AiMessage,
     AiThread,

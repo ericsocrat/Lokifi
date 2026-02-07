@@ -5,7 +5,17 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Boolean, Column, DateTime, Enum, Index, Integer, String, Text, event
+from sqlalchemy import (
+    Boolean,
+    Column,
+    DateTime,
+    Enum,
+    Index,
+    Integer,
+    String,
+    Text,
+    event,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -65,7 +75,9 @@ class Webhook(Base):
     )
 
     # Security
-    secret: Mapped[str] = mapped_column(String(255), nullable=False, comment="HMAC-SHA256 signing key")
+    secret: Mapped[str] = mapped_column(
+        String(255), nullable=False, comment="HMAC-SHA256 signing key"
+    )
     active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     status: Mapped[WebhookStatus] = mapped_column(
         Enum(WebhookStatus), default=WebhookStatus.ACTIVE, nullable=False
@@ -85,7 +97,9 @@ class Webhook(Base):
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-    last_triggered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_triggered_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Delivery stats
     successful_deliveries: Mapped[int] = mapped_column(Integer, default=0, nullable=False)

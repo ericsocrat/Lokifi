@@ -110,9 +110,7 @@ class WebhookDeliveryService:
             return True
 
         except Exception as e:
-            logger.error(
-                f"❌ Failed to queue webhook delivery: {e}", exc_info=True
-            )
+            logger.error(f"❌ Failed to queue webhook delivery: {e}", exc_info=True)
             return False
 
     async def process_queue(self, batch_size: int = 10) -> int:
@@ -185,9 +183,7 @@ class WebhookDeliveryService:
             # Fetch webhook config and delivery record
             async with db_manager.session() as session:
                 # Get webhook
-                result = await session.execute(
-                    select(Webhook).where(Webhook.id == webhook_id)
-                )
+                result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
                 webhook = result.scalar_one_or_none()
 
                 if not webhook:
@@ -210,16 +206,13 @@ class WebhookDeliveryService:
                 delivery = result.scalar_one_or_none()
 
                 if not delivery:
-                    logger.warning(
-                        f"⚠️ Delivery record not found: {delivery_id}"
-                    )
+                    logger.warning(f"⚠️ Delivery record not found: {delivery_id}")
                     return
 
                 # Check if webhook is active
                 if webhook.status.value != "ACTIVE":
                     logger.info(
-                        f"⚠️ Webhook inactive: {webhook_id}, "
-                        f"skipping delivery {delivery_id}"
+                        f"⚠️ Webhook inactive: {webhook_id}, " f"skipping delivery {delivery_id}"
                     )
                     await self._update_delivery_status(
                         delivery_id,
@@ -243,18 +236,14 @@ class WebhookDeliveryService:
                 }
 
                 # Attempt delivery
-                success = await self._send_delivery(
-                    webhook.url, headers, payload
-                )
+                success = await self._send_delivery(webhook.url, headers, payload)
 
                 if success:
                     logger.info(
                         f"✅ Webhook delivered successfully: "
                         f"webhook_id={webhook_id}, delivery_id={delivery_id}"
                     )
-                    await self._update_delivery_status(
-                        delivery_id, DeliveryStatus.SUCCESS, session
-                    )
+                    await self._update_delivery_status(delivery_id, DeliveryStatus.SUCCESS, session)
                     # Update webhook last_triggered_at
                     await session.execute(
                         update(Webhook)
@@ -264,9 +253,7 @@ class WebhookDeliveryService:
 
                 else:
                     # Handle retry logic
-                    await self._handle_retry(
-                        webhook, delivery, delivery_id, session
-                    )
+                    await self._handle_retry(webhook, delivery, delivery_id, session)
 
         except Exception as e:
             logger.error(
@@ -302,8 +289,7 @@ class WebhookDeliveryService:
             payload_str = json.dumps(payload)
             if len(payload_str) > self.max_payload_size:
                 logger.warning(
-                    f"⚠️ Payload exceeds max size: "
-                    f"{len(payload_str)} > {self.max_payload_size}"
+                    f"⚠️ Payload exceeds max size: " f"{len(payload_str)} > {self.max_payload_size}"
                 )
                 return False
 
@@ -322,8 +308,7 @@ class WebhookDeliveryService:
                     return True
                 else:
                     logger.warning(
-                        f"⚠️ Webhook POST failed: {url} "
-                        f"(status={response.status_code})"
+                        f"⚠️ Webhook POST failed: {url} " f"(status={response.status_code})"
                     )
                     return False
 
@@ -379,9 +364,7 @@ class WebhookDeliveryService:
                 base_delay * (2 ** (attempt_count - 1)),
                 3600,  # Cap at 1 hour
             )
-            next_retry_at = datetime.now(timezone.utc) + timedelta(
-                seconds=delay_seconds
-            )
+            next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=delay_seconds)
 
             # Update delivery record
             await session.execute(

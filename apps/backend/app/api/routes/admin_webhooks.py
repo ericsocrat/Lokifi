@@ -42,7 +42,7 @@ async def list_webhooks(
     _: Annotated[User, Depends(require_admin)],
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    status_filter: Optional[str] = Query(None),
+    status_filter: str | None = Query(None),
 ) -> WebhookListResponse:
     """List all webhooks with pagination and filtering."""
     query = select(Webhook)
@@ -144,7 +144,9 @@ async def update_webhook(
     if "events" in update_data:
         update_data["events"] = ",".join(update_data["events"])
     if "active" in update_data:
-        update_data["status"] = WebhookStatus.ACTIVE if update_data["active"] else WebhookStatus.INACTIVE
+        update_data["status"] = (
+            WebhookStatus.ACTIVE if update_data["active"] else WebhookStatus.INACTIVE
+        )
 
     for field, value in update_data.items():
         if field != "status":

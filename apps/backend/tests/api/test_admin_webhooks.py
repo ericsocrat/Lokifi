@@ -13,7 +13,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.main import app
 from app.models import User, Webhook, WebhookDelivery, WebhookEvent, WebhookStatus
 from app.schemas.webhook import WebhookResponse
-from tests.conftest import admin_user, db_session, regular_user
 
 
 @pytest.fixture
@@ -203,9 +202,7 @@ class TestWebhookCRUD:
         assert response.status_code == 204
 
         # Verify webhook is deleted
-        result = await db_session.execute(
-            select(Webhook).where(Webhook.id == test_webhook.id)
-        )
+        result = await db_session.execute(select(Webhook).where(Webhook.id == test_webhook.id))
         assert result.scalar_one_or_none() is None
 
 
@@ -344,9 +341,7 @@ class TestWebhookTesting:
         )
         assert response.status_code == 400  # Bad request
 
-    async def test_get_available_events(
-        self, client: TestClient, admin_token: str
-    ):
+    async def test_get_available_events(self, client: TestClient, admin_token: str):
         """Test getting available webhook events."""
         response = client.get(
             "/api/v1/admin/webhooks/available-events",

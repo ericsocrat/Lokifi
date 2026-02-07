@@ -7,6 +7,7 @@ from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
+
 from app.api.routes.admin_api_keys import (
     create_api_key,
     delete_api_key,

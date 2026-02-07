@@ -7,13 +7,14 @@ This service:
 - Handles sync and async event handlers
 """
 
-__all__ = ["WebhookEventEmitter", "webhook_event_emitter", "emit_webhook_event"]
+__all__ = ["WebhookEventEmitter", "emit_webhook_event", "webhook_event_emitter"]
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Callable
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
@@ -113,19 +114,15 @@ class WebhookEventEmitter:
 
                 # Filter webhooks that are subscribed to this event
                 subscribed_webhooks = [
-                    w for w in webhooks
-                    if self.EVENT_MAP[event] in w.get_events()
+                    w for w in webhooks if self.EVENT_MAP[event] in w.get_events()
                 ]
 
                 if not subscribed_webhooks:
-                    logger.debug(
-                        f"📭 No webhooks subscribed to event: {event}"
-                    )
+                    logger.debug(f"📭 No webhooks subscribed to event: {event}")
                     return True
 
                 logger.info(
-                    f"📤 Dispatching event '{event}' to "
-                    f"{len(subscribed_webhooks)} webhook(s)"
+                    f"📤 Dispatching event '{event}' to " f"{len(subscribed_webhooks)} webhook(s)"
                 )
 
                 # Create payload
@@ -149,10 +146,7 @@ class WebhookEventEmitter:
                 results = await asyncio.gather(*tasks, return_exceptions=True)
 
                 # Check results
-                success_count = sum(
-                    1 for r in results
-                    if isinstance(r, bool) and r
-                )
+                success_count = sum(1 for r in results if isinstance(r, bool) and r)
                 logger.info(
                     f"✅ Queued event '{event}' to {success_count}/"
                     f"{len(subscribed_webhooks)} webhook(s)"
