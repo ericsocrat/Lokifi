@@ -14,7 +14,6 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    event,
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -73,7 +72,9 @@ class Webhook(Base):
     __tablename__ = "webhooks"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # URL and configuration
     url: Mapped[str] = mapped_column(String(2048), nullable=False)
@@ -82,7 +83,9 @@ class Webhook(Base):
 
     # Event filtering
     events: Mapped[list[str]] = mapped_column(
-        String(1000), nullable=False, comment="Comma-separated list of events to listen for"
+        String(1000),
+        nullable=False,
+        comment="Comma-separated list of events to listen for",
     )
 
     # Security
@@ -96,11 +99,15 @@ class Webhook(Base):
 
     # Retry configuration
     max_retries: Mapped[int] = mapped_column(Integer, default=5, nullable=False)
-    retry_delay_seconds: Mapped[int] = mapped_column(Integer, default=60, nullable=False)
+    retry_delay_seconds: Mapped[int] = mapped_column(
+        Integer, default=60, nullable=False
+    )
 
     # Tracking
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -113,12 +120,17 @@ class Webhook(Base):
     )
 
     # Delivery stats
-    successful_deliveries: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    successful_deliveries: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False
+    )
     failed_deliveries: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
 
     # Relationships
     deliveries: Mapped[list["WebhookDelivery"]] = relationship(
-        "WebhookDelivery", back_populates="webhook", cascade="all, delete-orphan", lazy="select"
+        "WebhookDelivery",
+        back_populates="webhook",
+        cascade="all, delete-orphan",
+        lazy="select",
     )
 
     # Indexes for performance

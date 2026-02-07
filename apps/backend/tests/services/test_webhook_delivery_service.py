@@ -63,9 +63,7 @@ class TestWebhookQueueing:
         test_webhook: MagicMock,
     ):
         """Test that queueing fails gracefully without Redis."""
-        with patch(
-            "app.services.webhook_delivery_service.redis_client"
-        ) as mock_redis:
+        with patch("app.services.webhook_delivery_service.redis_client") as mock_redis:
             mock_redis.is_available = AsyncMock(return_value=False)
 
             result = await webhook_service.queue_delivery(
@@ -92,9 +90,7 @@ class TestWebhookQueueing:
         mock_session_cm.__aenter__.return_value = mock_session
 
         with (
-            patch(
-                "app.services.webhook_delivery_service.redis_client"
-            ) as mock_redis,
+            patch("app.services.webhook_delivery_service.redis_client") as mock_redis,
             patch(
                 "app.services.webhook_delivery_service.db_manager"
             ) as mock_db_manager,
@@ -182,9 +178,7 @@ class TestWebhookRetryLogic:
         mock_delivery.payload = '{"test": true}'
         delivery_id = uuid4()
 
-        with patch(
-            "app.services.webhook_delivery_service.redis_client"
-        ) as mock_redis:
+        with patch("app.services.webhook_delivery_service.redis_client") as mock_redis:
             mock_redis.client = AsyncMock()
             mock_redis.client.rpush = AsyncMock()
 
@@ -331,9 +325,7 @@ class TestWebhookStats:
         webhook_service: WebhookDeliveryService,
     ):
         """Test getting webhook statistics."""
-        with patch(
-            "app.services.webhook_delivery_service.redis_client"
-        ) as mock_redis:
+        with patch("app.services.webhook_delivery_service.redis_client") as mock_redis:
             mock_redis.is_available = AsyncMock(return_value=False)
 
             stats = await webhook_service.get_stats()

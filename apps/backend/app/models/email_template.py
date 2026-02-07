@@ -30,7 +30,9 @@ class EmailTemplate(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
 
     # Template metadata
-    name: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    name: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     category: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
@@ -44,7 +46,9 @@ class EmailTemplate(Base):
 
     # Variables and configuration
     variables: Mapped[list | None] = mapped_column(JSON, nullable=True, default=list)
-    enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False, index=True
+    )
 
     # Version tracking
     version: Mapped[int] = mapped_column(Integer, default=1, nullable=False)

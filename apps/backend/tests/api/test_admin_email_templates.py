@@ -41,7 +41,9 @@ class TestAdminEmailTemplates:
         template.category = "password_reset"
         template.subject = "Reset Your Password"
         template.body = "Hi {{user_name}}, click {{reset_link}} to reset your password."
-        template.html_body = "<p>Hi {{user_name}}, <a href='{{reset_link}}'>reset password</a></p>"
+        template.html_body = (
+            "<p>Hi {{user_name}}, <a href='{{reset_link}}'>reset password</a></p>"
+        )
         template.variables = ["user_name", "reset_link"]
         template.enabled = True
         template.version = 1
@@ -52,7 +54,9 @@ class TestAdminEmailTemplates:
         return template
 
     @pytest.mark.asyncio
-    async def test_list_email_templates_returns_entries(self, test_email_template, mock_admin_user):
+    async def test_list_email_templates_returns_entries(
+        self, test_email_template, mock_admin_user
+    ):
         """Should return paginated email templates."""
         db = AsyncMock()
 
@@ -110,7 +114,9 @@ class TestAdminEmailTemplates:
         assert response.templates[0].category == "password_reset"
 
     @pytest.mark.asyncio
-    async def test_get_email_template_returns_template(self, test_email_template, mock_admin_user):
+    async def test_get_email_template_returns_template(
+        self, test_email_template, mock_admin_user
+    ):
         """Should return a specific template by ID."""
         db = AsyncMock()
 
@@ -266,7 +272,9 @@ class TestAdminEmailTemplates:
         assert db.refresh.called
 
     @pytest.mark.asyncio
-    async def test_delete_email_template_soft_delete(self, test_email_template, mock_admin_user):
+    async def test_delete_email_template_soft_delete(
+        self, test_email_template, mock_admin_user
+    ):
         """Should soft delete template by setting enabled=False."""
         db = AsyncMock()
 

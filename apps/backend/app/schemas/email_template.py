@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -12,12 +11,20 @@ from pydantic import BaseModel, Field
 class EmailTemplateCreate(BaseModel):
     """Schema for creating a new email template."""
 
-    name: str = Field(..., min_length=1, max_length=255, description="Unique template name")
-    category: str = Field(..., min_length=1, max_length=50, description="Template category")
-    subject: str = Field(..., min_length=1, max_length=500, description="Email subject line")
+    name: str = Field(
+        ..., min_length=1, max_length=255, description="Unique template name"
+    )
+    category: str = Field(
+        ..., min_length=1, max_length=50, description="Template category"
+    )
+    subject: str = Field(
+        ..., min_length=1, max_length=500, description="Email subject line"
+    )
     body: str = Field(..., min_length=1, description="Plain text email body")
     html_body: str | None = Field(None, description="Rich HTML email body")
-    variables: list[str] | None = Field(None, description="List of variable placeholders")
+    variables: list[str] | None = Field(
+        None, description="List of variable placeholders"
+    )
     enabled: bool = Field(True, description="Whether template is enabled for use")
 
 

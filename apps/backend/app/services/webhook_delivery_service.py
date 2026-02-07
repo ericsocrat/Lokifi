@@ -19,7 +19,7 @@ from typing import Any
 from uuid import UUID
 
 import httpx
-from sqlalchemy import and_, select, update
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
@@ -144,7 +144,9 @@ class WebhookDeliveryService:
                     payload = data["payload"]
 
                     # Process the delivery
-                    await self._process_delivery(webhook_id, delivery_id, event, payload)
+                    await self._process_delivery(
+                        webhook_id, delivery_id, event, payload
+                    )
                     processed_count += 1
 
                 except (json.JSONDecodeError, KeyError, ValueError) as e:
@@ -183,7 +185,9 @@ class WebhookDeliveryService:
             # Fetch webhook config and delivery record
             async with db_manager.session() as session:
                 # Get webhook
-                result = await session.execute(select(Webhook).where(Webhook.id == webhook_id))
+                result = await session.execute(
+                    select(Webhook).where(Webhook.id == webhook_id)
+                )
                 webhook = result.scalar_one_or_none()
 
                 if not webhook:
@@ -212,7 +216,8 @@ class WebhookDeliveryService:
                 # Check if webhook is active
                 if webhook.status.value != "ACTIVE":
                     logger.info(
-                        f"⚠️ Webhook inactive: {webhook_id}, " f"skipping delivery {delivery_id}"
+                        f"⚠️ Webhook inactive: {webhook_id}, "
+                        f"skipping delivery {delivery_id}"
                     )
                     await self._update_delivery_status(
                         delivery_id,
@@ -243,7 +248,9 @@ class WebhookDeliveryService:
                         f"✅ Webhook delivered successfully: "
                         f"webhook_id={webhook_id}, delivery_id={delivery_id}"
                     )
-                    await self._update_delivery_status(delivery_id, DeliveryStatus.SUCCESS, session)
+                    await self._update_delivery_status(
+                        delivery_id, DeliveryStatus.SUCCESS, session
+                    )
                     # Update webhook last_triggered_at
                     await session.execute(
                         update(Webhook)
@@ -289,7 +296,8 @@ class WebhookDeliveryService:
             payload_str = json.dumps(payload)
             if len(payload_str) > self.max_payload_size:
                 logger.warning(
-                    f"⚠️ Payload exceeds max size: " f"{len(payload_str)} > {self.max_payload_size}"
+                    f"⚠️ Payload exceeds max size: "
+                    f"{len(payload_str)} > {self.max_payload_size}"
                 )
                 return False
 
@@ -308,7 +316,8 @@ class WebhookDeliveryService:
                     return True
                 else:
                     logger.warning(
-                        f"⚠️ Webhook POST failed: {url} " f"(status={response.status_code})"
+                        f"⚠️ Webhook POST failed: {url} "
+                        f"(status={response.status_code})"
                     )
                     return False
 
@@ -364,7 +373,9 @@ class WebhookDeliveryService:
                 base_delay * (2 ** (attempt_count - 1)),
                 3600,  # Cap at 1 hour
             )
-            next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=delay_seconds)
+            next_retry_at = datetime.now(timezone.utc) + timedelta(
+                seconds=delay_seconds
+            )
 
             # Update delivery record
             await session.execute(

@@ -15,7 +15,9 @@ class WebhookBase(BaseModel):
 
     name: str = Field(..., min_length=1, max_length=255, description="Webhook name")
     url: HttpUrl = Field(..., description="URL to send webhook requests to")
-    description: str | None = Field(None, max_length=1000, description="Webhook description")
+    description: str | None = Field(
+        None, max_length=1000, description="Webhook description"
+    )
     events: list[str] = Field(..., description="List of events to subscribe to")
     active: bool = Field(True, description="Whether webhook is active")
     max_retries: int = Field(5, ge=0, le=10, description="Maximum retry attempts")
@@ -47,7 +49,9 @@ class WebhookResponse(WebhookBase):
 
     id: str = Field(..., description="Webhook ID")
     status: WebhookStatus
-    secret: str = Field(..., description="HMAC signing secret (last 8 chars only for security)")
+    secret: str = Field(
+        ..., description="HMAC signing secret (last 8 chars only for security)"
+    )
     created_at: datetime
     updated_at: datetime
     last_triggered_at: datetime | None = None

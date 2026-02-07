@@ -36,16 +36,28 @@ def upgrade() -> None:
             server_default="ACTIVE",
         ),
         sa.Column("max_retries", sa.Integer(), nullable=False, server_default="5"),
-        sa.Column("retry_delay_seconds", sa.Integer(), nullable=False, server_default="60"),
         sa.Column(
-            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+            "retry_delay_seconds", sa.Integer(), nullable=False, server_default="60"
         ),
         sa.Column(
-            "updated_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
         ),
         sa.Column("last_triggered_at", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("successful_deliveries", sa.Integer(), nullable=False, server_default="0"),
-        sa.Column("failed_deliveries", sa.Integer(), nullable=False, server_default="0"),
+        sa.Column(
+            "successful_deliveries", sa.Integer(), nullable=False, server_default="0"
+        ),
+        sa.Column(
+            "failed_deliveries", sa.Integer(), nullable=False, server_default="0"
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
     op.create_index("idx_webhooks_active", "webhooks", ["active"])
@@ -71,19 +83,31 @@ def upgrade() -> None:
         sa.Column("attempt", sa.Integer(), nullable=False, server_default="1"),
         sa.Column("next_retry_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column(
-            "created_at", sa.DateTime(timezone=True), nullable=False, server_default=sa.func.now()
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
         ),
         sa.Column("delivered_at", sa.DateTime(timezone=True), nullable=True),
         sa.ForeignKeyConstraint(
-            ["webhook_id"], ["webhooks.id"], ondelete="CASCADE", name="fk_webhook_deliveries"
+            ["webhook_id"],
+            ["webhooks.id"],
+            ondelete="CASCADE",
+            name="fk_webhook_deliveries",
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("idx_webhook_deliveries_created_at", "webhook_deliveries", ["created_at"])
+    op.create_index(
+        "idx_webhook_deliveries_created_at", "webhook_deliveries", ["created_at"]
+    )
     op.create_index("idx_webhook_deliveries_event", "webhook_deliveries", ["event"])
-    op.create_index("idx_webhook_deliveries_next_retry", "webhook_deliveries", ["next_retry_at"])
+    op.create_index(
+        "idx_webhook_deliveries_next_retry", "webhook_deliveries", ["next_retry_at"]
+    )
     op.create_index("idx_webhook_deliveries_status", "webhook_deliveries", ["status"])
-    op.create_index("idx_webhook_deliveries_webhook_id", "webhook_deliveries", ["webhook_id"])
+    op.create_index(
+        "idx_webhook_deliveries_webhook_id", "webhook_deliveries", ["webhook_id"]
+    )
 
 
 def downgrade() -> None:

@@ -77,7 +77,9 @@ class WebhookProcessor:
         while self.running:
             try:
                 # Process a batch of deliveries
-                processed = await webhook_delivery_service.process_queue(batch_size=self.batch_size)
+                processed = await webhook_delivery_service.process_queue(
+                    batch_size=self.batch_size
+                )
                 self.processed_total += processed
 
                 # Wait before next batch

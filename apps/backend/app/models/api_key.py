@@ -7,11 +7,12 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from app.db.database import Base
 from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PgUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.types import JSON
+
+from app.db.database import Base
 
 if TYPE_CHECKING:
     from app.models.user import User
@@ -51,7 +52,9 @@ class APIKey(Base):
 
     # Key data (security: never store plain text key)
     key_hash: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    key_prefix: Mapped[str] = mapped_column(String(12), index=True)  # For user identification
+    key_prefix: Mapped[str] = mapped_column(
+        String(12), index=True
+    )  # For user identification
 
     # Metadata
     name: Mapped[str] = mapped_column(String(255), index=True)
@@ -65,14 +68,19 @@ class APIKey(Base):
     expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True, index=True
     )
-    last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_used_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, index=True)
 
     # Audit fields
     created_by: Mapped[UUID | None] = mapped_column(
-        PgUUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+        PgUUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True

@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import re
 from typing import Any
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user
 from app.db.database import get_db
@@ -20,11 +25,18 @@ from app.schemas.api_key import (
     APIKeyValidateRequest,
     APIKeyValidateResponse,
 )
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_log(value: str | None, max_len: int = 100) -> str:
+    """Sanitize user input for safe logging (prevent log injection)."""
+    if value is None:
+        return ""
+    # Strip control characters and newlines
+    sanitized = re.sub(r"[\x00-\x1f\x7f-\x9f]", "", str(value))
+    return sanitized[:max_len]
+
 
 router = APIRouter(tags=["Admin - API Keys"])
 
@@ -74,11 +86,9 @@ async def list_api_keys(
             "admin_id": current_user.id,
             "offset": offset,
             "limit": limit,
-            "filters": {
-                "search": search,
-                "is_active": is_active,
-                "created_by": created_by,
-            },
+            "has_search": bool(search),
+            "has_active_filter": is_active is not None,
+            "has_creator_filter": created_by is not None,
         },
     )
 
@@ -89,7 +99,8 @@ async def list_api_keys(
     if search:
         search_filter = f"%{search}%"
         query = query.where(
-            (APIKey.name.ilike(search_filter)) | (APIKey.description.ilike(search_filter))
+            (APIKey.name.ilike(search_filter))
+            | (APIKey.description.ilike(search_filter))
         )
 
     if is_active is not None:
@@ -138,7 +149,8 @@ async def get_api_key(
         HTTPException: 404 if key not found
     """
     logger.info(
-        "Admin fetching API key", extra={"admin_id": current_user.id, "key_id": str(key_id)}
+        "Admin fetching API key",
+        extra={"admin_id": current_user.id, "key_id": str(key_id)},
     )
 
     result = await db.execute(select(APIKey).where(APIKey.id == key_id))
@@ -154,7 +166,9 @@ async def get_api_key(
 
 
 @router.post(
-    "/admin/api-keys", response_model=APIKeyCreateResponse, status_code=status.HTTP_201_CREATED
+    "/admin/api-keys",
+    response_model=APIKeyCreateResponse,
+    status_code=status.HTTP_201_CREATED,
 )
 async def create_api_key(
     data: APIKeyCreate,
@@ -179,7 +193,7 @@ async def create_api_key(
     """
     logger.info(
         "Admin creating API key",
-        extra={"admin_id": current_user.id, "key_name": data.name, "scopes": data.scopes},
+        extra={"admin_id": current_user.id, "key_name": _sanitize_log(data.name)},
     )
 
     # Check for duplicate name
@@ -254,7 +268,7 @@ async def update_api_key(
         extra={
             "admin_id": current_user.id,
             "key_id": str(key_id),
-            "updates": data.model_dump(exclude_unset=True),
+            "fields_updated": list(data.model_dump(exclude_unset=True).keys()),
         },
     )
 
@@ -284,7 +298,9 @@ async def update_api_key(
     await db.commit()
     await db.refresh(api_key)
 
-    logger.info("API key updated", extra={"admin_id": current_user.id, "key_id": str(key_id)})
+    logger.info(
+        "API key updated", extra={"admin_id": current_user.id, "key_id": str(key_id)}
+    )
 
     return api_key
 
@@ -306,7 +322,8 @@ async def delete_api_key(
         HTTPException: 404 if key not found
     """
     logger.info(
-        "Admin deleting API key", extra={"admin_id": current_user.id, "key_id": str(key_id)}
+        "Admin deleting API key",
+        extra={"admin_id": current_user.id, "key_id": str(key_id)},
     )
 
     result = await db.execute(select(APIKey).where(APIKey.id == key_id))
@@ -323,7 +340,8 @@ async def delete_api_key(
     await db.commit()
 
     logger.info(
-        "API key deleted (soft)", extra={"admin_id": current_user.id, "key_id": str(key_id)}
+        "API key deleted (soft)",
+        extra={"admin_id": current_user.id, "key_id": str(key_id)},
     )
 
 
@@ -345,7 +363,7 @@ async def validate_api_key(
     """
     from datetime import datetime, timezone
 
-    logger.debug("Validating API key", extra={"key_prefix": data.api_key[:12]})
+    logger.debug("Validating API key", extra={"key_prefix": data.api_key[:8]})
 
     # Hash the provided key
     key_hash = hash_api_key(data.api_key)

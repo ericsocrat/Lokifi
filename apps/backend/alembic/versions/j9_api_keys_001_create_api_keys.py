@@ -23,7 +23,9 @@ def upgrade() -> None:
     op.create_table(
         "api_keys",
         # Primary key (UUID)
-        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
+        sa.Column(
+            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
+        ),
         # Key data (hashed - never store plain text)
         sa.Column("key_hash", sa.String(255), unique=True, nullable=False),
         sa.Column("key_prefix", sa.String(12), nullable=False),
@@ -46,7 +48,10 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.Column(
-            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.func.now(),
+            nullable=False,
         ),
         sa.Column(
             "updated_at",
@@ -68,8 +73,12 @@ def upgrade() -> None:
     op.create_index("ix_api_keys_created_at", "api_keys", ["created_at"])
 
     # Create composite indexes for common queries
-    op.create_index("ix_api_keys_active_expires", "api_keys", ["is_active", "expires_at"])
-    op.create_index("ix_api_keys_created_by_active", "api_keys", ["created_by", "is_active"])
+    op.create_index(
+        "ix_api_keys_active_expires", "api_keys", ["is_active", "expires_at"]
+    )
+    op.create_index(
+        "ix_api_keys_created_by_active", "api_keys", ["created_by", "is_active"]
+    )
 
 
 def downgrade() -> None:

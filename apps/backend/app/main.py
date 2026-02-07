@@ -218,12 +218,16 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
-app.include_router(profile.router, prefix=settings.API_PREFIX)  # Phase J Profiles & Settings
+app.include_router(
+    profile.router, prefix=settings.API_PREFIX
+)  # Phase J Profiles & Settings
 app.include_router(
     profile_enhanced_router, prefix=settings.API_PREFIX
 )  # Phase J2 Enhanced Profile Features
 app.include_router(follow.router, prefix=settings.API_PREFIX)  # Phase J Follow Graph
-app.include_router(conversations.router, prefix=settings.API_PREFIX)  # Phase J4 Direct Messages
+app.include_router(
+    conversations.router, prefix=settings.API_PREFIX
+)  # Phase J4 Direct Messages
 app.include_router(websocket.router, prefix=settings.API_PREFIX)  # Phase J4 WebSocket
 app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase J4 Admin
 app.include_router(
@@ -235,7 +239,9 @@ app.include_router(
 app.include_router(
     admin_analytics.router, prefix=settings.API_PREFIX
 )  # Session 192 Admin Analytics Dashboard
-app.include_router(admin_settings.router, prefix=settings.API_PREFIX)  # Session 193 System Settings
+app.include_router(
+    admin_settings.router, prefix=settings.API_PREFIX
+)  # Session 193 System Settings
 app.include_router(
     admin_audit_logs.router, prefix=settings.API_PREFIX
 )  # Session 194 Admin Audit Logs
@@ -249,11 +255,15 @@ app.include_router(
     admin_webhooks.router, prefix=settings.API_PREFIX
 )  # Session 197 Webhook Management
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
-app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
+app.include_router(
+    ai_websocket.router, prefix=settings.API_PREFIX
+)  # Phase J5 AI WebSocket
 app.include_router(
     notifications.router, prefix=settings.API_PREFIX
 )  # Phase J6 Enterprise Notifications
-app.include_router(j6_2_router, prefix=settings.API_PREFIX)  # Phase J6.2 Advanced Features
+app.include_router(
+    j6_2_router, prefix=settings.API_PREFIX
+)  # Phase J6.2 Advanced Features
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market.router, prefix=settings.API_PREFIX)  # Phase 4c Market caching
 app.include_router(news.router, prefix=settings.API_PREFIX)
@@ -264,8 +274,12 @@ app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
-app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
-app.include_router(smart_prices.router, prefix=settings.API_PREFIX)  # 🎯 Smart Price Service
+app.include_router(
+    realtime_market_router, prefix=settings.API_PREFIX
+)  # Real-time prices
+app.include_router(
+    smart_prices.router, prefix=settings.API_PREFIX
+)  # 🎯 Smart Price Service
 app.include_router(
     websocket_prices.router, prefix=settings.API_PREFIX
 )  # 🔌 WebSocket Price Updates

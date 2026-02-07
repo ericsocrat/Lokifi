@@ -5,10 +5,11 @@ import uuid
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from app.db.database import Base
 from sqlalchemy import DateTime, Enum, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.db.database import Base
 
 if TYPE_CHECKING:
     from app.models.webhook import Webhook
@@ -29,16 +30,22 @@ class WebhookDelivery(Base):
     __tablename__ = "webhook_deliveries"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign key
     webhook_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("webhooks.id", ondelete="CASCADE"), nullable=False
+        UUID(as_uuid=True),
+        ForeignKey("webhooks.id", ondelete="CASCADE"),
+        nullable=False,
     )
 
     # Event details
     event: Mapped[str] = mapped_column(String(255), nullable=False)
-    payload: Mapped[str] = mapped_column(Text, nullable=False, comment="JSON payload sent")
+    payload: Mapped[str] = mapped_column(
+        Text, nullable=False, comment="JSON payload sent"
+    )
 
     # Delivery tracking
     status: Mapped[DeliveryStatus] = mapped_column(
@@ -51,13 +58,19 @@ class WebhookDelivery(Base):
 
     # Retry tracking
     attempt: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
-    next_retry_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    next_retry_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Timing
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
-    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    delivered_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Relationship
     webhook: Mapped["Webhook"] = relationship("Webhook", back_populates="deliveries")

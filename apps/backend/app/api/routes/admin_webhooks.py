@@ -3,6 +3,10 @@
 import secrets
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import desc, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.user import User
@@ -19,9 +23,6 @@ from app.schemas.webhook import (
     WebhookTestPayload,
     WebhookUpdate,
 )
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import desc, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/admin/webhooks", tags=["admin-webhooks"])
 
@@ -31,7 +32,9 @@ async def require_admin(
 ) -> User:
     """Require admin user for webhook routes."""
     if not current_user.is_admin:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
+        )
     return current_user
 
 
@@ -117,7 +120,9 @@ async def get_webhook(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     response = WebhookResponse.model_validate(webhook)
     response.redact_secret()
@@ -136,7 +141,9 @@ async def update_webhook(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     # Update fields
     update_data = webhook_data.model_dump(exclude_unset=True)
@@ -172,7 +179,9 @@ async def delete_webhook(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     await db.delete(webhook)
     await db.commit()
@@ -189,7 +198,9 @@ async def get_webhook_secret(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     return WebhookSecretResponse(secret=webhook.secret, webhook_id=webhook_id)
 
@@ -205,7 +216,9 @@ async def rotate_webhook_secret(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     webhook.secret = secrets.token_urlsafe(32)
     await db.commit()
@@ -225,10 +238,14 @@ async def get_webhook_deliveries(
     # Verify webhook exists
     result = await db.execute(select(Webhook).where(Webhook.id == webhook_id))
     if not result.scalar_one_or_none():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     # Get total deliveries
-    count_query = select(WebhookDelivery).where(WebhookDelivery.webhook_id == webhook_id)
+    count_query = select(WebhookDelivery).where(
+        WebhookDelivery.webhook_id == webhook_id
+    )
     result = await db.execute(count_query)
     total = len(result.scalars().all())
 
@@ -264,7 +281,9 @@ async def test_webhook(
     webhook = result.scalar_one_or_none()
 
     if not webhook:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Webhook not found"
+        )
 
     # Validate event
     if test_payload.event not in webhook.parse_events():
@@ -275,7 +294,11 @@ async def test_webhook(
 
     # Queue test delivery (in real implementation, this would be async)
     # For now, return acceptance
-    return {"status": "queued", "message": "Test delivery queued", "webhook_id": webhook_id}
+    return {
+        "status": "queued",
+        "message": "Test delivery queued",
+        "webhook_id": webhook_id,
+    }
 
 
 @router.get("/available-events", response_model=WebhookEventList)

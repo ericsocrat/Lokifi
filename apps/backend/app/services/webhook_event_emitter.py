@@ -18,7 +18,6 @@ from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import db_manager
 from app.models.webhook import Webhook, WebhookEvent, WebhookStatus
@@ -122,7 +121,8 @@ class WebhookEventEmitter:
                     return True
 
                 logger.info(
-                    f"📤 Dispatching event '{event}' to " f"{len(subscribed_webhooks)} webhook(s)"
+                    f"📤 Dispatching event '{event}' to "
+                    f"{len(subscribed_webhooks)} webhook(s)"
                 )
 
                 # Create payload

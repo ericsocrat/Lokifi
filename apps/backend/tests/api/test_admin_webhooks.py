@@ -393,9 +393,7 @@ class TestWebhookSecretManagement:
         assert db.commit.called
         assert result.webhook_id == str(mock_webhook.id)
 
-    async def test_rotate_webhook_secret_not_found(
-        self, mock_admin_user: User
-    ) -> None:
+    async def test_rotate_webhook_secret_not_found(self, mock_admin_user: User) -> None:
         """Test rotating secret for non-existent webhook raises 404."""
         db = AsyncMock()
         result_mock = MagicMock()

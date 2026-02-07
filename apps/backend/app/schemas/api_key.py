@@ -11,14 +11,22 @@ from pydantic import BaseModel, ConfigDict, Field
 class APIKeyCreate(BaseModel):
     """Schema for creating a new API key."""
 
-    name: str = Field(..., min_length=1, max_length=255, description="Human-readable key name")
-    description: str | None = Field(None, description="Optional description of key purpose")
+    name: str = Field(
+        ..., min_length=1, max_length=255, description="Human-readable key name"
+    )
+    description: str | None = Field(
+        None, description="Optional description of key purpose"
+    )
     scopes: list[str] | None = Field(
         default=None,
         description="Permission scopes (e.g., ['read:users', 'write:content'])",
     )
-    rate_limit: int = Field(60, ge=0, le=10000, description="Requests per minute (0=unlimited)")
-    expires_at: datetime | None = Field(None, description="Optional expiration datetime")
+    rate_limit: int = Field(
+        60, ge=0, le=10000, description="Requests per minute (0=unlimited)"
+    )
+    expires_at: datetime | None = Field(
+        None, description="Optional expiration datetime"
+    )
     is_active: bool = Field(True, description="Whether key is enabled")
 
 
