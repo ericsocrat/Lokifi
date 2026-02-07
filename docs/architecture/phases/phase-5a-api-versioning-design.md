@@ -1,7 +1,7 @@
 # Phase 5A: API Versioning Implementation
 
-**Objective**: Enable parallel API versions (v1/v2) without breaking production clients  
-**Timeline**: 2-3 sessions  
+**Objective**: Enable parallel API versions (v1/v2) without breaking production clients
+**Timeline**: 2-3 sessions
 **Strategic Value**: Foundation for sustainable feature development
 
 ---
@@ -23,6 +23,7 @@ Headers:
 ### Implementation Components
 
 #### 1. **Version Router Factory** (Middleware)
+
 ```python
 # app/core/versioning.py
 class APIVersion(str, Enum):
@@ -35,6 +36,7 @@ def get_api_version(request: Request) -> APIVersion:
 ```
 
 #### 2. **Route Organization**
+
 ```
 app/api/v1/
   routes/
@@ -43,7 +45,7 @@ app/api/v1/
     alerts.py
     cache.py
     ...
-    
+
 app/api/v2/
   routes/
     auth.py          # Enhanced v2 auth
@@ -53,6 +55,7 @@ app/api/v2/
 ```
 
 #### 3. **Shared Models & Utilities**
+
 ```
 app/api/common/
   schemas.py         # Shared Pydantic models
@@ -61,6 +64,7 @@ app/api/common/
 ```
 
 #### 4. **Router Registration**
+
 ```python
 # app/main.py
 from app.api.v1 import router as v1_router
@@ -75,6 +79,7 @@ app.include_router(v2_router, prefix="/api/v2")
 ## Phase 5A Milestones
 
 ### Milestone 1: Foundation (Session N+1)
+
 - [ ] Create versioning router factory
 - [ ] Migrate v1 routes (existing → /api/v1/)
 - [ ] Create v2 route structure (stub endpoints)
@@ -84,6 +89,7 @@ app.include_router(v2_router, prefix="/api/v2")
 **Deliverable**: Dual API endpoints working, all v1 endpoints accessible at /api/v1
 
 ### Milestone 2: Migration & Enhancement (Session N+2)
+
 - [ ] Deep copy v1 endpoints to v2 (new baseline)
 - [ ] Add v2 enhancements:
   - Improved error responses
@@ -95,6 +101,7 @@ app.include_router(v2_router, prefix="/api/v2")
 **Deliverable**: v2 API with enhancements, migration guide for clients
 
 ### Milestone 3: Maturity & Scalability (Session N+3)
+
 - [ ] Performance benchmarks (v1 vs v2)
 - [ ] Backward compatibility testing
 - [ ] Rate limiting per version
@@ -108,17 +115,19 @@ app.include_router(v2_router, prefix="/api/v2")
 ## v1 vs v2 API Differences
 
 ### v1 (Current - Stable)
-✅ `/api/social/users` - create users  
-✅ `/api/social/posts` - create/list posts  
-✅ `/api/social/follows` - manage follows  
+
+✅ `/api/social/users` - create users
+✅ `/api/social/posts` - create/list posts
+✅ `/api/social/follows` - manage follows
 ✅ Basic error responses
 
 ### v2 (Enhanced - New Features)
-✅ `/api/v2/users` - user management endpoints  
-✅ `/api/v2/posts` - posts with search/filter  
-✅ `/api/v2/social` - enhanced social graph  
-🆕 `/api/v2/feed` - personalized feeds  
-🆕 `/api/v2/recommendations` - user recommendations  
+
+✅ `/api/v2/users` - user management endpoints
+✅ `/api/v2/posts` - posts with search/filter
+✅ `/api/v2/social` - enhanced social graph
+🆕 `/api/v2/feed` - personalized feeds
+🆕 `/api/v2/recommendations` - user recommendations
 🆕 Response pagination, granular fields, sorting
 
 ---
@@ -126,6 +135,7 @@ app.include_router(v2_router, prefix="/api/v2")
 ## Backward Compatibility Strategy
 
 ### Phase 1: Coexistence
+
 ```
 /api/social/*     → Deprecated (soft)
 /api/v1/*         → Current production
@@ -133,11 +143,13 @@ app.include_router(v2_router, prefix="/api/v2")
 ```
 
 ### Phase 2: Deprecation
+
 - Announce v1 EOL (3-6 months notice)
 - Mark v1 endpoints with `Deprecation` headers
 - Provide migration tooling
 
 ### Phase 3: Sunset
+
 - Full migration to v2
 - Retire v1 (long-term maintenance option?)
 
@@ -146,6 +158,7 @@ app.include_router(v2_router, prefix="/api/v2")
 ## Implementation Checklist
 
 ### Code Structure
+
 - [ ] `app/api/__init__.py` - Version registry
 - [ ] `app/api/v1/__init__.py` - v1 router
 - [ ] `app/api/v2/__init__.py` - v2 router
@@ -153,6 +166,7 @@ app.include_router(v2_router, prefix="/api/v2")
 - [ ] `app/core/versioning.py` - Version utilities
 
 ### Testing
+
 - [ ] Version routing tests
 - [ ] v1 endpoint tests (existing → migrated)
 - [ ] v2 endpoint tests (new features)
@@ -160,12 +174,14 @@ app.include_router(v2_router, prefix="/api/v2")
 - [ ] OpenAPI spec generation for both versions
 
 ### Documentation
+
 - [ ] Migration guide (v1 → v2)
 - [ ] API reference (both versions)
 - [ ] Changelog with version timeline
 - [ ] SDK/client examples
 
 ### Deployment
+
 - [ ] Feature flag for v2 enablement
 - [ ] Gradual rollout plan
 - [ ] Health checks for both versions
@@ -176,6 +192,7 @@ app.include_router(v2_router, prefix="/api/v2")
 ## Expected Outcomes
 
 **After Phase 5A**:
+
 1. ✅ Dual API versions operational
 2. ✅ v2 with enhanced features ready for development
 3. ✅ Clear upgrade path for API clients
@@ -183,6 +200,7 @@ app.include_router(v2_router, prefix="/api/v2")
 5. ✅ Team can work on v2 features without disrupting v1
 
 **Value Delivered**:
+
 - 🚀 Sustainable growth
 - 🔄 Backward compatibility
 - 👥 Team collaboration enabled
@@ -193,6 +211,7 @@ app.include_router(v2_router, prefix="/api/v2")
 ## Next Steps
 
 **Session N+1 Actionable Plan**:
+
 1. Create versioning middleware (`app/core/versioning.py`)
 2. Organize v1 routes under `/api/v1/`
 3. Create v2 route stubs

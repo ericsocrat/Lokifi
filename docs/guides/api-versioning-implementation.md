@@ -1,7 +1,7 @@
 ## Phase 5A: API Versioning Implementation
 
-**Status**: ✅ IMPLEMENTED (Session 199)  
-**Completion Date**: February 7, 2026  
+**Status**: ✅ IMPLEMENTED (Session 199)
+**Completion Date**: February 7, 2026
 **Design Doc**: [phase-5a-api-versioning-design.md](../../architecture/phases/phase-5a-api-versioning-design.md)
 
 ### Overview
@@ -13,6 +13,7 @@ Phase 5A implements **API versioning infrastructure** for sustainable growth and
 #### 1. Core Versioning Utilities (`app/core/versioning.py`)
 
 **APIVersion Enum**:
+
 ```python
 class APIVersion(str, Enum):
     """Supported API versions"""
@@ -21,12 +22,14 @@ class APIVersion(str, Enum):
 ```
 
 **Version Detection Function** (`get_api_version()`):
+
 - Extracts version from request URL path
 - Falls back to Accept-Version header
 - Defaults to V1 for backward compatibility
 - **Priority**: URL path > header > v1 default
 
 Example usage:
+
 ```python
 @router.get("/endpoint")
 async def my_endpoint(request: Request):
@@ -35,6 +38,7 @@ async def my_endpoint(request: Request):
 ```
 
 **Deprecation Warnings**:
+
 ```python
 class DeprecationWarning:
     """RFC 8594 compliant deprecation notices"""
@@ -47,6 +51,7 @@ class DeprecationWarning:
 #### 2. Version Detection Middleware (`app/middleware/versioning.py`)
 
 **VersionDetectionMiddleware**:
+
 - Runs on EVERY request through the API
 - Extracts version using `get_api_version()`
 - Stores version in `request.state.api_version`
@@ -54,6 +59,7 @@ class DeprecationWarning:
 - Adds `Vary: Accept-Version` header
 
 **Registration** (in `app/main.py`):
+
 ```python
 # Phase 5A: Version detection middleware
 app.add_middleware(VersionDetectionMiddleware)
@@ -68,6 +74,7 @@ app.add_middleware(VersionDetectionMiddleware)
 3. `/api/v1/example/compatibility` - Version compatibility info
 
 **Schema Differences Example**:
+
 ```python
 # V1 Response (basic schema)
 {
@@ -101,9 +108,9 @@ from app.core.versioning import APIVersion
 @router.get("/users/{user_id}")
 async def get_user(user_id: str, request: Request):
     api_version = request.state.api_version
-    
+
     user = await db.get_user(user_id)
-    
+
     if api_version == APIVersion.V2:
         # Return v2 schema with additional fields
         return {
@@ -128,13 +135,13 @@ async def get_user(user_id: str, request: Request):
 @router.post("/posts")
 async def create_post(data: PostCreate, request: Request):
     api_version = request.state.api_version
-    
+
     post = await db.create_post(data)
-    
+
     if api_version == APIVersion.V2:
         # V2 supports advanced fields
         await post.update(tags=data.tags, ai_summary=data.ai_summary)
-    
+
     return post
 ```
 
@@ -150,10 +157,10 @@ async def old_endpoint(request: Request):
     Migrate to /new-endpoint instead.
     """
     deprecation = V1_DEPRECATION["endpoint"]
-    
+
     # Add deprecation headers to response
     # (Future: middleware will do this automatically)
-    
+
     return {"message": "Use /new-endpoint instead"}
 ```
 
@@ -203,6 +210,7 @@ curl -X GET http://localhost:8000/api/example/schema
 - ✅ Compatibility info endpoint
 
 **Run tests**:
+
 ```bash
 pytest tests/unit/test_versioning.py -v
 ```
@@ -212,6 +220,7 @@ pytest tests/unit/test_versioning.py -v
 **Process to version an existing endpoint**:
 
 1. **Identify endpoint to version**
+
    ```python
    @router.get("/api/posts")
    async def list_posts():
@@ -219,13 +228,14 @@ pytest tests/unit/test_versioning.py -v
    ```
 
 2. **Add version awareness**
+
    ```python
    @router.get("/api/posts")
    async def list_posts(request: Request):
        api_version = request.state.api_version
-       
+
        posts = await db.list_posts()
-       
+
        if api_version == APIVersion.V2:
            # Return enhanced v2 response
            return [{"id": p.id, **p.v2_fields()} for p in posts]
@@ -235,6 +245,7 @@ pytest tests/unit/test_versioning.py -v
    ```
 
 3. **Document in OpenAPI**
+
    ```python
    @router.get(
        "/api/posts",
@@ -249,6 +260,7 @@ pytest tests/unit/test_versioning.py -v
 ### Future Extensions
 
 #### 1. Request Schema Versioning
+
 ```python
 class PostCreateV1(BaseModel):
     title: str
@@ -260,6 +272,7 @@ class PostCreateV2(PostCreateV1):
 ```
 
 #### 2. Automatic Deprecation Headers
+
 ```python
 # Future: Middleware auto-adds RFC 8594 headers
 @router.get("/old-endpoint", sunset_date="2026-12-31")
@@ -271,6 +284,7 @@ async def old_endpoint():
 ```
 
 #### 3. Request/Response Transformations
+
 ```python
 # Future: Automatic schema transformation
 @router.get("/api/users/{user_id}")
@@ -284,6 +298,7 @@ async def get_user(user_id: str):
 ```
 
 #### 4. Version Deprecation Timeline
+
 ```python
 # Future: Automatic v1 → v2 migration
 VERSION_TIMELINE = {
@@ -328,16 +343,17 @@ deprecated_endpoints{version="v1", endpoint="/old-api"}
 
 Phase 5A provides:
 
-| Component | Purpose | Status |
-|-----------|---------|--------|
-| `APIVersion` enum | Version constants | ✅ Complete |
-| `get_api_version()` | Version detection logic | ✅ Complete |
+| Component                    | Purpose                         | Status      |
+| ---------------------------- | ------------------------------- | ----------- |
+| `APIVersion` enum            | Version constants               | ✅ Complete |
+| `get_api_version()`          | Version detection logic         | ✅ Complete |
 | `VersionDetectionMiddleware` | Auto-attach version to requests | ✅ Complete |
-| Example endpoints | Demonstrate v1 vs v2 patterns | ✅ Complete |
-| Test suite | Validate version routing | ✅ Complete |
-| This guide | Usage documentation | ✅ Complete |
+| Example endpoints            | Demonstrate v1 vs v2 patterns   | ✅ Complete |
+| Test suite                   | Validate version routing        | ✅ Complete |
+| This guide                   | Usage documentation             | ✅ Complete |
 
 **Next phases**:
+
 - 5B: Migrate critical endpoints (users, posts, follows)
 - 5C: Automatic deprecation headers
 - 5D: Request/response schema versioning

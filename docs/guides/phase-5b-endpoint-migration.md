@@ -1,7 +1,7 @@
 ## Phase 5B: Endpoint Migration Guide
 
-**Status**: Planning (Ready to execute)  
-**Scope**: Migrate critical endpoints to use Phase 5A versioning  
+**Status**: Planning (Ready to execute)
+**Scope**: Migrate critical endpoints to use Phase 5A versioning
 **Priority**: High (enables client version awareness)
 
 ### Overview
@@ -11,6 +11,7 @@ Phase 5B migrates critical endpoints from Phase 5A foundation to actually use ve
 ### Endpoints to Version (Priority Order)
 
 #### Tier 1 (Critical) - Session 200
+
 1. **Social Endpoints** (in `app/api/routes/social.py`):
    - `/api/posts` - List posts
    - `/api/posts/{post_id}` - Get single post
@@ -31,6 +32,7 @@ Phase 5B migrates critical endpoints from Phase 5A foundation to actually use ve
    - V2: Add additional metadata (expiry info, scopes)
 
 #### Tier 2 (Important) - Session 201
+
 1. **Profile Endpoints** (in `app/routers/profile.py`):
    - `/api/profile/me` - Get current user
    - `/api/profile/{user_id}` - Get user profile
@@ -49,6 +51,7 @@ Phase 5B migrates critical endpoints from Phase 5A foundation to actually use ve
    - V2: Add performance metrics, historical data
 
 #### Tier 3 (Enhancement) - Session 202+
+
 - Market data endpoints
 - Admin endpoints
 - Webhook endpoints
@@ -82,11 +85,11 @@ async def get_post(
 ):
     """Get a single post with version-aware response"""
     api_version = request.state.api_version
-    
+
     post = await db.get_post(post_id)
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
-    
+
     # V1: Basic response
     response = {
         "id": post.id,
@@ -94,7 +97,7 @@ async def get_post(
         "content": post.content,
         "author_id": post.author_id,
     }
-    
+
     # V2: Enhanced response with metadata
     if api_version == APIVersion.V2:
         response.update({
@@ -107,7 +110,7 @@ async def get_post(
                 "reading_time_minutes": len(post.content.split()) // 200 + 1,
             }
         })
-    
+
     return response
 ```
 
@@ -138,7 +141,7 @@ async def get_post(
     """Get post - returns PostV1 or PostV2 based on version"""
     api_version = request.state.api_version
     post_data = await fetch_post(post_id, db)
-    
+
     # Pydantic handles validation for correct version
     if api_version == APIVersion.V2:
         return PostV2(**post_data)
@@ -153,7 +156,7 @@ async def get_post(
     "/posts",
     description="""
     Get all posts.
-    
+
     *Version Differences*:
     - **V1**: Returns basic post fields (id, title, content, author_id)
     - **V2**: Adds metadata (timestamps, engagement metrics, reading_time)
@@ -169,12 +172,14 @@ async def list_posts(request: Request, ...):
 **Session Goal**: Version 4 critical social endpoints
 
 **Endpoints to Migrate**:
+
 1. `POST /api/posts` - Create post
 2. `GET /api/posts` - List posts
 3. `GET /api/posts/{post_id}` - Get post
 4. `PUT /api/posts/{post_id}` - Update post
 
 **Changes per Endpoint**:
+
 - Add `request: Request` parameter
 - Extract `api_version = request.state.api_version`
 - Add v2 fields (timestamps, metrics)
@@ -184,6 +189,7 @@ async def list_posts(request: Request, ...):
 **Code Amount**: ~150-200 lines (4 endpoints × 40-50 lines each)
 
 **Testing**:
+
 - Verify v1 responses unchanged (backward compatibility)
 - Verify v2 responses have additional fields
 - Test version detection via URL path
@@ -207,26 +213,27 @@ async def get_post(
 ):
     api_version = request.state.api_version
     post = await db.get_post(post_id)
-    
+
     response = {
         "id": post.id,
         "title": post.title,
         "content": post.content,
     }
-    
+
     if api_version == APIVersion.V2:
         response.update({
             "created_at": post.created_at.isoformat(),
             "updated_at": post.updated_at.isoformat(),
             "like_count": post.like_count,
         })
-    
+
     return response
 ```
 
 ### Backward Compatibility Checklist
 
 For each versioned endpoint:
+
 - [ ] V1 response unchanged (100% backward compatible)
 - [ ] V2 response includes all V1 fields plus new fields
 - [ ] Default version is V1 (existing clients unaffected)
@@ -237,6 +244,7 @@ For each versioned endpoint:
 ### Success Metrics
 
 After Phase 5B:
+
 - ✅ 4+ critical endpoints versioned
 - ✅ V1/V2 responses documented
 - ✅ Version detection tested with real data
@@ -289,4 +297,3 @@ def test_posts_backward_compatibility():
 - [ ] Documentation complete
 - [ ] Example curl commands work for both versions
 - [ ] Client guide updated
-

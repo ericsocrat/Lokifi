@@ -9,9 +9,8 @@ Example:
   - GET /api/v2/example/version -> Returns v2 schema with additional fields
 """
 
-from fastapi import APIRouter, Request
-
 from app.core.versioning import APIVersion
+from fastapi import APIRouter, Request
 
 router = APIRouter(prefix="/example", tags=["Versioning Examples"])
 
@@ -48,14 +47,16 @@ async def get_schema(request: Request):
 
     if api_version == APIVersion.V2:
         # V2 adds additional fields
-        base_response.update({
-            "created_at": "2026-02-07T00:00:00Z",
-            "updated_at": "2026-02-07T12:00:00Z",
-            "metadata": {
-                "last_login": "2026-02-07T11:30:00Z",
-                "login_count": 42,
-            },
-        })
+        base_response.update(
+            {
+                "created_at": "2026-02-07T00:00:00Z",
+                "updated_at": "2026-02-07T12:00:00Z",
+                "metadata": {
+                    "last_login": "2026-02-07T11:30:00Z",
+                    "login_count": 42,
+                },
+            }
+        )
 
     return base_response
 

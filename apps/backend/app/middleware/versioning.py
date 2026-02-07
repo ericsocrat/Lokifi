@@ -5,9 +5,8 @@ Extracts and tracks API version from request, adds version info to responses
 
 from typing import Callable
 
-from fastapi import Request, Response
-
 from app.core.versioning import APIVersion, get_api_version
+from fastapi import Request, Response
 
 
 class VersionDetectionMiddleware:
