@@ -9,8 +9,9 @@ Example:
   - GET /api/v2/example/version -> Returns v2 schema with additional fields
 """
 
-from app.core.versioning import APIVersion
 from fastapi import APIRouter, Request
+
+from app.core.versioning import APIVersion
 
 router = APIRouter(prefix="/example", tags=["Versioning Examples"])
 
