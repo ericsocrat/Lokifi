@@ -36,10 +36,14 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
     # Index 1: Composite index on follows (follower_id, followee_id)
     # Used for: Fast lookup of "does user A follow user B?"
     try:
-        session.execute(text("""
+        session.execute(
+            text(
+                """
             CREATE INDEX IF NOT EXISTS idx_follows_follower_followee
             ON follows(follower_id, followee_id);
-            """))
+            """
+            )
+        )
         results["idx_follows_follower_followee"] = True
     except Exception:
         results["idx_follows_follower_followee"] = False
@@ -47,10 +51,14 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
     # Index 2: Composite index on posts (user_id, created_at DESC)
     # Used for: Efficient ordered feed retrieval from specific users
     try:
-        session.execute(text("""
+        session.execute(
+            text(
+                """
             CREATE INDEX IF NOT EXISTS idx_posts_user_created_desc
             ON posts(user_id, created_at DESC);
-            """))
+            """
+            )
+        )
         results["idx_posts_user_created_desc"] = True
     except Exception:
         results["idx_posts_user_created_desc"] = False
@@ -58,10 +66,14 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
     # Index 3: Index on follows.followee_id for reverse follower lookups
     # Used for: Finding all followers of a user
     try:
-        session.execute(text("""
+        session.execute(
+            text(
+                """
             CREATE INDEX IF NOT EXISTS idx_follows_followee_id
             ON follows(followee_id);
-            """))
+            """
+            )
+        )
         results["idx_follows_followee_id"] = True
     except Exception:
         results["idx_follows_followee_id"] = False
@@ -69,10 +81,14 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
     # Index 4: Index on posts.symbol for symbol-filtered feeds
     # Used for: Fast filtering of posts by trading symbol
     try:
-        session.execute(text("""
+        session.execute(
+            text(
+                """
             CREATE INDEX IF NOT EXISTS idx_posts_symbol_created
             ON posts(symbol, created_at DESC) WHERE symbol IS NOT NULL;
-            """))
+            """
+            )
+        )
         results["idx_posts_symbol_created"] = True
     except Exception:
         results["idx_posts_symbol_created"] = False
@@ -95,12 +111,8 @@ def get_user_follower_stats(session: Session, user_id: str) -> dict[str, int]:
         Dictionary with counts: {"following": int, "followers": int, "posts": int}
     """
     # Use subqueries to avoid join multiplication issues
-    following_subq = (
-        select(func.count(Follow.id)).where(Follow.follower_id == user_id).subquery()
-    )
-    followers_subq = (
-        select(func.count(Follow.id)).where(Follow.followee_id == user_id).subquery()
-    )
+    following_subq = select(func.count(Follow.id)).where(Follow.follower_id == user_id).subquery()
+    followers_subq = select(func.count(Follow.id)).where(Follow.followee_id == user_id).subquery()
     posts_subq = select(func.count(Post.id)).where(Post.user_id == user_id).subquery()
 
     result = session.execute(select(following_subq, followers_subq, posts_subq)).first()
