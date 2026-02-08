@@ -79,29 +79,29 @@ class User(Base):
     )
 
     # Relationships
-    profile: Mapped[Profile | None] = relationship(
+    profile: Mapped["Profile | None"] = relationship(
         "Profile", back_populates="user", uselist=False
     )
-    following: Mapped[list[Follow]] = relationship(
+    following: Mapped[list["Follow"]] = relationship(
         "Follow", foreign_keys="Follow.follower_id", back_populates="follower"
     )
-    followers: Mapped[list[Follow]] = relationship(
+    followers: Mapped[list["Follow"]] = relationship(
         "Follow", foreign_keys="Follow.followee_id", back_populates="followee"
     )
-    conversations: Mapped[list[ConversationParticipant]] = relationship(
+    conversations: Mapped[list["ConversationParticipant"]] = relationship(
         "ConversationParticipant", back_populates="user"
     )
-    sent_messages: Mapped[list[Message]] = relationship(
+    sent_messages: Mapped[list["Message"]] = relationship(
         "Message", foreign_keys="Message.sender_id", back_populates="sender"
     )
-    ai_threads: Mapped[list[AiThread]] = relationship("AiThread", back_populates="user")
-    notifications: Mapped[list[Notification]] = relationship(
+    ai_threads: Mapped[list["AiThread"]] = relationship("AiThread", back_populates="user")
+    notifications: Mapped[list["Notification"]] = relationship(
         "Notification", foreign_keys="Notification.user_id", back_populates="user"
     )
-    notification_preferences: Mapped[NotificationPreference | None] = relationship(
+    notification_preferences: Mapped["NotificationPreference | None"] = relationship(
         "NotificationPreference", back_populates="user", uselist=False
     )
-    posts: Mapped[list[Post]] = relationship("Post", back_populates="user")
+    posts: Mapped[list["Post"]] = relationship("Post", back_populates="user")
     # Optional: notifications where this user is the related_user (no back_populates to avoid cycles)
     # related_notifications = relationship(
     #     "Notification",

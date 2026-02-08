@@ -34,6 +34,7 @@ try:
     with get_session() as db:
         create_database_indexes(db)
 except Exception:
+    # Silently fail if indexes already exist or DB not ready (initialization phase)
     pass
 
 

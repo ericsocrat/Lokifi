@@ -39,4 +39,4 @@ class Post(Base):
     )
 
     # Relationships
-    user: Mapped[User] = relationship(back_populates="posts")
+    user: Mapped["User"] = relationship(back_populates="posts")

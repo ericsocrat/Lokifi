@@ -127,10 +127,10 @@ class Notification(Base):
     )
 
     # Relationships
-    user: Mapped[User] = relationship(
+    user: Mapped["User"] = relationship(
         "User", back_populates="notifications", foreign_keys=[user_id]
     )
-    children: Mapped[list[Notification]] = relationship(
+    children: Mapped[list["Notification"]] = relationship(
         "Notification", backref="parent", remote_side="[Notification.id]"
     )
 
@@ -288,7 +288,7 @@ class NotificationPreference(Base):
     )
 
     # Relationships
-    user: Mapped[User] = relationship("User", back_populates="notification_preferences")
+    user: Mapped["User"] = relationship("User", back_populates="notification_preferences")
 
     def __repr__(self):
         return f"<NotificationPreference(user_id={self.user_id}, email={self.email_enabled}, push={self.push_enabled})>"

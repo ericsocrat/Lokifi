@@ -9,11 +9,10 @@ This module provides high-performance query implementations using:
 
 from __future__ import annotations
 
-import json
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import and_, desc, func, select, text
+from sqlalchemy import desc, func, select, text
 from sqlalchemy.orm import Session
 
 from app.db.models import Follow, Post, User
@@ -42,7 +41,7 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
             ON follows(follower_id, followee_id);
             """))
         results["idx_follows_follower_followee"] = True
-    except Exception as e:
+    except Exception:
         results["idx_follows_follower_followee"] = False
 
     # Index 2: Composite index on posts (user_id, created_at DESC)
@@ -53,7 +52,7 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
             ON posts(user_id, created_at DESC);
             """))
         results["idx_posts_user_created_desc"] = True
-    except Exception as e:
+    except Exception:
         results["idx_posts_user_created_desc"] = False
 
     # Index 3: Index on follows.followee_id for reverse follower lookups
@@ -64,7 +63,7 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
             ON follows(followee_id);
             """))
         results["idx_follows_followee_id"] = True
-    except Exception as e:
+    except Exception:
         results["idx_follows_followee_id"] = False
 
     # Index 4: Index on posts.symbol for symbol-filtered feeds
@@ -75,7 +74,7 @@ def create_database_indexes(session: Session) -> dict[str, bool]:
             ON posts(symbol, created_at DESC) WHERE symbol IS NOT NULL;
             """))
         results["idx_posts_symbol_created"] = True
-    except Exception as e:
+    except Exception:
         results["idx_posts_symbol_created"] = False
 
     session.commit()
