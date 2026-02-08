@@ -6,21 +6,12 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import TYPE_CHECKING
 
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-if TYPE_CHECKING:
-    from app.models.ai_thread import AiThread
-    from app.models.conversation import ConversationParticipant, Message
-    from app.models.follow import Follow
-    from app.models.notification_models import Notification, NotificationPreference
-    from app.models.post import Post
-    from app.models.profile import Profile
 
 
 class User(Base):
