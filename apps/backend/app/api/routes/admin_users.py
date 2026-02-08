@@ -232,9 +232,7 @@ async def create_user(
             )
 
         # Check if handle already exists
-        handle_check = await db.execute(
-            select(Profile).where(Profile.username == data.handle)
-        )
+        handle_check = await db.execute(select(Profile).where(Profile.username == data.handle))
         if handle_check.scalar_one_or_none():
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
@@ -324,16 +322,12 @@ async def get_user(
             )
 
         # Query user with profile
-        query = (
-            select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
-        )
+        query = select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         return user_to_response(user)
 
@@ -376,16 +370,12 @@ async def update_user(
             )
 
         # Query user with profile
-        query = (
-            select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
-        )
+        query = select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Update user fields
         if data.name is not None:
@@ -475,9 +465,7 @@ async def delete_user(
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Delete user (cascades to profile and other relationships)
         await db.delete(user)
@@ -530,16 +518,12 @@ async def suspend_user(
             )
 
         # Query user with profile
-        query = (
-            select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
-        )
+        query = select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Suspend user
         user.is_active = False
@@ -596,16 +580,12 @@ async def verify_user(
             )
 
         # Query user with profile
-        query = (
-            select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
-        )
+        query = select(User).options(selectinload(User.profile)).where(User.id == user_uuid)
         result = await db.execute(query)
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Verify user
         user.is_verified = True
