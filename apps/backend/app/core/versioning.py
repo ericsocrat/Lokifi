@@ -5,12 +5,12 @@ Provides version detection, routing, and deprecation handling
 
 from datetime import datetime, timezone
 from email.utils import format_datetime
-from enum import Enum
+from enum import StrEnum
 
 from fastapi import Header, Request
 
 
-class APIVersion(str, Enum):
+class APIVersion(StrEnum):
     """Supported API versions"""
 
     V1 = "v1"
@@ -48,9 +48,7 @@ class DeprecationWarning:
     def to_header(self) -> dict[str, str]:
         """Convert to HTTP Deprecation headers"""
         deprecation_value = (
-            "true"
-            if self.deprecation_date is None
-            else _format_http_date(self.deprecation_date)
+            "true" if self.deprecation_date is None else _format_http_date(self.deprecation_date)
         )
         headers = {
             "Deprecation": deprecation_value,

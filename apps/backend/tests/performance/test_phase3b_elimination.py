@@ -13,8 +13,8 @@ Test Strategy:
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from app.api.routes.social import get_user
+from app.core.versioning import APIVersion
 from app.db.db import get_session
 from app.db.models import Follow, User
 
@@ -34,8 +34,15 @@ class TestPhase3bPerformance:
         user.created_at.isoformat.return_value = "2024-01-01T00:00:00"
         return user
 
+    @pytest.fixture
+    def mock_request(self):
+        """Create a mock Request with api_version for versioned endpoints."""
+        req = MagicMock()
+        req.state.api_version = APIVersion.V1
+        return req
+
     @patch("app.api.routes.social.get_session")
-    def test_get_user_executes_single_query(self, mock_get_session, sample_user):
+    def test_get_user_executes_single_query(self, mock_get_session, sample_user, mock_request):
         """Test that refactored get_user executes exactly 1 query.
 
         This validates the aggregation pattern eliminates the N+1:
@@ -59,7 +66,7 @@ class TestPhase3bPerformance:
         )
 
         # Act
-        result = get_user("testuser")
+        result = get_user("testuser", mock_request)
 
         # Assert
         assert result.handle == "testuser"
@@ -72,7 +79,7 @@ class TestPhase3bPerformance:
         mock_session.execute.assert_called_once()
 
     @patch("app.api.routes.social.get_session")
-    def test_get_user_aggregates_all_counts(self, mock_get_session, sample_user):
+    def test_get_user_aggregates_all_counts(self, mock_get_session, sample_user, mock_request):
         """Test that aggregation query correctly combines all count computations.
 
         This ensures that the aggregation:
@@ -94,7 +101,7 @@ class TestPhase3bPerformance:
         )
 
         # Act
-        result = get_user("testuser")
+        result = get_user("testuser", mock_request)
 
         # Assert - zero counts should be handled correctly
         assert result.following_count == 0
@@ -102,7 +109,7 @@ class TestPhase3bPerformance:
         assert result.posts_count == 0
 
     @patch("app.api.routes.social.get_session")
-    def test_get_user_not_found_no_extra_queries(self, mock_get_session):
+    def test_get_user_not_found_no_extra_queries(self, mock_get_session, mock_request):
         """Test that not-found case doesn't execute unnecessary queries.
 
         Validates that we check for None result before attempting to unpack,
@@ -119,7 +126,7 @@ class TestPhase3bPerformance:
         from fastapi import HTTPException
 
         with pytest.raises(HTTPException) as exc_info:
-            get_user("nonexistent")
+            get_user("nonexistent", mock_request)
 
         assert exc_info.value.status_code == 404
         assert "User not found" in exc_info.value.detail

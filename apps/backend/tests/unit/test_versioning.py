@@ -9,9 +9,8 @@ Validates:
 """
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -95,8 +94,8 @@ class TestVersionAwaeResponses:
         assert "created_at" in data
         assert "updated_at" in data
         assert "metadata" in data
-        assert "last_login" in data
-        assert "login_count" in data
+        assert "last_login" in data["metadata"]
+        assert "login_count" in data["metadata"]
 
     def test_compatibility_info(self):
         """Compatibility info endpoint returns version info"""
