@@ -84,9 +84,7 @@ class PostOut(BaseModel):
 
 # ===== Users =====
 @router.post("/social/users", response_model=UserOut)
-def create_user(
-    payload: UserCreate, request: Request, background_tasks: BackgroundTasks
-):
+def create_user(payload: UserCreate, request: Request, background_tasks: BackgroundTasks):
     api_version = request.state.api_version
     with get_session() as db:
         existing = db.execute(
@@ -155,9 +153,7 @@ def get_user(handle: str, request: Request):
                 # Phase 5B: Add v2 metadata if requested
                 if api_version == APIVersion.V2:
                     out.account_status = "active"
-                    out.mutual_follow = (
-                        False  # Would need current user context to compute
-                    )
+                    out.mutual_follow = False  # Would need current user context to compute
                     out.metadata = {"cached": True}
 
                 return out
@@ -170,15 +166,15 @@ def get_user(handle: str, request: Request):
         result = db.execute(
             select(
                 User,
-                func.coalesce(
-                    func.count(Follow.id).filter(Follow.follower_id == User.id), 0
-                ).label("following_count"),
-                func.coalesce(
-                    func.count(Follow.id).filter(Follow.followee_id == User.id), 0
-                ).label("followers_count"),
-                func.coalesce(
-                    func.count(Post.id).filter(Post.user_id == User.id), 0
-                ).label("posts_count"),
+                func.coalesce(func.count(Follow.id).filter(Follow.follower_id == User.id), 0).label(
+                    "following_count"
+                ),
+                func.coalesce(func.count(Follow.id).filter(Follow.followee_id == User.id), 0).label(
+                    "followers_count"
+                ),
+                func.coalesce(func.count(Post.id).filter(Post.user_id == User.id), 0).label(
+                    "posts_count"
+                ),
             )
             .outerjoin(Follow, Follow.follower_id == User.id)
             .outerjoin(Post, Post.user_id == User.id)
@@ -298,9 +294,7 @@ def unfollow(
         me_u = get_user_by_handle(db, me)
         target = get_user_by_handle(db, handle)
         f = db.execute(
-            select(Follow).where(
-                Follow.follower_id == me_u.id, Follow.followee_id == target.id
-            )
+            select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
         ).scalar_one_or_none()
         if not f:
             response = {"ok": True, "following": False}
@@ -398,9 +392,7 @@ def create_post(
 
                     # Symbol-specific feed first page (if applicable)
                     if payload.symbol:
-                        cache._redis.delete(
-                            f"posts:list:{payload.symbol}:p1:l{limit_val}"
-                        )
+                        cache._redis.delete(f"posts:list:{payload.symbol}:p1:l{limit_val}")
 
                 # Invalidate follower feeds (get author's followers)
                 follower_handles = [
@@ -418,9 +410,7 @@ def create_post(
                     for follower_handle in follower_handles:
                         for limit_val in [50, 100, 200]:
                             # Invalidate global personal feed
-                            cache._redis.delete(
-                                f"feed:{follower_handle}:global:p1:l{limit_val}"
-                            )
+                            cache._redis.delete(f"feed:{follower_handle}:global:p1:l{limit_val}")
 
                             # Invalidate symbol-specific personal feed (if applicable)
                             if payload.symbol:
@@ -478,9 +468,7 @@ def list_posts(
                             post_out.comment_count = 0
                             post_out.metadata = {
                                 "word_count": len(post_out.content.split()),
-                                "reading_time_minutes": len(post_out.content.split())
-                                // 200
-                                + 1,
+                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
                             }
                 return posts_out
     except Exception:
@@ -572,9 +560,7 @@ def feed(
                             post_out.comment_count = 0
                             post_out.metadata = {
                                 "word_count": len(post_out.content.split()),
-                                "reading_time_minutes": len(post_out.content.split())
-                                // 200
-                                + 1,
+                                "reading_time_minutes": len(post_out.content.split()) // 200 + 1,
                             }
                 return posts_out
     except Exception:

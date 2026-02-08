@@ -47,9 +47,7 @@ class Notification(Base):
     __tablename__ = "notifications"
 
     # Primary identification
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
@@ -76,23 +74,13 @@ class Notification(Base):
         nullable=False,
         default=lambda: datetime.now(timezone.utc),
     )
-    read_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    delivered_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    clicked_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
-    dismissed_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    clicked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    dismissed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Status flags
-    is_read: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=False, index=True
-    )
+    is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, index=True)
     is_delivered: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_dismissed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     is_archived: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -103,17 +91,13 @@ class Notification(Base):
     in_app_sent: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     # Expiration and cleanup
-    expires_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Reference to related entities
     related_entity_type: Mapped[str | None] = mapped_column(
         String(50), nullable=True
     )  # e.g., "message", "thread", "user"
-    related_entity_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), nullable=True
-    )
+    related_entity_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     related_user_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )  # For user-specific notifications
@@ -201,13 +185,9 @@ class Notification(Base):
             "payload": self.payload,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "read_at": self.read_at.isoformat() if self.read_at else None,
-            "delivered_at": (
-                self.delivered_at.isoformat() if self.delivered_at else None
-            ),
+            "delivered_at": (self.delivered_at.isoformat() if self.delivered_at else None),
             "clicked_at": self.clicked_at.isoformat() if self.clicked_at else None,
-            "dismissed_at": (
-                self.dismissed_at.isoformat() if self.dismissed_at else None
-            ),
+            "dismissed_at": (self.dismissed_at.isoformat() if self.dismissed_at else None),
             "is_read": self.is_read,
             "is_delivered": self.is_delivered,
             "is_dismissed": self.is_dismissed,
@@ -235,9 +215,7 @@ class NotificationPreference(Base):
 
     __tablename__ = "notification_preferences"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="CASCADE"),
@@ -251,28 +229,18 @@ class NotificationPreference(Base):
     in_app_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     # Type-specific preferences (JSON for flexibility)
-    type_preferences: Mapped[dict[str, Any]] = mapped_column(
-        JSON, nullable=False, default=dict
-    )
+    type_preferences: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
 
     # Timing preferences
-    quiet_hours_start: Mapped[str | None] = mapped_column(
-        String(5), nullable=True
-    )  # "22:00"
-    quiet_hours_end: Mapped[str | None] = mapped_column(
-        String(5), nullable=True
-    )  # "08:00"
+    quiet_hours_start: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "22:00"
+    quiet_hours_end: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "08:00"
     timezone: Mapped[str] = mapped_column(
         String(50), nullable=False, default="timezone.timezone.utc"
     )
 
     # Digest settings
-    daily_digest_enabled: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=False
-    )
-    weekly_digest_enabled: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, default=False
-    )
+    daily_digest_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    weekly_digest_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     digest_time: Mapped[str] = mapped_column(String(5), nullable=False, default="09:00")
 
     # Metadata
@@ -288,23 +256,17 @@ class NotificationPreference(Base):
     )
 
     # Relationships
-    user: Mapped["User"] = relationship(
-        "User", back_populates="notification_preferences"
-    )
+    user: Mapped["User"] = relationship("User", back_populates="notification_preferences")
 
     def __repr__(self):
         return f"<NotificationPreference(user_id={self.user_id}, email={self.email_enabled}, push={self.push_enabled})>"
 
-    def get_type_preference(
-        self, notification_type: str, channel: str = "in_app"
-    ) -> bool:
+    def get_type_preference(self, notification_type: str, channel: str = "in_app") -> bool:
         """Get preference for specific notification type and channel"""
         type_prefs = self.type_preferences or {}
         return type_prefs.get(f"{notification_type}_{channel}", True)
 
-    def set_type_preference(
-        self, notification_type: str, channel: str, enabled: bool
-    ) -> None:
+    def set_type_preference(self, notification_type: str, channel: str, enabled: bool) -> None:
         """Set preference for specific notification type and channel"""
         # type_preferences always exists (default=dict in mapping)
         self.type_preferences[f"{notification_type}_{channel}"] = enabled
@@ -323,9 +285,7 @@ class NotificationPreference(Base):
 
         # Handle quiet hours that span midnight
         if self.quiet_hours_start > self.quiet_hours_end:
-            return (
-                time_str >= self.quiet_hours_start or time_str <= self.quiet_hours_end
-            )
+            return time_str >= self.quiet_hours_start or time_str <= self.quiet_hours_end
         else:
             return self.quiet_hours_start <= time_str <= self.quiet_hours_end
 

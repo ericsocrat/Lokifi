@@ -115,9 +115,7 @@ class QueryProfiler:
             normalized_query = self._normalize_query(statement)
 
             # Track query frequency (for N+1 detection)
-            self.query_counts[normalized_query] = (
-                self.query_counts.get(normalized_query, 0) + 1
-            )
+            self.query_counts[normalized_query] = self.query_counts.get(normalized_query, 0) + 1
 
             # Determine query type
             query_type = self._extract_query_type(statement)
@@ -185,9 +183,7 @@ class QueryProfiler:
             )
 
         # Slow queries
-        slow_queries = [
-            m for m in recent_metrics if m.execution_time_ms > slow_threshold
-        ]
+        slow_queries = [m for m in recent_metrics if m.execution_time_ms > slow_threshold]
         slow_queries.sort(key=lambda x: x.execution_time_ms, reverse=True)
 
         # N+1 candidates (same query pattern executed frequently)
@@ -200,15 +196,11 @@ class QueryProfiler:
 
         # Cache stats (from metrics marked as cached)
         cached_queries = [m for m in recent_metrics if m.is_cached]
-        cache_hit_rate = (
-            len(cached_queries) / len(recent_metrics) if recent_metrics else 0.0
-        )
+        cache_hit_rate = len(cached_queries) / len(recent_metrics) if recent_metrics else 0.0
 
         # Timing stats
         execution_times = [m.execution_time_ms for m in recent_metrics]
-        average_time = (
-            sum(execution_times) / len(execution_times) if execution_times else 0.0
-        )
+        average_time = sum(execution_times) / len(execution_times) if execution_times else 0.0
         slowest_time = max(execution_times) if execution_times else 0.0
 
         return PerformanceReport(
@@ -251,9 +243,7 @@ class QueryProfiler:
             Dictionary with query plan and statistics
         """
         try:
-            result = session.execute(
-                text(f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query_str}")
-            )
+            result = session.execute(text(f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query_str}"))
             plan = result.fetchone()[0]
             return json.loads(json.dumps(plan)) if isinstance(plan, str) else plan
         except Exception as e:
