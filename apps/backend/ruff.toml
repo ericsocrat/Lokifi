@@ -90,3 +90,4 @@ combine-as-imports = true
 [lint.per-file-ignores]
 "tests/**/*.py" = ["S101", "S106"]  # Allow assert and test passwords in tests
 "alembic/**/*.py" = ["F401"]  # Allow unused imports in migrations
+"app/models/*.py" = ["F821", "UP037"]  # Forward references for SQLAlchemy relationships (resolved at runtime)
