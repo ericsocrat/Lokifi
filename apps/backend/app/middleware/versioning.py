@@ -3,10 +3,11 @@ API Version Detection Middleware
 Extracts and tracks API version from request, adds version info to responses
 """
 
-from app.core.versioning import APIVersion, get_api_version, get_deprecation_warning
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
+
+from app.core.versioning import APIVersion, get_api_version, get_deprecation_warning
 
 
 class VersionDetectionMiddleware(BaseHTTPMiddleware):
@@ -48,7 +49,9 @@ class VersionDetectionMiddleware(BaseHTTPMiddleware):
             deprecation_headers = deprecation.to_header()
             for header_name, header_value in deprecation_headers.items():
                 if header_name == "Link" and "Link" in response.headers:
-                    response.headers["Link"] = f"{response.headers['Link']}, {header_value}"
+                    response.headers["Link"] = (
+                        f"{response.headers['Link']}, {header_value}"
+                    )
                 else:
                     response.headers[header_name] = header_value
 

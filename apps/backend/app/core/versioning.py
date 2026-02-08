@@ -48,7 +48,9 @@ class DeprecationWarning:
     def to_header(self) -> dict[str, str]:
         """Convert to HTTP Deprecation headers"""
         deprecation_value = (
-            "true" if self.deprecation_date is None else _format_http_date(self.deprecation_date)
+            "true"
+            if self.deprecation_date is None
+            else _format_http_date(self.deprecation_date)
         )
         headers = {
             "Deprecation": deprecation_value,

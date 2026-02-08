@@ -5,6 +5,8 @@ Pydantic schemas for content moderation API.
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.models.moderation import (
     AppealStatus,
     ContentType,
@@ -12,7 +14,6 @@ from app.models.moderation import (
     FlagStatus,
     ModerationAction,
 )
-from pydantic import BaseModel, ConfigDict, Field
 
 # ============================================================================
 # FlaggedContent Schemas
@@ -204,7 +205,9 @@ class ModerationHistoryEntry(BaseModel):
 
     id: UUID
     timestamp: datetime
-    event_type: str  # "flag_created", "decision_made", "appeal_submitted", "appeal_reviewed"
+    event_type: (
+        str  # "flag_created", "decision_made", "appeal_submitted", "appeal_reviewed"
+    )
     moderator_id: UUID | None = None
     moderator_name: str | None = None
     action: ModerationAction | None = None

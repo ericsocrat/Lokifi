@@ -13,6 +13,7 @@ Test Strategy:
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from app.api.routes.social import get_user
 from app.core.versioning import APIVersion
 from app.db.db import get_session
@@ -42,7 +43,9 @@ class TestPhase3bPerformance:
         return req
 
     @patch("app.api.routes.social.get_session")
-    def test_get_user_executes_single_query(self, mock_get_session, sample_user, mock_request):
+    def test_get_user_executes_single_query(
+        self, mock_get_session, sample_user, mock_request
+    ):
         """Test that refactored get_user executes exactly 1 query.
 
         This validates the aggregation pattern eliminates the N+1:
@@ -79,7 +82,9 @@ class TestPhase3bPerformance:
         mock_session.execute.assert_called_once()
 
     @patch("app.api.routes.social.get_session")
-    def test_get_user_aggregates_all_counts(self, mock_get_session, sample_user, mock_request):
+    def test_get_user_aggregates_all_counts(
+        self, mock_get_session, sample_user, mock_request
+    ):
         """Test that aggregation query correctly combines all count computations.
 
         This ensures that the aggregation:
