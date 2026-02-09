@@ -25,6 +25,7 @@ from app.api.routes.versioning import router as versioning_router
 # Temporarily disable J53 scheduler due to async issues
 # from app.services.j53_scheduler import j53_router, j53_lifespan_manager
 from app.core.advanced_redis_client import advanced_redis_client
+from app.core.cache import get_cache, shutdown_cache
 from app.core.config import settings
 from app.core.database import db_manager
 
@@ -87,6 +88,14 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"⚠️ Redis initialization error (continuing): {e}")
 
+    logger.info("💾 Initializing analytics cache layer...")
+    try:
+        cache = await get_cache()
+        cache_info = await cache.get_info()
+        logger.info(f"✅ Analytics cache layer initialized (Redis: {cache_info.get('connected', False)})")
+    except Exception as e:
+        logger.warning(f"⚠️ Analytics cache initialization error (continuing): {e}")
+
     logger.info("🔌 Starting WebSocket manager...")
     try:
         advanced_websocket_manager.start_background_tasks()
@@ -139,8 +148,12 @@ async def lifespan(app: FastAPI):
     # Shutdown sequence
     logger.info("🛑 Shutting down Phase K Track 3 systems...")
 
-    # logger.info("📊 Stopping monitoring system...")
-    # await monitoring_system.stop_monitoring()
+    logger.info("💾 Shutting down analytics cache layer...")
+    try:
+        await shutdown_cache()
+        logger.info("✅ Analytics cache layer shutdown")
+    except Exception as e:
+        logger.error(f"❌ Error shutting down cache: {e}")
 
     logger.info("🔌 Stopping WebSocket manager...")
     try:

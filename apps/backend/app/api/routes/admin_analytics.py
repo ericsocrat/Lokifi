@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.cache_decorator import CacheConfig, cached_endpoint
 from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.ai_thread import AiThread
@@ -117,6 +118,7 @@ async def get_date_range(
 
 
 @router.get("/users/growth", response_model=UserGrowthMetrics)
+@cached_endpoint(ttl=CacheConfig.USERS_GROWTH_TTL, key_prefix="users:growth")
 async def get_user_growth_metrics(
     db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
@@ -226,6 +228,7 @@ async def get_user_growth_metrics(
 
 
 @router.get("/users/activity", response_model=UserActivityMetrics)
+@cached_endpoint(ttl=CacheConfig.USERS_ACTIVITY_TTL, key_prefix="users:activity")
 async def get_user_activity_metrics(
     db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
@@ -308,6 +311,7 @@ async def get_user_activity_metrics(
 
 
 @router.get("/users/demographics", response_model=UserDemographics)
+@cached_endpoint(ttl=CacheConfig.USERS_DEMOGRAPHICS_TTL, key_prefix="users:demographics")
 async def get_user_demographics(
     db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
@@ -455,6 +459,7 @@ async def get_content_metrics(
 
 
 @router.get("/moderation", response_model=ModerationMetrics)
+@cached_endpoint(ttl=CacheConfig.MODERATION_TTL, key_prefix="moderation")
 async def get_moderation_metrics(
     db: AsyncSession = Depends(get_db),
     _: Any = Depends(require_admin),
