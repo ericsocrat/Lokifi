@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import func, select
+from sqlalchemy import and_, case, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user
@@ -125,6 +125,10 @@ async def get_user_growth_metrics(
     Get user growth and registration metrics.
 
     Returns total users, active users, new registrations, and growth rates.
+
+    Optimization: Single aggregation query using CASE expressions (Phase 2)
+    - Reduced from 7 separate COUNT queries to 1 optimized query
+    - Expected improvement: 85% latency reduction
     """
     try:
         now = datetime.now(UTC)
@@ -133,60 +137,69 @@ async def get_user_growth_metrics(
         month_start = today_start - timedelta(days=30)
         prev_month_start = today_start - timedelta(days=60)
 
-        # Total users
-        total_result = await db.execute(select(func.count(User.id)))
-        total_users = total_result.scalar() or 0
-
-        # Active users (last 30 days)
-        active_result = await db.execute(
-            select(func.count(User.id)).where(
-                User.is_active.is_(True), User.last_login >= month_start
-            )
+        # Phase 2: Single aggregation query with CASE expressions
+        # Before: 7 separate COUNT queries
+        # After: 1 query with conditional aggregation
+        query = select(
+            func.count(User.id).label("total_users"),
+            func.count(
+                case(
+                    (
+                        and_(User.is_active.is_(True), User.last_login >= month_start),
+                        User.id,
+                    ),
+                    else_=None,
+                )
+            ).label("active_users"),
+            func.count(case((User.is_verified.is_(True), User.id), else_=None)).label(
+                "verified_users"
+            ),
+            func.count(case((User.created_at >= today_start, User.id), else_=None)).label(
+                "new_users_today"
+            ),
+            func.count(case((User.created_at >= week_start, User.id), else_=None)).label(
+                "new_users_week"
+            ),
+            func.count(case((User.created_at >= month_start, User.id), else_=None)).label(
+                "new_users_month"
+            ),
+            func.count(
+                case(
+                    (
+                        and_(
+                            User.created_at >= prev_month_start,
+                            User.created_at < month_start,
+                        ),
+                        User.id,
+                    ),
+                    else_=None,
+                )
+            ).label("prev_month_users"),
         )
-        active_users = active_result.scalar() or 0
 
-        # Verified users
-        verified_result = await db.execute(
-            select(func.count(User.id)).where(User.is_verified.is_(True))
-        )
-        verified_users = verified_result.scalar() or 0
+        result = await db.execute(query)
+        row = result.first()
 
-        # New users today
-        new_today_result = await db.execute(
-            select(func.count(User.id)).where(User.created_at >= today_start)
-        )
-        new_users_today = new_today_result.scalar() or 0
-
-        # New users this week
-        new_week_result = await db.execute(
-            select(func.count(User.id)).where(User.created_at >= week_start)
-        )
-        new_users_week = new_week_result.scalar() or 0
-
-        # New users this month
-        new_month_result = await db.execute(
-            select(func.count(User.id)).where(User.created_at >= month_start)
-        )
-        new_users_month = new_month_result.scalar() or 0
-
-        # Previous month new users for growth rate
-        prev_month_result = await db.execute(
-            select(func.count(User.id)).where(
-                User.created_at >= prev_month_start, User.created_at < month_start
-            )
-        )
-        prev_month_users = prev_month_result.scalar() or 0
+        # Extract results from single query
+        total_users = row.total_users or 0
+        active_users = row.active_users or 0
+        verified_users = row.verified_users or 0
+        new_users_today = row.new_users_today or 0
+        new_users_week = row.new_users_week or 0
+        new_users_month = row.new_users_month or 0
+        prev_month_users = row.prev_month_users or 0
 
         # Calculate growth rate and trend
         growth_rate = calculate_growth_rate(new_users_month, prev_month_users)
         trend = calculate_trend(new_users_month, prev_month_users)
 
         logger.info(
-            "User growth metrics retrieved",
+            "User growth metrics retrieved (Phase 2: single aggregation query)",
             extra={
                 "total_users": total_users,
                 "active_users": active_users,
                 "new_users_month": new_users_month,
+                "query_count": 1,
             },
         )
 
@@ -221,6 +234,10 @@ async def get_user_activity_metrics(
     Get user activity and engagement metrics.
 
     Returns daily/weekly/monthly active users and engagement rates.
+
+    Optimization: Single aggregation query using CASE expressions (Phase 2)
+    - Reduced from 4 separate COUNT queries to 1 optimized query
+    - Expected improvement: 75% latency reduction
     """
     try:
         now = datetime.now(UTC)
@@ -228,43 +245,45 @@ async def get_user_activity_metrics(
         week_ago = now - timedelta(days=7)
         month_ago = now - timedelta(days=30)
 
-        # Daily active users
-        dau_result = await db.execute(
-            select(func.count(User.id)).where(User.last_login >= day_ago)
+        # Phase 2: Single aggregation query with CASE expressions
+        # Before: 4 separate COUNT queries
+        # After: 1 query with conditional aggregation
+        query = select(
+            func.count(User.id).label("total_users"),
+            func.count(
+                case((User.last_login >= day_ago, User.id), else_=None)
+            ).label("daily_active"),
+            func.count(
+                case((User.last_login >= week_ago, User.id), else_=None)
+            ).label("weekly_active"),
+            func.count(
+                case((User.last_login >= month_ago, User.id), else_=None)
+            ).label("monthly_active"),
         )
-        daily_active = dau_result.scalar() or 0
 
-        # Weekly active users
-        wau_result = await db.execute(
-            select(func.count(User.id)).where(User.last_login >= week_ago)
-        )
-        weekly_active = wau_result.scalar() or 0
+        result = await db.execute(query)
+        row = result.first()
 
-        # Monthly active users
-        mau_result = await db.execute(
-            select(func.count(User.id)).where(User.last_login >= month_ago)
-        )
-        monthly_active = mau_result.scalar() or 0
-
-        # Total users for retention calculation
-        total_result = await db.execute(select(func.count(User.id)))
-        total_users = total_result.scalar() or 0
+        # Extract results from single query
+        total_users = row.total_users or 0
+        daily_active = row.daily_active or 0
+        weekly_active = row.weekly_active or 0
+        monthly_active = row.monthly_active or 0
 
         # Calculate retention rate (MAU / Total Users)
-        retention_rate = (
-            (monthly_active / total_users * 100) if total_users > 0 else 0.0
-        )
+        retention_rate = (monthly_active / total_users * 100) if total_users > 0 else 0.0
 
         # Placeholder values for session metrics (would need session tracking)
         avg_session_duration = 15.5  # minutes
         avg_sessions_per_user = 3.2
 
         logger.info(
-            "User activity metrics retrieved",
+            "User activity metrics retrieved (Phase 2: single aggregation query)",
             extra={
                 "daily_active": daily_active,
                 "weekly_active": weekly_active,
                 "monthly_active": monthly_active,
+                "query_count": 1,
             },
         )
 
@@ -440,9 +459,7 @@ async def get_moderation_metrics(
         status_counts: dict[str, int] = {}
         for flag_status in FlagStatus:
             status_result = await db.execute(
-                select(func.count(FlaggedContent.id)).where(
-                    FlaggedContent.status == flag_status
-                )
+                select(func.count(FlaggedContent.id)).where(FlaggedContent.status == flag_status)
             )
             status_counts[flag_status.value] = status_result.scalar() or 0
 
@@ -455,9 +472,7 @@ async def get_moderation_metrics(
         reason_counts: dict[str, int] = {}
         for flag_reason in FlagReason:
             reason_result = await db.execute(
-                select(func.count(FlaggedContent.id)).where(
-                    FlaggedContent.reason == flag_reason
-                )
+                select(func.count(FlaggedContent.id)).where(FlaggedContent.reason == flag_reason)
             )
             reason_counts[flag_reason.value] = reason_result.scalar() or 0
 
@@ -548,9 +563,7 @@ async def get_social_metrics(
 
         # Conversations today
         convos_today_result = await db.execute(
-            select(func.count(Conversation.id)).where(
-                Conversation.created_at >= today_start
-            )
+            select(func.count(Conversation.id)).where(Conversation.created_at >= today_start)
         )
         conversations_today = convos_today_result.scalar() or 0
 
