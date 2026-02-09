@@ -250,15 +250,15 @@ async def get_user_activity_metrics(
         # After: 1 query with conditional aggregation
         query = select(
             func.count(User.id).label("total_users"),
-            func.count(
-                case((User.last_login >= day_ago, User.id), else_=None)
-            ).label("daily_active"),
-            func.count(
-                case((User.last_login >= week_ago, User.id), else_=None)
-            ).label("weekly_active"),
-            func.count(
-                case((User.last_login >= month_ago, User.id), else_=None)
-            ).label("monthly_active"),
+            func.count(case((User.last_login >= day_ago, User.id), else_=None)).label(
+                "daily_active"
+            ),
+            func.count(case((User.last_login >= week_ago, User.id), else_=None)).label(
+                "weekly_active"
+            ),
+            func.count(case((User.last_login >= month_ago, User.id), else_=None)).label(
+                "monthly_active"
+            ),
         )
 
         result = await db.execute(query)
@@ -316,9 +316,14 @@ async def get_user_demographics(
     Get user demographic distribution.
 
     Returns users grouped by timezone, language, verification, and account status.
+
+    Optimization: Combined query pattern (Phase 2)
+    - Reduced from 6 separate queries to 3 optimized queries
+    - GROUP BY queries left as-is (already efficient)
+    - COUNT queries consolidated into single aggregation (50% reduction)
     """
     try:
-        # Users by timezone
+        # Users by timezone (GROUP BY - efficient as-is)
         timezone_result = await db.execute(
             select(User.timezone, func.count(User.id))
             .where(User.timezone.isnot(None))
@@ -326,7 +331,7 @@ async def get_user_demographics(
         )
         by_timezone = dict(timezone_result.all()) or {}
 
-        # Users by language
+        # Users by language (GROUP BY - efficient as-is)
         language_result = await db.execute(
             select(User.language, func.count(User.id))
             .where(User.language.isnot(None))
@@ -334,31 +339,40 @@ async def get_user_demographics(
         )
         by_language = dict(language_result.all()) or {}
 
-        # Users by verification status
-        verified_result = await db.execute(
-            select(func.count(User.id)).where(User.is_verified.is_(True))
+        # Phase 2: Single aggregation query for verification + account status
+        # Before: 4 separate COUNT queries
+        # After: 1 query with CASE expressions
+        query = select(
+            func.count(
+                case((User.is_verified.is_(True), User.id), else_=None)
+            ).label("verified"),
+            func.count(
+                case((User.is_verified.is_(False), User.id), else_=None)
+            ).label("unverified"),
+            func.count(
+                case((User.is_active.is_(True), User.id), else_=None)
+            ).label("active"),
+            func.count(
+                case((User.is_active.is_(False), User.id), else_=None)
+            ).label("inactive"),
         )
-        unverified_result = await db.execute(
-            select(func.count(User.id)).where(User.is_verified.is_(False))
-        )
+
+        result = await db.execute(query)
+        row = result.first()
+
         by_verification_status = {
-            "verified": verified_result.scalar() or 0,
-            "unverified": unverified_result.scalar() or 0,
+            "verified": row.verified or 0,
+            "unverified": row.unverified or 0,
         }
-
-        # Users by account status
-        active_result = await db.execute(
-            select(func.count(User.id)).where(User.is_active.is_(True))
-        )
-        inactive_result = await db.execute(
-            select(func.count(User.id)).where(User.is_active.is_(False))
-        )
         by_account_status = {
-            "active": active_result.scalar() or 0,
-            "inactive": inactive_result.scalar() or 0,
+            "active": row.active or 0,
+            "inactive": row.inactive or 0,
         }
 
-        logger.info("User demographics retrieved")
+        logger.info(
+            "User demographics retrieved (Phase 2: optimized query pattern)",
+            extra={"query_count": 3, "reduction": "50%"},
+        )
 
         return UserDemographics(
             by_timezone=by_timezone,
@@ -451,46 +465,64 @@ async def get_moderation_metrics(
     Returns flagged content stats, resolution times, and action distributions.
     """
     try:
-        # Total flags
-        total_result = await db.execute(select(func.count(FlaggedContent.id)))
-        total_flags = total_result.scalar() or 0
+        # Phase 2: Optimized aggregation for all moderation metrics
+        # Before: 1 total + 4 status loop + 4 reason loop + 4 action loop = 13 separate queries
+        # After: 1 aggregation for status + GROUP BY for reason + GROUP BY for action = 3 queries (77% reduction)
+        
+        # Single aggregation query for FlaggedContent status counts
+        flagged_query = select(
+            func.count(FlaggedContent.id).label("total_flags"),
+            func.count(
+                case((FlaggedContent.status == FlagStatus.PENDING, FlaggedContent.id), else_=None)
+            ).label("pending_flags"),
+            func.count(
+                case((FlaggedContent.status == FlagStatus.RESOLVED, FlaggedContent.id), else_=None)
+            ).label("resolved_flags"),
+            func.count(
+                case((FlaggedContent.status == FlagStatus.DISMISSED, FlaggedContent.id), else_=None)
+            ).label("dismissed_flags"),
+            func.count(
+                case((FlaggedContent.status == FlagStatus.APPEALED, FlaggedContent.id), else_=None)
+            ).label("appealed_flags"),
+        )
+        
+        flagged_result = await db.execute(flagged_query)
+        flagged_row = flagged_result.first()
+        
+        total_flags = flagged_row.total_flags or 0
+        pending_flags = flagged_row.pending_flags or 0
+        resolved_flags = flagged_row.resolved_flags or 0
+        dismissed_flags = flagged_row.dismissed_flags or 0
+        appealed_flags = flagged_row.appealed_flags or 0
+        
+        status_counts = {
+            FlagStatus.PENDING.value: pending_flags,
+            FlagStatus.RESOLVED.value: resolved_flags,
+            FlagStatus.DISMISSED.value: dismissed_flags,
+            FlagStatus.APPEALED.value: appealed_flags,
+        }
 
-        # Flags by status
-        status_counts: dict[str, int] = {}
-        for flag_status in FlagStatus:
-            status_result = await db.execute(
-                select(func.count(FlaggedContent.id)).where(FlaggedContent.status == flag_status)
-            )
-            status_counts[flag_status.value] = status_result.scalar() or 0
+        # Flags by reason (GROUP BY query - efficient)
+        reason_query = select(FlaggedContent.reason, func.count(FlaggedContent.id)).where(
+            FlaggedContent.reason.isnot(None)
+        ).group_by(FlaggedContent.reason)
+        reason_result = await db.execute(reason_query)
+        reason_rows = reason_result.all()
+        reason_counts: dict[str, int] = {str(r.reason.value): r[1] for r in reason_rows} if reason_rows else {}
 
-        pending_flags = status_counts.get(FlagStatus.PENDING.value, 0)
-        resolved_flags = status_counts.get(FlagStatus.RESOLVED.value, 0)
-        dismissed_flags = status_counts.get(FlagStatus.DISMISSED.value, 0)
-        appealed_flags = status_counts.get(FlagStatus.APPEALED.value, 0)
-
-        # Flags by reason
-        reason_counts: dict[str, int] = {}
-        for flag_reason in FlagReason:
-            reason_result = await db.execute(
-                select(func.count(FlaggedContent.id)).where(FlaggedContent.reason == flag_reason)
-            )
-            reason_counts[flag_reason.value] = reason_result.scalar() or 0
-
-        # Actions by type from ModerationDecision
-        action_counts: dict[str, int] = {}
-        for mod_action in ModerationAction:
-            action_result = await db.execute(
-                select(func.count(ModerationDecision.id)).where(
-                    ModerationDecision.action == mod_action
-                )
-            )
-            action_counts[mod_action.value] = action_result.scalar() or 0
+        # Actions by type from ModerationDecision (GROUP BY query - efficient)
+        action_query = select(ModerationDecision.action, func.count(ModerationDecision.id)).where(
+            ModerationDecision.action.isnot(None)
+        ).group_by(ModerationDecision.action)
+        action_result = await db.execute(action_query)
+        action_rows = action_result.all()
+        action_counts: dict[str, int] = {str(a.action.value): a[1] for a in action_rows} if action_rows else {}
 
         # Calculate average resolution time (placeholder - would need actual timing data)
         avg_resolution_time = 4.5  # hours
 
         logger.info(
-            "Moderation metrics retrieved",
+            "Moderation metrics retrieved - optimized query pattern",
             extra={"total_flags": total_flags, "pending_flags": pending_flags},
         )
 
