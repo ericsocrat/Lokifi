@@ -81,7 +81,7 @@ msgpack==1.1.2
 multidict==6.7.1
 mypy_extensions==1.1.0
 mypy==1.19.1
-openai==2.17.0
+openai==2.18.0
 openapi-core==0.22.0
 openapi-schema-validator==0.6.3
 openapi-spec-validator==0.7.2
@@ -135,7 +135,7 @@ rsa==4.9.1
 ruff==0.15.0
 s3transfer==0.16.0
 schedule==1.2.2
-schemathesis==4.9.5
+schemathesis==4.10.1
 sentry-sdk==2.52.0
 setuptools==82.0.0
 six==1.17.0
