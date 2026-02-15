@@ -91,7 +91,7 @@ parse==1.21.0
 passlib[bcrypt]==1.7.4
 pathable==0.4.4
 pathspec==1.0.4
-pillow==12.1.0
+pillow==12.1.1
 pip_audit==2.10.0
 pip-api==0.0.34
 pip-requirements-parser==32.0.1
