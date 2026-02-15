@@ -43,7 +43,7 @@ dogpile.cache==1.5.0
 email-validator==2.3.0
 Faker==40.4.0
 fastapi==0.128.1
-filelock==3.20.3
+filelock==3.21.2
 fqdn==1.5.1
 frozenlist==1.8.0
 graphql-core==3.2.7
@@ -81,7 +81,7 @@ msgpack==1.1.2
 multidict==6.7.1
 mypy_extensions==1.1.0
 mypy==1.19.1
-openai==2.18.0
+openai==2.21.0
 openapi-core==0.22.0
 openapi-schema-validator==0.6.3
 openapi-spec-validator==0.7.2
@@ -95,7 +95,7 @@ pillow==12.1.0
 pip_audit==2.10.0
 pip-api==0.0.34
 pip-requirements-parser==32.0.1
-platformdirs==4.5.1
+platformdirs==4.8.0
 pluggy==1.6.0
 prometheus_client==0.24.1
 prompt_toolkit==3.0.52
