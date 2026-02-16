@@ -4,7 +4,7 @@ aiohttp==3.13.3
 aiosignal==1.4.0
 aiosmtplib==5.1.0
 aiosqlite==0.22.1
-alembic==1.18.3
+alembic==1.18.4
 amqp==5.3.1
 annotated-types==0.7.0
 anyio==4.12.1
@@ -13,14 +13,14 @@ argon2-cffi==25.1.0
 arrow==1.4.0
 asyncpg==0.31.0
 attrs==25.4.0
-Authlib==1.6.7
+Authlib==1.6.8
 backoff==2.2.1
 billiard==4.2.4
 black==26.1.0
 bleach==6.3.0
 boolean.py==5.0
-boto3==1.42.44
-botocore==1.42.44
+boto3==1.42.49
+botocore==1.42.49
 CacheControl==0.14.4
 celery==5.6.2
 certifi==2026.1.4
@@ -31,7 +31,7 @@ click-plugins==1.1.1.2
 click-repl==0.3.0
 click==8.3.1
 colorama==0.4.6
-coverage==7.13.3
+coverage==7.13.4
 cryptography==46.0.5
 cyclonedx-python-lib==11.6.0
 defusedxml==0.7.1
@@ -55,7 +55,7 @@ httptools==0.7.1
 httpx==0.28.1
 hypothesis-graphql==0.12.0
 hypothesis-jsonschema==0.23.1
-hypothesis==6.151.5
+hypothesis==6.151.7
 idna==3.11
 iniconfig==2.3.0
 isodate==0.7.2
@@ -124,7 +124,7 @@ python-dotenv==1.2.1
 python-multipart==0.0.22
 pytokens==0.4.1
 PyYAML==6.0.3
-redis==7.1.0
+redis==7.1.1
 referencing>=0.35.1,<0.38.0
 requests==2.32.5
 rfc3339-validator==0.1.4
@@ -135,7 +135,7 @@ rsa==4.9.1
 ruff==0.15.0
 s3transfer==0.16.0
 schedule==1.2.2
-schemathesis==4.10.1
+schemathesis==4.10.2
 sentry-sdk==2.52.0
 setuptools==82.0.0
 six==1.17.0
