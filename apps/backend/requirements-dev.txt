@@ -18,7 +18,7 @@ black==26.1.0
 
 # Security Scanning
 pip_audit==2.10.0
-bandit==1.9.3
+bandit==1.9.4
 
 # Test Utilities
 pytest-mock==3.15.1
