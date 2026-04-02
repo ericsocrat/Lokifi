@@ -16,7 +16,7 @@ attrs==25.4.0
 Authlib==1.6.9
 backoff==2.2.1
 billiard==4.2.4
-black==26.1.0
+black==26.3.1
 bleach==6.3.0
 boolean.py==5.0
 boto3==1.42.62
