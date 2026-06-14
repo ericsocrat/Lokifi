@@ -13,7 +13,7 @@ argon2-cffi==25.1.0
 arrow==1.4.0
 asyncpg==0.31.0
 attrs==25.4.0
-Authlib==1.6.11
+Authlib==1.6.12
 backoff==2.2.1
 billiard==4.2.4
 black==26.5.1
