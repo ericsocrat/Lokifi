@@ -17,7 +17,7 @@ Authlib==1.6.12
 backoff==2.2.1
 billiard==4.2.4
 black==26.5.1
-bleach==6.3.0
+bleach==6.4.0
 boolean.py==5.0
 boto3==1.42.91
 botocore==1.42.91
