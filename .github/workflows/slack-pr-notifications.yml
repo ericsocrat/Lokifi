@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: 🔍 Determine notification type
         id: notification
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -116,7 +116,7 @@ jobs:
             core.setOutput('pr_title', pr.title);
 
       - name: 📢 Send Slack notification
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4.0.0
         with:
           # v2 compatibility: webhook inputs (env vars deprecated in v2)
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
