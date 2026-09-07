@@ -42,10 +42,10 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🎯 Check changed files
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -86,7 +86,7 @@ jobs:
             build-mode: none
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🔍 Initialize CodeQL
         uses: github/codeql-action/init@v4
@@ -116,10 +116,10 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: "npm"
@@ -194,7 +194,7 @@ jobs:
 
       - name: 📈 Upload npm audit report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: npm-audit-report
           path: apps/frontend/npm-audit.json
@@ -215,10 +215,10 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🐍 Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
           cache: "pip"
@@ -298,7 +298,7 @@ jobs:
 
       - name: 📈 Upload pip-audit report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: pip-audit-report
           path: apps/backend/pip-audit.json
