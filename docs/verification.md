@@ -37,3 +37,19 @@ Screenshots are generated test artifacts and intentionally not committed. They i
 ## Scope of acceptance
 
 Complete local portfolio journey and source restructuring. The legacy source is preserved in Git and the original checkout; archived documents are non-operational. Public rollout remains gated by the separately documented privacy, recovery, hosting and data-provider decisions.
+
+## Clean-checkout closeout
+
+Reproduced from detached revision `b496bbd1fa3ae041841cb5804cd94a20685e68d4`, with no node_modules, Python environment, build output or application configuration copied from the implementation checkout. A separate `lokifi_clean_test` database was created on the isolated PostgreSQL cluster.
+
+- `npm ci --ignore-scripts`: passed, zero npm advisories.
+- `uv sync --project apps/api --frozen`: passed with Python 3.12.10.
+- `npm run verify`: passed; 30 API tests, migration from empty database, contract, lint, types and production build.
+- Started the API from this checkout against `lokifi_clean_test`; started its generated standalone web server.
+- `npm run test:e2e` with headless Edge: all six test executions passed in 13.8 seconds, including desktop/mobile complete journeys, provider-unavailable display and synthetic demonstration labeling.
+- `backup.py --restore-test`: source and restored public table counts/content hashes matched.
+- `git status --short`: empty after installs, builds, runtime and browser checks.
+
+The implementation checkout was then restarted using the local launcher and its separate persistent `lokifi_rebuild` database. Final desktop/mobile portfolio screenshots are available as ignored local artifacts under `.local/evidence/`. No branch was pushed, no PR opened, and no domain, email or paid-service settings were changed.
+
+The original checkout remains on `58f9471f` with no tracked changes. Only its origin/main tracking reference was refreshed during worktree creation. The audit checkpoint is `92698009`; implementation and line-ending normalization checkpoints are `d998bd55` and `b496bbd1`.
