@@ -1,0 +1,1 @@
+"""Lokifi portfolio application."""

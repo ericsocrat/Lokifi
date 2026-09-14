@@ -1,0 +1,38 @@
+name: lokifi-rebuild
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: ${LOKIFI_DB_PASSWORD:?Set LOKIFI_DB_PASSWORD}
+      POSTGRES_DB: lokifi_rebuild
+    volumes:
+      - lokifi-rebuild-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U lokifi -d lokifi_rebuild]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      LOKIFI_DATABASE_URL: postgresql+psycopg://lokifi:${LOKIFI_DB_PASSWORD}@postgres:5432/lokifi_rebuild
+      LOKIFI_ENVIRONMENT: local
+      LOKIFI_WEB_ORIGIN: http://127.0.0.1:13100
+    depends_on:
+      postgres:
+        condition: service_healthy
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      LOKIFI_API_ORIGIN: http://api:18100
+      HOSTNAME: 0.0.0.0
+      PORT: 13100
+    ports: ["127.0.0.1:13100:13100"]
+    depends_on: [api]
+volumes:
+  lokifi-rebuild-data:

@@ -1,0 +1,11 @@
+import {cp,access} from 'node:fs/promises';
+import {dirname,resolve} from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const next=resolve(root,'apps/web/.next');
+const entry=resolve(next,'standalone/apps/web/server.js');
+await access(entry);
+await cp(resolve(next,'static'),resolve(next,'standalone/apps/web/.next/static'),{recursive:true});
+process.env.PORT ||= '13100';
+process.env.HOSTNAME = process.env.LOKIFI_BIND_HOST || '127.0.0.1';
+await import(pathToFileURL(entry).href);

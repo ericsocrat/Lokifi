@@ -1,0 +1,61 @@
+name: Verify portfolio product
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: isolated-ci-password
+          POSTGRES_DB: lokifi_rebuild_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U lokifi -d lokifi_rebuild_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      LOKIFI_TEST_DATABASE_URL: postgresql+psycopg://lokifi:isolated-ci-password@127.0.0.1:5432/lokifi_rebuild_test
+      LOKIFI_DATABASE_URL: postgresql+psycopg://lokifi:isolated-ci-password@127.0.0.1:5432/lokifi_rebuild_test
+      LOKIFI_ENVIRONMENT: test
+      LOKIFI_WEB_ORIGIN: http://127.0.0.1:13100
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: '0.12.9'
+      - run: npm ci --ignore-scripts
+      - run: npm run verify
+      - run: npx playwright install --with-deps chromium
+      - name: Start built application
+        run: |
+          uv run --directory apps/api uvicorn lokifi.main:app --host 127.0.0.1 --port 18100 > /tmp/lokifi-api.log 2>&1 &
+          npm start > /tmp/lokifi-web.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:13100/api/v1/health; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - run: npm run test:e2e
+      - name: Verify backup restoration
+        run: |
+          docker exec ${{ job.services.postgres.id }} createdb -U lokifi lokifi_restore_test
+          export LOKIFI_PG_CONTAINER=${{ job.services.postgres.id }}
+          uv run --directory apps/api python ../../tools/backup.py --restore-test
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: browser-evidence
+          path: |
+            apps/web/test-results
+            apps/web/playwright-report
+          retention-days: 14

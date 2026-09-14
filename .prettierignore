@@ -1,0 +1,7 @@
+apps/web/src/api-schema.d.ts
+docs/archive/
+docs/audit/
+.local/
+**/node_modules/
+**/.next/
+**/test-results/

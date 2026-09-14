@@ -1,168 +1,27 @@
-﻿# Node/Next.js
 node_modules/
 .next/
-out/
-dist/
-build/
-coverage/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-pnpm-debug.log*
-.pnp.*
-.yarn-integrity
-.eslintcache
+.venv/
+.local/
+__pycache__/
+*.pyc
 *.tsbuildinfo
-.npm
-
-# Test Coverage (pytest, vitest)
-# Note: Coverage files should only exist in app-specific directories
-# (apps/backend/ and apps/frontend/), not at project root
-.coverage
-coverage.json
-coverage.xml
-htmlcov/
 .pytest_cache/
-.vitest/
-
-# Test results (JUnit XML, etc.) - app-specific locations
+.ruff_cache/
+.mypy_cache/
 test-results/
-**/test-results/
-apps/frontend/test-results/
-apps/backend/test-results/
-
-# Tool data (stored in tools/ directory)
-tools/.baselines/
-tools/.cache/
-
-# Legacy test cache (removed, keeping for cleanup)
-.test-cache/
-
-# Env & secrets
+playwright-report/
+coverage/
+htmlcov/
+.coverage
+*.log
 .env
 .env.*
 *.pem
 *.key
-
-# OS / editors
+*.dump
+*.db
+*.sqlite*
 .DS_Store
 Thumbs.db
 .vscode/
-!.vscode/settings.json
-!.vscode/extensions.json
-!.vscode/launch.json
-!.vscode/tasks.json
-!.vscode/mcp.json
-!.vscode/copilot-settings.json
-!.vscode/keybindings.json
-!.vscode/README.md
-.idea/
-
-# Database files
-*.sqlite
-*.sqlite3
-*.db
-
-# Log files
-*.log
-logs/
-infra/logs/
-# BUT allow README files in log directories
-!**/logs/**/README.md
-
-# Backup files
-*.bak
-infra/backups/
-
-# Temporary files
-*.tmp
-*.temp
-*.cache
-
-# Python (if any tools/scripts)
-__pycache__/
-*.py[cod]
-*.so
-*.egg
-*.egg-info/
-.Python
-.venv/
-venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.hypothesis/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-backend/venv/
-backend/__pycache__/
-backend/.pytest_cache/
-backend/.venv/
-backend/.env
-backend/data/*
-!backend/data/.gitkeep
-
-# Apps structure (actual paths)
-apps/backend/venv/
-apps/backend/__pycache__/
-apps/backend/.pytest_cache/
-apps/backend/.mypy_cache/
-apps/backend/.ruff_cache/
-apps/backend/.venv/
-apps/backend/.env
-apps/backend/.env.*
-apps/backend/data/*
-!apps/backend/data/.gitkeep
-apps/frontend/node_modules/
-apps/frontend/.next/
-apps/frontend/out/
-apps/frontend/.turbo/
-apps/frontend/.vitest/
-apps/frontend/.env.local
-apps/frontend/.env.*.local
-
-# OS/IDE duplicates (cleanup)
-frontend/frontend/
-frontend/backend/
-
-# Protection Reports (auto-generated on each commit)
-docs/reports/protection_report_*.md
-tools/docs/reports/protection_report_*.md
-
-# CI/CD Tools (downloaded binaries in tools/)
-tools/actionlint
-tools/actionlint.exe
-
-# Config directory (keep tracked files, ignore generated)
-# config/ files are tracked - no ignore patterns needed
-
-# User Uploads & Runtime Data (backend-managed)
-apps/backend/uploads/
-!apps/backend/uploads/.gitkeep
-
-# Redis/Celery Runtime Data
-dump.rdb
-celerybeat-schedule
-celerybeat-schedule.db
-
-# Docker Local Overrides
-docker-compose.override.local.yml
-
-# Deployment Platforms
-.vercel
-.netlify
-
-# IDE Workspace Files
-*.code-workspace
-
-# Python Build Artifacts
-build/
-dist/
-wheels/
-*.whl
-
-# Lighthouse CI reports (generated, not source)
-apps/frontend/.lighthouseci/
-.lighthouseci/
+.vercel/

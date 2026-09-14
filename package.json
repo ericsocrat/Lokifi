@@ -1,47 +1,26 @@
 {
   "name": "lokifi",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Lokifi - Full-stack financial application",
   "engines": {
-    "node": ">=22.0.0",
-    "npm": ">=10.0.0"
-  },
-  "scripts": {
-    "dev": "npm run dev:frontend",
-    "dev:frontend": "cd apps/frontend && npm run dev",
-    "dev:backend": "cd apps/backend && uvicorn app.main:app --reload",
-    "build": "cd apps/frontend && npm run build",
-    "lint": "cd apps/frontend && npm run lint",
-    "lint:security": "cd apps/frontend && npm run lint:security",
-    "lint:a11y": "cd apps/frontend && npm run lint:a11y",
-    "lint:backend": "cd apps/backend && ruff check .",
-    "typecheck": "cd apps/frontend && npm run typecheck",
-    "test": "npm run test:all",
-    "test:frontend": "cd apps/frontend && npm test",
-    "test:backend": "cd apps/backend && pytest",
-    "test:all": "npm run test:frontend && npm run test:backend",
-    "test:coverage": "cd apps/frontend && npm run test:coverage",
-    "clean": "npm run clean:frontend && npm run clean:backend",
-    "clean:frontend": "cd apps/frontend && rm -rf .next node_modules",
-    "clean:backend": "cd apps/backend && rm -rf __pycache__ .pytest_cache .ruff_cache"
+    "node": ">=22.13",
+    "npm": ">=10"
   },
   "workspaces": [
-    "apps/frontend",
-    "apps/backend",
-    "apps/admin"
+    "apps/web"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ericsocrat/Lokifi.git"
+  "scripts": {
+    "dev": "npm run dev --workspace=@lokifi/web",
+    "build": "npm run build --workspace=@lokifi/web",
+    "start": "npm run start --workspace=@lokifi/web",
+    "typecheck": "npm run typecheck --workspace=@lokifi/web",
+    "lint": "npm run lint --workspace=@lokifi/web",
+    "test:e2e": "npm run test:e2e --workspace=@lokifi/web",
+    "contracts": "node tools/contracts.mjs",
+    "verify": "node tools/verify.mjs"
   },
-  "keywords": [
-    "finance",
-    "trading",
-    "portfolio",
-    "nextjs",
-    "fastapi"
-  ],
-  "author": "Eric Socrat",
-  "license": "UNLICENSED"
+  "devDependencies": {
+    "openapi-typescript": "7.13.0",
+    "prettier": "^3.9.6"
+  }
 }
