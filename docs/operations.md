@@ -35,4 +35,4 @@ The GitHub workflow implements these gates without source rewriting or continue-
 
 ## Public-pilot work deliberately outstanding
 
-TLS/secure cookie readback on the actual origin; off-site encrypted backups and restore ownership; public account recovery and deletion; privacy notices/retention; monitoring and alert ownership; abuse capacity limits; licensing for any proposed quote provider. Current alpha has no email sender, broker connection or automatic price ingestion. These are public-release prerequisites, not hidden completed features.
+TLS/secure cookie readback on the actual origin; off-site encrypted backups and restore ownership; public account recovery and deletion; privacy notices/retention; monitoring and alert ownership; abuse capacity limits; and confirmed public-use terms for Coinbase market data. Current alpha has no email sender, broker connection, scheduled price ingestion, or automatic equity/ETF pricing. These are public-release prerequisites, not hidden completed features.

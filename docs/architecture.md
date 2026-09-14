@@ -1,6 +1,6 @@
 # Architecture and financial rules
 
-Lokifi v2 is one Next.js web application, one modular FastAPI application, and PostgreSQL. The active runtime is `apps/web` and `apps/api`. There is no Redis, external AI, market-data worker, public webhook processor, or separate admin app.
+Lokifi v2 is one Next.js web application, one modular FastAPI application, and PostgreSQL. The active runtime is `apps/web` and `apps/api`. There is no Redis, external AI, market-data worker, public webhook processor, or separate admin app. A narrow on-demand Coinbase Exchange adapter resolves supported EUR crypto products and reference prices; it never fabricates a fallback.
 
 ```mermaid
 flowchart LR
@@ -23,7 +23,7 @@ FastAPI's OpenAPI document is the contract. `npm run contracts` regenerates the 
 
 Tables: users, sessions, auth_attempts, portfolios, instruments, holdings, imports and watchlist. The initial migration is explicit and stable. No application startup calls create_all or modifies the schema; migrations run as a separate operation. Legacy databases must not be reused. The original source and migration graph remain in Git history.
 
-Instrument uniqueness is `(owner, category, identifier, venue, currency)`. Names are descriptive, not identifiers. A different exchange/network/account is a distinct instrument. Reusing an identity with a conflicting name is rejected for explicit correction. Identifiers are user assertions; this version does not verify ISIN check digits or a provider catalogue.
+Instrument uniqueness is `(owner, category, identifier, venue, currency)`. Names are descriptive, not identifiers. A different exchange/network/account is a distinct instrument. Reusing an identity with a conflicting name is rejected for explicit correction. Manual identifiers are user assertions; automatic crypto identities are restricted to online Coinbase EUR products.
 
 ## Valuations
 
@@ -33,6 +33,7 @@ Instrument uniqueness is `(owner, category, identifier, venue, currency)`. Names
 - A missing price or missing required FX produces a null EUR value. The portfolio's full total is null; the valued subtotal and excluded holding count remain explicit. Missing data is never zero.
 - A zero price is a valid recorded observation. Dates older than seven days are flagged for review; this is a usability threshold, not a market-freshness guarantee.
 - Snapshot dates may differ. No backfilled prices, simulated history, investment returns, corporate-action adjustments or trading recommendations are generated.
+- Automatic crypto entry stores two distinct observations: the UTC daily closing reference for the purchase date and the latest EUR trade for the portfolio valuation. The former is not asserted to be the user's execution price. Provider timestamps and source labels are retained with the holding.
 - Totals use unrounded source decimals, rounded half-even to cents for presentation. Per-holding displayed cents can differ slightly from an aggregate rounded after summation. Browser formatting preserves decimal cents without converting large amounts through floating point.
 - Allocation percentages describe the valued subtotal. An empty or all-zero portfolio has no meaningful percentage allocation.
 

@@ -311,6 +311,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/market-data/assets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Assets */
+        get: operations["assets_api_v1_market_data_assets_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/market-data/assets/{symbol}/holding": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Automated Holding */
+        get: operations["automated_holding_api_v1_market_data_assets__symbol__holding_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -363,6 +397,35 @@ export interface components {
             /** Percentage */
             percentage: string;
         };
+        /** AssetMatch */
+        AssetMatch: {
+            /** Symbol */
+            symbol: string;
+            /** Name */
+            name: string;
+            /**
+             * Category
+             * @constant
+             */
+            category: "crypto";
+            /** Product Id */
+            product_id: string;
+            /** Venue */
+            venue: string;
+            /**
+             * Currency
+             * @constant
+             */
+            currency: "EUR";
+            /** Source */
+            source: string;
+        };
+        /** AutomatedHolding */
+        AutomatedHolding: {
+            instrument: components["schemas"]["InstrumentInput"];
+            acquisition: components["schemas"]["PriceReference"];
+            valuation: components["schemas"]["PriceReference"];
+        };
         /** CSVInput */
         CSVInput: {
             /** Csv Text */
@@ -387,10 +450,18 @@ export interface components {
         HoldingInput: {
             /** Quantity */
             quantity: number | string;
+            /** Acquired At */
+            acquired_at?: string | null;
+            /** Acquisition Price */
+            acquisition_price?: number | string | null;
+            /** Acquisition Source */
+            acquisition_source?: string | null;
             /** Price */
             price?: number | string | null;
             /** Valued At */
             valued_at?: string | null;
+            /** Valuation Observed At */
+            valuation_observed_at?: string | null;
             /** Source */
             source: string;
             /** Fx Rate */
@@ -405,10 +476,18 @@ export interface components {
         HoldingUpdate: {
             /** Quantity */
             quantity: number | string;
+            /** Acquired At */
+            acquired_at?: string | null;
+            /** Acquisition Price */
+            acquisition_price?: number | string | null;
+            /** Acquisition Source */
+            acquisition_source?: string | null;
             /** Price */
             price?: number | string | null;
             /** Valued At */
             valued_at?: string | null;
+            /** Valuation Observed At */
+            valuation_observed_at?: string | null;
             /** Source */
             source: string;
             /** Fx Rate */
@@ -430,10 +509,18 @@ export interface components {
             instrument: components["schemas"]["InstrumentView"];
             /** Quantity */
             quantity: string;
+            /** Acquired At */
+            acquired_at: string | null;
+            /** Acquisition Price */
+            acquisition_price: string | null;
+            /** Acquisition Source */
+            acquisition_source: string | null;
             /** Price */
             price: string | null;
             /** Valued At */
             valued_at: string | null;
+            /** Valuation Observed At */
+            valuation_observed_at: string | null;
             /** Source */
             source: string;
             /** Fx Rate */
@@ -547,6 +634,27 @@ export interface components {
             name: string;
             /** Is Demo */
             is_demo: boolean;
+        };
+        /** PriceReference */
+        PriceReference: {
+            /** Product Id */
+            product_id: string;
+            /** Price */
+            price: string;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Observed At */
+            observed_at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "daily_close" | "latest_trade";
+            /** Source */
+            source: string;
         };
         /** Registration */
         Registration: {
@@ -1274,6 +1382,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PortfolioDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assets_api_v1_market_data_assets_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetMatch"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    automated_holding_api_v1_market_data_assets__symbol__holding_get: {
+        parameters: {
+            query: {
+                acquired_at: string;
+            };
+            header?: never;
+            path: {
+                symbol: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AutomatedHolding"];
                 };
             };
             /** @description Validation Error */

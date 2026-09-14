@@ -4,19 +4,19 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, OperationalError
 
-from . import identity, imports, portfolios
+from . import identity, imports, market_data, portfolios
 from .config import settings
 from .database import SessionLocal
 from .schemas import Message
 
 app = FastAPI(
     title="Lokifi portfolio API",
-    version="2.0.0",
+    version="2.1.0",
     docs_url=None,
     redoc_url=None,
     separate_input_output_schemas=False,
 )
-for router in (identity.router, portfolios.router, imports.router):
+for router in (identity.router, portfolios.router, imports.router, market_data.router):
     app.include_router(router, prefix="/api/v1")
 
 

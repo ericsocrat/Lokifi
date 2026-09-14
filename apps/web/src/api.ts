@@ -7,6 +7,8 @@ export type Instrument = components["schemas"]["InstrumentInput"];
 export type HoldingInput = components["schemas"]["HoldingInput"];
 export type Preview = components["schemas"]["ImportPreview"];
 export type Watch = components["schemas"]["WatchView"];
+export type AssetMatch = components["schemas"]["AssetMatch"];
+export type AutomatedHolding = components["schemas"]["AutomatedHolding"];
 
 export class ApiError extends Error {
   constructor(

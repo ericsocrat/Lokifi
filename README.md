@@ -1,6 +1,6 @@
 # Lokifi
 
-A portfolio workspace for understanding what you own, how it is valued, and where each figure comes from. English-first, EUR reporting, manual or CSV-imported valuations. **Local preview; not deployed.**
+A portfolio workspace for understanding what you own, how it is valued, and where each figure comes from. English-first, EUR reporting, automatic crypto lookup plus manual or CSV-imported valuations. **Local preview; not deployed.**
 
 ## Open locally on Windows
 
@@ -12,12 +12,13 @@ The first setup downloads packages and a local PostgreSQL runtime. Records are s
 
 - Account registration, sign-in/out, profile editing, password changes and session revocation.
 - Multiple portfolios; manual holdings; explicit stock, ETF, crypto and cash identity.
+- Crypto symbol lookup with Coinbase EUR identity, purchase-date daily close, and latest-trade valuation.
 - Dated prices, sources and EUR conversion rates; incomplete valuations stay visible.
 - CSV template, validated preview, atomic commit and duplicate protection.
 - Holding details and editing, watchlist, CSV exports and full-account JSON exports.
 - A separate, read-only synthetic example portfolio.
 
-There are no connected price feeds, fabricated returns, trading operations, AI advice, or active legacy administration interfaces. A recorded price is user-supplied, not independently verified market data.
+There are no fabricated returns, trading operations, AI advice, or active legacy administration interfaces. Automatic crypto references come from Coinbase Exchange public market data; a historical daily close may differ from the user's execution price. Manual records remain user-supplied rather than independently verified.
 
 ## Developer setup
 

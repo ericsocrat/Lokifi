@@ -12,7 +12,7 @@ Allow a provisional **€15–25/month before VAT** for the VM, IP, backup stora
 
 ## Data costs
 
-Manual/statement import remains the default: **€0 provider subscription**, with user effort to refresh records. ECB informational reference rates could be added later, clearly dated and sourced, with no suggestion of transaction execution rates. [ECB guidance](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)
+Crypto holdings with an active EUR market can now resolve on demand through Coinbase Exchange public market data at **€0 provider subscription**. The product labels purchase-date values as UTC daily closes rather than execution prices and never invents a missing candle. Stocks, ETFs, cash, unsupported crypto, and CSV records retain manual entry. ECB informational reference rates could be added later, clearly dated and sourced, with no suggestion of transaction execution rates. [ECB guidance](https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html)
 
 Automatic equity/ETF and crypto pricing is a separate decision. Free access does not establish redistribution rights or coverage of European listings. CoinGecko currently lists a Demo plan and paid plans with distinct licensing; do not treat the prototype's old API adapters as commercial entitlement. [CoinGecko pricing](https://www.coingecko.com/en/api/pricing)
 

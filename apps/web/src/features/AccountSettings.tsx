@@ -80,7 +80,10 @@ export function AccountSettings({
             Valuations are entered or imported by you. A dated source makes their origin visible; it does not
             independently verify the price. Dates older than seven days are flagged for review.
           </p>
-          <p className="small muted">Reporting currency: EUR. No automatic market feeds are connected.</p>
+          <p className="small muted">
+            Reporting currency: EUR. Supported crypto references come from Coinbase Exchange; other holdings remain
+            manual.
+          </p>
         </section>
       </div>
     </>

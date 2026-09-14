@@ -197,7 +197,7 @@ export function PortfolioOverview({ detail, open }: { detail: Detail; open: Open
           )}
           <div className="card-footer">
             <span className="dot" />
-            Manual and imported records only
+            Automatic, manual and imported records
             <span className="spacer" />
             <button className="text-button" disabled={detail.is_demo} onClick={() => open("rename")}>
               Rename portfolio
@@ -240,8 +240,7 @@ export function PortfolioOverview({ detail, open }: { detail: Detail; open: Open
         </aside>
       </div>
       <p className="bottom-note">
-        Values are based on your records and may be from different dates. No live prices or return estimates are
-        generated.
+        Values are recorded snapshots and may be from different dates. No return estimates are generated.
       </p>
     </>
   );

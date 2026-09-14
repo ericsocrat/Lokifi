@@ -36,7 +36,17 @@ def parse_csv(content: str) -> list[HoldingInput]:
                 raise HTTPException(422, f"Row {line}: wrong number of columns")
             data = {key: value.strip() for key, value in row.items()}
             instrument = {key: data.pop(key) for key in CSV_FIELDS[:5]}
-            for key in ("price", "valued_at", "fx_rate", "fx_at", "fx_source"):
+            for key in (
+                "acquired_at",
+                "acquisition_price",
+                "acquisition_source",
+                "price",
+                "valued_at",
+                "valuation_observed_at",
+                "fx_rate",
+                "fx_at",
+                "fx_source",
+            ):
                 data[key] = data[key] or None
             try:
                 parsed = HoldingInput.model_validate({"instrument": instrument, **data})
@@ -78,7 +88,7 @@ def preview(
     rows = parse_csv(data.csv_text)
     values = [r.model_dump(mode="json") for r in rows]
     for row in values:
-        for key in ("quantity", "price", "fx_rate"):
+        for key in ("quantity", "acquisition_price", "price", "fx_rate"):
             if row[key] is not None:
                 row[key] = format(Decimal(row[key]).normalize(), "f")
     canonical = sorted(values, key=lambda r: json.dumps(r["instrument"], sort_keys=True))

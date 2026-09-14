@@ -1,6 +1,6 @@
 import csv
 import io
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 
 import pytest
@@ -397,3 +397,77 @@ def test_demo_holding_metadata_and_readonly_enforcement(client):
     h = client.get(f"{PREFIX}/portfolios/{p}").json()["holdings"][0]
     assert h["is_demo"] and client.get(PREFIX + "/holdings/" + h["id"]).json()["is_demo"]
     assert client.delete(PREFIX + "/holdings/" + h["id"]).status_code == 409
+
+
+def test_automatic_crypto_identity_and_prices(client, monkeypatch):
+    from lokifi import market_data
+
+    register(client)
+    market_data._catalog = (
+        float("inf"),
+        [{"id": "BTC-EUR", "base_currency": "BTC", "quote_currency": "EUR", "status": "online"}],
+        {"BTC": "Bitcoin"},
+    )
+    purchase = date.today() - timedelta(days=30)
+    timestamp = int(datetime.combine(purchase, datetime.min.time(), timezone.utc).timestamp())
+
+    async def provider(path):
+        if "/candles?" in path:
+            return [[timestamp, "40000", "42000", "40500", "41000.12", "100"]]
+        if path.endswith("/ticker"):
+            return {"price": "67000.34", "time": f"{date.today().isoformat()}T10:30:00Z"}
+        raise AssertionError(path)
+
+    monkeypatch.setattr(market_data, "_request_json", provider)
+    matches = client.get(PREFIX + "/market-data/assets?q=BTC")
+    assert matches.status_code == 200
+    assert matches.json()[0] == {
+        "symbol": "BTC",
+        "name": "Bitcoin",
+        "category": "crypto",
+        "product_id": "BTC-EUR",
+        "venue": "Coinbase Exchange",
+        "currency": "EUR",
+        "source": "Coinbase Exchange public market data",
+    }
+    result = client.get(f"{PREFIX}/market-data/assets/BTC/holding?acquired_at={purchase.isoformat()}")
+    assert result.status_code == 200, result.text
+    assert result.json()["instrument"] == {
+        "name": "Bitcoin",
+        "category": "crypto",
+        "identifier": "BTC",
+        "venue": "COINBASE EXCHANGE",
+        "currency": "EUR",
+    }
+    assert result.json()["acquisition"]["price"] == "41000.12"
+    assert result.json()["acquisition"]["kind"] == "daily_close"
+    assert result.json()["valuation"]["price"] == "67000.34"
+    assert result.json()["valuation"]["kind"] == "latest_trade"
+    assert result.json()["valuation"]["observed_at"].endswith("Z")
+
+
+def test_automatic_price_missing_or_invalid_is_never_fabricated(client, monkeypatch):
+    from lokifi import market_data
+
+    register(client)
+    market_data._catalog = (
+        float("inf"),
+        [{"id": "BTC-EUR", "base_currency": "BTC", "quote_currency": "EUR", "status": "online"}],
+        {"BTC": "Bitcoin"},
+    )
+
+    async def no_candle(path):
+        return [] if "/candles?" in path else {"price": "67000", "time": f"{date.today()}T10:30:00Z"}
+
+    monkeypatch.setattr(market_data, "_request_json", no_candle)
+    purchase = date.today() - timedelta(days=30)
+    response = client.get(f"{PREFIX}/market-data/assets/BTC/holding?acquired_at={purchase}")
+    assert response.status_code == 404
+    assert "Enter your execution price manually" in response.json()["detail"]
+
+
+def test_market_data_requires_authentication(client):
+    assert client.get(PREFIX + "/market-data/assets?q=BTC").status_code == 401
+    assert (
+        client.get(PREFIX + f"/market-data/assets/BTC/holding?acquired_at={date.today()}").status_code == 401
+    )

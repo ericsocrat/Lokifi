@@ -188,8 +188,12 @@ CSV_FIELDS = [
     "venue",
     "currency",
     "quantity",
+    "acquired_at",
+    "acquisition_price",
+    "acquisition_source",
     "price",
     "valued_at",
+    "valuation_observed_at",
     "source",
     "fx_rate",
     "fx_at",
@@ -213,7 +217,19 @@ def export(portfolio_id: str, user: User = Depends(current_user), db: Session = 
         values = {
             **h.instrument.model_dump(exclude={"id"}),
             **h.model_dump(
-                include={"quantity", "price", "valued_at", "source", "fx_rate", "fx_at", "fx_source"}
+                include={
+                    "quantity",
+                    "acquired_at",
+                    "acquisition_price",
+                    "acquisition_source",
+                    "price",
+                    "valued_at",
+                    "valuation_observed_at",
+                    "source",
+                    "fx_rate",
+                    "fx_at",
+                    "fx_source",
+                }
             ),
         }
         if h.instrument.currency == "EUR":
@@ -233,7 +249,7 @@ def account_export(user: User = Depends(current_user), db: Session = Depends(get
 
     return JSONResponse(
         {
-            "version": 1,
+            "version": 2,
             "name": user.name,
             "email": user.email,
             "portfolios": [detail(db, p).model_dump(mode="json") for p in ps],
@@ -271,8 +287,12 @@ def demo(user: User = Depends(current_user), db: Session = Depends(get_db)):
                         "currency": currency,
                     },
                     "quantity": qty,
+                    "acquired_at": None,
+                    "acquisition_price": None,
+                    "acquisition_source": None,
                     "price": price,
                     "valued_at": today,
+                    "valuation_observed_at": None,
                     "source": "Synthetic example — not market data",
                     "fx_rate": rate,
                     "fx_at": today if rate else None,

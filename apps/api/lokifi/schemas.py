@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 
@@ -108,8 +108,12 @@ class InstrumentView(InstrumentInput):
 
 class ValuationInput(Input):
     quantity: Quantity
+    acquired_at: date | None = None
+    acquisition_price: Money | None = None
+    acquisition_source: str | None = Field(default=None, min_length=1, max_length=160)
     price: Money | None = None
     valued_at: date | None = None
+    valuation_observed_at: datetime | None = None
     source: str = Field(min_length=1, max_length=120)
     fx_rate: Rate | None = None
     fx_at: date | None = None
@@ -117,13 +121,23 @@ class ValuationInput(Input):
 
     @model_validator(mode="after")
     def dates(self):
+        if self.acquired_at is None and (
+            self.acquisition_price is not None or self.acquisition_source is not None
+        ):
+            raise ValueError("An acquisition price/source requires a purchase date")
+        if self.acquisition_price is not None and not self.acquisition_source:
+            raise ValueError("An acquisition price requires its source")
         if (self.price is None) != (self.valued_at is None):
             raise ValueError("A price and its valuation date must be supplied together")
+        if self.valuation_observed_at is not None and (
+            self.price is None or self.valuation_observed_at.tzinfo is None
+        ):
+            raise ValueError("A valuation timestamp must include a timezone and a price")
         if self.fx_rate is not None and (self.fx_at is None or not self.fx_source):
             raise ValueError("An FX rate requires its date and source")
         if self.fx_rate is None and (self.fx_at is not None or self.fx_source is not None):
             raise ValueError("An FX date/source requires an FX rate")
-        if any(d and d > date.today() for d in (self.valued_at, self.fx_at)):
+        if any(d and d > date.today() for d in (self.acquired_at, self.valued_at, self.fx_at)):
             raise ValueError("Future valuation dates are not accepted")
         return self
 
@@ -149,8 +163,12 @@ class HoldingView(BaseModel):
     is_demo: bool
     instrument: InstrumentView
     quantity: str
+    acquired_at: date | None
+    acquisition_price: str | None
+    acquisition_source: str | None
     price: str | None
     valued_at: date | None
+    valuation_observed_at: datetime | None
     source: str
     fx_rate: str | None
     fx_at: date | None
@@ -199,3 +217,28 @@ class WatchView(BaseModel):
 
 class Message(BaseModel):
     detail: str
+
+
+class AssetMatch(BaseModel):
+    symbol: str
+    name: str
+    category: Literal["crypto"]
+    product_id: str
+    venue: str
+    currency: Literal["EUR"]
+    source: str
+
+
+class PriceReference(BaseModel):
+    product_id: str
+    price: str
+    date: date
+    observed_at: str
+    kind: Literal["daily_close", "latest_trade"]
+    source: str
+
+
+class AutomatedHolding(BaseModel):
+    instrument: InstrumentInput
+    acquisition: PriceReference
+    valuation: PriceReference

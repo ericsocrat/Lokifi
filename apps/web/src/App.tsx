@@ -139,7 +139,7 @@ export function App({ path }: { path: string }) {
             </div>
             <div className="welcome-note">
               <span className="dot" />
-              Local preview · Manual and imported valuations
+              Local preview · Automatic crypto, manual and imported valuations
             </div>
           </section>
           <section className="auth-card">
@@ -284,7 +284,7 @@ export function App({ path }: { path: string }) {
             </select>
             <span className="mode">
               <span className="dot" />
-              Manual valuations
+              Sourced valuations
             </span>
             <span className="currency-tag">EUR</span>
             <button
@@ -342,7 +342,7 @@ export function App({ path }: { path: string }) {
           )}
         </main>
         <footer className="app-footer">
-          Lokifi · Your portfolio, clearly.<span>Local preview · No connected market feeds</span>
+          Lokifi · Your portfolio, clearly.<span>Local preview · Automatic crypto data where available</span>
         </footer>
       </div>
       {panel && (

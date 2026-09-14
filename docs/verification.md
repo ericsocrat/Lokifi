@@ -9,18 +9,24 @@ The rebuilt application is a local portfolio preview. This report records observ
 | Legacy inventory | 43 pages / 283 API declarations | `docs/audit/legacy-inventory.md` |
 | Legacy browser | Six representative routes at 1440 and 390 px, synthetic services | `test-results/legacy-browser.json` and legacy PNG captures |
 | Legacy clean migration | FAIL after head merge: posts table referenced before creation | Audit report; isolated `lokifi_legacy_test` |
-| API integration | 30 passed on PostgreSQL | `uv run --directory apps/api python -m pytest` with guarded test URL |
+| API integration | 33 passed on PostgreSQL | `uv run --directory apps/api python -m pytest` with guarded test URL |
 | Authentication and ownership | Anonymous, ordinary-admin, cross-user, expiry, revocation, CSRF and secure-cookie assertions passed | `apps/api/tests/test_journey.py` |
 | Financial and import behavior | Decimals, mixed currencies, missing/zero values, stale dates, invalid input, atomic rollback and replay assertions passed | Same API suite |
 | Frontend static | TypeScript and ESLint passed without ignored build errors | `npm run verify` |
 | Production build | Next.js 16.3.5 build passed | `npm run build` |
 | API contract | Generated declaration matched OpenAPI | `node tools/contracts.mjs --check` |
-| Browser and formatting | Four full desktop/mobile scenario executions plus two decimal-format test executions passed | `apps/web/tests`; Playwright report and screenshots |
+| Browser and formatting | Six full desktop/mobile scenario executions plus two decimal-format test executions passed | `apps/web/tests`; Playwright report and screenshots |
 | Accessibility | No axe WCAG A/AA violations in the tested portfolio views; viewport overflow assertion passed | Browser journey suite |
 | npm dependencies | Zero known advisories at scan time | `npm audit` |
 | Python production dependencies | No known vulnerabilities found | uv frozen export + pip-audit |
 | Backup / restore | Matching counts and hashes for all public tables | `.local/backups/verification.json` |
 | Local launcher | Started API + built standalone web, same-origin health returned 200 | `.local/logs` |
+
+## Automatic crypto-entry follow-up
+
+The follow-up implementation added a nullable acquisition reference migration, an authenticated on-demand Coinbase Exchange adapter, and an automatic-first holding form. A live end-to-end provider check resolved `BTC` to Bitcoin / `BTC-EUR`, returned the documented 2024-01-01 UTC daily close of EUR 40,090.38, and returned a separately timestamped latest trade. No API key or paid account was created.
+
+The backend suite now has 33 passing PostgreSQL tests, including provider response parsing, authentication, missing-candle behavior, and the guarantee that provider gaps never become synthetic prices. The production browser suite now has eight passing desktop/mobile executions. Its automatic-entry scenario begins with only `BTC`, quantity, and purchase date; it verifies the filled identity, historical reference, latest valuation, saved acquisition provenance, accessibility, and responsive layout.
 
 Browser tests use a fresh isolated headless Edge profile on this Windows machine, not the user's browser profile. CI is configured for Playwright Chromium. The full journey creates a synthetic account, adds a portfolio and holding, imports mixed-currency records, checks incomplete valuation, downloads CSV, saves a watchlist item, reloads, signs out and verifies persistence in a second browser session. Provider calls are absent from the new runtime.
 

@@ -91,6 +91,33 @@ export function HoldingDetail({
               <dd>{holding.source}</dd>
               <dt>Price date</dt>
               <dd>{holding.valued_at || "Not recorded"}</dd>
+              {holding.valuation_observed_at && (
+                <>
+                  <dt>Observed at</dt>
+                  <dd>
+                    {new Date(holding.valuation_observed_at).toLocaleString("en-IE", {
+                      dateStyle: "medium",
+                      timeStyle: "medium",
+                      timeZone: "UTC",
+                    })}{" "}
+                    UTC
+                  </dd>
+                </>
+              )}
+              <dt>Purchase date</dt>
+              <dd>{holding.acquired_at || "Not recorded"}</dd>
+              <dt>Reference purchase price</dt>
+              <dd>
+                {holding.acquisition_price
+                  ? money(holding.acquisition_price, holding.instrument.currency)
+                  : "Not recorded"}
+              </dd>
+              {holding.acquisition_source && (
+                <>
+                  <dt>Purchase-price source</dt>
+                  <dd>{holding.acquisition_source}</dd>
+                </>
+              )}
               <dt>FX source</dt>
               <dd>
                 {holding.instrument.currency === "EUR" ? "No conversion needed" : holding.fx_source || "Not recorded"}

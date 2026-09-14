@@ -22,7 +22,7 @@ export function EmptyPortfolio({ open, action, busy }: { open: OpenPanel; action
         <p>
           Stocks, ETFs, crypto or cash. Start with a portfolio,
           <br />
-          then add holdings manually or import a CSV.
+          then find supported crypto automatically, enter other holdings manually, or import a CSV.
         </p>
         <button onClick={() => open("portfolio")}>
           Create your first portfolio
