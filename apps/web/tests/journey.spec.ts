@@ -28,7 +28,7 @@ test("account → portfolio → holding → import → export → second session
   await page.getByLabel("Record source").fill("September statement");
   await page.getByRole("button", { name: "Save holding" }).click();
   await expect(page.getByRole("link", { name: "Global equity fund", exact: true })).toBeVisible();
-  const portfolioPath = new URL(page.url()).pathname;
+  const portfolioUrl = page.url();
   await page.getByRole("button", { name: "Import CSV", exact: true }).click();
   const today = new Date().toISOString().slice(0, 10);
   const headers =
@@ -74,12 +74,12 @@ test("account → portfolio → holding → import → export → second session
   await expect(page.getByRole("button", { name: "Sign in", exact: true })).toBeVisible();
   const context = await browser.newContext();
   const second = await context.newPage();
-  await second.goto("http://127.0.0.1:13100/login");
+  await second.goto(new URL("/login", portfolioUrl).href);
   await second.getByLabel("Email address").fill(email);
   await second.getByLabel("Password", { exact: true }).fill(password);
   await second.getByRole("button", { name: "Sign in", exact: true }).click();
   await second.waitForURL("**/dashboard");
-  await second.goto("http://127.0.0.1:13100" + portfolioPath);
+  await second.goto(portfolioUrl);
   await expect(second.getByRole("link", { name: "Technology shares", exact: true })).toBeVisible();
   await context.close();
   expect(errors).toEqual([]);

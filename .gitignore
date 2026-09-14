@@ -1,5 +1,7 @@
 node_modules/
 .next/
+out/
+.wrangler/
 .venv/
 .local/
 __pycache__/

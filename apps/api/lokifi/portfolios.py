@@ -247,6 +247,11 @@ def account_export(user: User = Depends(current_user), db: Session = Depends(get
     ps = db.scalars(select(Portfolio).where(Portfolio.user_id == user.id)).all()
     from fastapi.responses import JSONResponse
 
+    from .chat import get_conversation
+    from .models import Conversation
+
+    conversations = db.scalars(select(Conversation).where(Conversation.user_id == user.id)).all()
+
     return JSONResponse(
         {
             "version": 2,
@@ -254,6 +259,7 @@ def account_export(user: User = Depends(current_user), db: Session = Depends(get
             "email": user.email,
             "portfolios": [detail(db, p).model_dump(mode="json") for p in ps],
             "watchlist": [w.model_dump(mode="json") for w in watchlist(user, db)],
+            "conversations": [get_conversation(c.id, user).model_dump(mode="json") for c in conversations],
         },
         headers={"Content-Disposition": 'attachment; filename="lokifi-records.json"'},
     )

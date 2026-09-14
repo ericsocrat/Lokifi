@@ -10,7 +10,7 @@ import {
   ShieldCheck,
   Wallet,
 } from "lucide-react";
-import Link from "next/link";
+import Link from "../components/Link";
 import { useState } from "react";
 import { money, units, type Detail } from "../api";
 import { Status } from "../components/Status";

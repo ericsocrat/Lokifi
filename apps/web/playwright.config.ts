@@ -9,7 +9,7 @@ export default defineConfig({
   retries: 0,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
-    baseURL: "http://127.0.0.1:13100",
+    baseURL: process.env.LOKIFI_E2E_ORIGIN || "http://127.0.0.1:13100",
     headless: true,
     channel: process.env.PLAYWRIGHT_CHANNEL || undefined,
     trace: "retain-on-failure",

@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, OperationalError
 
-from . import identity, imports, market_data, portfolios
+from . import account_security, chat, identity, imports, market_data, portfolios
 from .config import settings
 from .database import SessionLocal
 from .schemas import Message
@@ -16,12 +16,33 @@ app = FastAPI(
     redoc_url=None,
     separate_input_output_schemas=False,
 )
-for router in (identity.router, portfolios.router, imports.router, market_data.router):
+for router in (
+    identity.router,
+    portfolios.router,
+    imports.router,
+    market_data.router,
+    account_security.router,
+    chat.router,
+):
     app.include_router(router, prefix="/api/v1")
 
 
 @app.middleware("http")
 async def security(request: Request, call_next):
+    if settings().environment == "production" and request.url.path != "/api/v1/health":
+        import secrets
+
+        expected = settings().proxy_secret
+        if not expected or not secrets.compare_digest(
+            request.headers.get("x-lokifi-proxy", ""), expected.get_secret_value()
+        ):
+            return JSONResponse({"detail": "Use the Lokifi website to access this service"}, status_code=403)
+        import ipaddress
+
+        try:
+            request.state.client_ip = str(ipaddress.ip_address(request.headers.get("x-lokifi-client-ip", "")))
+        except ValueError:
+            request.state.client_ip = "unverified-client"
     if request.method not in {"GET", "HEAD", "OPTIONS"}:
         if request.headers.get("origin") != settings().web_origin:
             return JSONResponse({"detail": "Untrusted request origin"}, status_code=403)

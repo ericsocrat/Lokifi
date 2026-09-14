@@ -336,8 +336,16 @@ def test_production_cookie_requires_https_configuration(client, monkeypatch):
             web_origin="http://localhost",
         )
     monkeypatch.setattr(settings(), "environment", "production")
+    from pydantic import SecretStr
+
+    from lokifi import account_security
+
+    monkeypatch.setattr(settings(), "proxy_secret", SecretStr("isolated-test-proxy"))
+    monkeypatch.setattr(account_security, "challenge", lambda *args: None)
     response = client.post(
-        PREFIX + "/auth/register", json={"name": "Alice", "email": "alice@example.com", "password": PASSWORD}
+        PREFIX + "/auth/register",
+        json={"name": "Alice", "email": "alice@example.com", "password": PASSWORD},
+        headers={"x-lokifi-proxy": "isolated-test-proxy"},
     )
     assert response.status_code == 201
     assert "Secure" in response.headers["set-cookie"]

@@ -25,7 +25,10 @@ export async function api<T>(path: string, method = "GET", body?: unknown): Prom
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
     cache: "no-store",
+    signal: AbortSignal.timeout(125000),
   });
+  if (!response.headers.get("content-type")?.includes("application/json"))
+    throw new ApiError("Lokifi is starting or temporarily unavailable. Please retry shortly.", 503);
   const value = await response.json();
   if (!response.ok) throw new ApiError(value.detail || "We couldn’t complete this request.", response.status);
   return value as T;

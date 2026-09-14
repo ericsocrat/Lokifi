@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import Link from "./Link";
 export function Logo() {
   return (
     <Link className="logo" href="/">

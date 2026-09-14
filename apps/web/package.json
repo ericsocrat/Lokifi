@@ -6,7 +6,7 @@
     "dev": "next dev --hostname 127.0.0.1 --port 13100",
     "build": "next build",
     "start": "node ../../tools/web-start.mjs",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "lint": "eslint . --max-warnings=0",
     "test:e2e": "playwright test"
   },

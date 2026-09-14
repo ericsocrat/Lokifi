@@ -43,6 +43,7 @@ class Credentials(Input):
 
 class Registration(Credentials):
     name: str = Field(min_length=1, max_length=80)
+    turnstile_token: str | None = Field(default=None, max_length=2048)
 
     @field_validator("name")
     @classmethod
@@ -58,6 +59,8 @@ class UserView(BaseModel):
     email: str
     name: str
     is_admin: bool
+    email_verified: bool
+    ai_consent_at: datetime | None
 
 
 class AccountInput(Input):

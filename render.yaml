@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: lokifi-api
+    runtime: python
+    region: frankfurt
+    plan: free
+    rootDir: apps/api
+    buildCommand: pip install uv==0.12.9 && uv sync --frozen --no-dev
+    startCommand: uv run --no-sync alembic upgrade head && uv run --no-sync uvicorn lokifi.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/v1/health
+    autoDeploy: false
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: LOKIFI_ENVIRONMENT
+        value: production
+      - key: LOKIFI_SIGNUP_ENABLED
+        value: 'false'
+      - key: LOKIFI_WEB_ORIGIN
+        value: https://lokifi.com
+      - key: LOKIFI_DATABASE_URL
+        sync: false
+      - key: LOKIFI_PROXY_SECRET
+        sync: false

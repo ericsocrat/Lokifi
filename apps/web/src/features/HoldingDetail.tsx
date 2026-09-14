@@ -1,6 +1,6 @@
 "use client";
 import { Star } from "lucide-react";
-import Link from "next/link";
+import Link from "../components/Link";
 import { api, money, units, type Holding } from "../api";
 import { Status } from "../components/Status";
 import { HoldingForm } from "./HoldingForm";

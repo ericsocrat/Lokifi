@@ -41,7 +41,7 @@ def schema():
 @pytest.fixture(autouse=True)
 def empty_database(schema):
     with engine.begin() as c:
-        c.execute(text("TRUNCATE users, auth_attempts CASCADE"))
+        c.execute(text("TRUNCATE users, auth_attempts, email_quota CASCADE"))
 
 
 @pytest.fixture

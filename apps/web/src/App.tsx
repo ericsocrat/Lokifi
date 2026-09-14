@@ -5,9 +5,23 @@ import { HoldingDetail } from "./features/HoldingDetail";
 import { PortfolioOverview } from "./features/PortfolioOverview";
 import { WatchlistView } from "./features/WatchlistView";
 
-import { ArrowRight, Layers3, LayoutDashboard, LogOut, Plus, Settings2, ShieldCheck, Star, Wallet } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  Layers3,
+  LayoutDashboard,
+  LogOut,
+  MessageSquare,
+  Plus,
+  Settings2,
+  ShieldCheck,
+  Star,
+  Wallet,
+  X,
+} from "lucide-react";
+import { Assistant } from "./features/Assistant";
+import { Turnstile } from "./features/Turnstile";
+import Link from "./components/Link";
+import { useRouter } from "./routing";
 import { useEffect, useState } from "react";
 import { api, ApiError, type Detail, type Holding, type Portfolio, type User, type Watch } from "./api";
 import { Field } from "./components/Field";
@@ -29,6 +43,14 @@ export function App({ path }: { path: string }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [cold, setCold] = useState(false);
+  const [challengeToken, setChallengeToken] = useState("");
+  const [challengeAttempt, setChallengeAttempt] = useState(0);
+  const [publicConfig, setPublicConfig] = useState<{
+    turnstile_site_key: string | null;
+    signup_enabled: boolean;
+  } | null>(null);
   const [panel, setPanel] = useState<null | "portfolio" | "holding" | "import" | "watch" | "remove" | "rename">(null);
 
   async function load() {
@@ -46,6 +68,14 @@ export function App({ path }: { path: string }) {
   }
   useEffect(() => {
     let active = true;
+    const wakeup = setTimeout(() => {
+      if (active) setCold(true);
+    }, 5000);
+    void api<{ turnstile_site_key: string | null; signup_enabled: boolean }>("/config")
+      .then((c) => {
+        if (active) setPublicConfig(c);
+      })
+      .catch(() => {});
     async function init() {
       try {
         const u = await api<User>("/auth/me");
@@ -71,6 +101,7 @@ export function App({ path }: { path: string }) {
     void init();
     return () => {
       active = false;
+      clearTimeout(wakeup);
     };
     // Each route mounts a new workspace; mutation refreshes use the same loader.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -98,7 +129,7 @@ export function App({ path }: { path: string }) {
     return (
       <main className="loading" role="status">
         <span className="logo-mark">L</span>
-        <p>Opening your workspace…</p>
+        <p>{cold ? "Starting Lokifi… This can take about a minute after inactivity." : "Opening your workspace…"}</p>
       </main>
     );
   if (!user) {
@@ -158,13 +189,15 @@ export function App({ path }: { path: string }) {
                   await api(`/auth/${register ? "register" : "login"}`, "POST", {
                     email: String(f.get("email")),
                     password: String(f.get("password")),
-                    ...(register ? { name: String(f.get("name")) } : {}),
+                    ...(register ? { name: String(f.get("name")), turnstile_token: challengeToken || null } : {}),
                   });
                   router.replace("/dashboard");
                 } catch (e) {
                   setError(message(e));
                 } finally {
                   setBusy(false);
+                  setChallengeToken("");
+                  setChallengeAttempt((n) => n + 1);
                 }
               }}
             >
@@ -181,7 +214,25 @@ export function App({ path }: { path: string }) {
                   {error}
                 </p>
               )}
-              <button disabled={busy} className="full">
+              {register && (
+                <Turnstile
+                  siteKey={publicConfig?.turnstile_site_key || null}
+                  action="signup"
+                  onToken={setChallengeToken}
+                  attempt={challengeAttempt}
+                />
+              )}
+              {register && publicConfig?.signup_enabled === false && (
+                <p className="notice">Public registration is not open yet.</p>
+              )}
+              <button
+                disabled={
+                  busy ||
+                  (register &&
+                    (publicConfig?.signup_enabled === false || (!!publicConfig?.turnstile_site_key && !challengeToken)))
+                }
+                className="full"
+              >
                 {busy ? "Please wait…" : register ? "Create account" : "Sign in"}
                 <ArrowRight size={17} />
               </button>
@@ -190,16 +241,32 @@ export function App({ path }: { path: string }) {
               {register ? "Already have an account?" : "New to Lokifi?"}{" "}
               <Link href={register ? "/login" : "/register"}>{register ? "Sign in" : "Create an account"}</Link>
             </p>
+            {!register && (
+              <Link className="text-link" href="/recovery">
+                Forgot your password?
+              </Link>
+            )}
           </section>
         </main>
         <footer>
-          Lokifi · A clearer financial picture.<span>No trading. No generated investment advice.</span>
+          Lokifi · Public beta.
+          <span>
+            <Link href="/privacy">Privacy & data</Link> · <Link href="/about">About this beta</Link>
+          </span>
         </footer>
       </div>
     );
   }
   const section =
-    path === "/watchlist" ? "Watchlist" : path === "/settings" ? "Settings" : holding ? "Holding detail" : "Overview";
+    path === "/assistant"
+      ? "Assistant"
+      : path === "/watchlist"
+        ? "Watchlist"
+        : path === "/settings"
+          ? "Settings"
+          : holding
+            ? "Holding detail"
+            : "Overview";
   return (
     <div className="workspace">
       <a className="skip-link" href="#main">
@@ -209,6 +276,10 @@ export function App({ path }: { path: string }) {
         <Logo />
         <div className="workspace-label">PERSONAL WORKSPACE</div>
         <nav aria-label="Main navigation">
+          <Link href="/assistant" className={section === "Assistant" ? "active" : ""}>
+            <MessageSquare size={18} />
+            Assistant
+          </Link>
           <Link href="/dashboard" className={section === "Overview" || holding ? "active" : ""}>
             <LayoutDashboard size={18} />
             Overview
@@ -329,6 +400,8 @@ export function App({ path }: { path: string }) {
               <h1>Your records couldn’t be loaded.</h1>
               <p className="muted">This is not an empty portfolio. Use Retry above to reconnect to storage.</p>
             </section>
+          ) : section === "Assistant" ? (
+            <Assistant portfolios={portfolios} initialPortfolioId={detail?.id} onChanged={() => void load()} />
           ) : section === "Settings" ? (
             <AccountSettings user={user} setUser={setUser} action={action} busy={busy} />
           ) : section === "Watchlist" ? (
@@ -338,13 +411,34 @@ export function App({ path }: { path: string }) {
           ) : !detail ? (
             <EmptyPortfolio open={open} action={action} busy={busy} />
           ) : (
-            <PortfolioOverview detail={detail} open={open} />
+            <>
+              <button className="secondary ask-portfolio" onClick={() => setAssistantOpen(true)}>
+                <MessageSquare size={16} />
+                Ask about this portfolio
+              </button>
+              <PortfolioOverview detail={detail} open={open} />
+            </>
           )}
         </main>
         <footer className="app-footer">
-          Lokifi · Your portfolio, clearly.<span>Local preview · Automatic crypto data where available</span>
+          Lokifi · Public beta.
+          <span>
+            <Link href="/privacy">Privacy & data</Link> · <Link href="/about">Free allowances apply</Link>
+          </span>
         </footer>
       </div>
+      {assistantOpen && (
+        <aside className="assistant-drawer" aria-label="Portfolio assistant">
+          <button
+            className="icon-button close-assistant"
+            aria-label="Close assistant"
+            onClick={() => setAssistantOpen(false)}
+          >
+            <X size={19} />
+          </button>
+          <Assistant portfolios={portfolios} initialPortfolioId={detail?.id} onChanged={() => void load()} />
+        </aside>
+      )}
       {panel && (
         <Modal
           title={

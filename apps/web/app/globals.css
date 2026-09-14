@@ -1524,6 +1524,202 @@ td small {
   position: relative;
 }
 
+.assistant-workspace {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+.assistant-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+.assistant-heading h2 {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 23px;
+}
+.chat-history-picker {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+.chat-history-picker .field {
+  flex: 1;
+}
+.chat-messages {
+  min-height: 260px;
+  max-height: 55vh;
+  overflow: auto;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.chat-message {
+  padding: 16px;
+  border-radius: 12px;
+  max-width: 95%;
+  background: #f6f5fa;
+}
+.chat-message.user {
+  background: var(--soft);
+  align-self: flex-end;
+}
+.chat-message > span {
+  font-weight: 600;
+  font-size: 10px;
+  color: var(--muted);
+}
+.chat-message p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 13px;
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+}
+.chat-empty h3 {
+  color: var(--ink);
+}
+.chat-empty button {
+  font-size: 11px;
+}
+.chat-composer {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+  margin: 12px 0;
+}
+.chat-composer textarea {
+  flex: 1;
+  min-height: 74px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 13px;
+  font: inherit;
+  resize: vertical;
+  min-width: 0;
+  background: #fbfbfd;
+}
+.chat-composer button {
+  height: 44px;
+}
+.chat-source {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.proposal-card {
+  border: 1px solid #d9d1ef;
+  border-radius: 12px;
+  padding: 20px;
+  background: #faf8ff;
+}
+.proposal-card h3 {
+  text-transform: capitalize;
+  margin-top: 8px;
+}
+.proposal-card details {
+  margin: 13px 0;
+}
+.proposal-card summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 12px;
+}
+.proposal-card fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.proposal-card legend {
+  text-transform: capitalize;
+}
+.proposal-card .field > span {
+  text-transform: capitalize;
+}
+.assistant-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(590px, 100vw);
+  z-index: 30;
+  background: white;
+  box-shadow: -12px 0 50px #29213622;
+  overflow: auto;
+  padding: 45px 15px 20px;
+}
+.assistant-drawer .assistant-workspace {
+  padding: 18px;
+  border: 0;
+}
+.close-assistant {
+  position: absolute;
+  top: 9px;
+  right: 14px;
+}
+.ask-portfolio {
+  margin-bottom: 20px;
+}
+.bot-verification {
+  margin-top: 15px;
+}
+.standalone h2 {
+  margin-top: 28px;
+}
+.standalone p {
+  line-height: 1.9;
+  margin-top: 14px;
+}
+@media (max-width: 760px) {
+  .assistant-workspace {
+    padding: 17px;
+  }
+  .assistant-heading h2 {
+    font-size: 20px;
+  }
+  .assistant-heading button {
+    font-size: 10px;
+    padding: 8px;
+  }
+  .chat-composer {
+    flex-wrap: wrap;
+  }
+  .chat-composer textarea {
+    flex-basis: 100%;
+  }
+  .chat-composer button {
+    margin-left: auto;
+  }
+  .sidebar nav a {
+    font-size: 10px;
+    gap: 5px;
+    padding-inline: 6px;
+  }
+  .sidebar nav a svg {
+    width: 15px;
+  }
+  .assistant-drawer {
+    padding-inline: 0;
+  }
+  .chat-messages {
+    max-height: 50vh;
+  }
+}
+
 .entry-mode {
   display: flex;
   gap: 5px;

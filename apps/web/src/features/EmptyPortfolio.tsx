@@ -1,6 +1,6 @@
 "use client";
 import { ArrowRight, ArrowUpRight, Layers3 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "../routing";
 import { api, type Portfolio } from "../api";
 import type { Action, OpenPanel } from "./types";
 export function EmptyPortfolio({ open, action, busy }: { open: OpenPanel; action: Action; busy: boolean }) {

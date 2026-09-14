@@ -35,7 +35,7 @@ if(-not(PortOpen 18100)){
     $launched.api=$p.Id
 }
 if(-not(PortOpen 13100)){
-    if(-not(Test-Path 'apps/web/.next/BUILD_ID')){Checked 'npm' @('run','build')}
+    if(-not(Test-Path 'apps/web/out/index.html')){Checked 'npm' @('run','build')}
     $launched.web=Launch 'web' 'tools/web-start.mjs'
 }
 $launched | ConvertTo-Json | Set-Content '.local/last-launch.json'

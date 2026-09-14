@@ -2,6 +2,8 @@
 import { ArrowDownToLine, CircleHelp } from "lucide-react";
 import { api, type User } from "../api";
 import { Field } from "../components/Field";
+import { useState } from "react";
+import { useRouter } from "../routing";
 import type { Action } from "./types";
 export function AccountSettings({
   user,
@@ -14,6 +16,8 @@ export function AccountSettings({
   action: Action;
   busy: boolean;
 }) {
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
   return (
     <>
       <div className="page-heading">
@@ -84,6 +88,45 @@ export function AccountSettings({
             Reporting currency: EUR. Supported crypto references come from Coinbase Exchange; other holdings remain
             manual.
           </p>
+        </section>
+        <section className="card">
+          <h2>AI and chat privacy</h2>
+          <p>Delete all conversations and withdraw consent to send portfolio context to Groq.</p>
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() =>
+              void action(() => api("/account/chat-data", "DELETE"), "Chat data deleted and AI consent withdrawn.")
+            }
+          >
+            Delete chat history
+          </button>
+        </section>
+        <section className="card">
+          <h2>Delete your account</h2>
+          <p>Export first if you need a copy. Deletion removes your portfolios, holdings, watchlist and chats.</p>
+          {!deleting ? (
+            <button className="secondary" onClick={() => setDeleting(true)}>
+              Delete account…
+            </button>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const password = String(new FormData(e.currentTarget).get("password"));
+                void action(async () => {
+                  await api("/account", "DELETE", { password });
+                  router.replace("/login");
+                });
+              }}
+            >
+              <Field label="Confirm your password" name="password" type="password" />
+              <button disabled={busy}>Permanently delete my account</button>
+              <button className="secondary" type="button" onClick={() => setDeleting(false)}>
+                Cancel
+              </button>
+            </form>
+          )}
         </section>
       </div>
     </>

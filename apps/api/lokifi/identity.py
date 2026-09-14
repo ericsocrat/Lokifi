@@ -43,7 +43,10 @@ def administrator(user: User = Depends(current_user)) -> User:
 
 def throttle(request: Request, email: str):
     # Persist attempts separately: failed auth transactions must not erase them.
-    for value, limit in ((email, 10), (request.client.host if request.client else "local", 100)):
+    for value, limit in (
+        (email, 10),
+        (getattr(request.state, "client_ip", request.client.host if request.client else "local"), 100),
+    ):
         bucket = digest(value)
         with SessionLocal.begin() as db:
             db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": int(bucket[:15], 16)})
@@ -77,6 +80,11 @@ def establish(response: Response, user: User, db: Session):
 
 @router.post("/register", response_model=UserView, status_code=201)
 def register(data: Registration, request: Request, response: Response, db: Session = Depends(get_db)):
+    from .account_security import challenge
+
+    if not settings().signup_enabled:
+        raise HTTPException(503, "Registration is not open yet")
+    challenge(data.turnstile_token, "signup")
     throttle(request, str(data.email))
     if db.scalar(select(User).where(User.email == data.email)):
         raise HTTPException(409, "An account already uses this email")
