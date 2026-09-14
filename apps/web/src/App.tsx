@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Assistant } from "./features/Assistant";
 import { Turnstile } from "./features/Turnstile";
+import { PendingVerification } from "./features/PendingVerification";
 import Link from "./components/Link";
 import { useRouter } from "./routing";
 import { useEffect, useRef, useState } from "react";
@@ -60,6 +61,7 @@ export function App({ path, assistantPortfolioId }: { path: string; assistantPor
   const [publicConfig, setPublicConfig] = useState<{
     turnstile_site_key: string | null;
     signup_enabled: boolean;
+    require_verified_email: boolean;
   } | null>(null);
   const [panel, setPanel] = useState<null | "portfolio" | "holding" | "import" | "watch" | "remove" | "rename">(null);
 
@@ -81,7 +83,12 @@ export function App({ path, assistantPortfolioId }: { path: string; assistantPor
     const wakeup = setTimeout(() => {
       if (active) setCold(true);
     }, 5000);
-    void api<{ turnstile_site_key: string | null; signup_enabled: boolean }>("/config")
+    const configuration = api<{
+      turnstile_site_key: string | null;
+      signup_enabled: boolean;
+      require_verified_email: boolean;
+    }>("/config");
+    void configuration
       .then((c) => {
         if (active) setPublicConfig(c);
       })
@@ -89,8 +96,10 @@ export function App({ path, assistantPortfolioId }: { path: string; assistantPor
     async function init() {
       try {
         const u = await api<User>("/auth/me");
+        const c = await configuration;
         if (!active) return;
         setUser(u);
+        if (c.require_verified_email && !u.email_verified) return;
         if (path === "/" || path === "/login" || path === "/register") {
           router.replace("/dashboard");
           return;
@@ -142,6 +151,24 @@ export function App({ path, assistantPortfolioId }: { path: string; assistantPor
         <p>{cold ? "Starting Lokifi… This can take about a minute after inactivity." : "Opening your workspace…"}</p>
       </main>
     );
+  if (user && publicConfig?.require_verified_email && !user.email_verified) {
+    return (
+      <PendingVerification
+        user={user}
+        siteKey={publicConfig.turnstile_site_key}
+        onVerified={async (current) => {
+          await load();
+          setUser(current);
+          router.replace("/dashboard");
+        }}
+        onSignOut={async () => {
+          await api("/auth/logout", "POST");
+          setUser(null);
+          router.replace("/login");
+        }}
+      />
+    );
+  }
   if (!user) {
     const register = path === "/register";
     return (

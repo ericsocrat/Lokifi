@@ -13,7 +13,7 @@ from sqlalchemy.orm import Session
 
 from .config import settings
 from .database import SessionLocal, get_db
-from .identity import COOKIE, current_user, digest, hasher, throttle
+from .identity import COOKIE, current_user, digest, hasher, session_user, throttle
 from .models import AccountToken, Conversation, EmailQuota, LoginSession, User, now
 from .schemas import Input, Message, UserView
 
@@ -108,6 +108,8 @@ def issue_email(user: User, kind: str):
                 "from": cfg.email_from,
                 "to": [user.email],
                 "subject": f"Lokifi: {label}",
+                "reply_to": cfg.support_email or cfg.email_from,
+                "text": f"{label} for your Lokifi account.\n\n{link}\n\nIf you did not request this, ignore this email.\nSupport: {cfg.support_email or 'Lokifi support'}",
                 "html": f'<p>{label} to continue using Lokifi.</p><p><a href="{html.escape(link)}">{label}</a></p><p>If you did not request this, ignore this email.</p>',
             },
         )
@@ -137,11 +139,12 @@ def public_config():
         "research_enabled": cfg.research_enabled,
         "support_email": cfg.support_email,
         "environment": cfg.environment,
+        "require_verified_email": cfg.environment == "production",
     }
 
 
 @router.post("/auth/verification/request", response_model=Message)
-def verification_request(data: ChallengeInput, request: Request, user: User = Depends(current_user)):
+def verification_request(data: ChallengeInput, request: Request, user: User = Depends(session_user)):
     throttle(request, user.email)
     challenge(data.turnstile_token, "verify_email")
     if not user.email_verified:
@@ -194,7 +197,7 @@ def delete_chat(user: User = Depends(current_user), db: Session = Depends(get_db
 
 @router.delete("/account", response_model=Message)
 def delete_account(
-    data: DeleteInput, response: Response, user: User = Depends(current_user), db: Session = Depends(get_db)
+    data: DeleteInput, response: Response, user: User = Depends(session_user), db: Session = Depends(get_db)
 ):
     from argon2.exceptions import VerificationError
 

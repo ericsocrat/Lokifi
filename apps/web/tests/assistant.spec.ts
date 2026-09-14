@@ -2,6 +2,39 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { randomUUID } from "node:crypto";
 
+test("unverified signup stays on the verification screen until confirmation", async ({ page, baseURL }, info) => {
+  const result = await page.request.post("/api/v1/auth/register", {
+    headers: { Origin: baseURL! },
+    data: {
+      name: "Pending browser fixture",
+      email: `pending-${randomUUID()}@example.com`,
+      password: "Synthetic+pending+password",
+    },
+  });
+  expect(result.status()).toBe(201);
+  const user = await result.json();
+  let verified = false;
+  let workspaceRequests = 0;
+  await page.route("**/api/v1/config", (route) =>
+    route.fulfill({ json: { signup_enabled: true, require_verified_email: true, turnstile_site_key: null } }),
+  );
+  await page.route("**/api/v1/auth/me", (route) => route.fulfill({ json: { ...user, email_verified: verified } }));
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/api/v1/portfolios") workspaceRequests++;
+  });
+  await page.goto("/dashboard");
+  await expect(page.getByRole("heading", { name: "Verify your email to open Lokifi." })).toBeVisible();
+  expect(workspaceRequests).toBe(0);
+  await expect(page.getByRole("button", { name: "Create your first portfolio" })).toHaveCount(0);
+  const accessibility = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(accessibility.violations.map((v) => v.id)).toEqual([]);
+  await page.screenshot({ path: info.outputPath("pending-verification.png"), fullPage: true });
+  verified = true;
+  await page.getByRole("button", { name: "I have verified my email" }).click();
+  await expect(page.getByRole("heading", { name: "Your portfolio starts here." })).toBeVisible();
+  expect(workspaceRequests).toBeGreaterThan(0);
+});
+
 test("Assistant simulated stream: responsive entry, safe formatting and keyboard dismissal", async ({
   page,
   baseURL,

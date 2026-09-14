@@ -3,7 +3,7 @@
 import hashlib
 import json
 from datetime import timedelta
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
@@ -139,16 +139,18 @@ def scenario(db: Session, user_id: str, portfolio_id: str, category: str, change
             "available": False,
             "reason": "Complete missing valuations before comparing allocation scenarios",
         }
-    amounts = {row.category: Decimal(row.eur_value) for row in summary.allocation}
-    amounts[category] = amounts.get(category, Decimal(0)) + value
-    total = sum(amounts.values(), Decimal(0))
-    if amounts[category] < 0 or total <= 0:
-        raise HTTPException(422, "Scenario would create negative holdings or a non-positive portfolio")
-    return {
-        "hypothetical": True,
-        "total_eur": f"{total:.2f}",
-        "allocation": [
-            {"category": key, "eur_value": f"{amount:.2f}", "percentage": f"{amount / total * 100:.2f}"}
-            for key, amount in amounts.items()
-        ],
-    }
+    with localcontext() as context:
+        context.prec = 128
+        amounts = {row.category: Decimal(row.eur_value) for row in summary.allocation}
+        amounts[category] = amounts.get(category, Decimal(0)) + value
+        total = sum(amounts.values(), Decimal(0))
+        if amounts[category] < 0 or total <= 0:
+            raise HTTPException(422, "Scenario would create negative holdings or a non-positive portfolio")
+        return {
+            "hypothetical": True,
+            "total_eur": f"{total:.2f}",
+            "allocation": [
+                {"category": key, "eur_value": f"{amount:.2f}", "percentage": f"{amount / total * 100:.2f}"}
+                for key, amount in amounts.items()
+            ],
+        }

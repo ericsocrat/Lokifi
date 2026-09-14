@@ -22,7 +22,7 @@ def digest(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
 
 
-def current_user(request: Request, db: Session = Depends(get_db)) -> User:
+def session_user(request: Request, db: Session = Depends(get_db)) -> User:
     token = request.cookies.get(COOKIE, "")
     if not token or len(token) > 200:
         raise HTTPException(401, "Sign in to continue")
@@ -32,6 +32,13 @@ def current_user(request: Request, db: Session = Depends(get_db)) -> User:
     user = db.get(User, session.user_id)
     if user is None:
         raise HTTPException(401, "Sign in to continue")
+    return user
+
+
+def current_user(request: Request, db: Session = Depends(get_db)) -> User:
+    user = session_user(request, db)
+    if settings().environment == "production" and not user.email_verified:
+        raise HTTPException(403, "Verify your email before accessing your workspace")
     return user
 
 
@@ -80,7 +87,7 @@ def establish(response: Response, user: User, db: Session):
 
 @router.post("/register", response_model=UserView, status_code=201)
 def register(data: Registration, request: Request, response: Response, db: Session = Depends(get_db)):
-    from .account_security import challenge
+    from .account_security import challenge, issue_email
 
     if not settings().signup_enabled:
         raise HTTPException(503, "Registration is not open yet")
@@ -93,6 +100,15 @@ def register(data: Registration, request: Request, response: Response, db: Sessi
     db.flush()
     establish(response, user, db)
     db.commit()
+    if settings().environment == "production":
+        try:
+            issue_email(user, "verify")
+        except HTTPException:
+            # The account remains recoverable through its restricted verification screen.
+            # Do not turn an email outage into a misleading duplicate-registration retry.
+            import logging
+
+            logging.getLogger("lokifi.accounts").warning("Signup verification delivery unavailable")
     return user
 
 
@@ -118,7 +134,7 @@ DUMMY_HASH = hasher.hash(secrets.token_hex(32))
 
 
 @router.get("/me", response_model=UserView)
-def me(user: User = Depends(current_user)):
+def me(user: User = Depends(session_user)):
     return user
 
 

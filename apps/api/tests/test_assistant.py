@@ -51,6 +51,55 @@ def test_ai_requires_verified_email_consent_and_configured_free_provider(client,
     assert send(client, c).status_code == 503
 
 
+@pytest.mark.parametrize("delivery_fails", [False, True])
+def test_production_signup_requests_email_and_locks_unverified_workspace(client, monkeypatch, delivery_fails):
+    from fastapi.testclient import TestClient
+
+    from lokifi.main import app
+
+    monkeypatch.setattr(settings(), "environment", "production")
+    monkeypatch.setattr(settings(), "web_origin", "https://lokifi.test")
+    monkeypatch.setattr(settings(), "proxy_secret", SecretStr("synthetic-proxy"))
+    monkeypatch.setattr(account_security, "challenge", lambda *args: None)
+    deliveries = []
+
+    def issue(user, kind):
+        deliveries.append((user.id, kind))
+        if delivery_fails:
+            raise HTTPException(503, "Synthetic email outage")
+
+    monkeypatch.setattr(account_security, "issue_email", issue)
+    with TestClient(
+        app,
+        base_url="https://lokifi.test",
+        headers={"Origin": "https://lokifi.test", "x-lokifi-proxy": "synthetic-proxy"},
+    ) as secure:
+        user = register(secure)
+        assert deliveries == [(user["id"], "verify")]
+        assert secure.get(PREFIX + "/auth/me").json()["email_verified"] is False
+        for path in ("/portfolios", "/watchlist", "/account/export", "/chat/status"):
+            assert secure.get(PREFIX + path).status_code == 403
+        assert secure.post(PREFIX + "/portfolios", json={"name": "Blocked"}).status_code == 403
+        resend = secure.post(PREFIX + "/auth/verification/request", json={})
+        assert resend.status_code == (503 if delivery_fails else 200)
+        with SessionLocal.begin() as db:
+            db.add(
+                AccountToken(
+                    user_id=user["id"],
+                    kind="verify",
+                    token_hash=digest("synthetic-verification-long-token"),
+                    expires_at=now() + timedelta(minutes=5),
+                )
+            )
+        assert (
+            secure.post(
+                PREFIX + "/auth/verification/confirm", json={"token": "synthetic-verification-long-token"}
+            ).status_code
+            == 200
+        )
+        assert secure.get(PREFIX + "/portfolios").status_code == 200
+
+
 def test_stream_idempotency_and_history(client, monkeypatch):
     verified(client, monkeypatch)
     c = conversation(client)
@@ -261,6 +310,25 @@ def test_expired_proposal_and_cross_user_send_are_denied(client, monkeypatch):
         db.get(User, other["id"]).email_verified = True
     client.post(PREFIX + "/account/ai-consent")
     assert send(client, c).status_code == 404
+
+
+def test_scenario_preserves_small_changes_to_large_decimal_values(client, monkeypatch):
+    from decimal import Decimal, localcontext
+
+    from lokifi import chat_actions
+
+    user = verified(client, monkeypatch)
+    p = portfolio(client)
+    assert (
+        add(client, p, row(price="999999999999999999.99", quantity="100000000000000000")).status_code == 201
+    )
+    before = client.get(f"{PREFIX}/portfolios/{p}").json()["total"]
+    with SessionLocal() as db:
+        result = chat_actions.scenario(db, user["id"], p, "cash", "0.01")
+    with localcontext() as context:
+        context.prec = 128
+        assert result["total_eur"] == f"{Decimal(before) + Decimal('0.01'):.2f}"
+    assert client.get(f"{PREFIX}/portfolios/{p}").json()["total"] == before
 
 
 def test_cancel_expiry_and_retention(client, monkeypatch):
