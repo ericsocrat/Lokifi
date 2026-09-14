@@ -1,4 +1,2 @@
-https://www.lokifi.com/* https://lokifi.com/:splat 301
-https://lokifi-beta.pages.dev/* https://lokifi.com/:splat 302
-/portfolios/:id /portfolio?id=:id 302
-/holdings/:id /holding?id=:id 302
+/portfolios/* /portfolio 200
+/holdings/* /holding 200

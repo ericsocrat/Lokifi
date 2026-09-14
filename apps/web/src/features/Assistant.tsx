@@ -453,6 +453,27 @@ export function Assistant({
             ) : null,
           )}
       </div>
+      {selected?.runs[0]?.status === "running" && !busy && (
+        <div className="notice" role="status">
+          This response is still running. Refreshing retrieves its saved result without another model request.
+          <button className="secondary" onClick={() => void open(selected.id)}>
+            Refresh response
+          </button>
+          <button
+            className="secondary"
+            onClick={async () => {
+              try {
+                await api(`/chat/runs/${selected.runs[0].id}/cancel`, "POST");
+                await open(selected.id);
+              } catch (e) {
+                setError(e instanceof Error ? e.message : "Could not stop this response");
+              }
+            }}
+          >
+            Stop response
+          </button>
+        </div>
+      )}
       {selected?.runs[0] && ["cancelled", "failed", "interrupted"].includes(selected.runs[0].status) && (
         <p role="status" className="notice">
           {selected.runs[0].status === "cancelled" ? "Response stopped." : "The last response did not finish."} Your
