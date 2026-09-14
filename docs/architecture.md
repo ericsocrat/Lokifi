@@ -1,10 +1,10 @@
 # Architecture and financial rules
 
-Lokifi v2 is one Next.js web application, one modular FastAPI application, and PostgreSQL. The active runtime is `apps/web` and `apps/api`. There is no Redis, external AI, market-data worker, public webhook processor, or separate admin app. A narrow on-demand Coinbase Exchange adapter resolves supported EUR crypto products and reference prices; it never fabricates a fallback.
+Lokifi v2 is one statically exported Next.js application on Cloudflare Pages, one modular FastAPI application on Render, and PostgreSQL on Neon. The active runtime is `apps/web` and `apps/api`. Groq provides optional hosted inference. There is no Redis, market-data worker, public webhook processor, or separate admin app. A narrow on-demand Coinbase Exchange adapter resolves supported EUR crypto products and reference prices; it never fabricates a fallback.
 
 ```mermaid
 flowchart LR
- browser[Browser] -->|same origin /api/v1| web[Next.js route handler]
+ browser[Browser] -->|same origin /api/v1| web[Cloudflare Pages Function]
  web -->|private configured origin| api[FastAPI]
  api --> identity[Identity + sessions]
  api --> portfolios[Portfolios + instruments + watchlist]
@@ -13,6 +13,9 @@ flowchart LR
  identity --> pg[(PostgreSQL)]
  portfolios --> pg
  imports --> pg
+ api --> chat[Chat + confirmed proposals + quotas]
+ chat --> pg
+ chat --> groq[Groq Free]
 ```
 
 Frontend features are separated into portfolio overview, holding details/editing, imports, instrument identity, watchlist and account settings. Shared components implement accessible fields, modal focus, valuation status and branding. `App.tsx` coordinates session and route state. It does not store financial records in localStorage. The route allowlist returns 404 for legacy features.
@@ -21,7 +24,7 @@ Frontend features are separated into portfolio overview, holding details/editing
 
 FastAPI's OpenAPI document is the contract. `npm run contracts` regenerates the frontend declaration file; `node tools/contracts.mjs --check` fails on drift. UUID strings identify records. Unknown or another user's IDs return 404. Input schemas reject extra fields; users cannot submit administrator roles or ownership IDs.
 
-Tables: users, sessions, auth_attempts, portfolios, instruments, holdings, imports and watchlist. The initial migration is explicit and stable. No application startup calls create_all or modifies the schema; migrations run as a separate operation. Legacy databases must not be reused. The original source and migration graph remain in Git history.
+Tables: users, sessions, auth_attempts, portfolios, instruments, holdings, imports, watchlist, account_tokens, email_quota, chat_conversations, chat_messages, chat_runs, chat_proposals and chat_quota. Explicit Alembic migrations run before the API process starts. The application does not call create_all. Legacy databases must not be reused. The original source and migration graph remain in Git history.
 
 Instrument uniqueness is `(owner, category, identifier, venue, currency)`. Names are descriptive, not identifiers. A different exchange/network/account is a distinct instrument. Reusing an identity with a conflicting name is rejected for explicit correction. Manual identifiers are user assertions; automatic crypto identities are restricted to online Coinbase EUR products.
 
@@ -43,6 +46,6 @@ CSV import requires the exact template headers and explicit identity fields. Pre
 
 Passwords use Argon2. Opaque random session tokens are stored only as SHA-256 hashes with expiry. Cookies are HttpOnly and SameSite=Lax, Secure in production. Production configuration requires an HTTPS web origin. Logout revokes the current session; password changes revoke all old sessions. There is no localStorage token path or anonymous user fallback.
 
-Every mutation requires an exact configured Origin and rejects cross-site Fetch Metadata. Requests are capped at 600 KB before parsing, including chunked bodies. Authentication attempts are rate-limited in PostgreSQL; failed transactions cannot erase attempts. The same-origin proxy uses one server-only origin, forwards only required headers, forbids redirects, and times out at 15 seconds. Responses are not cached.
+Every mutation requires an exact configured Origin and rejects cross-site Fetch Metadata. Requests are capped at 600 KB before parsing, including chunked bodies. Authentication attempts are rate-limited in PostgreSQL; failed transactions cannot erase attempts. The same-origin proxy uses one server-only origin and shared secret, forwards required headers, forbids upstream redirects, and allows up to 120 seconds for cold-start response headers. Private responses are not cached.
 
-The only administrator route is an authenticated, role-checked status probe. No public role-management interface exists. Broad legacy uploads, messaging and webhook surfaces are absent. Public launch still requires account recovery/deletion workflows, a privacy review, hosting configuration and an operational abuse-control assessment; the local preview is not evidence of a completed public security review.
+The only administrator route is an authenticated, role-checked status probe. No public role-management interface exists. Broad legacy uploads, messaging and webhook surfaces are absent. Production workspace access requires verified email. An unverified session only permits verification, resending, identity readback, logout and password-confirmed account deletion. Signup requests its verification email automatically. See [hosted beta](hosted-beta.md) for deployment evidence and remaining limitations.

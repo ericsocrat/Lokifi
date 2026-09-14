@@ -1,6 +1,6 @@
 # Verification evidence
 
-The rebuilt application is a local portfolio preview. This report records observed checks, not a production certification.
+This document preserves the earlier local rebuild verification. The current hosted beta, updated checks and deployment revisions are recorded in [hosted-beta.md](hosted-beta.md). Neither report is a production certification.
 
 ## Recorded results, 2026-09-14
 

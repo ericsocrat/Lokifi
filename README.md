@@ -1,6 +1,6 @@
 # Lokifi
 
-A portfolio workspace for understanding what you own, how it is valued, and where each figure comes from. English-first, EUR reporting, automatic crypto lookup plus manual or CSV-imported valuations. **Local preview; not deployed.**
+A portfolio workspace for understanding what you own, how it is valued, and where each figure comes from. English-first, EUR reporting, automatic crypto lookup plus manual or CSV-imported valuations. **Public beta: [lokifi.com](https://lokifi.com).** Runtime services are hosted remotely on free plans.
 
 ## Open locally on Windows
 
@@ -17,8 +17,10 @@ The first setup downloads packages and a local PostgreSQL runtime. Records are s
 - CSV template, validated preview, atomic commit and duplicate protection.
 - Holding details and editing, watchlist, CSV exports and full-account JSON exports.
 - A separate, read-only synthetic example portfolio.
+- Automatic signup verification emails, a locked workspace until verification, recovery and account deletion.
+- Groq-hosted Assistant with saved conversations, portfolio explanations and separately confirmed changes.
 
-There are no fabricated returns, trading operations, AI advice, or active legacy administration interfaces. Automatic crypto references come from Coinbase Exchange public market data; a historical daily close may differ from the user's execution price. Manual records remain user-supplied rather than independently verified.
+There are no fabricated returns, trading operations, or active legacy administration interfaces. AI can make mistakes; records change only after confirmation. Public research is disabled because the tested browser-search call exceeded the beta's safe per-turn token budget. Automatic crypto references come from Coinbase Exchange public market data; a historical daily close may differ from the user's execution price. Manual records remain user-supplied rather than independently verified.
 
 ## Developer setup
 
@@ -59,5 +61,6 @@ uv run --directory apps/api python ../../tools/backup.py --restore-test
 - [Operations, backup and local startup](docs/operations.md).
 - [Verification evidence and release status](docs/verification.md).
 - [Optional public-pilot cost proposal](docs/pilot-proposal.md).
+- [Hosted beta, deployment evidence and rollback](docs/hosted-beta.md).
 
-`docs/archive` is historical evidence, not setup guidance. Legacy source remains available in Git at `e4b1a833` and the unchanged original checkout. The replacement uses a fresh database: it does not migrate or delete an existing legacy database.
+`docs/archive` is historical evidence, not setup guidance. Legacy source remains available in Git at `e4b1a833` and the unchanged original checkout. The replacement uses a separate database. Its local portfolio records were copied to Neon with exact content-hash verification; old sessions were not migrated. Existing legacy databases were not modified.

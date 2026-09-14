@@ -29,10 +29,14 @@ For real recovery, preserve the damaged database and dump first. Restore to a ne
 3. Run `npm run verify`; it stops on any failed required check.
 4. Start the built web application and API, then run desktop/mobile browser journeys and axe accessibility checks.
 5. Verify backup restoration and record the revision and evidence paths.
-6. Prepare an explicit deployment proposal before any purchase, publication, credential change or DNS edit.
+6. Deploy only the approved revision and configuration. Purchases and paid upgrades require a separate decision; the current beta is explicitly restricted to free services.
 
-The GitHub workflow implements these gates without source rewriting or continue-on-error. It has been authored locally; no push or hosted workflow execution has occurred. Do not call remote CI green until it actually runs on the final revision.
+The GitHub workflow implements these gates without source rewriting or continue-on-error. Hosted CI passed for application revision `fa8d7638`, including PostgreSQL integration, browser tests, and restoration. See [hosted beta evidence](hosted-beta.md).
 
-## Public-pilot work deliberately outstanding
+## Hosted beta operations
 
-TLS/secure cookie readback on the actual origin; off-site encrypted backups and restore ownership; public account recovery and deletion; privacy notices/retention; monitoring and alert ownership; abuse capacity limits; and confirmed public-use terms for Coinbase market data. Current alpha has no email sender, broker connection, scheduled price ingestion, or automatic equity/ETF pricing. These are public-release prerequisites, not hidden completed features.
+The runtime is Cloudflare Pages, Render Free Frankfurt, Neon Free Frankfurt, Groq Free and Resend Free. API secrets live on Render; the proxy secret and upstream origin live in Pages secrets. Registration, recovery and verification use server-validated Turnstile. Production configuration refuses open signup without the required email, proxy, bot-protection and support settings.
+
+Use `LOKIFI_SIGNUP_ENABLED=false` to pause registration and `LOKIFI_GROQ_FREE_CONFIRMED=false` to disable inference without deleting records. Apply through Render secrets/environment configuration and redeploy. No artificial keep-alive traffic is configured. Do not upgrade services or add a card automatically.
+
+The original verified local backup and the migration hash report remain in ignored `.local/backups` and `.local/hosted-migration-verification.json`. They represent the cutover snapshot, not subsequent hosted edits. Scheduled off-site backup automation is not configured; export current records before recovery work. Broader adoption requires an agreed ongoing backup and monitoring owner. There is no broker connection, scheduled price ingestion, or automatic equity/ETF pricing.
