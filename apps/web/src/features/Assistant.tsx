@@ -3,6 +3,48 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Check, MessageSquare, Plus, Send, Square, Trash2 } from "lucide-react";
 import { api, type Portfolio } from "../api";
 import { Turnstile } from "./Turnstile";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
+function Answer({ text }: { text: string }) {
+  return (
+    <Markdown
+      skipHtml
+      remarkPlugins={[remarkGfm]}
+      allowedElements={[
+        "p",
+        "strong",
+        "em",
+        "code",
+        "pre",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "blockquote",
+        "br",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+      ]}
+      components={{
+        a: ({ href, children }) =>
+          href?.startsWith("https://") ? (
+            <a href={href} target="_blank" rel="noreferrer">
+              {children}
+            </a>
+          ) : (
+            <span>{children}</span>
+          ),
+      }}
+    >
+      {text}
+    </Markdown>
+  );
+}
 
 interface Conversation {
   id: string;
@@ -147,7 +189,7 @@ export function Assistant({
     setLiveProposals([]);
     setError("");
   }
-  async function send(retry = false) {
+  async function send(retry = false, newTurn = false) {
     if (busy || (!prompt.trim() && !retry)) return;
     setBusy(true);
     setError("");
@@ -164,7 +206,7 @@ export function Assistant({
       }
       const submission =
         retry && lastRequest.current
-          ? lastRequest.current
+          ? { ...lastRequest.current, id: newTurn ? crypto.randomUUID() : lastRequest.current.id }
           : { id: crypto.randomUUID(), message: prompt.trim(), conversation: conversation.id };
       lastRequest.current = submission;
       setPrompt("");
@@ -375,13 +417,13 @@ export function Assistant({
         {selected?.messages.map((m) => (
           <article key={m.id} className={"chat-message " + m.role}>
             <span>{m.role === "user" ? "You" : "Lokifi"}</span>
-            <p>{m.content}</p>
+            {m.role === "assistant" ? <Answer text={m.content} /> : <p>{m.content}</p>}
           </article>
         ))}
         {partial && (
           <article className="chat-message assistant">
             <span>Lokifi</span>
-            <p>{partial}</p>
+            <Answer text={partial} />
           </article>
         )}
         {[...(selected?.proposals || []), ...liveProposals].map((p) => (
@@ -411,6 +453,12 @@ export function Assistant({
             ) : null,
           )}
       </div>
+      {selected?.runs[0] && ["cancelled", "failed", "interrupted"].includes(selected.runs[0].status) && (
+        <p role="status" className="notice">
+          {selected.runs[0].status === "cancelled" ? "Response stopped." : "The last response did not finish."} Your
+          records were not changed by the response. Any pending proposal still requires confirmation.
+        </p>
+      )}
       {progress && (
         <p role="status" className="muted">
           {progress}
@@ -421,7 +469,12 @@ export function Assistant({
           {error}
           {lastRequest.current && (
             <button className="secondary" disabled={busy} onClick={() => void send(true)}>
-              Retrieve / retry
+              Retrieve existing response
+            </button>
+          )}
+          {lastRequest.current && (
+            <button className="secondary" disabled={busy} onClick={() => void send(true, true)}>
+              Retry as new turn
             </button>
           )}
         </p>
@@ -448,8 +501,13 @@ export function Assistant({
           <button
             type="button"
             onClick={async () => {
-              if (runId.current) await api("/chat/runs/" + runId.current + "/cancel", "POST");
-              abort.current?.abort();
+              try {
+                if (runId.current) await api("/chat/runs/" + runId.current + "/cancel", "POST");
+              } catch {
+                setError("The connection was stopped; retrieve the response to check its final status.");
+              } finally {
+                abort.current?.abort();
+              }
             }}
           >
             <Square size={16} />

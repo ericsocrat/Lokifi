@@ -10,8 +10,8 @@ export default function Page() {
       <h2>Optional AI processing</h2>
       <p>
         With your consent, your chat messages and relevant records from the selected portfolio are sent to Groq. Public
-        asset research is a separate request without your holdings or quantities. Groq’s data policy applies to
-        inference processing.
+        asset research is currently disabled. Groq inference zero-data-retention is enabled for this beta. Groq’s data
+        policy applies to inference processing, which may take place outside the EU.
       </p>
       <p>
         <a href="https://console.groq.com/docs/your-data" rel="noreferrer">
@@ -26,14 +26,14 @@ export default function Page() {
       <h2>Retention and control</h2>
       <p>
         Chat content expires after 30 days. You can export your records, delete individual chats, delete all chat data,
-        or delete your account in Settings. Anonymous quota totals may remain for 31 days to protect the free allowance.
-        Provider backups may retain deleted data briefly until their retention periods expire.
+        or delete your account in Settings. Quota usage records remain for up to 31 days to protect the free allowance;
+        deleting your account removes their account association. Provider backups may retain deleted data briefly until
+        their retention periods expire.
       </p>
       <h2>Beta status</h2>
       <p>
         This is an experimental portfolio tool. Essential session cookies are used for sign-in. No advertising trackers
-        are required. The operator’s support contact is displayed in the application configuration before public
-        registration opens.
+        are required. For support or data requests, contact <a href="mailto:support@lokifi.com">support@lokifi.com</a>.
       </p>
     </main>
   );

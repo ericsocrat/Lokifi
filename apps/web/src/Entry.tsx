@@ -15,5 +15,14 @@ export function Entry({ page }: { page: string }) {
     const path = `/${page === "portfolio" ? "portfolios" : "holdings"}/${id}`;
     return <App key={path} path={path} />;
   }
-  return <App key={page} path={"/" + page} />;
+  const portfolio = params.get("portfolio");
+  return (
+    <App
+      key={page}
+      path={"/" + page}
+      assistantPortfolioId={
+        page === "assistant" && portfolio && /^[a-f0-9-]{36}$/i.test(portfolio) ? portfolio : undefined
+      }
+    />
+  );
 }

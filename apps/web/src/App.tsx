@@ -22,7 +22,7 @@ import { Assistant } from "./features/Assistant";
 import { Turnstile } from "./features/Turnstile";
 import Link from "./components/Link";
 import { useRouter } from "./routing";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api, ApiError, type Detail, type Holding, type Portfolio, type User, type Watch } from "./api";
 import { Field } from "./components/Field";
 import { Logo } from "./components/Logo";
@@ -31,7 +31,7 @@ import { message } from "./constants";
 import { HoldingForm } from "./features/HoldingForm";
 import { ImportForm } from "./features/ImportForm";
 import { InstrumentFields, readInstrument } from "./features/instruments";
-export function App({ path }: { path: string }) {
+export function App({ path, assistantPortfolioId }: { path: string; assistantPortfolioId?: string }) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [ready, setReady] = useState(false);
@@ -44,6 +44,16 @@ export function App({ path }: { path: string }) {
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [assistantOpen, setAssistantOpen] = useState(false);
+  const assistantDialog = useRef<HTMLDialogElement>(null);
+  const assistantTrigger = useRef<HTMLButtonElement>(null);
+  function closeAssistant() {
+    assistantDialog.current?.close();
+    setAssistantOpen(false);
+    assistantTrigger.current?.focus();
+  }
+  useEffect(() => {
+    if (assistantOpen) assistantDialog.current?.showModal();
+  }, [assistantOpen]);
   const [cold, setCold] = useState(false);
   const [challengeToken, setChallengeToken] = useState("");
   const [challengeAttempt, setChallengeAttempt] = useState(0);
@@ -170,7 +180,7 @@ export function App({ path }: { path: string }) {
             </div>
             <div className="welcome-note">
               <span className="dot" />
-              Local preview · Automatic crypto, manual and imported valuations
+              Automatic crypto, manual and imported valuations
             </div>
           </section>
           <section className="auth-card">
@@ -401,7 +411,11 @@ export function App({ path }: { path: string }) {
               <p className="muted">This is not an empty portfolio. Use Retry above to reconnect to storage.</p>
             </section>
           ) : section === "Assistant" ? (
-            <Assistant portfolios={portfolios} initialPortfolioId={detail?.id} onChanged={() => void load()} />
+            <Assistant
+              portfolios={portfolios}
+              initialPortfolioId={assistantPortfolioId || detail?.id}
+              onChanged={() => void load()}
+            />
           ) : section === "Settings" ? (
             <AccountSettings user={user} setUser={setUser} action={action} busy={busy} />
           ) : section === "Watchlist" ? (
@@ -412,7 +426,14 @@ export function App({ path }: { path: string }) {
             <EmptyPortfolio open={open} action={action} busy={busy} />
           ) : (
             <>
-              <button className="secondary ask-portfolio" onClick={() => setAssistantOpen(true)}>
+              <button
+                ref={assistantTrigger}
+                className="secondary ask-portfolio"
+                onClick={() => {
+                  if (window.matchMedia("(max-width: 760px)").matches) router.push(`/assistant?portfolio=${detail.id}`);
+                  else setAssistantOpen(true);
+                }}
+              >
                 <MessageSquare size={16} />
                 Ask about this portfolio
               </button>
@@ -428,16 +449,20 @@ export function App({ path }: { path: string }) {
         </footer>
       </div>
       {assistantOpen && (
-        <aside className="assistant-drawer" aria-label="Portfolio assistant">
-          <button
-            className="icon-button close-assistant"
-            aria-label="Close assistant"
-            onClick={() => setAssistantOpen(false)}
-          >
+        <dialog
+          ref={assistantDialog}
+          className="assistant-drawer"
+          aria-label="Portfolio assistant"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeAssistant();
+          }}
+        >
+          <button className="icon-button close-assistant" aria-label="Close assistant" onClick={closeAssistant}>
             <X size={19} />
           </button>
           <Assistant portfolios={portfolios} initialPortfolioId={detail?.id} onChanged={() => void load()} />
-        </aside>
+        </dialog>
       )}
       {panel && (
         <Modal

@@ -140,6 +140,129 @@ def test_chat_deletion_does_not_reset_daily_quota(client, monkeypatch):
     assert send(client, conversation(client), "synthetic-request-last").status_code == 429
 
 
+def test_quota_is_reserved_before_provider_and_survives_failure(client, monkeypatch):
+    from lokifi.models import ChatQuota
+
+    verified(client, monkeypatch)
+    c = conversation(client)
+    seen = []
+
+    async def provider(messages, tools):
+        with SessionLocal() as db:
+            reservations = db.scalars(select(ChatQuota).where(ChatQuota.reserved > 0)).all()
+            assert len(reservations) == 1
+            assert reservations[0].actual is None
+            seen.append(reservations[0].reserved)
+        raise chat_provider.ProviderError("Synthetic provider failure")
+        yield  # Make this an async generator without contacting a provider.
+
+    monkeypatch.setattr(chat_provider, "stream_completion", provider)
+    r = send(client, c)
+    assert events(r)[-1]["data"]["status"] == "failed"
+    assert seen and seen[0] > 1024
+    with SessionLocal() as db:
+        q = db.scalar(select(ChatQuota).where(ChatQuota.reserved > 0))
+        assert q.actual is None  # Unknown usage is charged conservatively.
+    monkeypatch.setattr(settings(), "chat_daily_tokens", 1)
+    blocked = send(client, c, "synthetic-global-ceiling")
+    assert any("shared free AI allowance" in e["data"].get("message", "") for e in events(blocked))
+    assert len(seen) == 1
+
+
+def test_crypto_preparation_builds_validated_reference_card_without_writing(client, monkeypatch):
+    from lokifi import market_data
+    from lokifi.schemas import AutomatedHolding
+
+    verified(client, monkeypatch)
+    p = portfolio(client)
+    c = conversation(client, p)
+    fixture = AutomatedHolding.model_validate(
+        {
+            "instrument": {
+                "name": "Bitcoin",
+                "category": "crypto",
+                "identifier": "BTC",
+                "venue": "COINBASE EXCHANGE",
+                "currency": "EUR",
+            },
+            "acquisition": {
+                "product_id": "BTC-EUR",
+                "price": "123.45",
+                "date": "2024-01-01",
+                "observed_at": "2024-01-02T00:00:00Z",
+                "kind": "daily_close",
+                "source": "Synthetic historical reference",
+            },
+            "valuation": {
+                "product_id": "BTC-EUR",
+                "price": "234.56",
+                "date": "2024-01-02",
+                "observed_at": "2024-01-02T00:00:00Z",
+                "kind": "latest_trade",
+                "source": "Synthetic current reference",
+            },
+        }
+    )
+
+    async def resolve(symbol, acquired_at):
+        assert symbol == "BTC" and str(acquired_at) == "2024-01-01"
+        return fixture
+
+    calls = []
+
+    async def provider(messages, tools):
+        if not calls:
+            calls.append(True)
+            yield {
+                "kind": "tool",
+                "id": "call_crypto",
+                "name": "prepare_crypto_holding",
+                "arguments": json.dumps({"symbol": "BTC", "quantity": "0.25", "acquired_at": "2024-01-01"}),
+            }
+        else:
+            yield {"kind": "text", "text": "Review the reference prices before confirming."}
+        yield {"kind": "usage", "tokens": 100}
+
+    monkeypatch.setattr(market_data, "automated_holding", resolve)
+    monkeypatch.setattr(chat_provider, "stream_completion", provider)
+    response = send(client, c)
+    proposal = next(e["data"] for e in events(response) if e["type"] == "proposal")
+    assert client.get(f"{PREFIX}/portfolios/{p}").json()["holdings"] == []
+    holding = proposal["payload"]["holding"]
+    assert holding["acquisition_price"] == "123.45"
+    assert "not execution" in holding["acquisition_source"]
+    assert client.post(f"{PREFIX}/chat/proposals/{proposal['id']}/confirm", json={}).status_code == 200
+    assert client.get(f"{PREFIX}/portfolios/{p}").json()["total"] == "58.64"
+
+
+def test_expired_proposal_and_cross_user_send_are_denied(client, monkeypatch):
+    from lokifi import chat_actions
+    from lokifi.models import ChatProposal
+
+    u = verified(client, monkeypatch)
+    p = portfolio(client)
+    c = conversation(client, p)
+    with SessionLocal.begin() as db:
+        prop = chat_actions.propose(
+            db,
+            u["id"],
+            db.get(Conversation, c),
+            "rename_portfolio",
+            {"portfolio_id": p, "name": "Expired change"},
+        )
+        prop.expires_at = now() - timedelta(seconds=1)
+        pid = prop.id
+    assert client.post(f"{PREFIX}/chat/proposals/{pid}/confirm", json={}).status_code == 409
+    with SessionLocal() as db:
+        assert db.get(ChatProposal, pid).status == "pending"
+    client.post(PREFIX + "/auth/logout")
+    other = register(client, "other@example.com")
+    with SessionLocal.begin() as db:
+        db.get(User, other["id"]).email_verified = True
+    client.post(PREFIX + "/account/ai-consent")
+    assert send(client, c).status_code == 404
+
+
 def test_cancel_expiry_and_retention(client, monkeypatch):
     u = verified(client, monkeypatch)
     c = conversation(client)
