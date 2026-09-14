@@ -495,7 +495,7 @@ export function Assistant({
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Ask about your portfolio…"
-          disabled={!status?.verified || !status?.consented || !status?.configured}
+          disabled={!status?.verified || !status?.consented || !status?.configured || status.remaining_turns === 0}
         />
         {busy ? (
           <button
@@ -514,7 +514,15 @@ export function Assistant({
             Stop
           </button>
         ) : (
-          <button disabled={!prompt.trim() || !status?.verified || !status?.consented || !status?.configured}>
+          <button
+            disabled={
+              !prompt.trim() ||
+              !status?.verified ||
+              !status?.consented ||
+              !status?.configured ||
+              status.remaining_turns === 0
+            }
+          >
             <Send size={16} />
             Send
           </button>
