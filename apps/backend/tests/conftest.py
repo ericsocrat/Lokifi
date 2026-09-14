@@ -130,14 +130,14 @@ async def integration_db_session() -> AsyncGenerator[AsyncSession]:
     """
     from app.core.database import Base  # Import Base from core
 
-    # Get test database URL (defaults to main DATABASE_URL)
-    test_db_url = os.getenv(
-        "TEST_DATABASE_URL",
-        os.getenv(
-            "DATABASE_URL",
-            "postgresql+asyncpg://lokifi:lokifi_dev_password@localhost:5432/lokifi_test",
-        ),
-    )
+    from sqlalchemy.engine import make_url
+
+    test_db_url = os.environ.get("TEST_DATABASE_URL", "")
+    if not test_db_url:
+        pytest.fail("TEST_DATABASE_URL must explicitly identify a disposable test database")
+    target = make_url(test_db_url)
+    if target.host not in {"localhost", "127.0.0.1", "postgres"} or not (target.database or "").endswith("_test"):
+        pytest.fail("Refusing teardown outside a local database ending in _test")
 
     # Create test engine
     test_engine = create_async_engine(

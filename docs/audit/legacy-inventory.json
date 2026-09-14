@@ -1,0 +1,2855 @@
+{
+  "baseline": "e4b1a833765b33ae9d0a46d8b42ebdea3446d73b",
+  "pages": [
+    {
+      "app": "frontend",
+      "route": "/admin/api-keys",
+      "source": "apps\\frontend\\app\\admin\\api-keys\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/admin/audit-logs",
+      "source": "apps\\frontend\\app\\admin\\audit-logs\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/admin/email-templates",
+      "source": "apps\\frontend\\app\\admin\\email-templates\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/admin",
+      "source": "apps\\frontend\\app\\admin\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/admin/webhooks",
+      "source": "apps\\frontend\\app\\admin\\webhooks\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/ai-research",
+      "source": "apps\\frontend\\app\\ai-research\\page.tsx",
+      "status": "simulated",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/alerts",
+      "source": "apps\\frontend\\app\\alerts\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/asset/[symbol]",
+      "source": "apps\\frontend\\app\\asset\\[symbol]\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/chart/[symbol]",
+      "source": "apps\\frontend\\app\\chart\\[symbol]\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/chart",
+      "source": "apps\\frontend\\app\\chart\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/chat",
+      "source": "apps\\frontend\\app\\chat\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/dashboard/add-assets",
+      "source": "apps\\frontend\\app\\dashboard\\add-assets\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/dashboard/analytics",
+      "source": "apps\\frontend\\app\\dashboard\\analytics\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/dashboard/assets",
+      "source": "apps\\frontend\\app\\dashboard\\assets\\page.tsx",
+      "status": "simulated",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/dashboard",
+      "source": "apps\\frontend\\app\\dashboard\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/dashboard/settings",
+      "source": "apps\\frontend\\app\\dashboard\\settings\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/debts",
+      "source": "apps\\frontend\\app\\debts\\page.tsx",
+      "status": "simulated",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/dev/drawing",
+      "source": "apps\\frontend\\app\\dev\\drawing\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/dev/flags",
+      "source": "apps\\frontend\\app\\dev\\flags\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/goals",
+      "source": "apps\\frontend\\app\\goals\\page.tsx",
+      "status": "simulated",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/login",
+      "source": "apps\\frontend\\app\\login\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/markets/crypto",
+      "source": "apps\\frontend\\app\\markets\\crypto\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/markets/forex",
+      "source": "apps\\frontend\\app\\markets\\forex\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/markets/indices",
+      "source": "apps\\frontend\\app\\markets\\indices\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/markets",
+      "source": "apps\\frontend\\app\\markets\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/markets/stocks",
+      "source": "apps\\frontend\\app\\markets\\stocks\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/notifications",
+      "source": "apps\\frontend\\app\\notifications\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/notifications/preferences",
+      "source": "apps\\frontend\\app\\notifications\\preferences\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/",
+      "source": "apps\\frontend\\app\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/portfolio",
+      "source": "apps\\frontend\\app\\portfolio\\page.tsx",
+      "status": "simulated",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/profile/edit",
+      "source": "apps\\frontend\\app\\profile\\edit\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/profile",
+      "source": "apps\\frontend\\app\\profile\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/profile/settings",
+      "source": "apps\\frontend\\app\\profile\\settings\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/recap",
+      "source": "apps\\frontend\\app\\recap\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "frontend",
+      "route": "/settings",
+      "source": "apps\\frontend\\app\\settings\\page.tsx",
+      "status": "untested",
+      "decision": "rebuild"
+    },
+    {
+      "app": "frontend",
+      "route": "/test",
+      "source": "apps\\frontend\\app\\test\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/(auth)/login",
+      "source": "apps\\admin\\app\\(auth)\\login\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/dashboard/moderation/[id]",
+      "source": "apps\\admin\\app\\dashboard\\moderation\\[id]\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/dashboard/moderation",
+      "source": "apps\\admin\\app\\dashboard\\moderation\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/dashboard",
+      "source": "apps\\admin\\app\\dashboard\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/dashboard/users/[id]",
+      "source": "apps\\admin\\app\\dashboard\\users\\[id]\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/dashboard/users",
+      "source": "apps\\admin\\app\\dashboard\\users\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    },
+    {
+      "app": "admin",
+      "route": "/",
+      "source": "apps\\admin\\app\\page.tsx",
+      "status": "untested",
+      "decision": "retire"
+    }
+  ],
+  "route_declarations": [
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 102,
+      "method": "GET",
+      "path": "/analytics/dashboard",
+      "function": "get_notification_dashboard",
+      "dependencies": "days: int=Query(default=7, ge=1, le=90), current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 116,
+      "method": "GET",
+      "path": "/analytics/metrics/{user_id}",
+      "function": "get_user_metrics",
+      "dependencies": "user_id: str, days: int=Query(default=30, ge=1, le=90), current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 133,
+      "method": "GET",
+      "path": "/analytics/performance",
+      "function": "get_performance_metrics",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 144,
+      "method": "GET",
+      "path": "/analytics/trends",
+      "function": "get_notification_trends",
+      "dependencies": "days: int=Query(default=30, ge=7, le=365), current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 158,
+      "method": "GET",
+      "path": "/analytics/health-score",
+      "function": "get_system_health_score",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 172,
+      "method": "POST",
+      "path": "/rich",
+      "function": "send_rich_notification_endpoint",
+      "dependencies": "request: RichNotificationRequest, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 208,
+      "method": "POST",
+      "path": "/batched",
+      "function": "send_batched_notification_endpoint",
+      "dependencies": "request: RichNotificationRequest, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 239,
+      "method": "POST",
+      "path": "/schedule",
+      "function": "schedule_notification_endpoint",
+      "dependencies": "request: ScheduledNotificationRequest, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 278,
+      "method": "GET",
+      "path": "/batches/pending",
+      "function": "get_pending_batches",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 289,
+      "method": "POST",
+      "path": "/batches/{batch_id}/deliver",
+      "function": "force_deliver_batch",
+      "dependencies": "batch_id: str, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 319,
+      "method": "POST",
+      "path": "/ab-tests",
+      "function": "configure_ab_test",
+      "dependencies": "config: ABTestConfiguration, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 342,
+      "method": "GET",
+      "path": "/ab-tests",
+      "function": "get_ab_tests",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 360,
+      "method": "GET",
+      "path": "/preferences/{user_id}",
+      "function": "get_user_notification_preferences",
+      "dependencies": "user_id: str, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 377,
+      "method": "PUT",
+      "path": "/preferences/{user_id}",
+      "function": "update_user_notification_preferences",
+      "dependencies": "user_id: str, preferences: NotificationPreferencesUpdate, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 414,
+      "method": "GET",
+      "path": "/templates",
+      "function": "get_notification_templates",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 432,
+      "method": "GET",
+      "path": "/channels",
+      "function": "get_delivery_channels",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\j6_2_endpoints.py",
+      "line": 450,
+      "method": "GET",
+      "path": "/system-status",
+      "function": "get_system_status",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\market\\routes.py",
+      "line": 39,
+      "method": "GET",
+      "path": "/stock/{symbol}",
+      "function": "get_stock_price_endpoint",
+      "dependencies": "symbol: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\market\\routes.py",
+      "line": 57,
+      "method": "GET",
+      "path": "/crypto/{symbol}",
+      "function": "get_crypto_price_endpoint",
+      "dependencies": "symbol: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\market\\routes.py",
+      "line": 74,
+      "method": "POST",
+      "path": "/batch",
+      "function": "batch_fetch_prices_endpoint",
+      "dependencies": "request: BatchRequest",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\market\\routes.py",
+      "line": 94,
+      "method": "GET",
+      "path": "/status",
+      "function": "get_api_status",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\market\\routes.py",
+      "line": 106,
+      "method": "GET",
+      "path": "/stats",
+      "function": "get_api_stats_endpoint",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 122,
+      "method": "GET",
+      "path": "/users/growth",
+      "function": "get_user_growth_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 232,
+      "method": "GET",
+      "path": "/users/activity",
+      "function": "get_user_activity_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 315,
+      "method": "GET",
+      "path": "/users/demographics",
+      "function": "get_user_demographics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 405,
+      "method": "GET",
+      "path": "/content",
+      "function": "get_content_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 463,
+      "method": "GET",
+      "path": "/moderation",
+      "function": "get_moderation_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 563,
+      "method": "GET",
+      "path": "/social",
+      "function": "get_social_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 649,
+      "method": "GET",
+      "path": "/ai",
+      "function": "get_ai_metrics",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 727,
+      "method": "GET",
+      "path": "/overview",
+      "function": "get_dashboard_overview",
+      "dependencies": "db: AsyncSession=Depends(get_db), admin: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_analytics.py",
+      "line": 774,
+      "method": "GET",
+      "path": "/timeseries/user-growth",
+      "function": "get_user_growth_timeseries",
+      "dependencies": "period: MetricPeriod=MetricPeriod.DAY, db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 60,
+      "method": "GET",
+      "path": "/admin/api-keys",
+      "function": "list_api_keys",
+      "dependencies": "current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db), offset: int=Query(0, ge=0), limit: int=Query(50, ge=1, le=500), search: str | None=Query(None), is_active: bool | None=Query(None), created_by: UUID | None=Query(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 133,
+      "method": "GET",
+      "path": "/admin/api-keys/{key_id}",
+      "function": "get_api_key",
+      "dependencies": "key_id: UUID, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 173,
+      "method": "POST",
+      "path": "/admin/api-keys",
+      "function": "create_api_key",
+      "dependencies": "data: APIKeyCreate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 246,
+      "method": "PATCH",
+      "path": "/admin/api-keys/{key_id}",
+      "function": "update_api_key",
+      "dependencies": "key_id: UUID, data: APIKeyUpdate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 309,
+      "method": "DELETE",
+      "path": "/admin/api-keys/{key_id}",
+      "function": "delete_api_key",
+      "dependencies": "key_id: UUID, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_api_keys.py",
+      "line": 349,
+      "method": "POST",
+      "path": "/admin/api-keys/validate",
+      "function": "validate_api_key",
+      "dependencies": "data: APIKeyValidateRequest, db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_audit_logs.py",
+      "line": 84,
+      "method": "GET",
+      "path": "",
+      "function": "list_audit_logs",
+      "dependencies": "action: AuditAction | None=None, resource_type: AuditResourceType | None=None, status: AuditStatus | None=None, user_id: UUID | None=None, search: str | None=None, start_date: datetime | None=None, end_date: datetime | None=None, limit: int=Query(50, ge=1, le=200), offset: int=Query(0, ge=0), db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_audit_logs.py",
+      "line": 140,
+      "method": "POST",
+      "path": "",
+      "function": "create_audit_log",
+      "dependencies": "payload: AuditLogCreate, request: Request, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_audit_logs.py",
+      "line": 189,
+      "method": "GET",
+      "path": "/summary",
+      "function": "audit_log_summary",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_email_templates.py",
+      "line": 59,
+      "method": "GET",
+      "path": "",
+      "function": "list_email_templates",
+      "dependencies": "db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin), offset: int=Query(0, ge=0), limit: int=Query(50, ge=1, le=500), category: str | None=Query(None), enabled: bool | None=Query(None), search: str | None=Query(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_email_templates.py",
+      "line": 122,
+      "method": "GET",
+      "path": "/{template_id}",
+      "function": "get_email_template",
+      "dependencies": "template_id: int, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_email_templates.py",
+      "line": 151,
+      "method": "POST",
+      "path": "",
+      "function": "create_email_template",
+      "dependencies": "data: EmailTemplateCreate, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_email_templates.py",
+      "line": 213,
+      "method": "PATCH",
+      "path": "/{template_id}",
+      "function": "update_email_template",
+      "dependencies": "template_id: int, data: EmailTemplateUpdate, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_email_templates.py",
+      "line": 294,
+      "method": "DELETE",
+      "path": "/{template_id}",
+      "function": "delete_email_template",
+      "dependencies": "template_id: int, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 56,
+      "method": "POST",
+      "path": "/flags",
+      "function": "create_flag",
+      "dependencies": "data: FlaggedContentCreate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 127,
+      "method": "GET",
+      "path": "/flags",
+      "function": "list_flags",
+      "dependencies": "status_filter: FlagStatus | None=Query(None, alias='status'), content_type: ContentType | None=Query(None), reason: FlagReason | None=Query(None), page: int=Query(1, ge=1), page_size: int=Query(20, ge=1, le=100), current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 183,
+      "method": "GET",
+      "path": "/flags/{flag_id}",
+      "function": "get_flag",
+      "dependencies": "flag_id: UUID, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 200,
+      "method": "PUT",
+      "path": "/flags/{flag_id}",
+      "function": "update_flag",
+      "dependencies": "flag_id: UUID, data: FlaggedContentUpdate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 238,
+      "method": "POST",
+      "path": "/flags/{flag_id}/decision",
+      "function": "create_moderation_decision",
+      "dependencies": "flag_id: UUID, data: ModerationDecisionCreate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 303,
+      "method": "GET",
+      "path": "/decisions",
+      "function": "list_decisions",
+      "dependencies": "action: ModerationAction | None=Query(None), page: int=Query(1, ge=1), page_size: int=Query(20, ge=1, le=100), current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 348,
+      "method": "POST",
+      "path": "/decisions/{decision_id}/appeal",
+      "function": "create_appeal",
+      "dependencies": "decision_id: UUID, data: ModerationAppealCreate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 421,
+      "method": "GET",
+      "path": "/appeals",
+      "function": "list_appeals",
+      "dependencies": "status_filter: AppealStatus | None=Query(None, alias='status'), page: int=Query(1, ge=1), page_size: int=Query(20, ge=1, le=100), current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 457,
+      "method": "PUT",
+      "path": "/appeals/{appeal_id}",
+      "function": "review_appeal",
+      "dependencies": "appeal_id: UUID, data: ModerationAppealUpdate, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 491,
+      "method": "GET",
+      "path": "/statistics",
+      "function": "get_moderation_statistics",
+      "dependencies": "current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 603,
+      "method": "GET",
+      "path": "/statistics/by-content-type",
+      "function": "get_content_type_statistics",
+      "dependencies": "current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 634,
+      "method": "GET",
+      "path": "/statistics/by-reason",
+      "function": "get_reason_statistics",
+      "dependencies": "current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_moderation.py",
+      "line": 667,
+      "method": "GET",
+      "path": "/flags/{flag_id}/history",
+      "function": "get_flag_history",
+      "dependencies": "flag_id: UUID, current_user: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 70,
+      "method": "GET",
+      "path": "",
+      "function": "get_system_settings",
+      "dependencies": "db: AsyncSession=Depends(get_db), _: Any=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 90,
+      "method": "PATCH",
+      "path": "",
+      "function": "update_system_settings",
+      "dependencies": "update_data: SystemSettingsUpdate, request: Request, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 168,
+      "method": "POST",
+      "path": "/validate",
+      "function": "validate_settings",
+      "dependencies": "update_data: SystemSettingsUpdate, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 228,
+      "method": "POST",
+      "path": "/maintenance-mode/{enabled}",
+      "function": "toggle_maintenance_mode",
+      "dependencies": "enabled: bool, request: Request, message: str=\"System maintenance in progress. We'll be back shortly.\", db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 301,
+      "method": "POST",
+      "path": "/feature-flags/{flag_name}/{enabled}",
+      "function": "toggle_feature_flag",
+      "dependencies": "flag_name: str, enabled: bool, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 357,
+      "method": "GET",
+      "path": "/health",
+      "function": "health_check",
+      "dependencies": "db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 387,
+      "method": "GET",
+      "path": "/feature-flags",
+      "function": "get_feature_flags",
+      "dependencies": "db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_settings.py",
+      "line": 411,
+      "method": "POST",
+      "path": "/reset-to-defaults",
+      "function": "reset_to_defaults",
+      "dependencies": "request: Request, db: AsyncSession=Depends(get_db), admin: User=Depends(require_admin)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 128,
+      "method": "GET",
+      "path": "",
+      "function": "list_users",
+      "dependencies": "search: str | None=Query(None, description='Search by name, email, or handle'), role: str | None=Query(None, description='Filter by role'), is_verified: bool | None=Query(None, description='Filter by verification status'), is_active: bool | None=Query(None, description='Filter by active status'), page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Items per page'), current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 210,
+      "method": "POST",
+      "path": "",
+      "function": "create_user",
+      "dependencies": "data: UserCreate, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 305,
+      "method": "GET",
+      "path": "/{user_id}",
+      "function": "get_user",
+      "dependencies": "user_id: str, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 348,
+      "method": "PUT",
+      "path": "/{user_id}",
+      "function": "update_user",
+      "dependencies": "user_id: str, data: UserUpdate, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 442,
+      "method": "DELETE",
+      "path": "/{user_id}",
+      "function": "delete_user",
+      "dependencies": "user_id: str, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 500,
+      "method": "POST",
+      "path": "/{user_id}/suspend",
+      "function": "suspend_user",
+      "dependencies": "user_id: str, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_users.py",
+      "line": 563,
+      "method": "POST",
+      "path": "/{user_id}/verify",
+      "function": "verify_user",
+      "dependencies": "user_id: str, current_admin: User=Depends(require_admin), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 42,
+      "method": "GET",
+      "path": "",
+      "function": "list_webhooks",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], page: int=Query(1, ge=1), page_size: int=Query(20, ge=1, le=100), status_filter: str | None=Query(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 82,
+      "method": "POST",
+      "path": "",
+      "function": "create_webhook",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_data: WebhookCreate",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 113,
+      "method": "GET",
+      "path": "/{webhook_id}",
+      "function": "get_webhook",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 133,
+      "method": "PATCH",
+      "path": "/{webhook_id}",
+      "function": "update_webhook",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str, webhook_data: WebhookUpdate",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 172,
+      "method": "DELETE",
+      "path": "/{webhook_id}",
+      "function": "delete_webhook",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 191,
+      "method": "GET",
+      "path": "/{webhook_id}/secret",
+      "function": "get_webhook_secret",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 209,
+      "method": "POST",
+      "path": "/{webhook_id}/rotate-secret",
+      "function": "rotate_webhook_secret",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 230,
+      "method": "GET",
+      "path": "/{webhook_id}/deliveries",
+      "function": "get_webhook_deliveries",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str, page: int=Query(1, ge=1), page_size: int=Query(20, ge=1, le=100)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 273,
+      "method": "POST",
+      "path": "/{webhook_id}/test",
+      "function": "test_webhook",
+      "dependencies": "db: Annotated[AsyncSession, Depends(get_db)], _: Annotated[User, Depends(require_admin)], webhook_id: str, test_payload: WebhookTestPayload",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\admin_webhooks.py",
+      "line": 305,
+      "method": "GET",
+      "path": "/available-events",
+      "function": "get_available_events",
+      "dependencies": "_: Annotated[User, Depends(require_admin)]",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\alerts.py",
+      "line": 46,
+      "method": "GET",
+      "path": "/alerts",
+      "function": "list_alerts",
+      "dependencies": "authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\alerts.py",
+      "line": 53,
+      "method": "POST",
+      "path": "/alerts",
+      "function": "create_alert",
+      "dependencies": "payload: CreateAlert, authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\alerts.py",
+      "line": 89,
+      "method": "DELETE",
+      "path": "/alerts/{alert_id}",
+      "function": "delete_alert",
+      "dependencies": "alert_id: str=Path(...), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\alerts.py",
+      "line": 108,
+      "method": "POST",
+      "path": "/alerts/{alert_id}/toggle",
+      "function": "toggle_alert",
+      "dependencies": "alert_id: str, active: bool=Query(...), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\alerts.py",
+      "line": 129,
+      "method": "GET",
+      "path": "/alerts/stream",
+      "function": "stream_alerts",
+      "dependencies": "mine: bool=Query(False, description='If true, stream only my alerts'), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\auth.py",
+      "line": 78,
+      "method": "POST",
+      "path": "/auth/register",
+      "function": "register",
+      "dependencies": "payload: RegisterPayload, background_tasks: BackgroundTasks",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\auth.py",
+      "line": 110,
+      "method": "POST",
+      "path": "/auth/login",
+      "function": "login",
+      "dependencies": "payload: LoginPayload",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\auth.py",
+      "line": 124,
+      "method": "GET",
+      "path": "/auth/me",
+      "function": "me",
+      "dependencies": "authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\cache.py",
+      "line": 27,
+      "method": "GET",
+      "path": "/stats",
+      "function": "cache_statistics",
+      "dependencies": "request: Request",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\cache.py",
+      "line": 41,
+      "method": "POST",
+      "path": "/clear",
+      "function": "clear_cache",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\cache.py",
+      "line": 59,
+      "method": "POST",
+      "path": "/warm",
+      "function": "warm_cache_endpoint",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\cache.py",
+      "line": 71,
+      "method": "DELETE",
+      "path": "/pattern/{pattern}",
+      "function": "clear_cache_pattern",
+      "dependencies": "pattern: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\cache.py",
+      "line": 87,
+      "method": "GET",
+      "path": "/health",
+      "function": "cache_health_check",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\chat.py",
+      "line": 102,
+      "method": "POST",
+      "path": "/chat",
+      "function": "chat",
+      "dependencies": "req: ChatRequest, authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\health_check.py",
+      "line": 30,
+      "method": "GET",
+      "path": "/comprehensive",
+      "function": "comprehensive_health_check",
+      "dependencies": "db: AsyncSession=Depends(get_db_session), redis_client: RedisClient=Depends(get_redis_client)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\health_check.py",
+      "line": 112,
+      "method": "GET",
+      "path": "/metrics",
+      "function": "get_performance_metrics",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\health_check.py",
+      "line": 118,
+      "method": "GET",
+      "path": "/component/{component_name}",
+      "function": "check_component_health",
+      "dependencies": "component_name: str, db: AsyncSession=Depends(get_db_session), redis_client: RedisClient=Depends(get_redis_client)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\market.py",
+      "line": 16,
+      "method": "GET",
+      "path": "/health",
+      "function": "health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\market.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/ohlc",
+      "function": "get_ohlc",
+      "dependencies": "symbol: str=Query(..., description='Symbol, e.g., BTCUSD or AAPL'), timeframe: str=Query('1h', description='1m, 5m, 15m, 1h, 4h, 1d'), limit: int=Query(500, ge=1, le=5000, description='Number of bars')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 25,
+      "method": "GET",
+      "path": "/health",
+      "function": "get_system_health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 43,
+      "method": "GET",
+      "path": "/health/{service}",
+      "function": "get_service_health",
+      "dependencies": "service: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 63,
+      "method": "GET",
+      "path": "/metrics",
+      "function": "get_system_metrics",
+      "dependencies": "minutes: int=Query(60, description='Minutes of historical data', ge=1, le=1440)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 83,
+      "method": "GET",
+      "path": "/websocket/analytics",
+      "function": "get_websocket_analytics",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 96,
+      "method": "GET",
+      "path": "/websocket/connections",
+      "function": "get_active_connections",
+      "dependencies": "current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 138,
+      "method": "GET",
+      "path": "/cache/metrics",
+      "function": "get_cache_metrics",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 193,
+      "method": "POST",
+      "path": "/cache/invalidate",
+      "function": "invalidate_cache",
+      "dependencies": "pattern: str=Query(..., description='Cache key pattern to invalidate'), layer: str | None=Query(None, description='Specific cache layer'), current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 227,
+      "method": "GET",
+      "path": "/alerts",
+      "function": "get_alerts",
+      "dependencies": "active_only: bool=False, limit: int=100, current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 267,
+      "method": "GET",
+      "path": "/dashboard",
+      "function": "get_monitoring_dashboard",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 280,
+      "method": "GET",
+      "path": "/performance/insights",
+      "function": "get_performance_insights",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 293,
+      "method": "POST",
+      "path": "/monitoring/start",
+      "function": "start_monitoring",
+      "dependencies": "current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 310,
+      "method": "POST",
+      "path": "/monitoring/stop",
+      "function": "stop_monitoring",
+      "dependencies": "current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 327,
+      "method": "GET",
+      "path": "/status",
+      "function": "get_monitoring_status",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\monitoring.py",
+      "line": 352,
+      "method": "GET",
+      "path": "/load-test/websocket",
+      "function": "websocket_load_test",
+      "dependencies": "connections: int=Query(100, description='Number of test connections', ge=1, le=1000), duration: int=Query(60, description='Test duration in seconds', ge=10, le=300), current_user: dict=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 244,
+      "method": "GET",
+      "path": "/portfolio",
+      "function": "list_positions",
+      "dependencies": "request: Request, handle: str | None=Query(None), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 274,
+      "method": "POST",
+      "path": "/portfolio/position",
+      "function": "add_or_update_position",
+      "dependencies": "payload: PositionIn, create_alerts: bool=Query(False), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 303,
+      "method": "DELETE",
+      "path": "/portfolio/{position_id}",
+      "function": "delete_position",
+      "dependencies": "position_id: int, handle: str | None=Query(None), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 328,
+      "method": "POST",
+      "path": "/portfolio/import_text",
+      "function": "import_text",
+      "dependencies": "payload: ImportTextPayload, create_alerts: bool=Query(False), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 375,
+      "method": "GET",
+      "path": "/portfolio/summary",
+      "function": "portfolio_summary",
+      "dependencies": "request: Request, handle: str | None=Query(None), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\portfolio.py",
+      "line": 522,
+      "method": "GET",
+      "path": "/portfolio/analytics",
+      "function": "portfolio_analytics",
+      "dependencies": "request: Request, handle: str | None=Query(None), authorization: str | None=Header(None)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 21,
+      "method": "GET",
+      "path": "/security/status",
+      "function": "get_security_status",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 35,
+      "method": "GET",
+      "path": "/security/dashboard",
+      "function": "get_security_dashboard",
+      "dependencies": "current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 65,
+      "method": "POST",
+      "path": "/security/ip/{ip_address}/block",
+      "function": "block_ip_address",
+      "dependencies": "ip_address: str, current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 92,
+      "method": "DELETE",
+      "path": "/security/ip/{ip_address}/unblock",
+      "function": "unblock_ip_address",
+      "dependencies": "ip_address: str, current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 118,
+      "method": "GET",
+      "path": "/security/events/summary",
+      "function": "get_security_events_summary",
+      "dependencies": "hours: int=24, current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 164,
+      "method": "GET",
+      "path": "/security/health",
+      "function": "security_health_check",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 208,
+      "method": "GET",
+      "path": "/security/config",
+      "function": "get_security_config",
+      "dependencies": "current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 234,
+      "method": "GET",
+      "path": "/security/alerts/config",
+      "function": "get_alert_configuration",
+      "dependencies": "current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 261,
+      "method": "POST",
+      "path": "/security/alerts/test",
+      "function": "send_test_alert",
+      "dependencies": "current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\security.py",
+      "line": 298,
+      "method": "GET",
+      "path": "/security/alerts/history",
+      "function": "get_alert_history",
+      "dependencies": "hours: int=24, severity: str | None=None, current_user: dict[str, Any]=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 87,
+      "method": "POST",
+      "path": "/social/users",
+      "function": "create_user",
+      "dependencies": "payload: UserCreate, request: Request, background_tasks: BackgroundTasks",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 134,
+      "method": "GET",
+      "path": "/social/users/{handle}",
+      "function": "get_user",
+      "dependencies": "handle: str, request: Request",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 217,
+      "method": "POST",
+      "path": "/social/follow/{handle}",
+      "function": "follow",
+      "dependencies": "handle: str, request: Request, authorization: str | None=Header(None), background_tasks: BackgroundTasks=None",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 283,
+      "method": "DELETE",
+      "path": "/social/follow/{handle}",
+      "function": "unfollow",
+      "dependencies": "handle: str, request: Request, authorization: str | None=Header(None), background_tasks: BackgroundTasks=None",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 346,
+      "method": "POST",
+      "path": "/social/posts",
+      "function": "create_post",
+      "dependencies": "payload: PostCreate, request: Request, authorization: str | None=Header(None), background_tasks: BackgroundTasks=None",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 440,
+      "method": "GET",
+      "path": "/social/posts",
+      "function": "list_posts",
+      "dependencies": "symbol: str | None=None, limit: int=50, after_id: int | None=None, request: Request=None",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\social.py",
+      "line": 525,
+      "method": "GET",
+      "path": "/social/feed",
+      "function": "feed",
+      "dependencies": "handle: str, symbol: str | None=None, limit: int=50, after_timestamp: str | None=None, after_id: int | None=None, request: Request=None",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\versioning.py",
+      "line": 20,
+      "method": "GET",
+      "path": "/version",
+      "function": "get_version",
+      "dependencies": "request: Request",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\versioning.py",
+      "line": 34,
+      "method": "GET",
+      "path": "/schema",
+      "function": "get_schema",
+      "dependencies": "request: Request",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\api\\routes\\versioning.py",
+      "line": 66,
+      "method": "GET",
+      "path": "/compatibility",
+      "function": "compatibility_info",
+      "dependencies": "request: Request",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\enhanced_startup.py",
+      "line": 347,
+      "method": "GET",
+      "path": "/api/health",
+      "function": "health_check",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\enhanced_startup.py",
+      "line": 352,
+      "method": "GET",
+      "path": "/api/health/ready",
+      "function": "readiness_check",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\enhanced_startup.py",
+      "line": 364,
+      "method": "GET",
+      "path": "/api/health/live",
+      "function": "liveness_check",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\main.py",
+      "line": 322,
+      "method": "GET",
+      "path": "/",
+      "function": "read_root",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 33,
+      "method": "GET",
+      "path": "/admin/messaging/stats",
+      "function": "get_platform_messaging_stats",
+      "dependencies": "days_back: int=Query(30, ge=1, le=365), admin_user: User=Depends(get_admin_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 58,
+      "method": "GET",
+      "path": "/admin/messaging/performance",
+      "function": "get_performance_metrics",
+      "dependencies": "minutes_back: int=Query(10, ge=1, le=60), admin_user: User=Depends(get_admin_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 100,
+      "method": "GET",
+      "path": "/admin/messaging/moderation",
+      "function": "get_moderation_stats",
+      "dependencies": "admin_user: User=Depends(get_admin_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 128,
+      "method": "POST",
+      "path": "/admin/messaging/moderation/blocked-words",
+      "function": "add_blocked_words",
+      "dependencies": "words: list[str], admin_user: User=Depends(get_admin_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 159,
+      "method": "DELETE",
+      "path": "/admin/messaging/moderation/blocked-words",
+      "function": "remove_blocked_words",
+      "dependencies": "words: list[str], admin_user: User=Depends(get_admin_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 190,
+      "method": "GET",
+      "path": "/admin/messaging/connections",
+      "function": "get_active_connections",
+      "dependencies": "admin_user: User=Depends(get_admin_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 213,
+      "method": "POST",
+      "path": "/admin/messaging/broadcast",
+      "function": "admin_broadcast_message",
+      "dependencies": "message: str, admin_user: User=Depends(get_admin_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\admin_messaging.py",
+      "line": 252,
+      "method": "GET",
+      "path": "/admin/messaging/health",
+      "function": "comprehensive_health_check",
+      "dependencies": "admin_user: User=Depends(get_admin_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 52,
+      "method": "POST",
+      "path": "/threads",
+      "function": "create_thread",
+      "dependencies": "thread_data: AIThreadCreate, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 72,
+      "method": "GET",
+      "path": "/threads",
+      "function": "get_threads",
+      "dependencies": "limit: int=50, offset: int=0, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 95,
+      "method": "GET",
+      "path": "/threads/{thread_id}/messages",
+      "function": "get_thread_messages",
+      "dependencies": "thread_id: int, limit: int=50, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 120,
+      "method": "POST",
+      "path": "/threads/{thread_id}/messages",
+      "function": "send_message",
+      "dependencies": "thread_id: int, chat_request: AIChatRequest, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 215,
+      "method": "PUT",
+      "path": "/threads/{thread_id}",
+      "function": "update_thread",
+      "dependencies": "thread_id: int, thread_update: AIThreadUpdate, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 240,
+      "method": "DELETE",
+      "path": "/threads/{thread_id}",
+      "function": "delete_thread",
+      "dependencies": "thread_id: int, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 264,
+      "method": "GET",
+      "path": "/providers",
+      "function": "get_provider_status",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 278,
+      "method": "GET",
+      "path": "/rate-limit",
+      "function": "get_rate_limit_status",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 292,
+      "method": "GET",
+      "path": "/export/conversations",
+      "function": "export_conversations",
+      "dependencies": "format: str='json', include_metadata: bool=True, compress: bool=False, thread_ids: str | None=None, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 358,
+      "method": "POST",
+      "path": "/import/conversations",
+      "function": "import_conversations",
+      "dependencies": "file: UploadFile=File(...), merge_strategy: str='skip', current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 403,
+      "method": "GET",
+      "path": "/moderation/status",
+      "function": "get_user_moderation_status",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 422,
+      "method": "GET",
+      "path": "/analytics/conversation-metrics",
+      "function": "get_conversation_metrics",
+      "dependencies": "days_back: int=30, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 453,
+      "method": "GET",
+      "path": "/analytics/user-insights",
+      "function": "get_user_insights",
+      "dependencies": "days_back: int=90, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 483,
+      "method": "GET",
+      "path": "/analytics/provider-performance",
+      "function": "get_provider_performance",
+      "dependencies": "days_back: int=30, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 503,
+      "method": "GET",
+      "path": "/context/user-profile",
+      "function": "get_user_ai_profile",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai.py",
+      "line": 523,
+      "method": "POST",
+      "path": "/threads/{thread_id}/file-upload",
+      "function": "upload_file_to_thread",
+      "dependencies": "thread_id: int, file: UploadFile=File(...), prompt: str | None=None, current_user: User=Depends(get_current_user), db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai_websocket.py",
+      "line": 88,
+      "method": "WEBSOCKET",
+      "path": "/ai/ws",
+      "function": "websocket_ai_chat",
+      "dependencies": "websocket: WebSocket, token: str | None=None, db: Session=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ai_websocket.py",
+      "line": 282,
+      "method": "GET",
+      "path": "/ai/ws/status",
+      "function": "websocket_status",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\alerts.py",
+      "line": 9,
+      "method": "POST",
+      "path": "/",
+      "function": "create",
+      "dependencies": "body: AlertCreate",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\alerts.py",
+      "line": 20,
+      "method": "GET",
+      "path": "/",
+      "function": "index",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 33,
+      "method": "POST",
+      "path": "/register",
+      "function": "register",
+      "dependencies": "user_data: UserRegisterRequest, db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 90,
+      "method": "POST",
+      "path": "/login",
+      "function": "login",
+      "dependencies": "login_data: UserLoginRequest, db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 147,
+      "method": "POST",
+      "path": "/google",
+      "function": "google_oauth",
+      "dependencies": "oauth_data: GoogleOAuthRequest, db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 274,
+      "method": "POST",
+      "path": "/logout",
+      "function": "logout",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 288,
+      "method": "GET",
+      "path": "/me",
+      "function": "get_current_user_info",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\auth.py",
+      "line": 305,
+      "method": "GET",
+      "path": "/check",
+      "function": "check_auth_status",
+      "dependencies": "current_user: User=Depends(get_current_user_optional)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\chat.py",
+      "line": 10,
+      "method": "GET",
+      "path": "/stream",
+      "function": "chat_stream",
+      "dependencies": "q: str, ctx_symbols: str | None=None, ctx_timeframe: str | None=Query(None, description='e.g., 15m,1h,4h,1d,1w'), model: str | None=Query(None, description='Preferred model id')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 50,
+      "method": "POST",
+      "path": "/conversations/dm/{other_user_id}",
+      "function": "create_or_get_dm_conversation",
+      "dependencies": "other_user_id: uuid.UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 70,
+      "method": "GET",
+      "path": "/conversations",
+      "function": "get_user_conversations",
+      "dependencies": "page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Items per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 91,
+      "method": "GET",
+      "path": "/conversations/{conversation_id}",
+      "function": "get_conversation",
+      "dependencies": "conversation_id: uuid.UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 125,
+      "method": "GET",
+      "path": "/conversations/{conversation_id}/messages",
+      "function": "get_conversation_messages",
+      "dependencies": "conversation_id: uuid.UUID, page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(50, ge=1, le=100, description='Items per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 149,
+      "method": "POST",
+      "path": "/conversations/{conversation_id}/messages",
+      "function": "send_message",
+      "dependencies": "conversation_id: uuid.UUID, message_data: MessageCreate, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 320,
+      "method": "PATCH",
+      "path": "/conversations/{conversation_id}/read",
+      "function": "mark_messages_read",
+      "dependencies": "conversation_id: uuid.UUID, mark_read_data: MarkReadRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 373,
+      "method": "DELETE",
+      "path": "/conversations/{conversation_id}/messages/{message_id}",
+      "function": "delete_message",
+      "dependencies": "conversation_id: uuid.UUID, message_id: uuid.UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 424,
+      "method": "GET",
+      "path": "/conversations/health",
+      "function": "conversation_health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 433,
+      "method": "GET",
+      "path": "/conversations/search",
+      "function": "search_messages",
+      "dependencies": "q: str=Query(..., min_length=2, description='Search query'), content_type: str | None=Query(None, description='Filter by content type'), conversation_id: uuid.UUID | None=Query(None, description='Search within specific conversation'), page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Items per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 465,
+      "method": "POST",
+      "path": "/conversations/{conversation_id}/messages/{message_id}/report",
+      "function": "report_message",
+      "dependencies": "conversation_id: uuid.UUID, message_id: uuid.UUID, reason: str=Query(..., min_length=5, max_length=500, description='Report reason'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 496,
+      "method": "GET",
+      "path": "/conversations/analytics/user",
+      "function": "get_user_analytics",
+      "dependencies": "days_back: int=Query(30, ge=1, le=365, description='Days to analyze'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 530,
+      "method": "GET",
+      "path": "/conversations/{conversation_id}/analytics",
+      "function": "get_conversation_analytics",
+      "dependencies": "conversation_id: uuid.UUID, days_back: int=Query(30, ge=1, le=365, description='Days to analyze'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\conversations.py",
+      "line": 570,
+      "method": "GET",
+      "path": "/conversations/trending",
+      "function": "get_trending_conversations",
+      "dependencies": "limit: int=Query(10, ge=1, le=50, description='Number of trending conversations'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 67,
+      "method": "GET",
+      "path": "/top",
+      "function": "get_top_cryptocurrencies",
+      "dependencies": "limit: int=Query(default=100, ge=1, le=250), vs_currency: str=Query(default='usd')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 95,
+      "method": "GET",
+      "path": "/market/overview",
+      "function": "get_market_overview",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 136,
+      "method": "GET",
+      "path": "/coin/{coin_id}",
+      "function": "get_coin_details",
+      "dependencies": "coin_id: str, localization: bool=Query(default=False), tickers: bool=Query(default=False), market_data: bool=Query(default=True), community_data: bool=Query(default=False), developer_data: bool=Query(default=False)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 174,
+      "method": "GET",
+      "path": "/price",
+      "function": "get_simple_price",
+      "dependencies": "ids: str=Query(..., description=\"Comma-separated coin IDs (e.g., 'bitcoin,ethereum')\"), vs_currencies: str=Query(default='usd', description='Comma-separated currencies')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 203,
+      "method": "GET",
+      "path": "/trending",
+      "function": "get_trending_coins",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 215,
+      "method": "GET",
+      "path": "/categories",
+      "function": "get_categories",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 227,
+      "method": "GET",
+      "path": "/ohlc/{coin_id}",
+      "function": "get_ohlc_data",
+      "dependencies": "coin_id: str, vs_currency: str=Query(default='usd'), days: int=Query(default=7, ge=1, le=365)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 266,
+      "method": "GET",
+      "path": "/search",
+      "function": "search_coins",
+      "dependencies": "query: str=Query(..., min_length=1)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 281,
+      "method": "GET",
+      "path": "/exchanges",
+      "function": "get_exchanges",
+      "dependencies": "per_page: int=Query(default=100, ge=1, le=250)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 298,
+      "method": "GET",
+      "path": "/nft/list",
+      "function": "get_nft_list",
+      "dependencies": "per_page: int=Query(default=100, ge=1, le=250)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\crypto.py",
+      "line": 316,
+      "method": "GET",
+      "path": "/health",
+      "function": "crypto_api_health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 39,
+      "method": "POST",
+      "path": "/follow",
+      "function": "legacy_follow_user",
+      "dependencies": "follow_request: FollowRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 55,
+      "method": "POST",
+      "path": "/{user_id}",
+      "function": "follow_user",
+      "dependencies": "user_id: UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 135,
+      "method": "DELETE",
+      "path": "/unfollow",
+      "function": "legacy_unfollow_user",
+      "dependencies": "unfollow_request: UnfollowRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 152,
+      "method": "DELETE",
+      "path": "/{user_id}",
+      "function": "unfollow_user",
+      "dependencies": "user_id: UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 169,
+      "method": "GET",
+      "path": "/status/{user_id}",
+      "function": "get_follow_status",
+      "dependencies": "user_id: UUID, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 192,
+      "method": "GET",
+      "path": "/{user_id}/followers",
+      "function": "get_user_followers",
+      "dependencies": "user_id: UUID, page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), current_user: User | None=Depends(get_current_user_optional), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 209,
+      "method": "GET",
+      "path": "/{user_id}/following",
+      "function": "get_user_following",
+      "dependencies": "user_id: UUID, page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), current_user: User | None=Depends(get_current_user_optional), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 226,
+      "method": "GET",
+      "path": "/me/followers",
+      "function": "get_my_followers",
+      "dependencies": "page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 244,
+      "method": "GET",
+      "path": "/me/following",
+      "function": "get_my_following",
+      "dependencies": "page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 262,
+      "method": "GET",
+      "path": "/mutual/{user_id}",
+      "function": "get_mutual_follows",
+      "dependencies": "user_id: UUID, page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 278,
+      "method": "GET",
+      "path": "/suggestions",
+      "function": "get_follow_suggestions",
+      "dependencies": "page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(10, ge=1, le=50, description='Number of suggestions per page'), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 295,
+      "method": "GET",
+      "path": "/stats/me",
+      "function": "get_my_follow_stats",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 307,
+      "method": "GET",
+      "path": "/activity/me",
+      "function": "get_my_follow_activity",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 318,
+      "method": "POST",
+      "path": "/bulk/follow",
+      "function": "bulk_follow_users",
+      "dependencies": "user_ids: list[UUID], current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 353,
+      "method": "DELETE",
+      "path": "/bulk/unfollow",
+      "function": "bulk_unfollow_users",
+      "dependencies": "user_ids: list[UUID], current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\follow.py",
+      "line": 388,
+      "method": "GET",
+      "path": "/stats/{user_id}",
+      "function": "get_user_follow_stats",
+      "dependencies": "user_id: UUID, current_user: User | None=Depends(get_current_user_optional), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\health.py",
+      "line": 7,
+      "method": "GET",
+      "path": "/health",
+      "function": "health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 49,
+      "method": "GET",
+      "path": "/symbols/search",
+      "function": "search_symbols",
+      "dependencies": "q: str=Query(..., min_length=1, max_length=50, description='Search query'), asset_type: AssetType | None=Query(None, description='Filter by asset type'), limit: int=Query(50, ge=1, le=200, description='Maximum results to return')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 73,
+      "method": "GET",
+      "path": "/symbols/{symbol}",
+      "function": "get_symbol_info",
+      "dependencies": "symbol: str=Path(..., description='Symbol ticker (e.g., AAPL, BTCUSD)')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 90,
+      "method": "GET",
+      "path": "/symbols",
+      "function": "list_symbols",
+      "dependencies": "asset_type: AssetType | None=Query(None, description='Filter by asset type'), limit: int=Query(100, ge=1, le=500, description='Maximum results to return')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 112,
+      "method": "GET",
+      "path": "/ohlc/{symbol}",
+      "function": "get_ohlc_data",
+      "dependencies": "symbol: str=Path(..., description='Symbol ticker'), timeframe: str=Query('1D', description='Timeframe (1m, 5m, 15m, 30m, 1h, 1D, 1W, 1M)'), limit: int=Query(100, ge=1, le=1000, description='Number of bars to return'), start_date: datetime | None=Query(None, description='Start date (ISO format)'), end_date: datetime | None=Query(None, description='End date (ISO format)')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 168,
+      "method": "GET",
+      "path": "/market/overview",
+      "function": "get_market_overview",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 194,
+      "method": "GET",
+      "path": "/symbols/popular",
+      "function": "get_popular_symbols",
+      "dependencies": "limit: int=Query(20, ge=1, le=100, description='Number of popular symbols to return')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 235,
+      "method": "GET",
+      "path": "/symbols/{symbol}/similar",
+      "function": "get_similar_symbols",
+      "dependencies": "symbol: str=Path(..., description='Base symbol to find similar symbols for'), limit: int=Query(10, ge=1, le=50, description='Number of similar symbols to return')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\market_data.py",
+      "line": 269,
+      "method": "GET",
+      "path": "/stream/{symbol}",
+      "function": "stream_symbol_data",
+      "dependencies": "symbol: str",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\mock_ohlc.py",
+      "line": 10,
+      "method": "GET",
+      "path": "/ohlc",
+      "function": "mock_ohlc",
+      "dependencies": "symbol: str='BTCUSD', timeframe: str='1h', limit: int=100",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\news.py",
+      "line": 9,
+      "method": "GET",
+      "path": "/",
+      "function": "news",
+      "dependencies": "symbol: str, limit: int=20",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 134,
+      "method": "GET",
+      "path": "/",
+      "function": "get_notifications",
+      "dependencies": "request: Request, limit: int=Query(50, ge=1, le=100, description='Number of notifications to retrieve'), offset: int=Query(0, ge=0, description='Pagination offset'), unread_only: bool=Query(False, description='Only return unread notifications'), type_filter: str | None=Query(None, description='Filter by notification type'), category_filter: str | None=Query(None, description='Filter by category'), include_dismissed: bool=Query(False, description='Include dismissed notifications'), current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 192,
+      "method": "GET",
+      "path": "/unread-count",
+      "function": "get_unread_count",
+      "dependencies": "request: Request, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 213,
+      "method": "GET",
+      "path": "/stats",
+      "function": "get_notification_stats",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 244,
+      "method": "POST",
+      "path": "/mark-read",
+      "function": "mark_notifications_as_read",
+      "dependencies": "request: MarkAsReadRequest, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 293,
+      "method": "POST",
+      "path": "/{notification_id}/read",
+      "function": "mark_notification_as_read",
+      "dependencies": "notification_id: str, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 325,
+      "method": "POST",
+      "path": "/{notification_id}/dismiss",
+      "function": "dismiss_notification",
+      "dependencies": "notification_id: str, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 355,
+      "method": "POST",
+      "path": "/{notification_id}/click",
+      "function": "click_notification",
+      "dependencies": "notification_id: str, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 387,
+      "method": "GET",
+      "path": "/preferences",
+      "function": "get_notification_preferences",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 420,
+      "method": "PUT",
+      "path": "/preferences",
+      "function": "update_notification_preferences",
+      "dependencies": "request: NotificationPreferencesRequest, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 448,
+      "method": "POST",
+      "path": "/test",
+      "function": "create_test_notification",
+      "dependencies": "request: SampleNotificationRequest, background_tasks: BackgroundTasks, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 490,
+      "method": "DELETE",
+      "path": "/cleanup",
+      "function": "cleanup_expired_notifications",
+      "dependencies": "background_tasks: BackgroundTasks, current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\notifications.py",
+      "line": 511,
+      "method": "GET",
+      "path": "/types",
+      "function": "get_notification_types",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\ohlc.py",
+      "line": 73,
+      "method": "GET",
+      "path": "/",
+      "function": "ohlc",
+      "dependencies": "symbol: str=Query(..., description='Ticker or crypto id (e.g., AAPL, BTC, bitcoin, BTCUSD)'), timeframe: Timeframe='1h', limit: int=500",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\portfolio.py",
+      "line": 9,
+      "method": "POST",
+      "path": "/",
+      "function": "create_portfolio",
+      "dependencies": "body: PortfolioCreate",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\portfolio.py",
+      "line": 14,
+      "method": "POST",
+      "path": "/{pid}/holdings",
+      "function": "add_holding",
+      "dependencies": "pid: int, h: HoldingIn",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 30,
+      "method": "GET",
+      "path": "/me",
+      "function": "get_my_profile",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 46,
+      "method": "PUT",
+      "path": "/me",
+      "function": "update_my_profile",
+      "dependencies": "profile_data: ProfileUpdateRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 57,
+      "method": "GET",
+      "path": "/{profile_id}",
+      "function": "get_profile",
+      "dependencies": "profile_id: UUID, db: AsyncSession=Depends(get_db), current_user: User | None=Depends(get_current_user_optional)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 69,
+      "method": "GET",
+      "path": "/username/{username}",
+      "function": "get_profile_by_username",
+      "dependencies": "username: str, db: AsyncSession=Depends(get_db), current_user: User | None=Depends(get_current_user_optional)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 90,
+      "method": "GET",
+      "path": "",
+      "function": "search_profiles",
+      "dependencies": "q: str=Query(..., min_length=2, max_length=50, description='Search query'), page: int=Query(1, ge=1, description='Page number'), page_size: int=Query(20, ge=1, le=100, description='Number of results per page'), db: AsyncSession=Depends(get_db), current_user: User | None=Depends(get_current_user_optional)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 108,
+      "method": "GET",
+      "path": "/settings/user",
+      "function": "get_user_settings",
+      "dependencies": "current_user: User=Depends(get_current_user)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 114,
+      "method": "PUT",
+      "path": "/settings/user",
+      "function": "update_user_settings",
+      "dependencies": "settings_data: UserSettingsUpdateRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 126,
+      "method": "GET",
+      "path": "/settings/notifications",
+      "function": "get_notification_preferences",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 135,
+      "method": "PUT",
+      "path": "/settings/notifications",
+      "function": "update_notification_preferences",
+      "dependencies": "prefs_data: NotificationPreferencesUpdateRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile.py",
+      "line": 148,
+      "method": "DELETE",
+      "path": "/me",
+      "function": "delete_account",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 107,
+      "method": "POST",
+      "path": "/enhanced/avatar",
+      "function": "upload_avatar",
+      "dependencies": "file: UploadFile=File(...), current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 148,
+      "method": "GET",
+      "path": "/enhanced/avatar/{user_id}",
+      "function": "get_avatar",
+      "dependencies": "user_id: UUID",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 181,
+      "method": "POST",
+      "path": "/enhanced/validate",
+      "function": "validate_profile_data",
+      "dependencies": "profile_data: ProfileUpdateRequest, current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 213,
+      "method": "DELETE",
+      "path": "/enhanced/account",
+      "function": "delete_account",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 233,
+      "method": "GET",
+      "path": "/enhanced/export",
+      "function": "export_user_data",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 251,
+      "method": "GET",
+      "path": "/enhanced/stats",
+      "function": "get_profile_stats",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\profile_enhanced.py",
+      "line": 269,
+      "method": "GET",
+      "path": "/enhanced/activity",
+      "function": "get_activity_summary",
+      "dependencies": "current_user: User=Depends(get_current_user), db: AsyncSession=Depends(get_db)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 77,
+      "method": "GET",
+      "path": "/health",
+      "function": "health_check",
+      "dependencies": "service: SmartPriceService=Depends(get_price_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 89,
+      "method": "GET",
+      "path": "/all",
+      "function": "get_all_assets",
+      "dependencies": "limit_per_type: int=Query(default=10, ge=1, le=100, description='Assets per type'), types: str=Query(default='crypto,stocks,indices,forex', description='Comma-separated asset types'), force_refresh: bool=Query(default=False, description='Force API refresh'), service: UnifiedAssetService=Depends(get_unified_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 219,
+      "method": "GET",
+      "path": "/{symbol}",
+      "function": "get_price",
+      "dependencies": "symbol: str, force_refresh: bool=Query(False), service: SmartPriceService=Depends(get_price_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 254,
+      "method": "POST",
+      "path": "/batch",
+      "function": "get_batch_prices",
+      "dependencies": "request: BatchPriceRequest, force_refresh: bool=Query(False), service: SmartPriceService=Depends(get_price_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 299,
+      "method": "GET",
+      "path": "/admin/performance",
+      "function": "get_performance_stats",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 324,
+      "method": "POST",
+      "path": "/admin/reset-stats",
+      "function": "reset_performance_stats",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 357,
+      "method": "GET",
+      "path": "/{symbol}/history",
+      "function": "get_price_history",
+      "dependencies": "symbol: str, period: PeriodType=Query(default='1m', description='Time period: 1d, 1w, 1m, 3m, 6m, 1y, 5y, all'), force_refresh: bool=Query(default=False, description='Force refresh from API'), service: HistoricalPriceService=Depends(get_historical_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 406,
+      "method": "GET",
+      "path": "/{symbol}/ohlcv",
+      "function": "get_ohlcv_data",
+      "dependencies": "symbol: str, period: PeriodType=Query(default='1m', description='Time period: 1d, 1w, 1m, 3m, 6m, 1y, 5y, all'), force_refresh: bool=Query(default=False, description='Force refresh from API'), service: HistoricalPriceService=Depends(get_historical_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 481,
+      "method": "GET",
+      "path": "/crypto/top",
+      "function": "get_top_cryptocurrencies",
+      "dependencies": "limit: int=Query(default=100, ge=1, le=300, description='Number of cryptos to return'), force_refresh: bool=Query(default=False, description='Force refresh from API'), service: CryptoDiscoveryService=Depends(get_crypto_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 519,
+      "method": "GET",
+      "path": "/crypto/search",
+      "function": "search_cryptocurrencies",
+      "dependencies": "q: str=Query(..., min_length=1, description='Search query (name or symbol)'), limit: int=Query(default=50, ge=1, le=100, description='Max results'), service: CryptoDiscoveryService=Depends(get_crypto_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\smart_prices.py",
+      "line": 549,
+      "method": "GET",
+      "path": "/crypto/mapping",
+      "function": "get_crypto_symbol_mapping",
+      "dependencies": "service: CryptoDiscoveryService=Depends(get_crypto_service)",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\social.py",
+      "line": 9,
+      "method": "POST",
+      "path": "/posts",
+      "function": "create_post",
+      "dependencies": "payload: PostCreate",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\social.py",
+      "line": 19,
+      "method": "GET",
+      "path": "/feed",
+      "function": "feed",
+      "dependencies": "symbol: str | None=None, limit: int=50",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\websocket.py",
+      "line": 29,
+      "method": "WEBSOCKET",
+      "path": "/ws",
+      "function": "websocket_endpoint",
+      "dependencies": "websocket: WebSocket",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\websocket.py",
+      "line": 166,
+      "method": "GET",
+      "path": "/ws/health",
+      "function": "websocket_health",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\websocket.py",
+      "line": 178,
+      "method": "WEBSOCKET",
+      "path": "/ws/notifications",
+      "function": "notification_websocket_endpoint",
+      "dependencies": "websocket: WebSocket",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\websocket.py",
+      "line": 259,
+      "method": "GET",
+      "path": "/ws/notifications/stats",
+      "function": "notification_websocket_stats",
+      "dependencies": "",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\routers\\websocket_prices.py",
+      "line": 243,
+      "method": "WEBSOCKET",
+      "path": "/prices",
+      "function": "websocket_price_endpoint",
+      "dependencies": "websocket: WebSocket, client_id: str=Query(default=None, description='Optional client ID')",
+      "status": "untested"
+    },
+    {
+      "source": "apps\\backend\\app\\services\\j53_scheduler.py",
+      "line": 19,
+      "method": "GET",
+      "path": "/j53/status",
+      "function": "get_scheduler_status",
+      "dependencies": "",
+      "status": "untested"
+    }
+  ]
+}
