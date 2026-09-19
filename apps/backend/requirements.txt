@@ -7,7 +7,7 @@ aiosqlite==0.22.1
 alembic==1.18.4
 amqp==5.3.1
 annotated-types==0.7.0
-anyio==4.12.1
+anyio==4.14.2
 argon2-cffi-bindings==25.1.0
 argon2-cffi==25.1.0
 arrow==1.4.0
