@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: 🔍 Get workflow details
         id: workflow-details
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const workflowRun = context.payload.workflow_run;
@@ -71,7 +71,7 @@ jobs:
 
       - name: 🔍 Check for existing issue
         id: check-issue
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
@@ -102,7 +102,7 @@ jobs:
       - name: 📝 Create failure issue
         id: create-issue
         if: steps.check-issue.outputs.issue-exists == 'false'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
@@ -162,7 +162,7 @@ jobs:
 
       - name: � Auto-assign issue based on workflow type
         if: steps.check-issue.outputs.issue-exists == 'false'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
@@ -216,7 +216,7 @@ jobs:
 
       - name: �💬 Add comment to existing issue
         if: steps.check-issue.outputs.issue-exists == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const issueNumber = ${{ steps.check-issue.outputs.issue-number }};
