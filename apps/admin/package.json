@@ -26,11 +26,11 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.0.0",
     "@types/react": "^19.2.11",
     "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.0"
   }
 }
