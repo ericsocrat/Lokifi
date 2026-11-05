@@ -43,7 +43,7 @@ jobs:
     steps:
       - name: 🔍 Get workflow details
         id: details
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const workflowRun = context.payload.workflow_run;
@@ -90,7 +90,7 @@ jobs:
             core.setOutput('repo-url', `https://github.com/${context.repo.owner}/${context.repo.repo}`);
 
       - name: 📢 Send Slack notification
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4.0.0
         with:
           # v2 compatibility: webhook inputs (env vars deprecated in v2)
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
