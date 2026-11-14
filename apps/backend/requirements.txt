@@ -36,7 +36,7 @@ cryptography==50.0.2
 cyclonedx-python-lib==11.6.0
 defusedxml==0.7.1
 distro==1.9.0
-dnspython==2.9.0
+dnspython==2.9.2
 docker==7.1.0
 dogpile.cache==1.5.0
 # ecdsa removed - was vulnerable dependency of python-jose (HIGH severity timing attack vulnerability)
