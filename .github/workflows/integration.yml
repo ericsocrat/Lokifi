@@ -33,10 +33,10 @@ jobs:
       api: ${{ steps.filter.outputs.api }}
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🎯 Check changed files
-        uses: dorny/paths-filter@v3
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -60,7 +60,7 @@ jobs:
     timeout-minutes: 8
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
@@ -73,7 +73,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-
@@ -83,10 +83,10 @@ jobs:
           --health-retries 5
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🐍 Setup Python 3.13
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
           cache: "pip"
@@ -127,7 +127,7 @@ jobs:
 
       - name: 📊 Upload contract test results
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: api-contract-results
           path: |
@@ -149,7 +149,7 @@ jobs:
         working-directory: apps/frontend
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: � Setup E2E Environment
         uses: ./.github/actions/setup-e2e
@@ -163,7 +163,7 @@ jobs:
 
       - name: 📊 Upload accessibility report
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: accessibility-report
           path: |
@@ -195,7 +195,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
@@ -208,7 +208,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-
@@ -218,10 +218,10 @@ jobs:
           --health-retries 5
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🐍 Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
@@ -259,7 +259,7 @@ jobs:
 
       - name: 📊 Upload integration test results
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: backend-integration-results-python-${{ matrix.python-version }}
           path: apps/backend/test-results/
@@ -276,14 +276,14 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: 🐳 Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: 📦 Cache Docker layers
         id: cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ hashFiles('apps/backend/**', 'apps/frontend/**', 'infra/docker/**') }}
